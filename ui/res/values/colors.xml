@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
+    http://www.jaspersoft.com.
+
+    Unless you have purchased a commercial license agreement from Jaspersoft,
+    the following license terms apply:
+
+    This program is free software: you can redistribute it and/or  modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of  the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public  License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+    <!-- Primary Palette -->
+    <color name="js_blue">#0480ba</color>
+    <color name="js_orange">#ff790b</color>
+    <!-- Secondary Palette -->
+    <color name="js_light_blue">#1abafc</color>
+    <color name="js_light_orange">#ffac0b</color>
+    <color name="js_light_green">#b7cb2d</color>
+    <!-- Neutrals -->
+    <color name="js_dark_grey">#333333</color>
+    <color name="js_grey">#7d7d7d</color>
+    <color name="js_light_grey">#c0c0c0</color>
+    <color name="js_lighter_grey">#e7e7e7</color>
+    <!-- Others -->
+    <color name="red">#ff0000</color>
+</resources>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
+    http://www.jaspersoft.com.
+
+    Unless you have purchased a commercial license agreement from Jaspersoft,
+    the following license terms apply:
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+    <!-- Input Controls -->
+    <style name="inputControl" />
+
+        <style name="inputControl.layout">
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_width">fill_parent</item>
+            <item name="android:paddingBottom">7dp</item>
+        </style>
+
+        <style name="inputControl.label">
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_margin">5dp</item>
+            <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+            <item name="android:textColor">@color/js_blue</item>
+            <item name="android:textStyle">bold</item>
+        </style>
+
+        <style name="inputControl.errorText">
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_marginLeft">5dp</item>
+            <item name="android:layout_marginRight">5dp</item>
+            <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+            <item name="android:textColor">@color/red</item>
+        </style>
+
+        <!-- Boolean -->
+        <style name="inputControl.boolean" />
+
+            <style name="inputControl.boolean.checkBox">
+                <item name="android:layout_height">wrap_content</item>
+                <item name="android:layout_width">fill_parent</item>
+                <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+                <item name="android:textColor">@color/js_blue</item>
+                <item name="android:textStyle">bold</item>
+            </style>
+
+        <!-- Single Value -->
+        <style name="inputControl.singleValue" />
+
+            <style name="inputControl.singleValue.editText">
+                <item name="android:layout_height">wrap_content</item>
+                <item name="android:layout_width">fill_parent</item>
+                <item name="android:singleLine">true</item>
+            </style>
+
+        <!-- Date -->
+        <style name="inputControl.date" />
+
+            <style name="inputControl.date.inputContainer" />
+
+                <style name="inputControl.date.inputContainer.layout">
+                    <item name="android:layout_height">wrap_content</item>
+                    <item name="android:layout_width">fill_parent</item>
+                </style>
+
+                <style name="inputControl.date.inputContainer.editText">
+                    <item name="android:layout_height">wrap_content</item>
+                    <item name="android:layout_width">wrap_content</item>
+                    <item name="android:layout_weight">1</item>
+                    <item name="android:singleLine">true</item>
+                </style>
+
+                <style name="inputControl.date.inputContainer.picker">
+                    <item name="android:layout_height">wrap_content</item>
+                    <item name="android:layout_width">wrap_content</item>
+                </style>
+
+                <style name="inputControl.date.inputContainer.picker.date">
+                    <item name="android:src">@drawable/ic_action_date_picker</item>
+                </style>
+
+                <style name="inputControl.date.inputContainer.picker.time">
+                    <item name="android:src">@drawable/ic_action_time_picker</item>
+                </style>
+
+        <!-- Single/Multi Select -->
+        <style name="inputControl.select" />
+
+            <style name="inputControl.select.spinner">
+                <item name="android:layout_width">fill_parent</item>
+                <item name="android:layout_height">wrap_content</item>
+            </style>
+
+    <!-- Abstract Items List -->
+    <style name="list" />
+    <style name="list.item" />
+
+        <style name="list.item.layout">
+            <item name="android:layout_height">wrap_content</item>
+            <item name="android:layout_width">fill_parent</item>
+            <item name="android:background">@drawable/bs_white_blue</item>
+            <item name="android:gravity">center</item>
+        </style>
+
+        <style name="list.item.icon">
+            <item name="android:layout_height">55dp</item>
+            <item name="android:layout_width">55dp</item>
+            <item name="android:scaleType">center</item>
+        </style>
+
+        <style name="list.item.text" />
+
+            <style name="list.item.text.layout">
+                <item name="android:layout_height">wrap_content</item>
+                <item name="android:layout_width">fill_parent</item>
+                <item name="android:paddingRight">4dp</item>
+            </style>
+
+            <style name="list.item.text.label">
+                <item name="android:layout_height">wrap_content</item>
+                <item name="android:layout_width">wrap_content</item>
+                <item name="android:textColor">@color/cs_blue_white</item>
+                <item name="android:textSize">18sp</item>
+                <item name="android:textStyle">bold</item>
+                <item name="android:singleLine">true</item>
+            </style>
+
+            <style name="list.item.text.uri">
+                <item name="android:layout_height">wrap_content</item>
+                <item name="android:layout_width">wrap_content</item>
+                <item name="android:textColor">@color/cs_orange_white</item>
+                <item name="android:textSize">14sp</item>
+                <item name="android:singleLine">true</item>
+            </style>
+
+    <!-- Server Profiles List -->
+    <style name="list.item.icon.serverProfile">
+        <item name="android:src">@drawable/ic_type_server_profile</item>
+    </style>
+
+    <!-- Bread Crumbs -->
+    <style name="breadCrumbs" />
+
+    <style name="breadCrumbs.layout">
+        <item name="android:background">@drawable/gradient_light_grey</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+
+    <style name="breadCrumbs.labelSmall">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginBottom">-5sp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="breadCrumbs.labelLarge">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:shadowColor">@color/js_dark_grey</item>
+        <item name="android:shadowDx">-1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:shadowRadius">1.5</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+</resources>
