@@ -35,4 +35,5 @@
     <color name="js_lighter_grey">#e7e7e7</color>
     <!-- Others -->
     <color name="red">#ff0000</color>
+    <color name="js_lighter_blue">#8ec2ef</color>
 </resources>
