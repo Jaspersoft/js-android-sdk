@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>Declaration of <strong>Asynchronous task manager</strong>,
- * used to manage asynchronous task. </p>
+ * <p>Declaration of <strong>Asynchronous Task Manager</strong>,
+ * used to manage and execute asynchronous tasks. </p>
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
@@ -75,9 +75,9 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     }
 
     /**
-     * Executes target <strong>Asynchronous task</>.
+     * Executes target <strong>Asynchronous Task</>.
      *
-     * @param jsAsyncTask <strong>Asynchronous task</>.
+     * @param jsAsyncTask <strong>Asynchronous Task</>.
      */
     public void executeTask(JsAsyncTask jsAsyncTask) {
         // Keep async tasks
@@ -141,8 +141,8 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     }
 
     /**
-     * Retains and detaches from <strong>progress tracker</strong> the list of <strong>Asynchronous task</strong>s in
-     * <strong>state</strong> during <strong>Activity<strong>destroying.
+     * Retains and detaches from <strong>progress tracker</strong> the list of <strong>Asynchronous Task</strong>s in
+     * <strong>state</strong> during <strong>Activity<strong> destruction.
      *
      * @return list of <strong>Asynchronous task</strong>s.
      */
@@ -156,10 +156,10 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     }
 
     /**
-     * Restores the list of <strong>Asynchronous task</strong>s from <strong>state</strong> during
-     * <strong>Activity<strong> recovering.
+     * Restores the list of <strong>Asynchronous Task</strong>s from <strong>state</strong> during
+     * <strong>Activity<strong> recovery.
      *
-     * @param retainedTasksList list of <strong>Asynchronous task</strong>s.
+     * @param retainedTasksList list of <strong>Asynchronous Task</strong>s.
      */
     public void handleRetainedTasks(List<JsAsyncTask> retainedTasksList) {
         if (retainedTasksList != null) {
@@ -183,19 +183,19 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     }
 
     /**
-     * Tracks current status of <strong>Asynchronous task</strong>s.
+     * Tracks current status of <strong>Asynchronous Task</strong>s.
      *
-     * @return <code>true</code> if there are no <strong>Asynchronous task</strong>s in executing mode, otherwise
+     * @return <code>true</code> if there are <strong>Asynchronous Task</strong>s executing, otherwise
      * <code>false</code>.
      */
     public boolean isWorking() {
-        return jsAsyncTaskList.isEmpty();
+        return !jsAsyncTaskList.isEmpty();
     }
 
     /**
      * Tracks current status of the target <strong>Asynchronous task</strong>.
      *
-     * @return <code>true</code> if <strong>Asynchronous task</strong> is in executing mode, otherwise
+     * @return <code>true</code> if given <strong>Asynchronous Task</strong> is executing, otherwise
      * <code>false</code>.
      */
     public boolean isTaskWorking(JsAsyncTask asyncTask) {

@@ -36,29 +36,29 @@ import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 public interface JsProgressTracker {
 
     /**
-     * Updates progress <strong>message</strong> for target <strong>Asynchronous task</strong> if progress dialog
-     * showing is required for it.
+     * Updates progress <strong>message</strong> for target <strong>Asynchronous Task</strong> if showing progress
+     * dialog is required.
      *
      * @param asyncTask <strong>Asynchronous task</strong>.
-     * @param message <strong>message</strong> witch will be appeared on progress dialogue.
+     * @param message <strong>message</strong> which will appear on progress dialog.
      */
     void onProgress(JsAsyncTask asyncTask, String message);
 
     /**
-     * Notifies <strong>Asynchronous task manager</strong> about <strong>Asynchronous task</strong> success completeness
-     * and is responsible for removing target task from active  <strong>Asynchronous task</strong> list and progress
-     * dialog disconnecting.
+     * Notifies <strong>Asynchronous Task Manager</strong> about successful <strong>Asynchronous Task</strong>
+     * completion and is also responsible for removing the target task from active <strong>Asynchronous Task</strong>
+     * list and disconnecting the progress dialog.
      *
-     * @param asyncTask <strong>Asynchronous task</strong> witch finished successfully.
+     * @param asyncTask <strong>Asynchronous task</strong> which finished successfully.
      */
     void onComplete(JsAsyncTask asyncTask);
 
     /**
-     * Notifies <strong>Asynchronous task manager</strong> about <strong>Asynchronous task</strong> errors and is
-     * responsible for removing target task from active  <strong>Asynchronous task</strong> list and progress dialog
-     * disconnecting.
+     * Notifies <strong>Asynchronous Task Manager</strong> about <strong>Asynchronous Task</strong> errors and is
+     * responsible for removing the target task from active  <strong>Asynchronous Task</strong> list and
+     * disconnecting the progress dialog.
      *
-     * @param asyncTask <strong>Asynchronous task</strong> witch finished with exceptions.
+     * @param asyncTask <strong>Asynchronous task</strong> which finished with exceptions.
      */
     void onException(JsAsyncTask asyncTask);
 

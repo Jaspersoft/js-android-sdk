@@ -22,8 +22,8 @@
 package com.jaspersoft.android.sdk.client;
 
 /**
- * The <code>JsServerProfile</code> object represents an instance of a JasperReports server
- * with an authentication credentials.
+ * The <code>JsServerProfile</code> object represents an instance of a JasperReports Server
+ * including authentication credentials.
  *
  * @author Ivan Gadzhega
  * @version $Id$

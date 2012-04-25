@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class intended for convenient work with input control entities, independent of its type and UI appearance.
+ * This is a helper class for working with input control entities, independent of type and UI appearance.
  *
  * @author Ivan Gadzhega
  * @version $Id$

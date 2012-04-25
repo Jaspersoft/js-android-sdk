@@ -35,18 +35,18 @@ import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 public interface JsOnTaskCallbackListener {
 
     /**
-     * Notifies <strong>Activity</strong> about <strong>Asynchronous task</strong> success completeness and contains
-     * the logic witch will be executed on <strong>UI tread</strong>.
+     * Notifies <strong>Activity</strong> about successful completion of an <code>Asynchronous Task</code> and contains
+     * the logic which will be executed on the <strong>UI tread</strong>.
      *
-     * @param task <strong>Asynchronous task</strong> witch finished with exceptions.
+     * @param task <strong>Asynchronous Task</strong> which finished with exceptions.
      */
     void onTaskComplete(JsAsyncTask task);
 
     /**
-     * Notifies <strong>Activity</strong> about <strong>Asynchronous task</strong> executing errors and contains the
-     * logic witch will be executed on <strong>UI tread</strong>.
+     * Notifies <strong>Activity</strong> about <strong>Asynchronous Task</strong> execution errors and contains the
+     * logic which will be executed on the <strong>UI thread</strong>.
      *
-     * @param task <strong>Asynchronous task</strong> witch finished with exceptions.
+     * @param task <strong>Asynchronous Task</strong> which finished with exceptions.
      */
     void onTaskException(JsAsyncTask task);
 

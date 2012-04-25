@@ -88,7 +88,7 @@ public class JsRestClient {
 
 
     /**
-     * Gets the resource descriptor for the resource available by the specified URI.
+     * Gets the resource descriptor for the resource with specified URI.
      *
      * @param uri repository URI (i.e. /reports/samples/)
      * @return the ResourceDescriptor value
@@ -102,7 +102,7 @@ public class JsRestClient {
     /**
      * Modifies the resource with specified ResourceDescriptor
      *
-     * @param resourceDescriptor ResourceDescriptor of modifying resource
+     * @param resourceDescriptor ResourceDescriptor of resource being modified
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public void modifyResource(ResourceDescriptor resourceDescriptor) throws RestClientException {
@@ -191,7 +191,7 @@ public class JsRestClient {
      * Downloads specified report attachment, once a report has been generated, and keeps it in memory as a byte array.
      *
      * @param uuid Universally Unique Identifier. As a side effect of storing the report output in the user session,
-     *             the UUID in the URL is visible only to the currently logged user.
+     *             the UUID in the URI is visible only to the currently logged in user.
      * @param name One of the file names specified in the report xml. If the file parameter is not specified,
      *             the service returns the report descriptor.
      * @return Attachment file as byte array strored in memory.
@@ -209,7 +209,7 @@ public class JsRestClient {
      * Downloads specified report attachment, once a report has been generated and saves it in the specified file.
      *
      * @param uuid Universally Unique Identifier. As a side effect of storing the report output in the user session,
-     *             the UUID in the URL is visible only to the currently logged user.
+     *             the UUID in the URI is visible only to the currently logged in user.
      * @param name One of the file names specified in the report xml. If the file parameter is not specified,
      *             the service returns the report descriptor.
      * @param file The file in which the attachment will be saved.
