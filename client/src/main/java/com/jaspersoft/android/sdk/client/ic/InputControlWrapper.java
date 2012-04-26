@@ -162,15 +162,17 @@ public class InputControlWrapper {
                     for (ResourceProperty queryDataRow : queryData) {
                         ResourceProperty property = new ResourceProperty();
                         property.setName(queryDataRow.getValue());
-                        String value = "";
+
                         //cols
+                        StringBuilder value = new StringBuilder();
                         for(ResourceProperty queryDataCol : queryDataRow.getProperties()) {
                             if(ResourceDescriptor.PROP_QUERY_DATA_ROW_COLUMN.equals(queryDataCol.getName())) {
-                                if (value.length() > 0) value += " | ";
-                                value += queryDataCol.getValue();
+                                if (value.length() > 0) value.append(" | ");
+                                value.append(queryDataCol.getValue());
                             }
                         }
-                        property.setValue(value);
+
+                        property.setValue(value.toString());
                         listOfValues.add(property);
                     }
                 }
