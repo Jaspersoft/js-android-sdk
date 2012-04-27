@@ -26,7 +26,7 @@ import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 /**
  * <p>Declaration of <strong>Progress tracker</strong>, used for reducing of relating between <strong>Activity</strong>
  * and <strong>Asynchronous task manager</strong> and notifies the last one about life cycles result of
- * <strong>Asynchronous task</strong> executing</p>.
+ * <strong>Asynchronous task</strong> executing.</p>
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
