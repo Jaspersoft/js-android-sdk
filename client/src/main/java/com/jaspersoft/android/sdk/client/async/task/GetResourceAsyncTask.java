@@ -25,6 +25,9 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 
 /**
+ * <p>Declaration of the <strong>GetResourceAsyncTask</strong> which is subclass of <strong>JsRestAsyncTask</strong>
+ * abstract class and overrides <code>doInBackground(Object... arg0)</code> method from it.</p>
+ *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
  * @version $Id$
@@ -34,23 +37,54 @@ public class GetResourceAsyncTask extends JsRestAsyncTask<Object, ResourceDescri
 
     private String resourceUri;
 
+    /**
+     * Creates a new <strong>GetResourceAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetResourceAsyncTask</strong> identifier.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri <strong>Resource</strong> Uri.
+     */
     public GetResourceAsyncTask(int id, JsRestClient jsRestClient, String resourceUri) {
         super(id, jsRestClient);
         this.resourceUri = resourceUri;
     }
 
+    /**
+     * Creates a new <strong>GetResourceAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetResourceAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri <strong>Resource</strong> Uri.
+     */
     public GetResourceAsyncTask(int id, String progressMessage, JsRestClient jsRestClient, String resourceUri) {
         super(id, progressMessage, jsRestClient);
         this.resourceUri = resourceUri;
     }
 
+    /**
+     * Creates a new <strong>GetResourceAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetResourceAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri <strong>Resource</strong> Uri.
+     */
     public GetResourceAsyncTask(int id, String progressMessage,
             long showDialogTimeout, JsRestClient jsRestClient, String resourceUri) {
         super(id, progressMessage, showDialogTimeout, jsRestClient);
         this.resourceUri = resourceUri;
     }
 
-
+    /**
+     * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
+     * <code>getResource(String resourceUri)</code> method.
+     *
+     * @param arg0 the parameters of the <strong>Asynchronous task</strong>. Current implementation does not use this params.
+     * @return <strong>Resource descriptor</strong> by resource URI.
+     */
     @Override
     protected ResourceDescriptor doInBackground(Object... arg0) {
         super.doInBackground(arg0);

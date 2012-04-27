@@ -26,6 +26,9 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
 import java.io.File;
 
 /**
+ * <p>Declaration of the <strong>SaveReportAttachmentAsyncTask</strong> which is subclass of <strong>JsRestAsyncTask</strong>
+ * abstract class and overrides <code>doInBackground(Object... arg0)</code> method from it.</p>
+ *
  * @author Ivan Gadzhega
  * @version $Id$
  * @since 1.0
@@ -37,17 +40,54 @@ public class SaveReportAttachmentAsyncTask extends JsRestAsyncTask<Object, Void>
     private File outputFile;
     private String contentType;
 
+    /**
+     * Creates a new <strong>SaveReportAttachmentAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SaveReportAttachmentAsyncTask</strong> identifier.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param uuid Universally Unique Identifier. As a side effect of storing the report output in the user session,
+     *             the UUID in the URL is visible only to the currently logged user.
+     * @param attachmentName One of the file names specified in the report xml. If the file parameter is not specified,
+     *             the service returns the report descriptor.
+     * @param outputFile The file in which the attachment will be saved.
+     */
     public SaveReportAttachmentAsyncTask(int id, JsRestClient jsRestClient, String uuid, String attachmentName, File outputFile) {
         super(id, jsRestClient);
         init(uuid, attachmentName, outputFile);
     }
 
+    /**
+     * Creates a new <strong>SaveReportAttachmentAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SaveReportAttachmentAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param uuid Universally Unique Identifier. As a side effect of storing the report output in the user session,
+     *             the UUID in the URL is visible only to the currently logged user.
+     * @param attachmentName One of the file names specified in the report xml. If the file parameter is not specified,
+     *             the service returns the report descriptor.
+     * @param outputFile The file in which the attachment will be saved.
+     */
     public SaveReportAttachmentAsyncTask(int id, String progressMessage, JsRestClient jsRestClient,
             String uuid, String attachmentName, File outputFile) {
         super(id, progressMessage, jsRestClient);
         init(uuid, attachmentName, outputFile);
     }
 
+    /**
+     * Creates a new <strong>SaveReportAttachmentAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SaveReportAttachmentAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param uuid Universally Unique Identifier. As a side effect of storing the report output in the user session,
+     *             the UUID in the URL is visible only to the currently logged user.
+     * @param attachmentName One of the file names specified in the report xml. If the file parameter is not specified,
+     *             the service returns the report descriptor.
+     * @param outputFile The file in which the attachment will be saved.
+     */
     public SaveReportAttachmentAsyncTask(int id, String progressMessage, long showDialogTimeout,
             JsRestClient jsRestClient, String uuid, String attachmentName, File outputFile) {
         super(id, progressMessage, showDialogTimeout, jsRestClient);
@@ -60,7 +100,13 @@ public class SaveReportAttachmentAsyncTask extends JsRestAsyncTask<Object, Void>
         this.outputFile = outputFile;
     }
 
-
+    /**
+     * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
+     * <code>saveReportAttachmentToFile(...)</code> method.
+     *
+     * @param arg0 the parameters of the <strong>Asynchronous task</strong>. Current implementation does not use this params.
+     * @return nothing.
+     */
     @Override
     protected Void doInBackground(Object... arg0) {
         super.doInBackground(arg0);

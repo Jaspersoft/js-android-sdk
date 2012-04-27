@@ -26,6 +26,9 @@ import com.jaspersoft.android.sdk.client.oxm.ReportDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 
 /**
+ * <p>Declaration of the <strong>GetReportAsyncTask</strong> which is subclass of <strong>JsRestAsyncTask</strong>
+ * abstract class and overrides <code>doInBackground(Object... arg0)</code> method.</p>
+ *
  * @author Ivan Gadzhega
  * @version $Id$
  * @since 1.0
@@ -35,6 +38,12 @@ public class GetReportAsyncTask extends JsRestAsyncTask<Object, ReportDescriptor
     private ResourceDescriptor resourceDescriptor;
     private String outputFormat;
 
+    /**
+     * Creates a new <strong>GetReportAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetReportAsyncTask</strong> identifier.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     */
     public GetReportAsyncTask(int id, JsRestClient jsRestClient,
             ResourceDescriptor resourceDescriptor, String outputFormat) {
         super(id, jsRestClient);
@@ -42,6 +51,16 @@ public class GetReportAsyncTask extends JsRestAsyncTask<Object, ReportDescriptor
         this.outputFormat = outputFormat;
     }
 
+    /**
+     * Creates a new <strong>GetReportAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetReportAsyncTask</strong> identifier.
+     * @param progressMessage <strong>Progress dialog</strong> message.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceDescriptor resource descriptor of this report
+     * @param outputFormat The format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV,
+     * XML, JRPRINT. The Default is PDF.
+     */
     public GetReportAsyncTask(int id, String progressMessage, JsRestClient jsRestClient,
             ResourceDescriptor resourceDescriptor, String outputFormat) {
         super(id, progressMessage, jsRestClient);
@@ -49,6 +68,18 @@ public class GetReportAsyncTask extends JsRestAsyncTask<Object, ReportDescriptor
         this.outputFormat = outputFormat;
     }
 
+    /**
+     * Creates a new <strong>GetReportAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>GetReportAsyncTask</strong> identifier.
+     * @param progressMessage <strong>Progress dialog</strong> message.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceDescriptor resource descriptor of this report
+     * @param outputFormat The format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV,
+     * XML, JRPRINT. The Default is PDF.
+     */
     public GetReportAsyncTask(int id, String progressMessage, long showDialogTimeout, JsRestClient jsRestClient,
             ResourceDescriptor resourceDescriptor, String outputFormat) {
         super(id, progressMessage, showDialogTimeout, jsRestClient);
@@ -56,7 +87,13 @@ public class GetReportAsyncTask extends JsRestAsyncTask<Object, ReportDescriptor
         this.outputFormat = outputFormat;
     }
 
-
+    /**
+     * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
+     * <code>getReportDescriptor(String resourceUri, String outputFormat)</code> method.
+     *
+     * @param arg0 the parameters of the <strong>Asynchronous task</strong>. Current implementation does not use this params.
+     * @return <strong>Resource descriptor</strong> by resource URI.
+     */
     @Override
     protected ReportDescriptor doInBackground(Object... arg0) {
         super.doInBackground(arg0);

@@ -28,7 +28,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Declaration
+ * <p>Declaration of the <strong>JsAsyncTask</strong> which is subclass of Android core <strong>AsyncTask</strong>
+ * abstract class that enables proper and easy use of the <strong>Android</strong> UI thread.
+ * <strong>JsAsyncTask</strong> enables of <strong>Progress dialog</strong> integration due of encapsulating of
+ * <strong>Progress tracker</strong>.</p>
+ *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
  * @version $Id$
@@ -47,16 +51,34 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
     private long showDialogTimeout;
     private String progressMessage;
 
-
+    /**
+     * Creates a new <strong>JsAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>Asynchronous task</strong> identifier.
+     */
     public JsAsyncTask(int id) {
         this.id = id;
     }
 
+    /**
+     * Creates a new <strong>JsAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>Asynchronous task</strong> identifier.
+     * @param progressMessage <strong>Progress dialog</strong> message.
+     */
     public JsAsyncTask(int id, String progressMessage) {
         this(id, progressMessage, SHOW_DIALOG_DEFAULT_TIMEOUT);
         showProgressDialog = true;
     }
 
+    /**
+     * Creates a new <strong>JsAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>Asynchronous task</strong> identifier.
+     * @param progressMessage <strong>Progress dialog</strong> message.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     */
     public JsAsyncTask(int id, String progressMessage, long showDialogTimeout) {
         this.id = id;
         showProgressDialog = true;
@@ -64,7 +86,11 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         this.progressMessage = progressMessage;
     }
 
-    /* UI Thread */
+    /**
+     * Attaches <strong>Progress tracker</strong> for target <strong>Asynchronous task</strong>.
+     *
+     * @param progressTracker <strong>Progress tracker</strong>.
+     */
     public void setProgressTracker(JsProgressTracker progressTracker) {
         // Attach to progress tracker
         this.progressTracker = progressTracker;
@@ -77,14 +103,24 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         }
     }
 
-    /* UI Thread */
+    /**
+     * Overrides the android core <strong>AsyncTask</strong> method which runs on the UI thread after
+     * <code>cancel(boolean)</code> is invoked and <code>doInBackground(Object[])</code> has finished. Overriding method
+     * detaches from progress tracker.
+     */
     @Override
     protected void onCancelled() {
         // Detach from progress tracker
         this.progressTracker = null;
     }
 
-    /* UI Thread */
+    /**
+     * Overrides the android core <strong>AsyncTask</strong> method which invokes on the UI thread after a
+     * <code>publishProgress(Progress...)</code> calling. Overriding method update progress message and sent it to
+     * progress tracker.
+     *
+     * @param values the values indicating progress - <strong>progress dialog</strong> message in current implementation.
+     */
     @Override
     protected void onProgressUpdate(String... values) {
         // Update progress message
@@ -95,7 +131,12 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         }
     }
 
-    /* UI Thread */
+    /**
+     * Overrides the android core <strong>AsyncTask</strong> method which runs on the UI thread after
+     * <code>doInBackground(Params...)</code>. This method won't be invoked if the task was cancelled.
+     *
+     * @param result the specified result is the value returned by <code>doInBackground(Params...)</code>.
+     */
     @Override
     protected void onPostExecute(Result result) {
         // Update result
@@ -110,6 +151,14 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         progressTracker = null;
     }
 
+    /**
+     * Overrides the android core <strong>AsyncTask</strong> method which performs a computation on a background thread.
+     * Overriding is done by scheduling of <strong>progress dialog</strong> if it required for target
+     * <strong>Asynchronous task</strong>.
+     *
+     * @param params the parameters of the <strong>Asynchronous task</strong>.
+     * @return a result, defined by the subclass of this class.
+     */
     protected Result doInBackground(Params... params) {
         if (showProgressDialog) {
             //Init starting time of execution show progress dialog.
@@ -121,6 +170,10 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         return null;
     }
 
+    /**
+     * Declaration of runnable <strong>ShowProgressDialogTask</strong> which publishes updates on the UI thread while the
+     * background computation is still running.
+     */
     private class ShowProgressDialogTask extends TimerTask {
         @Override
         public void run() {
@@ -128,6 +181,12 @@ public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, Stri
         }
     }
 
+    /**
+     * Tracks whether to show <strong>Progress dialog</strong> for target <strong>Asynchronous task</strong>.
+     *
+     * @return <code>true</code> if <strong>Asynchronous task</strong> required of <strong>Progress dialog</strong>
+     * showing, otherwise <code>false</code>.
+     */
     public boolean isShowProgressDialog() {
         return showProgressDialog;
     }

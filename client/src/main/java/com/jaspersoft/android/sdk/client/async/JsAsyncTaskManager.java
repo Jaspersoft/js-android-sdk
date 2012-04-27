@@ -32,7 +32,16 @@ import java.util.List;
 
 /**
  * <p>Declaration of <strong>Asynchronous Task Manager</strong>,
- * used to manage and execute asynchronous tasks. </p>
+ * used to manage <strong>Asynchronous Task</strong>s. It responsible for the correct operation of all components,
+ * which is reduced to a list of the following tasks:
+ * 1) Creating a <strong>Progress dialog</strong> during it initialization;
+ * 2) The task to be executed when received in <strong>Asynchronous Task Manager</strong> control;
+ * 3) Displaying the status of the target <strong>Asynchronous Task</strong> in the <strong>Progress dialog</strong>;
+ * 4) Retains and restores the list of <strong>Asynchronous Task</strong>s from <strong>state</strong> during
+ * <strong>Activity<strong> recovering
+ * 5) Canceling the strong>Asynchronous task</strong> when <strong>Progress dialog</strong> is canceled.
+ * 6) Closing the <strong>Progress dialog</strong> when all active <strong>Asynchronous Task</strong> is completed.
+ * 7) Informing Activity with the completion or cancellation of <strong>Asynchronous Task</strong></p>.
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
@@ -45,19 +54,21 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     private List<JsAsyncTask> jsAsyncTaskList = new ArrayList<JsAsyncTask>();
 
     /**
+     * Creates a new <strong>Asynchronous Task Manager</strong> entity with the specified parameters.
      *
-     * @param context
-     * @param jsTaskCompleteListener
+     * @param context <strong>Android</strong> context.
+     * @param jsTaskCompleteListener <strong>Asynchronous task callback listener</strong>.
      */
     public JsAsyncTaskManager(Context context, JsOnTaskCallbackListener jsTaskCompleteListener) {
         this(context, jsTaskCompleteListener, null);
     }
 
     /**
+     * Creates a new <strong>Asynchronous Task Manager</strong> entity with the specified parameters.
      *
-     * @param context
-     * @param jsTaskCompleteListener
-     * @param progressDialog
+     * @param context <strong>Android</strong> context.
+     * @param jsTaskCompleteListener <strong>Asynchronous Task Callback Listener</strong>.
+     * @param progressDialog <strong>Progress dialog</strong>.
      */
     public JsAsyncTaskManager(Context context, JsOnTaskCallbackListener jsTaskCompleteListener, AlertDialog progressDialog) {
         // Save reference to complete listener (activity)
@@ -174,7 +185,7 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
      * Closes progress dialog when all task is done and target progress dialog showing is required for target.
      * <strong>Asynchronous task</strong>.
      *
-     * @param asyncTask <strong>Asynchronous task</strong>.
+     * @param asyncTask <strong>Asynchronous Task</strong>.
      */
     private void finishTaskHandler(JsAsyncTask asyncTask) {
         if (asyncTask.isShowProgressDialog() && jsAsyncTaskList.isEmpty()) {
@@ -193,7 +204,7 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
     }
 
     /**
-     * Tracks current status of the target <strong>Asynchronous task</strong>.
+     * Tracks current status of the target <strong>Asynchronous Task</strong>.
      *
      * @return <code>true</code> if given <strong>Asynchronous Task</strong> is executing, otherwise
      * <code>false</code>.

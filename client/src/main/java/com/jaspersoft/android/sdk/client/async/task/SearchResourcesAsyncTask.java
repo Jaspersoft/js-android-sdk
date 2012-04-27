@@ -27,6 +27,9 @@ import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 import java.util.List;
 
 /**
+ * <p>Declaration of the <strong>SearchResourcesAsyncTask</strong> which is subclass of <strong>JsRestAsyncTask</strong>
+ * abstract class and overrides <code>doInBackground(Object... arg0)</code> method from it.</p>
+ *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
  * @version $Id$
@@ -40,17 +43,61 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
     private Boolean recursive;
     private Integer limit;
 
+    /**
+     * Creates a new <strong>SearchResourcesAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param type  Match only resources of the given type (can be <code>null</code>)
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     */
     public SearchResourcesAsyncTask(int id, JsRestClient jsRestClient, String resourceUri, String query, String type,
             Boolean recursive, Integer limit) {
         super(id, jsRestClient);
         init(resourceUri, query, type, recursive, limit);
     }
 
+    /**
+     * Creates a new <strong>SearchResourcesAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param type  Match only resources of the given type (can be <code>null</code>)
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     */
     public SearchResourcesAsyncTask(int id, String progressMessage, JsRestClient jsRestClient, String resourceUri,
             String query, String type, Boolean recursive, Integer limit) {
         super(id, progressMessage, jsRestClient);
         init(resourceUri, query, type, recursive, limit);
     }
+
+    /**
+     * Creates a new <strong>SearchResourcesAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceUri resource URI (i.e. /reports/samples/)
+     * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param type  Match only resources of the given type (can be <code>null</code>)
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     */
     public SearchResourcesAsyncTask(int id, String progressMessage, long showDialogTimeout, JsRestClient jsRestClient,
             String resourceUri, String query, String type, Boolean recursive, Integer limit) {
         super(id, progressMessage, showDialogTimeout, jsRestClient);
@@ -64,8 +111,14 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
         this.recursive = recursive;
         this.limit = limit;
     }
-    
 
+    /**
+     * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
+     * <code>getResourcesList(...)</code> method.
+     *
+     * @param arg0 the parameters of the <strong>Asynchronous task</strong>. Current implementation does not use this params.
+     * @return the list of <strong>ResourceDescriptor</strong>s.
+     */
     @Override
     protected List<ResourceDescriptor> doInBackground(Object... arg0) {
         super.doInBackground(arg0);

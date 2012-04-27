@@ -25,6 +25,9 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 
 /**
+ * <p>Declaration of the <strong>ModifyResourceAsyncTask</strong> which is subclass of <strong>JsRestAsyncTask</strong>
+ * abstract class and overrides <code>doInBackground(Object... arg0)</code> method from it.</p>
+ *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
  * @version $Id$
@@ -34,23 +37,54 @@ public class ModifyResourceAsyncTask extends JsRestAsyncTask<Object, Void> {
 
     private ResourceDescriptor resourceDescriptor;
 
+    /**
+     * Creates a new <strong>ModifyResourceAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>ModifyResourceAsyncTask</strong> identifier.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceDescriptor <strong>Resource descriptor</strong>.
+     */
     public ModifyResourceAsyncTask(int id, JsRestClient jsRestClient, ResourceDescriptor resourceDescriptor) {
         super(id, jsRestClient);
         this.resourceDescriptor = resourceDescriptor;
     }
 
+    /**
+     * Creates a new <strong>ModifyResourceAsyncTask</strong> entity with the specified parameters.
+     *
+     * @param id <strong>ModifyResourceAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceDescriptor <strong>Resource descriptor</strong>.
+     */
     public ModifyResourceAsyncTask(int id, String progressMessage,
             JsRestClient jsRestClient, ResourceDescriptor resourceDescriptor) {
         super(id, progressMessage, jsRestClient);
         this.resourceDescriptor = resourceDescriptor;
     }
 
+    /**
+     *
+     * @param id <strong>ModifyResourceAsyncTask</strong> identifier.
+     * @param progressMessage message of <strong>Progress dialog</strong>.
+     * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
+     * after.
+     * @param jsRestClient <strong>JsRestClient</strong>.
+     * @param resourceDescriptor <strong>Resource descriptor</strong>.
+     */
     public ModifyResourceAsyncTask(int id, String progressMessage,
             JsRestClient jsRestClient, long showDialogTimeout, ResourceDescriptor resourceDescriptor) {
         super(id, progressMessage, showDialogTimeout, jsRestClient);
         this.resourceDescriptor = resourceDescriptor;
     }
 
+    /**
+     * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
+     * <code>modifyResource(ResourceDescriptor resourceDescriptor)</code> method.
+     *
+     * @param arg0 the parameters of the <strong>Asynchronous task</strong>. Current implementation does not use this params.
+     * @return nothing.
+     */
     @Override
     protected Void doInBackground(Object... arg0) {
         super.doInBackground(arg0);
