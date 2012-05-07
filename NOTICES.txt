@@ -22,7 +22,7 @@ If not, see <http://www.gnu.org/licenses/lgpl.html>.
 
 
 3rd PARTY COMPONENTS
-**********************
+-------------------------------
 This software includes third party software subject to the associated copyrights, as follows:
 - Roboguice 1.1.2 (Apache 2.0) - http://code.google.com/p/roboguice/
 - Simple XML 2.6.2 (Apache 2.0) - http://simple.sourceforge.net/
