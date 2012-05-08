@@ -1,5 +1,6 @@
-Jaspersoft Mobile SDK for Android icons created by Jaspersoft.
-Copyright 2012-2013 Jaspersoft Corporation. All Rights Reserved.
+Jaspersoft Mobile SDK for Android
+Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+http://www.jasperforge.org/projects/androidsdk
 
 Unless you have purchased a commercial license agreement from Jaspersoft,
 the following license terms apply:
@@ -14,22 +15,22 @@ the Free Software Foundation, either version 3 of the License, or
 Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-Lesser GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with Jaspersoft Mobile SDK for Android package as LICENSE.txt. 
-If not, see <http://www.gnu.org/licenses/lgpl.html>.
+along with Jaspersoft Mobile SDK for Android. If not, see 
+<http://www.gnu.org/licenses/lgpl>.
 
 
-3rd PARTY COMPONENTS
+THIRD PARTY COMPONENTS
 -------------------------------
 This software includes third party software subject to the associated copyrights, as follows:
 - Roboguice 1.1.2 (Apache 2.0) - http://code.google.com/p/roboguice/
 - Simple XML 2.6.2 (Apache 2.0) - http://simple.sourceforge.net/
 - Spring Android 1.0 (Apache 2.0) - http://www.springsource.org/spring-android
 
-The text of licenses for these third party components are included with the 
-Jaspersoft Mobile SDK for Android package in the /licenses folder.
+The text of licenses for the above software is included with the
+Jaspersoft Mobile SDK for Android package, in the /licenses folder.
 
 
 

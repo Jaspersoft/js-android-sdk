@@ -15,8 +15,13 @@ Getting Started & Installation
 -------------------------------
 
 Please see "Getting Started.html" included with the SDK for details.
+<link here>
 
 
-
-Known Issues
+Reference 
 -------------------------------
+
+Please see JavaDoc included in \docs\api\ and also posted at:
+<link here>
+
+
