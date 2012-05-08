@@ -25,7 +25,7 @@ import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 
 /**
  * <p>Declaration of <strong>Asynchronous task callback listener</strong>,
- * used to notification <strong>Activity</strong> about <strong>Asynchronous task</strong> executing results.</p>
+ * used to notify <strong>Activity</strong> about <strong>Asynchronous task</strong> execution results.</p>
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
@@ -36,7 +36,7 @@ public interface JsOnTaskCallbackListener {
 
     /**
      * Notifies <strong>Activity</strong> about successful completion of an <code>Asynchronous Task</code> and contains
-     * the logic which will be executed on the <strong>UI tread</strong>.
+     * the logic which will be executed on the <strong>UI thread</strong>.
      *
      * @param task <strong>Asynchronous Task</strong> which finished with exceptions.
      */

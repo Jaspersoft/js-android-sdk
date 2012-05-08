@@ -32,16 +32,15 @@ import java.util.List;
 
 /**
  * <p>Declaration of <strong>Asynchronous Task Manager</strong>,
- * used to manage <strong>Asynchronous Task</strong>s. It responsible for the correct operation of all components,
- * which is reduced to a list of the following tasks:
- * 1) Creating a <strong>Progress dialog</strong> during it initialization;
- * 2) The task to be executed when received in <strong>Asynchronous Task Manager</strong> control;
- * 3) Displaying the status of the target <strong>Asynchronous Task</strong> in the <strong>Progress dialog</strong>;
- * 4) Retains and restores the list of <strong>Asynchronous Task</strong>s from <strong>state</strong> during
- * <strong>Activity<strong> recovering
- * 5) Canceling the strong>Asynchronous task</strong> when <strong>Progress dialog</strong> is canceled.
- * 6) Closing the <strong>Progress dialog</strong> when all active <strong>Asynchronous Task</strong> is completed.
- * 7) Informing Activity with the completion or cancellation of <strong>Asynchronous Task</strong></p>.
+ * used to manage <strong>Asynchronous Task</strong>s. It responsible for the following: <br>
+ * 1) Creating a <strong>Progress dialog</strong> during it initialization; <br>
+ * 2) Executing the task when received into <strong>Asynchronous Task Manager</strong> control;   <br>
+ * 3) Displaying the status of the target <strong>Asynchronous Task</strong> in the <strong>Progress dialog</strong>; <br>
+ * 4) Retaining/restoring the list of <strong>Asynchronous Task</strong>s from <strong>state</strong> during
+ * <strong>Activity</strong> recovery  <br>
+ * 5) Canceling the strong>Asynchronous task</strong> when <strong>Progress dialog</strong> is canceled.  <br>
+ * 6) Closing the <strong>Progress dialog</strong> when all active <strong>Asynchronous Task</strong>s are completed.   <br>
+ * 7) Informing Activity about completion or cancellation of <strong>Asynchronous Task</strong>s</p>.  <br>
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega

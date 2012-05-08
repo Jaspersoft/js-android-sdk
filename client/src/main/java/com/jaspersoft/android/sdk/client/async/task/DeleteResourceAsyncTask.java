@@ -80,7 +80,7 @@ public class DeleteResourceAsyncTask extends JsRestAsyncTask<Object, Void> {
      * Overrides the <code>doInBackground(Object... arg0)</code> method by calling <strong>JsRestClient</strong>
      * <code>deleteResource(String resourceUri)</code> method.
      *
-     * @param arg0 the parameters of the <strong>Asynchronous Task</strong>. Current implementation does not use this params.
+     * @param arg0 the parameters of the <strong>Asynchronous Task</strong>. Current implementation does not use these params.
      * @return <strong>Resource descriptor</strong> by resource URI.
      */
     @Override
