@@ -39,9 +39,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,16 +56,24 @@ import static java.util.Collections.singletonList;
  */
 public class JsRestClient {
 
-    private final static String REST_SERVICE_URI = "/rest";
-    private final static String REST_RESOURCE_URI = "/resource";
-    private final static String REST_RESOURCES_URI = "/resources";
-    private final static String REST_REPORT_URI = "/report";
+    public final static String REST_SERVICE_URI = "/rest";
+    public final static String REST_RESOURCE_URI = "/resource";
+    public final static String REST_RESOURCES_URI = "/resources";
+    public final static String REST_REPORT_URI = "/report";
 
     @Inject
     private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
     private String restServiceUrl;
 
+
+    public String getRestServiceUrl() {
+        return restServiceUrl;
+    }
+
+    public JsServerProfile getServerProfile() {
+        return jsServerProfile;
+    }
 
     public void setServerProfile(JsServerProfile serverProfile) {
         this.jsServerProfile = serverProfile;
@@ -77,13 +83,9 @@ public class JsRestClient {
         AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
         DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(authScope, credentials);
+
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
     }
-
-    public JsServerProfile getServerProfile() {
-        return jsServerProfile;
-    }
-
 
     //---------------------------------------------------------------------
     // The Resource Service
@@ -230,7 +232,8 @@ public class JsRestClient {
             if (restTemplate.getErrorHandler().hasError(response)) {
                 restTemplate.getErrorHandler().handleError(response);
             }
-            FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+//            FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+            copyResponseToFile(response, file);
         } catch (IOException ex) {
             throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
         } finally {
@@ -296,6 +299,10 @@ public class JsRestClient {
         }
 
         return listOfValues;
+    }
+
+    protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
+        return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
     }
 
 }
