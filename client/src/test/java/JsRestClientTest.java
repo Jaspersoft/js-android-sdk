@@ -64,7 +64,7 @@ public class JsRestClientTest {
 
     @Test
     public void test_getResource() {
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_RESOURCE_URI + resourceUri;
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_RESOURCE_URI + resourceUri;
 
         ResourceDescriptor expectedDescriptor = mock(ResourceDescriptor.class);
         when(restTemplate.getForObject(fullUri, ResourceDescriptor.class)).thenReturn(expectedDescriptor);
@@ -79,7 +79,7 @@ public class JsRestClientTest {
     public void test_modifyResource() {
         ResourceDescriptor resourceDescriptor = mock(ResourceDescriptor.class);
 
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_RESOURCE_URI + resourceDescriptor.getUriString();
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_RESOURCE_URI + resourceDescriptor.getUriString();
 
         jsRestClient.modifyResource(resourceDescriptor);
         verify(restTemplate).postForLocation(fullUri, resourceDescriptor);
@@ -87,7 +87,7 @@ public class JsRestClientTest {
 
     @Test
     public void test_deleteResource() {
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_RESOURCE_URI + resourceUri;
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_RESOURCE_URI + resourceUri;
 
         jsRestClient.deleteResource(resourceUri);
         verify(restTemplate).delete(fullUri);
@@ -99,7 +99,7 @@ public class JsRestClientTest {
 
     @Test
     public void test_getResourcesList() {
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_RESOURCES_URI + folderUri;
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_RESOURCES_URI + folderUri;
 
         List<ResourceDescriptor> expectedResourcesList = (List<ResourceDescriptor>) mock(List.class);
 
@@ -122,7 +122,7 @@ public class JsRestClientTest {
         Integer limit = 10;
 
         String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_RESOURCES_URI + folderUri + uriVariablesTemplate;
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_RESOURCES_URI + folderUri + uriVariablesTemplate;
 
         List<ResourceDescriptor> expectedResourcesList = (List<ResourceDescriptor>) mock(List.class);
 
@@ -147,7 +147,7 @@ public class JsRestClientTest {
         String format = "HTML";
         ResourceDescriptor resourceDescriptor = mock(ResourceDescriptor.class);
 
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_REPORT_URI +
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_REPORT_URI +
                 resourceDescriptor.getUriString() + "?IMAGES_URI=./&RUN_OUTPUT_FORMAT={format}";
 
         ReportDescriptor expectedDescriptor = mock(ReportDescriptor.class);
@@ -167,7 +167,7 @@ public class JsRestClientTest {
 
     @Test
     public void test_getReportAttachment() {
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_REPORT_URI + "/{uuid}?file={name}";
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_REPORT_URI + "/{uuid}?file={name}";
 
         byte[] expectedAttachment = new byte[10];
 
@@ -185,7 +185,7 @@ public class JsRestClientTest {
 
     @Test
     public void test_saveReportAttachmentToFile() {
-        String fullUri = jsRestClient.getRestServiceUrl() + JsRestClient.REST_REPORT_URI + "/{uuid}?file={name}";
+        String fullUri = jsRestClient.getRestServicesUrl() + JsRestClient.REST_REPORT_URI + "/{uuid}?file={name}";
 
         ClientHttpRequestFactory factory = mock(ClientHttpRequestFactory.class);
         when(restTemplate.getRequestFactory()).thenReturn(factory);
@@ -223,7 +223,7 @@ public class JsRestClientTest {
         params.add(mock(ResourceParameter.class));
 
         StringBuilder fullUri = new StringBuilder();
-        fullUri.append(jsRestClient.getRestServiceUrl()).append(JsRestClient.REST_RESOURCE_URI).append(inputControlUri);
+        fullUri.append(jsRestClient.getRestServicesUrl()).append(JsRestClient.REST_RESOURCE_URI).append(inputControlUri);
         fullUri.append("?IC_GET_QUERY_DATA=").append(datasourceUri);
 
         for(ResourceParameter parameter : params) {

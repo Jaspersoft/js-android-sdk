@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.client;
 
 import com.google.inject.Inject;
 import com.jaspersoft.android.sdk.client.oxm.*;
+import com.jaspersoft.android.sdk.client.oxm.wadl.WADLDescriptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,6 +35,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -57,19 +59,26 @@ import static java.util.Collections.singletonList;
  */
 public class JsRestClient {
 
-    public final static String REST_SERVICE_URI = "/rest";
-    public final static String REST_RESOURCE_URI = "/resource";
-    public final static String REST_RESOURCES_URI = "/resources";
-    public final static String REST_REPORT_URI = "/report";
+    public static final String REST_SERVICES_URI = "/rest";
+    public static final String REST_SERVICES_V2_URI = "/rest_v2";
+    public static final String REST_RESOURCE_URI = "/resource";
+    public static final String REST_RESOURCES_URI = "/resources";
+    public static final String REST_REPORT_URI = "/report";
+    public static final String REST_REPORTS_URI = "/reports";
+
+    public static final String APPLICATION_WADL_URI = "/application.wadl";
 
     @Inject
     private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
-    private String restServiceUrl;
+    private String restServicesUrl;
 
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
 
-    public String getRestServiceUrl() {
-        return restServiceUrl;
+    public String getRestServicesUrl() {
+        return restServicesUrl;
     }
 
     public JsServerProfile getServerProfile() {
@@ -78,7 +87,7 @@ public class JsRestClient {
 
     public void setServerProfile(JsServerProfile serverProfile) {
         this.jsServerProfile = serverProfile;
-        this.restServiceUrl = serverProfile.getServerUrl() + REST_SERVICE_URI;
+        this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(serverProfile.getUsernameWithOrgId(), serverProfile.getPassword());
         AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
@@ -86,6 +95,28 @@ public class JsRestClient {
         client.getCredentialsProvider().setCredentials(authScope, credentials);
 
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+    }
+
+    public JsRestApiDescriptor getRestApiDescriptor() throws RestClientException {
+        if(jsServerProfile.getRestApiDescriptor() == null) {
+            String uri = getServerProfile().getServerUrl() + REST_SERVICES_V2_URI + APPLICATION_WADL_URI;
+            JsRestApiDescriptor restApiDescriptor;
+            try {
+                WADLDescriptor wadlDescriptor = restTemplate.getForObject(uri, WADLDescriptor.class);
+                restApiDescriptor = new JsRestApiDescriptor(2, wadlDescriptor);
+            } catch (HttpStatusCodeException ex) {
+                HttpStatus statusCode = ex.getStatusCode();
+                if (statusCode == HttpStatus.NOT_FOUND) {
+                    restApiDescriptor = new JsRestApiDescriptor(1, null);
+                } else {
+                    throw ex;
+                }
+            }
+
+            jsServerProfile.setRestApiDescriptor(restApiDescriptor);
+        }
+
+        return jsServerProfile.getRestApiDescriptor();
     }
 
     //---------------------------------------------------------------------
@@ -101,7 +132,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public ResourceDescriptor getResource(String uri) throws RestClientException {
-        String fullUri = restServiceUrl + REST_RESOURCE_URI + uri;
+        String fullUri = restServicesUrl + REST_RESOURCE_URI + uri;
         return restTemplate.getForObject(fullUri, ResourceDescriptor.class);
     }
 
@@ -112,7 +143,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public void modifyResource(ResourceDescriptor resourceDescriptor) throws RestClientException {
-        String fullUri = restServiceUrl + REST_RESOURCE_URI + resourceDescriptor.getUriString();
+        String fullUri = restServicesUrl + REST_RESOURCE_URI + resourceDescriptor.getUriString();
         restTemplate.postForLocation(fullUri, resourceDescriptor);
     }
 
@@ -123,7 +154,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public void deleteResource(String uri) throws RestClientException {
-        String fullUri = restServiceUrl + REST_RESOURCE_URI + uri;
+        String fullUri = restServicesUrl + REST_RESOURCE_URI + uri;
         restTemplate.delete(fullUri);
     }
 
@@ -150,7 +181,7 @@ public class JsRestClient {
 
     public List<ResourceDescriptor> getResourcesList(String uri, String query, String type, Boolean recursive, Integer limit) throws RestClientException {
         String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
-        String fullUri = restServiceUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
         ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class, query, type, recursive, limit);
         return resourcesList.getResourceDescriptors();
     }
@@ -163,7 +194,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public List<ResourceDescriptor> getResourcesList(String uri) throws RestClientException {
-        String fullUri = restServiceUrl + REST_RESOURCES_URI + uri;
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri;
         ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class);
         return resourcesList.getResourceDescriptors();
     }
@@ -185,7 +216,7 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public ReportDescriptor getReportDescriptor(ResourceDescriptor resourceDescriptor, String format) throws RestClientException {
-        String fullUri = restServiceUrl + REST_REPORT_URI + resourceDescriptor.getUriString() + "?IMAGES_URI=./&RUN_OUTPUT_FORMAT={format}";
+        String fullUri = restServicesUrl + REST_REPORT_URI + resourceDescriptor.getUriString() + "?IMAGES_URI=./&RUN_OUTPUT_FORMAT={format}";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAccept(singletonList(MediaType.TEXT_XML));
         HttpEntity<ResourceDescriptor> requestEntity = new HttpEntity<ResourceDescriptor>(resourceDescriptor, requestHeaders);
@@ -204,7 +235,7 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public byte[] getReportAttachment(String uuid, String name) throws RestClientException {
-        String fullUri = restServiceUrl + REST_REPORT_URI + "/{uuid}?file={name}";
+        String fullUri = restServicesUrl + REST_REPORT_URI + "/{uuid}?file={name}";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setAccept(singletonList(MediaType.APPLICATION_OCTET_STREAM));
         ResponseEntity<byte[]> entity = restTemplate.exchange(fullUri, HttpMethod.GET, new HttpEntity<byte[]>(requestHeaders), byte[].class, uuid, name);
@@ -222,7 +253,7 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public void saveReportAttachmentToFile(String uuid, String name, File file) throws RestClientException {
-        String fullUri = restServiceUrl + REST_REPORT_URI + "/{uuid}?file={name}";
+        String fullUri = restServicesUrl + REST_REPORT_URI + "/{uuid}?file={name}";
         UriTemplate uriTemplate = new UriTemplate(fullUri);
         URI expanded = uriTemplate.expand(uuid, name);
 
@@ -242,6 +273,56 @@ public class JsRestClient {
         }
     }
 
+    //---------------------------------------------------------------------
+    // The Report Service v2
+    //---------------------------------------------------------------------
+
+    /**
+     * Generates the report url according to specified parameters. The new v2/reports service allows clients
+     * to receive report output in a single request-response using this url.
+     *
+     * @param resourceDescriptor resource descriptor of this report
+     * @param parameters list of report parameter/input control values
+     * @param page a positive integer value used to output a specific page or 0 to output all pages
+     * @param format the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
+     * @return the report url
+     *
+     * @since 1.4
+     */
+    public String generateReportUrl(ResourceDescriptor resourceDescriptor, List<ResourceParameter> parameters, int page, String format) {
+        StringBuilder reportUrl = new StringBuilder();
+        reportUrl.append(getServerProfile().getServerUrl()).append(REST_SERVICES_V2_URI);
+        reportUrl.append(REST_REPORTS_URI).append(resourceDescriptor.getUriString()).append(".").append(format);
+
+        if (parameters == null) parameters = new ArrayList<ResourceParameter>();
+        if(page > 0) parameters.add(new ResourceParameter("page", Integer.toString(page), false));
+
+        if (!parameters.isEmpty() ) {
+            reportUrl.append("?");
+            for (ResourceParameter parameter :parameters) {
+                reportUrl.append(parameter.getName()).append("=").append(parameter.getValue()).append("&");
+            }
+        }
+        return reportUrl.toString();
+    }
+
+    /**
+     * Generates the report url to receive all pages report output in HTML format.
+     *
+     * @param resourceDescriptor resource descriptor of this report
+     * @param parameters list of report parameter/input control values
+     * @return the report url
+     *
+     * @since 1.4
+     */
+    public String generateReportUrl(ResourceDescriptor resourceDescriptor, List<ResourceParameter> parameters) {
+        return generateReportUrl(resourceDescriptor, parameters, 0, "HTML");
+    }
+
+    //---------------------------------------------------------------------
+    // Input Controls
+    //---------------------------------------------------------------------
+
     /**
      * Gets the resource descriptor of a query-based input control that contains query data
      * according to specified parameters.
@@ -254,7 +335,7 @@ public class JsRestClient {
      */
     public ResourceDescriptor getInputControlWithQueryData(String uri, String datasourceUri, List<ResourceParameter> params) throws RestClientException {
         StringBuilder fullUri = new StringBuilder();
-        fullUri.append(restServiceUrl).append(REST_RESOURCE_URI).append(uri);
+        fullUri.append(restServicesUrl).append(REST_RESOURCE_URI).append(uri);
         fullUri.append("?IC_GET_QUERY_DATA=").append(datasourceUri);
         if (params != null) {
             for(ResourceParameter parameter : params) {
@@ -301,6 +382,10 @@ public class JsRestClient {
 
         return listOfValues;
     }
+
+    //---------------------------------------------------------------------
+    // Helper methods
+    //---------------------------------------------------------------------
 
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
         File parentFolder = file.getParentFile();

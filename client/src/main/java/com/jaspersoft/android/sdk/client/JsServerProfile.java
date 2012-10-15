@@ -40,6 +40,8 @@ public class JsServerProfile {
     private String username;
     private String password;
 
+    private JsRestApiDescriptor restApiDescriptor;
+
     /**
      * Creates an empty JsServerProfile entity.
      */
@@ -121,5 +123,13 @@ public class JsServerProfile {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public JsRestApiDescriptor getRestApiDescriptor() {
+        return restApiDescriptor;
+    }
+
+    public void setRestApiDescriptor(JsRestApiDescriptor restApiDescriptor) {
+        this.restApiDescriptor = restApiDescriptor;
     }
 }
