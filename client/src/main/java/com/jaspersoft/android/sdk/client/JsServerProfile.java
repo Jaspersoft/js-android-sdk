@@ -33,7 +33,7 @@ package com.jaspersoft.android.sdk.client;
  * @since 1.0
  */
 public class JsServerProfile {
-    private Long id;
+    private long id;
     private String alias;
     private String serverUrl;
     private String organization;
@@ -77,11 +77,11 @@ public class JsServerProfile {
         }
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

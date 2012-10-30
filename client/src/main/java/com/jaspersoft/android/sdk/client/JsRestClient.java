@@ -42,9 +42,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 import roboguice.util.Ln;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -281,7 +284,7 @@ public class JsRestClient {
      * Generates the report url according to specified parameters. The new v2/reports service allows clients
      * to receive report output in a single request-response using this url.
      *
-     * @param resourceDescriptor resource descriptor of this report
+     * @param reportUri repository URI of the report
      * @param parameters list of report parameter/input control values
      * @param page a positive integer value used to output a specific page or 0 to output all pages
      * @param format the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
@@ -289,18 +292,21 @@ public class JsRestClient {
      *
      * @since 1.4
      */
-    public String generateReportUrl(ResourceDescriptor resourceDescriptor, List<ResourceParameter> parameters, int page, String format) {
+    public String generateReportUrl(String reportUri, List<ResourceParameter> parameters, int page, String format) {
         StringBuilder reportUrl = new StringBuilder();
         reportUrl.append(getServerProfile().getServerUrl()).append(REST_SERVICES_V2_URI);
-        reportUrl.append(REST_REPORTS_URI).append(resourceDescriptor.getUriString()).append(".").append(format);
+        reportUrl.append(REST_REPORTS_URI).append(reportUri).append(".").append(format);
 
         if (parameters == null) parameters = new ArrayList<ResourceParameter>();
         if(page > 0) parameters.add(new ResourceParameter("page", Integer.toString(page), false));
 
         if (!parameters.isEmpty() ) {
             reportUrl.append("?");
-            for (ResourceParameter parameter :parameters) {
-                reportUrl.append(parameter.getName()).append("=").append(parameter.getValue()).append("&");
+            Iterator<ResourceParameter> iterator = parameters.iterator();
+            while (iterator.hasNext()) {
+                ResourceParameter parameter = iterator.next();
+                reportUrl.append(parameter.getName()).append("=").append(parameter.getValue());
+                if (iterator.hasNext()) reportUrl.append("&");
             }
         }
         return reportUrl.toString();
@@ -309,14 +315,14 @@ public class JsRestClient {
     /**
      * Generates the report url to receive all pages report output in HTML format.
      *
-     * @param resourceDescriptor resource descriptor of this report
+     * @param reportUri repository URI of the report
      * @param parameters list of report parameter/input control values
      * @return the report url
      *
      * @since 1.4
      */
-    public String generateReportUrl(ResourceDescriptor resourceDescriptor, List<ResourceParameter> parameters) {
-        return generateReportUrl(resourceDescriptor, parameters, 0, "HTML");
+    public String generateReportUrl(String reportUri, List<ResourceParameter> parameters) {
+        return generateReportUrl(reportUri, parameters, 0, "HTML");
     }
 
     //---------------------------------------------------------------------

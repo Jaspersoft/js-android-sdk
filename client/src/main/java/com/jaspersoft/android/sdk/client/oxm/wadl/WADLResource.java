@@ -41,7 +41,7 @@ public class WADLResource {
     @ElementList(entry="param", inline=true, required=false, empty=false)
     private List<WADLParameter> parameters;
 
-    @ElementList(entry="method", inline=true)
+    @ElementList(entry="method", inline=true, required=false)
     private List<WADLMethod> methods;
 
     @ElementList(entry="resource", inline=true, required=false, empty=false)
