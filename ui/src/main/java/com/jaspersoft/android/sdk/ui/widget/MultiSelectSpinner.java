@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.ui.widget;
 
-import android.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import com.jaspersoft.android.sdk.ui.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +43,9 @@ import java.util.List;
  * @version $Id$
  * @since 1.0
  */
-public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMultiChoiceClickListener {
+public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.OnMultiChoiceClickListener {
 
-    private List items;
+    private List<T> items;
     CharSequence[] stringItems;
     private boolean[] checkedItems;
     /**
@@ -89,29 +89,21 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
             builder.setTitle(getPrompt());
         }
         builder.setMultiChoiceItems(stringItems, checkedItems, this);
-        builder.setPositiveButton(R.string.ok,
+        builder.setNegativeButton(R.string.mss_btn_uncheck_all,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // refresh text on spinner
-                        StringBuilder spinnerBuilder = new StringBuilder();
-                        for (int i = 0; i < stringItems.length; i++) {
-                            if (checkedItems[i]) {
-                                if(spinnerBuilder.length() > 0) spinnerBuilder.append(", ");
-                                spinnerBuilder.append(stringItems[i]);
-                            }
-                        }
-                        
-                        String spinnerText = (spinnerBuilder.length() > 0) ? spinnerBuilder.toString() : defaultText ;
+                        unselectAll();
+                        updateState();
+                        performClick();
+                    }
 
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                                android.R.layout.simple_spinner_item,
-                                new String[] { spinnerText });
-                        setAdapter(adapter);
-
-                        if (onItemsSelectedListener != null) {
-                            onItemsSelectedListener.onItemsSelected(getSelectedItems());
-                        }
+                });
+        builder.setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateState();
                     }
                 });
         builder.show();
@@ -119,11 +111,20 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
     }
 
     /**
+     * Gets a list of items displayed in the spinner.
+     *
+     * @return  list of items
+     */
+    public List<T> getItems() {
+        return items;
+    }
+
+    /**
      * Sets a list of items to be displayed in the spinner.
      *
      * @param items list of items
      */
-    public void setItemsList(List items) {
+    public void setItemsList(List<T> items) {
         setItemsList(items, null);
     }
 
@@ -133,7 +134,7 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
      * @param items list of items
      * @param defaultText the text that displays on the spinner if there is nothing selected.
      */
-    public void setItemsList(List items, String defaultText) {
+    public void setItemsList(List<T> items, String defaultText) {
         this.defaultText = (defaultText != null) ? defaultText : "";
         this.items = items;
 
@@ -155,6 +156,16 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
     }
 
     /**
+     * Returns the position of the specified item in the array.
+     *
+     * @param item The item to retrieve the position of
+     * @return The position of the specified item, or -1 if this list does not contain the element
+     */
+    public int getItemPosition(T item) {
+        return items.indexOf(item);
+    }
+
+    /**
      * Returns positions of the currently selected items.
      *
      * @return List of Integers (starting at 0).
@@ -170,19 +181,33 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
     }
 
     /**
+     * Sets the currently selected items.
+     *
+     * @param positions List of indexes (starting at 0) of the data items to be selected.
+     */
+    public void setSelection(List<Integer> positions) {
+        unselectAll();
+        for (int position : positions) {
+            if (position < checkedItems.length) {
+                checkedItems[position] = true;
+            }
+        }
+        updateState();
+    }
+
+    /**
      * Returns the list of the currently selected items.
      *
      * @return The list that contains all of the currently selected items, or
      * empty list if there is nothing selected.
      */
-    public List getSelectedItems() {
-        List<Object> selectedItems = new ArrayList<Object>();
+    public List<T> getSelectedItems() {
+        List<T> selectedItems = new ArrayList<T>();
         for(Integer position : getSelectedItemsPositions()) {
             selectedItems.add(items.get(position));
         }
         return selectedItems;
     }
-
 
     public void setOnItemsSelectedListener(OnItemsSelectedListener listener) {
         this.onItemsSelectedListener = listener;
@@ -190,5 +215,46 @@ public class MultiSelectSpinner extends Spinner implements DialogInterface.OnMul
 
     public interface OnItemsSelectedListener {
         public void onItemsSelected(List selectedItems);
+    }
+
+    @Override
+    public void setSelection(int position) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setSelection(int position, boolean animate) {
+        throw new UnsupportedOperationException();
+    }
+
+    //---------------------------------------------------------------------
+    // Helper methods
+    //---------------------------------------------------------------------
+
+    private void updateState() {
+        // refresh text on spinner
+        StringBuilder spinnerBuilder = new StringBuilder();
+        for (int i = 0; i < stringItems.length; i++) {
+            if (checkedItems[i]) {
+                if(spinnerBuilder.length() > 0) spinnerBuilder.append(", ");
+                spinnerBuilder.append(stringItems[i]);
+            }
+        }
+
+        String spinnerText = (spinnerBuilder.length() > 0) ? spinnerBuilder.toString() : defaultText ;
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_spinner_item,
+                new String[] { spinnerText });
+        setAdapter(adapter);
+
+        if (onItemsSelectedListener != null) {
+            onItemsSelectedListener.onItemsSelected(getSelectedItems());
+        }
+    }
+
+    private void unselectAll() {
+        for (int i=0; i < checkedItems.length; i++) {
+            checkedItems[i] = false;
+        }
     }
 }
