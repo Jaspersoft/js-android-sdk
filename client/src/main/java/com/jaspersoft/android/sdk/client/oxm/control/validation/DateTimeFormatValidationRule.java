@@ -19,38 +19,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.wadl;
+package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
-import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
  * @author Ivan Gadzhega
  * @version $Id$
- * @since 1.4
+ * @since 05.11.12 5:11
  */
-@Root(name="representation", strict=false)
-public class WADLRepresentation {
+@Root
+public class DateTimeFormatValidationRule extends ValidationRule {
 
-    @Attribute(required=false)
-    private String id;
+    @Element
+    private String format;
 
-    @Attribute
-    private String mediaType;
-
-    @Attribute(required=false)
-    private String element;
-
-
-    public String getId() {
-        return id;
+    public String getFormat() {
+        return format;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
-    public String getElement() {
-        return element;
-    }
 }

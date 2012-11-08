@@ -39,21 +39,22 @@ public class ResourceParameter {
     private String name;
 
     @Attribute(required=false)
-    private Boolean isListItem;
+    private boolean isListItem;
 
     @Text
     private String value;
 
-
     public ResourceParameter() { }
 
-    public ResourceParameter(String name, String value, Boolean isListItem) {
-        setName(name);
-        setValue(value);
-        isListItem(isListItem);
+    public ResourceParameter(String name, String value) {
+        this(name, value, false);
     }
 
-    public ResourceParameter(String name, Boolean value, Boolean isListItem) {
+    public ResourceParameter(String name, boolean value, boolean isListItem) {
+        this(name, Boolean.toString(value), isListItem);
+    }
+
+    public ResourceParameter(String name, String value, boolean isListItem) {
         setName(name);
         setValue(value);
         isListItem(isListItem);
@@ -67,11 +68,11 @@ public class ResourceParameter {
         this.name = name;
     }
 
-    public Boolean isListItem() {
+    public boolean isListItem() {
         return isListItem;
     }
 
-    public void isListItem(Boolean listItem) {
+    public void isListItem(boolean listItem) {
         isListItem = listItem;
     }
 
@@ -83,7 +84,4 @@ public class ResourceParameter {
         this.value = value;
     }
 
-    public void setValue(Boolean value) {
-        this.value = value.toString();
-    }
 }

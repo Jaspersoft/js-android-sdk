@@ -19,9 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.wadl;
+package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
-import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
 /**
@@ -29,28 +28,7 @@ import org.simpleframework.xml.Root;
  * @version $Id$
  * @since 1.4
  */
-@Root(strict=false)
-public class WADLParameter {
-
-    @Attribute
-    private String type;
-
-    @Attribute
-    private String style;
-
-    @Attribute
-    private String name;
-
-
-    public String getType() {
-        return type;
-    }
-
-    public String getStyle() {
-        return style;
-    }
-
-    public String getName() {
-        return name;
-    }
+@Root
+public class MandatoryValidationRule extends ValidationRule {
+    // currently it's enough to have super class's fields only, i.e. errorMessage.
 }

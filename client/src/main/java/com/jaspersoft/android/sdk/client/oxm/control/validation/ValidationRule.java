@@ -19,48 +19,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.wadl;
+package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-
-import java.util.List;
 
 /**
  * @author Ivan Gadzhega
  * @version $Id$
  * @since 1.4
  */
-@Root(name="resource", strict=false)
-public class WADLResource {
+@Root
+public abstract class ValidationRule {
 
-    @Attribute
-    private String path;
+    @Element
+    private String errorMessage;
 
-    @ElementList(entry="param", inline=true, required=false, empty=false)
-    private List<WADLParameter> parameters;
-
-    @ElementList(entry="method", inline=true, required=false)
-    private List<WADLMethod> methods;
-
-    @ElementList(entry="resource", inline=true, required=false, empty=false)
-    private List<WADLResource> internalResources;
-
-
-    public String getPath() {
-        return path;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public List<WADLParameter> getParameters() {
-        return parameters;
-    }
-
-    public List<WADLMethod> getMethods() {
-        return methods;
-    }
-
-    public List<WADLResource> getInternalResources() {
-        return internalResources;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

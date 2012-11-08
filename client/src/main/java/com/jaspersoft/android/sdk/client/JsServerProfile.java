@@ -40,12 +40,26 @@ public class JsServerProfile {
     private String username;
     private String password;
 
-    private JsRestApiDescriptor restApiDescriptor;
-
     /**
      * Creates an empty JsServerProfile entity.
      */
     public JsServerProfile() {}
+
+    /**
+     * Creates a new JsServerProfile entity with the specified parameters.
+     *
+     * @param alias        The name used to refer to this JsServerProfile. The alias is mainly used to display the name
+     *                     of this JsServerProfile in UI (i.e. when displaying a list of available servers).
+     * @param serverUrl    The URL of JasperReports Server. The url does not include the /core/ portion of the uri,
+     *                     i.e. http://hostname:port/jasperserver
+     * @param organization The name of an organization (used in JasperReport Server Professional which supports multi-tenancy).
+     *                     May be <code>null</code> or empty.
+     * @param username     The username, must be a valid account on JasperReports Server.
+     * @param password     The account password
+     */
+    public JsServerProfile(String alias, String serverUrl, String organization, String username, String password) {
+        this(null, alias, serverUrl, organization, username, password);
+    }
 
     /**
      * Creates a new JsServerProfile entity with the specified parameters.
@@ -125,11 +139,4 @@ public class JsServerProfile {
         this.password = password;
     }
 
-    public JsRestApiDescriptor getRestApiDescriptor() {
-        return restApiDescriptor;
-    }
-
-    public void setRestApiDescriptor(JsRestApiDescriptor restApiDescriptor) {
-        this.restApiDescriptor = restApiDescriptor;
-    }
 }

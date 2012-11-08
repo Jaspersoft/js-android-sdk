@@ -35,7 +35,7 @@ import java.util.List;
 @Root(name="resourceDescriptors")
 public class ResourcesList {
 
-    @ElementList(entry="resourceDescriptor", inline=true, required=false)
+    @ElementList(entry="resourceDescriptor", inline=true, required=false, empty=false)
     private List<ResourceDescriptor> resourceDescriptors;
 
     public List<ResourceDescriptor> getResourceDescriptors() {
