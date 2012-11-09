@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.client;
 
 import com.google.inject.Inject;
 import com.jaspersoft.android.sdk.client.oxm.*;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlDescriptor;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
@@ -475,16 +475,16 @@ public class JsRestClient {
      * Gets the list of input controls for the report with specified URI
      *
      * @param reportUri repository URI of the report
-     * @return a list of InputControlDescriptor values
+     * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
      * @since 1.4
      */
-    public List<InputControlDescriptor> getInputControlsForReport(String reportUri) throws RestClientException {
+    public List<InputControl> getInputControlsForReport(String reportUri) throws RestClientException {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUri
                 + REST_INPUT_CONTROLS_URI;
         InputControlsList inputControlsList = restTemplate.getForObject(fullUri, InputControlsList.class);
-        return inputControlsList == null ? new ArrayList<InputControlDescriptor>() : inputControlsList.getInputControls();
+        return inputControlsList == null ? new ArrayList<InputControl>() : inputControlsList.getInputControls();
     }
 
     /**
@@ -529,13 +529,13 @@ public class JsRestClient {
      * @since 1.4
      */
     public List<InputControlState> validateInputControlsValues(String reportUri,
-            List<InputControlDescriptor> inputControls) throws RestClientException {
+            List<InputControl> inputControls) throws RestClientException {
         if (inputControls.isEmpty()) {
             return new ArrayList<InputControlState>();
         } else {
             List<String> ids = new ArrayList<String>();
             List<ReportParameter> parameters = new ArrayList<ReportParameter>();
-            for(InputControlDescriptor control : inputControls) {
+            for(InputControl control : inputControls) {
                 ids.add(control.getId());
                 parameters.add(new ReportParameter(control.getId(), control.getSelectedValues()));
             }

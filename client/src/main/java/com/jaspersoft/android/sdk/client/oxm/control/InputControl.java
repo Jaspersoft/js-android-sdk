@@ -42,7 +42,7 @@ import java.util.Set;
  */
 
 @Root(name="inputControl", strict=false)
-public class InputControlDescriptor {
+public class InputControl {
 
     public enum Type {
         bool,
@@ -136,6 +136,7 @@ public class InputControlDescriptor {
         return validationRules.getValidationRules();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends ValidationRule> List<T> getValidationRules(Class<T> concreteRuleType){
         List<ValidationRule> rules = getValidationRules();
         List<T> result = new ArrayList<T>();

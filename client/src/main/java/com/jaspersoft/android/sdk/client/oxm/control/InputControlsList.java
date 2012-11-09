@@ -36,13 +36,13 @@ import java.util.List;
 public class InputControlsList {
 
     @ElementList(entry="inputControl", inline=true, empty=false)
-    private List<InputControlDescriptor> inputControls;
+    private List<InputControl> inputControls;
 
-    public List<InputControlDescriptor> getInputControls() {
+    public List<InputControl> getInputControls() {
         return inputControls;
     }
 
-    public void setInputControls(List<InputControlDescriptor> inputControls) {
+    public void setInputControls(List<InputControl> inputControls) {
         this.inputControls = inputControls;
     }
 }
