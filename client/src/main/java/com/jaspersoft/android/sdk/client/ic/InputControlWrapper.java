@@ -53,6 +53,7 @@ public class InputControlWrapper {
     private String uri;
     private byte type;
     private byte dataType;
+    private String dataTypeUri;
     private boolean isMandatory = false;
     private boolean isReadOnly = false;
     private boolean isVisible= true;
@@ -106,6 +107,10 @@ public class InputControlWrapper {
                 if(internalResource.getWsType() == ResourceDescriptor.WsType.dataType) {
                     ResourceProperty dataTypeProperty = internalResource.getPropertyByName(ResourceDescriptor.PROP_DATATYPE_TYPE);
                     this.dataType = Byte.parseByte(dataTypeProperty.getValue());
+                    break;
+                } else if (internalResource.getWsType() == ResourceDescriptor.WsType.reference) {
+                    ResourceProperty referenceUri = internalResource.getPropertyByName(ResourceDescriptor.PROP_FILERESOURCE_REFERENCE_URI);
+                    this.dataTypeUri = referenceUri.getValue();
                     break;
                 }
             }
@@ -223,6 +228,14 @@ public class InputControlWrapper {
 
     public void setDataType(byte dataType) {
         this.dataType = dataType;
+    }
+
+    public String getDataTypeUri() {
+        return dataTypeUri;
+    }
+
+    public void setDataTypeUri(String dataTypeUri) {
+        this.dataTypeUri = dataTypeUri;
     }
 
     public boolean isMandatory() {
