@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.ui.adapters;
 
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -33,7 +34,10 @@ import java.util.Comparator;
  * @version $Id$
  * @since 1.4
  */
-public class ResourceDescriptorComparator implements Comparator<ResourceDescriptor> {
+public class ResourceDescriptorComparator implements Comparator<ResourceDescriptor>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Override
     public int compare(ResourceDescriptor object1, ResourceDescriptor object2) {
         if (object1.getWsType() == ResourceDescriptor.WsType.folder) {
