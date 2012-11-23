@@ -58,7 +58,7 @@ public class JsServerProfile {
      * @param password     The account password
      */
     public JsServerProfile(String alias, String serverUrl, String organization, String username, String password) {
-        this(null, alias, serverUrl, organization, username, password);
+        this(0, alias, serverUrl, organization, username, password);
     }
 
     /**
@@ -74,7 +74,7 @@ public class JsServerProfile {
      * @param username     The username, must be a valid account on JasperReports Server.
      * @param password     The account password
      */
-    public JsServerProfile(Long id, String alias, String serverUrl, String organization, String username, String password) {
+    public JsServerProfile(long id, String alias, String serverUrl, String organization, String username, String password) {
         setId(id);
         setAlias(alias);
         setServerUrl(serverUrl);
