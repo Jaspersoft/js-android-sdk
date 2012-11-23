@@ -33,8 +33,8 @@ import org.simpleframework.xml.Root;
 public class ServerInfo {
 
     public static class VERSION_CODES {
-        public static int UNKNOWN = 0;
-        public static int EMERALD = 50000;
+        public static final int UNKNOWN = 0;
+        public static final int EMERALD = 50000;
     }
 
     @Element
