@@ -266,8 +266,10 @@ public class JsRestClient {
         StringBuilder fullUri = new StringBuilder();
         fullUri.append(restServicesUrl).append(REST_RESOURCES_URI).append(uri);
         fullUri.append("?q={query}&recursive={recursive}&limit={limit}");
-        for (String type : types) {
-            fullUri.append("&type=").append(type);
+        if (types != null) {
+            for (String type : types) {
+                fullUri.append("&type=").append(type);
+            }
         }
         ResourcesList resourcesList = restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
         return resourcesList.getResourceDescriptors();
