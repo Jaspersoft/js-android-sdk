@@ -27,7 +27,7 @@ import org.simpleframework.xml.Root;
 /**
  * @author Ivan Gadzhega
  * @version $Id$
- * @since 05.11.12 5:11
+ * @since 1.4
  */
 @Root
 public class DateTimeFormatValidationRule extends ValidationRule {
