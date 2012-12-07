@@ -36,6 +36,8 @@ import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -55,7 +57,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 
@@ -78,6 +82,11 @@ public class JsRestClient {
     public static final String REST_INPUT_CONTROLS_URI = "/inputControls";
     public static final String REST_VALUES_URI = "/values";
     public static final String REST_SERVER_INFO_URI = "/serverInfo";
+
+    // the default timeout in milliseconds until a connection is established
+    private static final int DEFAULT_CONNECTION_TIMEOUT = 15000;
+    // the default socket timeout in milliseconds for waiting for data
+    private static final int DEFAULT_SOCKET_TIMEOUT = 120000;
 
     @Inject
     private RestTemplate restTemplate;
@@ -102,12 +111,16 @@ public class JsRestClient {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
-
+        // set credentials
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(serverProfile.getUsernameWithOrgId(), serverProfile.getPassword());
         AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
         DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(authScope, credentials);
-
+        // set default timeouts
+        HttpParams params = client.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, DEFAULT_CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(params, DEFAULT_SOCKET_TIMEOUT);
+        // set request factory
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
     }
 
