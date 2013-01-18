@@ -29,7 +29,7 @@ import org.simpleframework.xml.Root;
  * @version $Id$
  * @since 1.4
  */
-@Root
+@Root(strict=false)
 public class ServerInfo {
 
     public static class VERSION_CODES {
