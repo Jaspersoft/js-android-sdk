@@ -47,7 +47,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
-import roboguice.util.Ln;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -620,8 +619,8 @@ public class JsRestClient {
 
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
         File parentFolder = file.getParentFile();
-        if (parentFolder != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-            Ln.e("Unable to create folder %s", file.getParentFile());
+        if (parentFolder != null && !parentFolder.exists() && !parentFolder.mkdirs()) {
+            throw new IllegalStateException("Unable to create folder: " + parentFolder);
         }
         return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
     }
