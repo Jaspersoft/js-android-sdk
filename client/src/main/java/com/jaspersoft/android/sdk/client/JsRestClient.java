@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.client;
 
-import com.google.inject.Inject;
 import com.jaspersoft.android.sdk.client.oxm.*;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
@@ -88,12 +87,14 @@ public class JsRestClient {
     // the default socket timeout in milliseconds for waiting for data
     private static final int DEFAULT_SOCKET_TIMEOUT = 120000;
 
-    @Inject
     private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
     private String restServicesUrl;
-
     private ServerInfo serverInfo;
+
+    public JsRestClient() {
+        this.restTemplate = new RestTemplate(true);
+    }
 
     public RestTemplate getRestTemplate() {
         return restTemplate;

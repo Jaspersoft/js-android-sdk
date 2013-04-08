@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>org.springframework.android</groupId>
                 <artifactId>spring-android-rest-template</artifactId>
-                <version>1.0.0.RC1</version>
+                <version>1.0.1.RELEASE</version>
             </dependency>
             <dependency>
                 <!-- Using Simple for XML marshaling -->
@@ -128,14 +128,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <repositories>
-        <repository>
-            <id>org.springframework.maven.milestone</id>
-            <name>Spring Maven Milestone Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
-    </repositories>
 
 </project>
