@@ -35,12 +35,8 @@ import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.*;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -81,27 +77,46 @@ public class JsRestClient {
     public static final String REST_VALUES_URI = "/values";
     public static final String REST_SERVER_INFO_URI = "/serverInfo";
 
-    // the default timeout in milliseconds until a connection is established
-    private static final int DEFAULT_CONNECTION_TIMEOUT = 15000;
-    // the default socket timeout in milliseconds for waiting for data
-    private static final int DEFAULT_SOCKET_TIMEOUT = 120000;
+    // the timeout in milliseconds until a connection is established
+    private int connectTimeout = 15 * 1000;
+    // the socket timeout in milliseconds for waiting for data
+    private int readTimeout = 120 * 1000;
 
     private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
     private String restServicesUrl;
     private ServerInfo serverInfo;
 
+
     public JsRestClient() {
         this.restTemplate = new RestTemplate(true);
     }
 
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
+    //---------------------------------------------------------------------
+    // Timeouts
+    //---------------------------------------------------------------------
+
+    /**
+     * Set the connection timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * @param timeout the timeout value in milliseconds
+     */
+    public void setConnectTimeout(int timeout) {
+        connectTimeout = timeout;
+        updateConnectTimeout();
     }
 
-    public String getRestServicesUrl() {
-        return restServicesUrl;
+    /**
+     * Set the socket read timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * @param timeout the timeout value in milliseconds
+     */
+    public void setReadTimeout(int timeout) {
+        readTimeout = timeout;
+        updateReadTimeout();
     }
+
+    //---------------------------------------------------------------------
+    // Server Profiles & Info
+    //---------------------------------------------------------------------
 
     public JsServerProfile getServerProfile() {
         return jsServerProfile;
@@ -116,12 +131,9 @@ public class JsRestClient {
         AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
         DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(authScope, credentials);
-        // set default timeouts
-        HttpParams params = client.getParams();
-        HttpConnectionParams.setConnectionTimeout(params, DEFAULT_CONNECTION_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(params, DEFAULT_SOCKET_TIMEOUT);
         // set request factory
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+        updateRequestFactoryTimeouts();
     }
 
     /**
@@ -617,12 +629,47 @@ public class JsRestClient {
     // Helper methods
     //---------------------------------------------------------------------
 
+    private void updateRequestFactoryTimeouts() {
+        updateConnectTimeout();
+        updateReadTimeout();
+    }
+
+    private void updateConnectTimeout() {
+        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
+        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
+            ((HttpComponentsClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
+        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
+            ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
+        }
+    }
+
+    private void updateReadTimeout() {
+        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
+        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
+            ((HttpComponentsClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
+        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
+            ((SimpleClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
+        }
+    }
+
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
         File parentFolder = file.getParentFile();
         if (parentFolder != null && !parentFolder.exists() && !parentFolder.mkdirs()) {
             throw new IllegalStateException("Unable to create folder: " + parentFolder);
         }
         return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+    }
+
+    //---------------------------------------------------------------------
+    // Getters & Setters
+    //---------------------------------------------------------------------
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public String getRestServicesUrl() {
+        return restServicesUrl;
     }
 
 }
