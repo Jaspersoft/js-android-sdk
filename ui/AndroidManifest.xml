@@ -25,6 +25,6 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.jaspersoft.android.sdk.ui"
-      android:versionCode="2"
-      android:versionName="1.4">
+      android:versionCode="3"
+      android:versionName="1.5">
 </manifest> 

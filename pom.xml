@@ -34,7 +34,7 @@
 
     <groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-aggregator</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <packaging>pom</packaging>
 
     <modules>
