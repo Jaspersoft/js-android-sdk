@@ -98,7 +98,10 @@ public class JsRestClient {
 
     /**
      * Set the connection timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     *
      * @param timeout the timeout value in milliseconds
+     *
+     * @since 1.5
      */
     public void setConnectTimeout(int timeout) {
         connectTimeout = timeout;
@@ -108,6 +111,8 @@ public class JsRestClient {
     /**
      * Set the socket read timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
      * @param timeout the timeout value in milliseconds
+     *
+     * @since 1.5
      */
     public void setReadTimeout(int timeout) {
         readTimeout = timeout;
