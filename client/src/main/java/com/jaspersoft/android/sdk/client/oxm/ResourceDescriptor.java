@@ -21,6 +21,7 @@
 
 package com.jaspersoft.android.sdk.client.oxm;
 
+import android.util.Log;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -151,6 +152,7 @@ public class ResourceDescriptor {
         accessGrantSchema,
         adhocDataView,
         adhocReport,
+        aws,
         bean,
         contentResource,
         css,
@@ -179,18 +181,22 @@ public class ResourceDescriptor {
         reference,
         reportOptions,
         reportUnit,
+        virtual,
         xml,
         xmlaConnection,
         unknow
     }
 
+    // Convenient TAG for logging purposes
+    private static final String TAG = "ResourceDescriptor";
+
     @Attribute(required=false)
     private String name;
     @Attribute
-    private WsType wsType;
+    private String wsType;
     @Attribute(required=false)
     private String uriString;
-    @Attribute
+    @Attribute(required=false)
     private Boolean isNew;
 
     @Element(required=false)
@@ -299,11 +305,16 @@ public class ResourceDescriptor {
     }
 
     public WsType getWsType() {
-        return wsType;
+        try {
+            return WsType.valueOf(wsType);
+        } catch (IllegalArgumentException ex) {
+            Log.w(TAG, wsType + " is not a constant in WsType enum");
+            return WsType.unknow;
+        }
     }
 
     public void setWsType(WsType wsType) {
-        this.wsType = wsType;
+        this.wsType = wsType.toString();
     }
 
     public String getUriString() {
