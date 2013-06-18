@@ -37,22 +37,22 @@ public class ServerInfo {
         public static final int EMERALD = 50000;
     }
 
-    @Element
+    @Element(required=false)
     private String build;
 
     @Element
     private String edition;
 
-    @Element
+    @Element(required=false)
     private String editionName;
 
     @Element(required=false)
     private String expiration;
 
-    @Element
+    @Element(required=false)
     private String features;
 
-    @Element
+    @Element(required=false)
     private String licenseType;
 
     @Element
