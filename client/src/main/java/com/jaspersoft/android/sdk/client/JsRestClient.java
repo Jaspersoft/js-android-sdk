@@ -34,7 +34,13 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 import org.springframework.http.*;
 import org.springframework.http.client.*;
 import org.springframework.util.FileCopyUtils;
@@ -131,11 +137,20 @@ public class JsRestClient {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
+
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
+        ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager(new BasicHttpParams(), registry);
+
+        DefaultHttpClient client = new DefaultHttpClient(connManager, null);
+
         // set credentials
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(serverProfile.getUsernameWithOrgId(), serverProfile.getPassword());
         AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
-        DefaultHttpClient client = new DefaultHttpClient();
         client.getCredentialsProvider().setCredentials(authScope, credentials);
+
         // set request factory
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
         updateRequestFactoryTimeouts();

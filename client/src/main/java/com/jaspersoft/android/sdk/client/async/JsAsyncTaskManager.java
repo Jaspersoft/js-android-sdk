@@ -28,6 +28,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.util.Log;
+import android.view.WindowManager;
 import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 
 import java.util.ArrayList;
@@ -51,6 +55,9 @@ import java.util.List;
  * @since 1.0
  */
 public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.OnCancelListener {
+
+    private static final String TAG = "JsAsyncTaskManager";
+
     private final JsOnTaskCallbackListener jsTaskCompleteListener;
     private AlertDialog progressDialog;
     private List<JsAsyncTask> jsAsyncTaskList = new ArrayList<JsAsyncTask>();
@@ -98,7 +105,12 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
         // Wire task to tracker (this)
         jsAsyncTask.setProgressTracker(this);
         // Start task
-        jsAsyncTask.execute();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            jsAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        else {
+            jsAsyncTask.execute();
+        }
     }
 
     /**
@@ -108,7 +120,13 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
         if (jsAsyncTask.isShowProgressDialog()) {
             // Show dialog if it wasn't shown yet or was removed on configuration (rotation) change
             if (!progressDialog.isShowing()) {
-                progressDialog.show();
+                try {
+                    progressDialog.show();
+                } catch (WindowManager.BadTokenException ex) {
+                    jsAsyncTask.cancel(true);
+                    jsAsyncTaskList.remove(jsAsyncTask);
+                    Log.w(TAG, ex.getMessage());
+                }
             }
             // Show current message in progress dialog
             progressDialog.setMessage(message);
@@ -190,8 +208,13 @@ public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.On
      * @param asyncTask <strong>Asynchronous Task</strong>.
      */
     private void finishTaskHandler(JsAsyncTask asyncTask) {
-        if (asyncTask.isShowProgressDialog() && jsAsyncTaskList.isEmpty()) {
-            progressDialog.dismiss();
+        if (progressDialog.isShowing() && asyncTask.isShowProgressDialog() && jsAsyncTaskList.isEmpty()) {
+            try {
+                progressDialog.dismiss();
+            } catch (IllegalArgumentException ex) {
+                Log.w(TAG, ex.getMessage());
+            }
+
         }
     }
 
