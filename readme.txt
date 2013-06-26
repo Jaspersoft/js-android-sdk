@@ -1,4 +1,4 @@
-Jaspersoft Mobile SDK for Android Readme
+Jaspersoft Mobile SDK for Android version 1.5 Readme
 
 The Jaspersoft Mobile SDK for Android provides a library, samples, and documentation for developers to build 
 mobile applications based on Jaspersoft JasperReports Server web services.
