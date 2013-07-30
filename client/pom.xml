@@ -31,13 +31,12 @@
     <parent>
         <artifactId>js-android-sdk-aggregator</artifactId>
         <groupId>com.jaspersoft.android.sdk</groupId>
-        <version>1.5</version>
+        <version>${js.sdk.version}</version>
     </parent>
 
-	<groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-client</artifactId>
     <name>js-android-sdk-client</name>
-	<version>1.5</version>
+    <version>${js.sdk.version}</version>
 
     <dependencies>
 

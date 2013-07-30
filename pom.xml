@@ -30,11 +30,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <js.sdk.version>1.6-SNAPSHOT</js.sdk.version>
     </properties>
 
     <groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-aggregator</artifactId>
-    <version>1.5</version>
+    <version>${js.sdk.version}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -90,12 +91,6 @@
                 <version>1.9.0</version>
                 <scope>test</scope>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.pivotallabs</groupId>-->
-                <!--<artifactId>robolectric</artifactId>-->
-                <!--<version>1.0</version>-->
-                <!--<scope>test</scope>-->
-            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
