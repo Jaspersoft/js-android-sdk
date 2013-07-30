@@ -31,7 +31,7 @@
     <parent>
         <artifactId>js-android-sdk-aggregator</artifactId>
         <groupId>com.jaspersoft.android.sdk</groupId>
-        <version>${js.sdk.version}</version>
+        <version>1.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>js-android-sdk-ui</artifactId>
