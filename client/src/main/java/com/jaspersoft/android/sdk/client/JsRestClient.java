@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -68,7 +68,6 @@ import static java.util.Collections.singletonList;
  * and does mapping of the returned data to object model.
  *
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
  */
 public class JsRestClient {
@@ -202,7 +201,7 @@ public class JsRestClient {
     /**
      * Gets the resource descriptor for the resource with specified URI.
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri repository URI (e.g. /reports/samples/)
      * @return the ResourceDescriptor value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
@@ -225,7 +224,7 @@ public class JsRestClient {
     /**
      * Deletes the resource with the specified URI
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri resource URI (e.g. /reports/samples/)
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public void deleteResource(String uri) throws RestClientException {
@@ -238,23 +237,33 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Gets the list of resource descriptors for all resources available in the specified repository URI.
+     * Gets the list of resource descriptors for all resources available in the folder specified in the URI.
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri folder URI (e.g. /reports/samples/)
      * @return the list of ResourceDescriptor values
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public List<ResourceDescriptor> getResourcesList(String uri) throws RestClientException {
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for all resources available in the folder specified in the URI.
+     *
+     * @param uri folder URI (e.g. /reports/samples/)
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri) throws RestClientException {
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri;
+        return restTemplate.getForObject(fullUri, ResourcesList.class);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
      *                  is specified, either query or type. (can be <code>null</code>)
@@ -264,17 +273,33 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, Boolean recursive, Integer limit) throws RestClientException {
-        String uriVariablesTemplate = "?q={query}&recursive={recursive}&limit={limit}";
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class, query, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri, query, recursive, limit).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, Boolean recursive, Integer limit) throws RestClientException {
+        String uriVariablesTemplate = "?q={query}&recursive={recursive}&limit={limit}";
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
+        return restTemplate.getForObject(fullUri, ResourcesList.class, query, recursive, limit);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param type      Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -286,17 +311,34 @@ public class JsRestClient {
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, String type, Boolean recursive,
                                                      Integer limit) throws RestClientException {
-        String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class, query, type, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri, query, type, recursive, limit).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param type      Match only resources of the given type
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, String type, Boolean recursive, Integer limit) throws RestClientException {
+        String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
+        return restTemplate.getForObject(fullUri, ResourcesList.class, query, type, recursive, limit);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param types     Match only resources of the given types
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -308,6 +350,24 @@ public class JsRestClient {
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, List<String> types, Boolean recursive,
                                                      Integer limit) throws RestClientException {
+        return getResources(uri, query, types, recursive, limit).getResourceDescriptors();
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param types     Match only resources of the given types
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, List<String> types, Boolean recursive, Integer limit) throws RestClientException {
         StringBuilder fullUri = new StringBuilder();
         fullUri.append(restServicesUrl).append(REST_RESOURCES_URI).append(uri);
         fullUri.append("?q={query}&recursive={recursive}&limit={limit}");
@@ -316,8 +376,7 @@ public class JsRestClient {
                 fullUri.append("&type=").append(type);
             }
         }
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
     }
 
     //---------------------------------------------------------------------
