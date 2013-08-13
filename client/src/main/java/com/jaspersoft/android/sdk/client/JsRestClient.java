@@ -201,7 +201,7 @@ public class JsRestClient {
     /**
      * Gets the resource descriptor for the resource with specified URI.
      *
-     * @param uri repository URI (e.g. /reports/samples/)
+     * @param uri resource URI (e.g. /reports/samples/)
      * @return the ResourceDescriptor value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
