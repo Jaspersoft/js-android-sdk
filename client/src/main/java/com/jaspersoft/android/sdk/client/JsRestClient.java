@@ -442,7 +442,6 @@ public class JsRestClient {
             if (restTemplate.getErrorHandler().hasError(response)) {
                 restTemplate.getErrorHandler().handleError(response);
             }
-//            FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
             copyResponseToFile(response, file);
         } catch (IOException ex) {
             throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
