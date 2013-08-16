@@ -631,10 +631,28 @@ public class JsRestClient {
      * @since 1.4
      */
     public List<InputControl> getInputControlsForReport(String reportUri) throws RestClientException {
+        return getInputControlsListForReport(reportUri).getInputControls();
+    }
+
+
+    /**
+     * Gets the list of input controls for the report with specified URI
+     *
+     * @param reportUri repository URI of the report
+     * @return the InputControlsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.5.2
+     */
+    public InputControlsList getInputControlsListForReport(String reportUri) throws RestClientException {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUri
                 + REST_INPUT_CONTROLS_URI;
-        InputControlsList inputControlsList = restTemplate.getForObject(fullUri, InputControlsList.class);
-        return inputControlsList == null ? new ArrayList<InputControl>() : inputControlsList.getInputControls();
+        InputControlsList controlsList = restTemplate.getForObject(fullUri, InputControlsList.class);
+        if (controlsList == null) {
+            controlsList = new InputControlsList();
+            controlsList.setInputControls(new ArrayList<InputControl>());
+        }
+        return controlsList;
     }
 
     /**
