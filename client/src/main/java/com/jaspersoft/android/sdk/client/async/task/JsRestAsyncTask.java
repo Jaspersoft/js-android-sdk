@@ -32,8 +32,12 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.BaseRequest BaseRequest}
+ * instead.
  */
+
+@Deprecated
 public abstract class JsRestAsyncTask<Params, Result> extends JsAsyncTask<Params, Result> {
 
     private JsRestClient jsRestClient;

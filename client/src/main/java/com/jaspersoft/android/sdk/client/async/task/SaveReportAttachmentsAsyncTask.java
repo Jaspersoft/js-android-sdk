@@ -37,7 +37,12 @@ import java.util.List;
  * @author Ivan Gadzhega
  * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.SaveReportAttachmentsRequest SaveReportAttachmentsRequest}
+ * instead.
  */
+
+@Deprecated
 public class SaveReportAttachmentsAsyncTask extends JsRestAsyncTask<Object, Void> {
 
     private String uuid;

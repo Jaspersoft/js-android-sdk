@@ -36,9 +36,13 @@ import java.util.List;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.SearchResourcesRequest SearchResourcesRequest}
+ * instead.
  */
+
+@Deprecated
 public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<ResourceDescriptor>> {
 
     private String resourceUri;
@@ -52,7 +56,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      *
      * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param resourceUri repository URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param type  Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -72,7 +76,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
      * @param progressMessage message of <strong>Progress dialog</strong>.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param resourceUri repository URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param type  Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -94,7 +98,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
      * after.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri resource URI (i.e. /reports/samples/)
+     * @param resourceUri resource URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param type  Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -113,7 +117,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      *
      * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param resourceUri repository URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param types  Match only resources of the given types
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -133,7 +137,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      * @param id <strong>SearchResourcesAsyncTask</strong> identifier.
      * @param progressMessage message of <strong>Progress dialog</strong>.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri repository URI (i.e. /reports/samples/)
+     * @param resourceUri repository URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param types  Match only resources of the given types
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -155,7 +159,7 @@ public class SearchResourcesAsyncTask extends JsRestAsyncTask<Object, List<Resou
      * @param showDialogTimeout the time interval (in milliseconds) <strong>Progress dialog</strong> should be appear
      * after.
      * @param jsRestClient <strong>JsRestClient</strong>.
-     * @param resourceUri resource URI (i.e. /reports/samples/)
+     * @param resourceUri resource URI (e.g. /reports/samples/)
      * @param query Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param types  Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria

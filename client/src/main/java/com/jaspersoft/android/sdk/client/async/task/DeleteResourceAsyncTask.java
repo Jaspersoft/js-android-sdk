@@ -32,8 +32,12 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.DeleteResourceRequest DeleteResourceRequest}
+ * instead.
  */
+
+@Deprecated
 public class DeleteResourceAsyncTask extends JsRestAsyncTask<Object, Void> {
 
     private String resourceUri;

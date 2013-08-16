@@ -38,9 +38,13 @@ import java.util.TimerTask;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.BaseRequest BaseRequest}
+ * instead.
  */
+
+@Deprecated
 public abstract class JsAsyncTask<Params, Result> extends AsyncTask<Params, String, Result> {
 
     // constant for dialog showing default timeout (1 second).

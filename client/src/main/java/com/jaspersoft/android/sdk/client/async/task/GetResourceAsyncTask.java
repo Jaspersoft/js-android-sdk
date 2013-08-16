@@ -33,9 +33,13 @@ import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetResourceRequest GetResourceRequest}
+ * instead.
  */
+
+@Deprecated
 public class GetResourceAsyncTask extends JsRestAsyncTask<Object, ResourceDescriptor> {
 
     private String resourceUri;

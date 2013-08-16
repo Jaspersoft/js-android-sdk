@@ -51,9 +51,12 @@ import java.util.List;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated  Use {@link JsXmlSpiceService} instead.
  */
+
+@Deprecated
 public class JsAsyncTaskManager implements JsProgressTracker, DialogInterface.OnCancelListener {
 
     private static final String TAG = "JsAsyncTaskManager";

@@ -34,9 +34,13 @@ import java.util.List;
  * abstract class and overrides <code>doInBackground(Object... arg0)</code> method from it.</p>
  *
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetInputControlsRequest GetInputControlsRequest}
+ * instead.
  */
+
+@Deprecated
 public class GetInputControlsAsyncTask extends JsRestAsyncTask<Object, List<InputControl>> {
 
     private String reportUri;
