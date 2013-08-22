@@ -592,7 +592,7 @@ public class JsRestClient {
     public List<ResourceProperty> getInputControlQueryData(String uri, String datasourceUri, List<ResourceParameter> params) throws RestClientException {
         ResourceDescriptor descriptor = getInputControlWithQueryData(uri, datasourceUri, params);
         ResourceProperty queryDataProperty = descriptor.getPropertyByName(ResourceDescriptor.PROP_QUERY_DATA);
-        
+
         List<ResourceProperty> listOfValues = new ArrayList<ResourceProperty>();
 
         if (queryDataProperty != null) {
@@ -642,7 +642,7 @@ public class JsRestClient {
      * @return the InputControlsList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
-     * @since 1.5.2
+     * @since 1.6
      */
     public InputControlsList getInputControlsListForReport(String reportUri) throws RestClientException {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUri
@@ -659,21 +659,37 @@ public class JsRestClient {
      * Gets the states with updated values for input controls with specified IDs and according to specified parameters
      *
      * @param reportUri repository URI of the report
-     * @param ids list of input controls IDs
-     * @param selectedValues list of input controls selected values
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
      * @return a list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
      *  @since 1.4
      */
-    public List<InputControlState> getUpdatedInputControlsValues(String reportUri, List<String> ids,
-            List<ReportParameter> selectedValues) throws RestClientException {
+    public List<InputControlState> getUpdatedInputControlsValues(String reportUri, List<String> controlsIds,
+                                                                 List<ReportParameter> selectedValues) throws RestClientException {
+        return getUpdatedInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStateList();
+    }
+
+    /**
+     * Gets the states with updated values for input controls with specified IDs and according to specified parameters
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the InputControlStateList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStateList getUpdatedInputControlsValuesList(String reportUri, List<String> controlsIds,
+                                                                   List<ReportParameter> selectedValues) throws RestClientException {
         StringBuilder fullUri = new StringBuilder();
         fullUri.append(jsServerProfile.getServerUrl()).append(REST_SERVICES_V2_URI).append(REST_REPORTS_URI)
                 .append(reportUri).append(REST_INPUT_CONTROLS_URI);
-        if (!ids.isEmpty()) {
+        if (!controlsIds.isEmpty()) {
             fullUri.append("/");
-            for (String id : ids) {
+            for (String id : controlsIds) {
                 fullUri.append(id).append(";");
             }
         }
@@ -682,8 +698,7 @@ public class JsRestClient {
         ReportParametersList parametersList = new ReportParametersList();
         parametersList.setReportParameters(selectedValues);
 
-        InputControlStateList stateList = restTemplate.postForObject(fullUri.toString(), parametersList, InputControlStateList.class);
-        return stateList.getInputControlStateList();
+        return restTemplate.postForObject(fullUri.toString(), parametersList, InputControlStateList.class);
     }
 
     /**
