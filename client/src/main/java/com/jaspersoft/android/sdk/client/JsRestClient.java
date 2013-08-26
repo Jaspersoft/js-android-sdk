@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.client;
 
+import android.util.Base64;
 import com.jaspersoft.android.sdk.client.oxm.*;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
@@ -32,15 +33,6 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
 import org.springframework.http.*;
 import org.springframework.http.client.*;
 import org.springframework.util.FileCopyUtils;
@@ -54,6 +46,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -132,26 +125,22 @@ public class JsRestClient {
         return jsServerProfile;
     }
 
-    public void setServerProfile(JsServerProfile serverProfile) {
+    public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-
-        ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager(new BasicHttpParams(), registry);
-
-        DefaultHttpClient client = new DefaultHttpClient(connManager, null);
-
-        // set credentials
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(serverProfile.getUsernameWithOrgId(), serverProfile.getPassword());
-        AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
-        client.getCredentialsProvider().setCredentials(authScope, credentials);
-
-        // set request factory
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory() {
+            @Override
+            protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+                super.prepareConnection(connection, httpMethod);
+                // Basic Authentication
+                String authorisation = serverProfile.getUsernameWithOrgId() + ":" + serverProfile.getPassword();
+                byte[] encodedAuthorisation = Base64.encode(authorisation.getBytes(), Base64.NO_WRAP);
+                connection.setRequestProperty("Authorization", "Basic " + new String(encodedAuthorisation));
+            }
+        };
+        restTemplate.setRequestFactory(factory);
         updateRequestFactoryTimeouts();
     }
 
