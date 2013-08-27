@@ -95,7 +95,7 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Set the connection timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * Set the underlying URLConnection's connect timeout. A timeout value of 0 specifies an infinite timeout.
      *
      * @param timeout the timeout value in milliseconds
      *
@@ -107,7 +107,7 @@ public class JsRestClient {
     }
 
     /**
-     * Set the socket read timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * Set the underlying URLConnection's read timeout. A timeout value of 0 specifies an infinite timeout.
      * @param timeout the timeout value in milliseconds
      *
      * @since 1.5
@@ -735,21 +735,13 @@ public class JsRestClient {
     }
 
     private void updateConnectTimeout() {
-        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
-        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
-            ((HttpComponentsClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
-        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
-            ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
-        }
+        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
+        factory.setConnectTimeout(connectTimeout);
     }
 
     private void updateReadTimeout() {
-        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
-        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
-            ((HttpComponentsClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
-        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
-            ((SimpleClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
-        }
+        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
+        factory.setReadTimeout(readTimeout);
     }
 
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
