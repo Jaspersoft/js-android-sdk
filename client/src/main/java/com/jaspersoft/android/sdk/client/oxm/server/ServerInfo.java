@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,7 +26,6 @@ import org.simpleframework.xml.Root;
 
 /**
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
  */
 @Root(strict=false)
@@ -35,6 +34,11 @@ public class ServerInfo {
     public static class VERSION_CODES {
         public static final int UNKNOWN = 0;
         public static final int EMERALD = 50000;
+    }
+
+    public static class EDITIONS {
+        public static final String CE = "CE";
+        public static final String PRO = "PRO";
     }
 
     @Element(required=false)
@@ -58,9 +62,17 @@ public class ServerInfo {
     @Element
     private String version;
 
+    @Element(required=false)
+    private int versionCode;
 
-    public int getVersionCode() {
-        int versionCode = VERSION_CODES.UNKNOWN;
+    public ServerInfo() {
+        edition = EDITIONS.CE;
+        version = String.valueOf(VERSION_CODES.UNKNOWN);
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+        // update version code
         if (version != null) {
             String[] subs = version.split("\\.");
             for (int i = 0; i < subs.length; i++) {
@@ -68,7 +80,6 @@ public class ServerInfo {
                 versionCode += Integer.parseInt(subs[i]) * Math.pow(10, exponent);
             }
         }
-        return versionCode;
     }
 
     //---------------------------------------------------------------------
@@ -127,7 +138,12 @@ public class ServerInfo {
         return version;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public int getVersionCode() {
+        return versionCode;
     }
+
+    public void setVersionCode(int versionCode) {
+        this.versionCode = versionCode;
+    }
+
 }
