@@ -59,19 +59,20 @@ public class ServerInfo {
     @Element(required=false)
     private String licenseType;
 
-    @Element
     private String version;
 
-    @Element(required=false)
     private int versionCode;
+
 
     public ServerInfo() {
         edition = EDITIONS.CE;
         version = String.valueOf(VERSION_CODES.UNKNOWN);
     }
 
+    @Element
     public void setVersion(String version) {
         this.version = version;
+        this.versionCode = 0;
         // update version code
         if (version != null) {
             String[] subs = version.split("\\.");
@@ -80,6 +81,11 @@ public class ServerInfo {
                 versionCode += Integer.parseInt(subs[i]) * Math.pow(10, exponent);
             }
         }
+    }
+
+    @Element
+    public String getVersion() {
+        return version;
     }
 
     //---------------------------------------------------------------------
@@ -132,10 +138,6 @@ public class ServerInfo {
 
     public void setLicenseType(String licenseType) {
         this.licenseType = licenseType;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     public int getVersionCode() {
