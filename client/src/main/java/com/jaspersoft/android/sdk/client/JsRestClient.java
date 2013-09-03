@@ -138,6 +138,8 @@ public class JsRestClient {
                 String authorisation = serverProfile.getUsernameWithOrgId() + ":" + serverProfile.getPassword();
                 byte[] encodedAuthorisation = Base64.encode(authorisation.getBytes(), Base64.NO_WRAP);
                 connection.setRequestProperty("Authorization", "Basic " + new String(encodedAuthorisation));
+                // disable buggy keep-alive
+                connection.setRequestProperty("Connection", "close");
             }
         };
         restTemplate.setRequestFactory(factory);
