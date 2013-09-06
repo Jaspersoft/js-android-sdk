@@ -30,12 +30,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <js.sdk.version>1.6-SNAPSHOT</js.sdk.version>
     </properties>
 
     <groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-aggregator</artifactId>
-    <version>${js.sdk.version}</version>
+    <version>1.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>

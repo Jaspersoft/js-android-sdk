@@ -36,7 +36,7 @@
 
     <artifactId>js-android-sdk-client</artifactId>
     <name>js-android-sdk-client</name>
-    <version>${js.sdk.version}</version>
+    <version>1.6-SNAPSHOT</version>
 
     <dependencies>
 

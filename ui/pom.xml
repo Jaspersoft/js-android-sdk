@@ -35,7 +35,7 @@
     </parent>
 
     <artifactId>js-android-sdk-ui</artifactId>
-    <version>${js.sdk.version}</version>
+    <version>1.6-SNAPSHOT</version>
     <packaging>apklib</packaging>
 
     <dependencies>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.jaspersoft.android.sdk</groupId>
             <artifactId>js-android-sdk-client</artifactId>
-            <version>${js.sdk.version}</version>
+            <version>1.6-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
