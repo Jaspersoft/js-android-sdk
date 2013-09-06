@@ -25,9 +25,11 @@
 package com.jaspersoft.android.sdk.client.async.request.cacheable;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +46,7 @@ public class GetUpdatedInputControlsRequest extends CacheableRequest<InputContro
     private List<ReportParameter> selectedValues;
 
     /**
-     * Creates a new instance of {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetUpdatedInputControlsRequest}.
+     * Creates a new instance of {@link GetUpdatedInputControlsRequest}.
      *
      * @param reportUri repository URI of the report
      * @param controlsIds list of input controls IDs
@@ -56,6 +58,23 @@ public class GetUpdatedInputControlsRequest extends CacheableRequest<InputContro
         this.reportUri = reportUri;
         this.controlsIds = controlsIds;
         this.selectedValues = selectedValues;
+    }
+
+    /**
+     * Creates a new instance of {@link GetUpdatedInputControlsRequest}.
+     *
+     * @param reportUri repository URI of the report
+     * @param inputControls list of input controls
+     */
+    public GetUpdatedInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<InputControl> inputControls) {
+        super(jsRestClient, InputControlStateList.class);
+        this.reportUri = reportUri;
+        controlsIds = new ArrayList<String>();
+        selectedValues = new ArrayList<ReportParameter>();
+        for(InputControl control : inputControls) {
+            controlsIds.add(control.getId());
+            selectedValues.add(new ReportParameter(control.getId(), control.getSelectedValues()));
+        }
     }
 
     @Override
