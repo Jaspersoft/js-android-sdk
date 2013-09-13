@@ -26,61 +26,45 @@ package com.jaspersoft.android.sdk.client.async.request.cacheable;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Request that gets the states with updated values for input controls with specified IDs
- * and according to specified parameters.
- *
  * @author Ivan Gadzhega
  * @since 1.6
  */
-public class GetUpdatedInputControlsRequest extends CacheableRequest<InputControlStateList> {
+abstract class BaseInputControlsRequest<T> extends CacheableRequest<T> {
 
     private String reportUri;
     private List<String> controlsIds;
     private List<ReportParameter> selectedValues;
 
-    /**
-     * Creates a new instance of {@link GetUpdatedInputControlsRequest}.
-     *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
-     * @param selectedValues list of selected values
-     */
-    public GetUpdatedInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<String> controlsIds,
-                                          List<ReportParameter> selectedValues) {
-        super(jsRestClient, InputControlStateList.class);
-        this.reportUri = reportUri;
-        this.controlsIds = controlsIds;
-        this.selectedValues = selectedValues;
+
+    BaseInputControlsRequest(JsRestClient jsRestClient, String reportUri, Class<T> clazz) {
+        this(jsRestClient, reportUri, new ArrayList<String>(), new ArrayList<ReportParameter>(), clazz);
     }
 
-    /**
-     * Creates a new instance of {@link GetUpdatedInputControlsRequest}.
-     *
-     * @param reportUri repository URI of the report
-     * @param inputControls list of input controls
-     */
-    public GetUpdatedInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<InputControl> inputControls) {
-        super(jsRestClient, InputControlStateList.class);
-        this.reportUri = reportUri;
-        controlsIds = new ArrayList<String>();
-        selectedValues = new ArrayList<ReportParameter>();
+    BaseInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<InputControl> inputControls, Class<T> clazz) {
+        this(jsRestClient, reportUri, clazz);
         for(InputControl control : inputControls) {
             controlsIds.add(control.getId());
             selectedValues.add(new ReportParameter(control.getId(), control.getSelectedValues()));
         }
     }
 
-    @Override
-    public InputControlStateList loadDataFromNetwork() throws Exception {
-        return getJsRestClient().getUpdatedInputControlsValuesList(reportUri, controlsIds, selectedValues);
+    BaseInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<String> controlsIds,
+                             List<ReportParameter> selectedValues, Class<T> clazz) {
+        super(jsRestClient, clazz);
+        this.reportUri = reportUri;
+        this.controlsIds = controlsIds;
+        this.selectedValues = selectedValues;
     }
+
+
+    @Override
+    public abstract T loadDataFromNetwork() throws Exception;
 
     @Override
     protected String createCacheKeyString() {

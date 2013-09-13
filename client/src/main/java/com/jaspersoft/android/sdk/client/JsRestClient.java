@@ -28,13 +28,17 @@ import android.util.Base64;
 import com.jaspersoft.android.sdk.client.oxm.*;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.springframework.http.*;
-import org.springframework.http.client.*;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -613,21 +617,37 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Gets the list of input controls for the report with specified URI
+     * Gets the list of all input controls for the report with specified URI.
      *
      * @param reportUri repository URI of the report
      * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
-     * @since 1.4
+     * @since 1.6
      */
-    public List<InputControl> getInputControlsForReport(String reportUri) throws RestClientException {
-        return getInputControlsListForReport(reportUri).getInputControls();
+    public List<InputControl> getInputControls(String reportUri) throws RestClientException {
+        return getInputControlsList(reportUri).getInputControls();
     }
 
+    /**
+     * Gets the list of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return a list of input controls
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public List<InputControl> getInputControls(String reportUri, List<String> controlsIds,
+                                               List<ReportParameter> selectedValues) throws RestClientException {
+        return getInputControlsList(reportUri, controlsIds, selectedValues).getInputControls();
+    }
 
     /**
-     * Gets the list of input controls for the report with specified URI
+     * Gets the list of all input controls for the report with specified URI.
      *
      * @param reportUri repository URI of the report
      * @return the InputControlsList value
@@ -635,101 +655,193 @@ public class JsRestClient {
      *
      * @since 1.6
      */
-    public InputControlsList getInputControlsListForReport(String reportUri) throws RestClientException {
-        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUri
-                + REST_INPUT_CONTROLS_URI;
-        InputControlsList controlsList = restTemplate.getForObject(fullUri, InputControlsList.class);
-        if (controlsList == null) {
-            controlsList = new InputControlsList();
-            controlsList.setInputControls(new ArrayList<InputControl>());
-        }
-        return controlsList;
+    public InputControlsList getInputControlsList(String reportUri) throws RestClientException {
+        return getInputControlsList(reportUri, new ArrayList<String>(), new ArrayList<ReportParameter>());
     }
 
     /**
-     * Gets the states with updated values for input controls with specified IDs and according to specified parameters
+     * Gets the list of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
      *
      * @param reportUri repository URI of the report
      * @param controlsIds list of input controls IDs
      * @param selectedValues list of selected values
-     * @return a list of the input controls states
-     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
-     *  @since 1.4
-     */
-    public List<InputControlState> getUpdatedInputControlsValues(String reportUri, List<String> controlsIds,
-                                                                 List<ReportParameter> selectedValues) throws RestClientException {
-        return getUpdatedInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStateList();
-    }
-
-    /**
-     * Gets the states with updated values for input controls with specified IDs and according to specified parameters
-     *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
-     * @param selectedValues list of selected values
-     * @return the InputControlStateList value
+     * @return the InputControlsList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
      * @since 1.6
      */
-    public InputControlStateList getUpdatedInputControlsValuesList(String reportUri, List<String> controlsIds,
-                                                                   List<ReportParameter> selectedValues) throws RestClientException {
-        StringBuilder fullUri = new StringBuilder();
-        fullUri.append(jsServerProfile.getServerUrl()).append(REST_SERVICES_V2_URI).append(REST_REPORTS_URI)
-                .append(reportUri).append(REST_INPUT_CONTROLS_URI);
-        if (!controlsIds.isEmpty()) {
-            fullUri.append("/");
-            for (String id : controlsIds) {
-                fullUri.append(id).append(";");
-            }
-        }
-        fullUri.append(REST_VALUES_URI);
-
+    public InputControlsList getInputControlsList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        // generate full url
+        String url = generateInputControlsUrl(reportUri, controlsIds, false);
+        // add selected values to request
         ReportParametersList parametersList = new ReportParametersList();
         parametersList.setReportParameters(selectedValues);
-
-        return restTemplate.postForObject(fullUri.toString(), parametersList, InputControlStateList.class);
+        // execute POST request
+        InputControlsList controlsList =
+                restTemplate.postForObject(url, parametersList, InputControlsList.class);
+        return (controlsList != null) ? controlsList : new InputControlsList();
     }
 
     /**
-     * Validates controls values on the server side and returns states only for invalid controls
+     * Gets the list of states of all input controls for the report with specified URI.
+     *
+     * @param reportUri repository URI of the report
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public List<InputControlState> getInputControlsValues(String reportUri) throws RestClientException {
+        return getInputControlsValuesList(reportUri).getInputControlStates();
+    }
+
+    /**
+     * Gets the list of states of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     *  @since 1.6
+     */
+    public List<InputControlState> getInputControlsValues(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        return getInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
+    }
+
+    /**
+     * Gets the list of states of all input controls for the report with specified URI.
+     *
+     * @param reportUri repository URI of the report
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList getInputControlsValuesList(String reportUri) throws RestClientException {
+        return getInputControlsValuesList(reportUri, new ArrayList<String>(), new ArrayList<ReportParameter>());
+    }
+
+    /**
+     * Gets the list of states of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList getInputControlsValuesList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        // generate full url
+        String url = generateInputControlsUrl(reportUri, controlsIds, true);
+        // add selected values to request
+        ReportParametersList parametersList = new ReportParametersList();
+        parametersList.setReportParameters(selectedValues);
+        // execute POST request
+        try {
+            return  restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
+        } catch (HttpMessageNotReadableException exception) {
+             return new InputControlStatesList();
+        }
+    }
+
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
      *
      * @param reportUri repository URI of the report
      * @param inputControls list of input controls that should be validated
-     * @return a list of the input controls states
+     * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
      * @since 1.4
      */
-    public List<InputControlState> validateInputControlsValues(String reportUri,
-            List<InputControl> inputControls) throws RestClientException {
-        if (inputControls.isEmpty()) {
-            return new ArrayList<InputControlState>();
-        } else {
-            List<String> ids = new ArrayList<String>();
-            List<ReportParameter> parameters = new ArrayList<ReportParameter>();
-            for(InputControl control : inputControls) {
-                ids.add(control.getId());
-                parameters.add(new ReportParameter(control.getId(), control.getSelectedValues()));
-            }
+    public List<InputControlState> validateInputControlsValues(String reportUri, List<InputControl> inputControls)
+            throws RestClientException {
+        return validateInputControlsValuesList(reportUri, inputControls).getInputControlStates();
+    }
 
-            List<InputControlState> stateList = getUpdatedInputControlsValues(reportUri, ids, parameters);
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs that should be validated
+     * @param selectedValues list of selected values for validation
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public List<InputControlState> validateInputControlsValues(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        return validateInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
+    }
 
-            Iterator<InputControlState> iterator = stateList.iterator();
-            while(iterator.hasNext()) {
-                InputControlState state = iterator.next();
-                if(state.getError() == null) {
-                    iterator.remove();
-                }
-            }
-            return stateList;
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param inputControls list of input controls that should be validated
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList validateInputControlsValuesList(String reportUri, List<InputControl> inputControls)
+            throws RestClientException {
+        List<String> controlsIds = new ArrayList<String>();
+        List<ReportParameter> selectedValues = new ArrayList<ReportParameter>();
+        for(InputControl control : inputControls) {
+            controlsIds.add(control.getId());
+            selectedValues.add(new ReportParameter(control.getId(), control.getSelectedValues()));
         }
+        // execute validation request
+        return validateInputControlsValuesList(reportUri, controlsIds, selectedValues);
+    }
+
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs that should be validated
+     * @param selectedValues list of selected values for validation
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList validateInputControlsValuesList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        InputControlStatesList statesList = getInputControlsValuesList(reportUri, controlsIds, selectedValues);
+        // remove states without validation errors
+        Iterator<InputControlState> iterator = statesList.getInputControlStates().iterator();
+        while(iterator.hasNext()) {
+            if(iterator.next().getError() == null) {
+                iterator.remove();
+            }
+        }
+        return statesList;
     }
 
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------
+
+    protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
+        File parentFolder = file.getParentFile();
+        if (parentFolder != null && !parentFolder.exists() && !parentFolder.mkdirs()) {
+            throw new IllegalStateException("Unable to create folder: " + parentFolder);
+        }
+        return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+    }
 
     private void updateRequestFactoryTimeouts() {
         updateConnectTimeout();
@@ -746,12 +858,25 @@ public class JsRestClient {
         factory.setReadTimeout(readTimeout);
     }
 
-    protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
-        File parentFolder = file.getParentFile();
-        if (parentFolder != null && !parentFolder.exists() && !parentFolder.mkdirs()) {
-            throw new IllegalStateException("Unable to create folder: " + parentFolder);
+    private String generateInputControlsUrl(String reportUri, List<String> controlsIds, boolean valuesOnly) {
+        StringBuilder fullUri = new StringBuilder();
+        fullUri.append(jsServerProfile.getServerUrl())
+                .append(REST_SERVICES_V2_URI)
+                .append(REST_REPORTS_URI)
+                .append(reportUri)
+                .append(REST_INPUT_CONTROLS_URI);
+        // add ids to uri
+        if (!controlsIds.isEmpty()) {
+            fullUri.append("/");
+            for (String id : controlsIds) {
+                fullUri.append(id).append(";");
+            }
         }
-        return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+        // add "values" suffix
+        if (valuesOnly) {
+            fullUri.append(REST_VALUES_URI);
+        }
+        return fullUri.toString();
     }
 
     //---------------------------------------------------------------------

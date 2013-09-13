@@ -26,11 +26,9 @@ package com.jaspersoft.android.sdk.client.async.request.cacheable;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,43 +38,34 @@ import java.util.List;
  * @author Ivan Gadzhega
  * @since 1.6
  */
-public class ValidateInputControlsRequest extends GetUpdatedInputControlsRequest {
+public class ValidateInputControlsValuesRequest extends BaseInputControlsRequest<InputControlStatesList> {
 
     /**
-     * Creates a new instance of {@link ValidateInputControlsRequest}.
-     *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs that should be validated
-     * @param selectedValues list of selected values that should be validated
-     */
-    public ValidateInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<String> controlsIds,
-                                        List<ReportParameter> selectedValues) {
-        super(jsRestClient, reportUri, controlsIds, selectedValues);
-    }
-
-    /**
-     * Creates a new instance of {@link ValidateInputControlsRequest}.
+     * Creates a new instance of {@link ValidateInputControlsValuesRequest}.
      *
      * @param reportUri repository URI of the report
      * @param inputControls list of input controls that should be validated
      */
-    public ValidateInputControlsRequest(JsRestClient jsRestClient, String reportUri, List<InputControl> inputControls) {
-        super(jsRestClient, reportUri, inputControls);
+    public ValidateInputControlsValuesRequest(JsRestClient jsRestClient, String reportUri, List<InputControl> inputControls) {
+        super(jsRestClient, reportUri, inputControls, InputControlStatesList.class);
     }
 
+    /**
+     * Creates a new instance of {@link ValidateInputControlsValuesRequest}.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs that should be validated
+     * @param selectedValues list of selected values for validation
+     */
+    public ValidateInputControlsValuesRequest(JsRestClient jsRestClient, String reportUri, List<String> controlsIds,
+                                              List<ReportParameter> selectedValues) {
+        super(jsRestClient, reportUri, controlsIds, selectedValues, InputControlStatesList.class);
+    }
+
+
     @Override
-    public InputControlStateList loadDataFromNetwork() throws Exception {
-        // if there is no input controls, just return an empty object
-        if (getControlsIds().isEmpty()) return new InputControlStateList();
-        // or make a network request otherwise
-        InputControlStateList stateList = super.loadDataFromNetwork();
-        Iterator<InputControlState> iterator = stateList.getInputControlStateList().iterator();
-        while(iterator.hasNext()) {
-            if(iterator.next().getError() == null) {
-                iterator.remove();
-            }
-        }
-        return stateList;
+    public InputControlStatesList loadDataFromNetwork() throws Exception {
+        return getJsRestClient().validateInputControlsValuesList(getReportUri(), getControlsIds(), getSelectedValues());
     }
 
 }

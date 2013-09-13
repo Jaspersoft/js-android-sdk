@@ -26,42 +26,44 @@ package com.jaspersoft.android.sdk.client.async.request.cacheable;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
+
+import java.util.List;
 
 /**
- * Request that gets the list of input controls for the report with specified URI.
+ * Request that gets the list of input controls for the report with specified URI
+ * and according to specified parameters.
  *
  * @author Ivan Gadzhega
  * @since 1.6
  */
-public class GetInputControlsRequest extends CacheableRequest<InputControlsList> {
-
-    private String reportUri;
+public class GetInputControlsRequest extends BaseInputControlsRequest<InputControlsList> {
 
     /**
      * Creates a new instance of {@link GetInputControlsRequest}.
+     *
      * @param reportUri repository URI of the report.
      */
     public GetInputControlsRequest(JsRestClient jsRestClient, String reportUri) {
-        super(jsRestClient, InputControlsList.class);
-        this.reportUri = reportUri;
+        super(jsRestClient, reportUri, InputControlsList.class);
     }
+
+    /**
+     * Creates a new instance of {@link GetInputControlsRequest}.
+     *
+     * @param reportUri repository URI of the report.
+     * @param controlsIds list of input controls IDs.
+     * @param selectedValues list of selected values.
+     */
+    public GetInputControlsRequest(JsRestClient jsRestClient, String reportUri,
+                                   List<String> controlsIds, List<ReportParameter> selectedValues) {
+        super(jsRestClient, reportUri, controlsIds, selectedValues, InputControlsList.class);
+    }
+
 
     @Override
     public InputControlsList loadDataFromNetwork() throws Exception {
-        return getJsRestClient().getInputControlsListForReport(reportUri);
-    }
-
-    @Override
-    protected String createCacheKeyString() {
-        return super.createCacheKeyString() + reportUri;
-    }
-
-    //---------------------------------------------------------------------
-    // Getters & Setters
-    //---------------------------------------------------------------------
-
-    public String getReportUri() {
-        return reportUri;
+        return getJsRestClient().getInputControlsList(getReportUri(), getControlsIds(), getSelectedValues());
     }
 
 }

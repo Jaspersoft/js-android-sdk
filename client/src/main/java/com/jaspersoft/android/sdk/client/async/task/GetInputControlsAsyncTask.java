@@ -96,7 +96,7 @@ public class GetInputControlsAsyncTask extends JsRestAsyncTask<Object, List<Inpu
     protected List<InputControl> doInBackground(Object... arg0) {
         super.doInBackground(arg0);
         try {
-            return getJsRestClient().getInputControlsForReport(reportUri);
+            return getJsRestClient().getInputControls(reportUri);
         } catch (Exception e) {
             setTaskException(e);
             return null;
