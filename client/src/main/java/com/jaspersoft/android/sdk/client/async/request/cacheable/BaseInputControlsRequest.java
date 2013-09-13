@@ -37,6 +37,8 @@ import java.util.List;
  */
 abstract class BaseInputControlsRequest<T> extends CacheableRequest<T> {
 
+    protected static final String TAG_IC_VALUES = "INPUT_CONTROLS_VALUES";
+
     private String reportUri;
     private List<String> controlsIds;
     private List<ReportParameter> selectedValues;

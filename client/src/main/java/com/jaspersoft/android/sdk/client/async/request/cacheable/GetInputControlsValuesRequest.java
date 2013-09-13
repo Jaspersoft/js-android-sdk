@@ -76,4 +76,9 @@ public class GetInputControlsValuesRequest extends BaseInputControlsRequest<Inpu
     public InputControlStatesList loadDataFromNetwork() throws Exception {
         return getJsRestClient().getInputControlsValuesList(getReportUri(), getControlsIds(), getSelectedValues());
     }
+
+    @Override
+    protected String createCacheKeyTag() {
+        return TAG_IC_VALUES;
+    }
 }

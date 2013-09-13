@@ -68,4 +68,9 @@ public class ValidateInputControlsValuesRequest extends BaseInputControlsRequest
         return getJsRestClient().validateInputControlsValuesList(getReportUri(), getControlsIds(), getSelectedValues());
     }
 
+    @Override
+    protected String createCacheKeyTag() {
+        return TAG_IC_VALUES;
+    }
+
 }
