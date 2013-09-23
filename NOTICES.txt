@@ -27,6 +27,7 @@ THIRD PARTY COMPONENTS
 This software includes third party software subject to the associated copyrights, as follows:
 - Simple XML 2.7 (Apache 2.0) - http://simple.sourceforge.net/
 - Spring Android 1.0.1 (Apache 2.0) - http://www.springsource.org/spring-android
+- RoboSpice 1.4.5 (Apache 2.0) - https://github.com/octo-online/robospice
 
 The text of licenses for the above software is included with the
 Jaspersoft Mobile SDK for Android package, in the /licenses folder.
