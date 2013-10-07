@@ -31,13 +31,12 @@
     <parent>
         <artifactId>js-android-sdk-aggregator</artifactId>
         <groupId>com.jaspersoft.android.sdk</groupId>
-        <version>1.5</version>
+        <version>1.6</version>
     </parent>
 
-	<groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-client</artifactId>
     <name>js-android-sdk-client</name>
-	<version>1.5</version>
+    <version>1.6</version>
 
     <dependencies>
 
@@ -49,7 +48,14 @@
             <groupId>org.springframework.android</groupId>
             <artifactId>spring-android-rest-template</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.octo.android.robospice</groupId>
+            <artifactId>robospice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.octo.android.robospice</groupId>
+            <artifactId>robospice-spring-android</artifactId>
+        </dependency>
         <dependency>
             <!-- Using Simple for XML marshaling -->
             <groupId>org.simpleframework</groupId>

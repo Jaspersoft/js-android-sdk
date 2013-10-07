@@ -33,9 +33,13 @@ import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
  * abstract class and overrides <code>doInBackground(Object... arg0)</code> method.</p>
  *
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetReportRequest GetReportRequest}
+ * instead.
  */
+
+@Deprecated
 public class GetReportAsyncTask extends JsRestAsyncTask<Object, ReportDescriptor> {
 
     private ResourceDescriptor resourceDescriptor;

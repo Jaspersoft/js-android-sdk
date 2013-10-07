@@ -35,9 +35,12 @@ import java.util.List;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetResourcesRequest GetResourcesRequest} instead.
  */
+
+@Deprecated
 public class GetResourcesListAsyncTask extends JsRestAsyncTask<Object, List<ResourceDescriptor>> {
 
     private String resourceUri;

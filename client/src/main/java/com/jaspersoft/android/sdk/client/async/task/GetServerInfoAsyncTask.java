@@ -29,9 +29,13 @@ import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 
 /**
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.cacheable.GetServerInfoRequest GetResourcesRequest}
+ * instead.
  */
+
+@Deprecated
 public class GetServerInfoAsyncTask extends JsRestAsyncTask<Object, ServerInfo>{
 
     /**

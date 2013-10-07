@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,11 +24,11 @@ package com.jaspersoft.android.sdk.client.oxm.control;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
  */
 
@@ -37,6 +37,12 @@ public class InputControlsList {
 
     @ElementList(entry="inputControl", inline=true, empty=false)
     private List<InputControl> inputControls;
+
+
+    public InputControlsList() {
+        this.inputControls = new ArrayList<InputControl>();
+    }
+
 
     public List<InputControl> getInputControls() {
         return inputControls;

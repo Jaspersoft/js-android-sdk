@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,21 @@
 
 package com.jaspersoft.android.sdk.client;
 
+import android.util.Base64;
 import com.jaspersoft.android.sdk.client.oxm.*;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStateList;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
 import org.springframework.http.*;
-import org.springframework.http.client.*;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -54,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -68,7 +65,6 @@ import static java.util.Collections.singletonList;
  * and does mapping of the returned data to object model.
  *
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
  */
 public class JsRestClient {
@@ -103,7 +99,7 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Set the connection timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * Set the underlying URLConnection's connect timeout. A timeout value of 0 specifies an infinite timeout.
      *
      * @param timeout the timeout value in milliseconds
      *
@@ -115,7 +111,7 @@ public class JsRestClient {
     }
 
     /**
-     * Set the socket read timeout for the underlying HttpClient. A timeout value of 0 specifies an infinite timeout.
+     * Set the underlying URLConnection's read timeout. A timeout value of 0 specifies an infinite timeout.
      * @param timeout the timeout value in milliseconds
      *
      * @since 1.5
@@ -133,26 +129,24 @@ public class JsRestClient {
         return jsServerProfile;
     }
 
-    public void setServerProfile(JsServerProfile serverProfile) {
+    public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-
-        ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager(new BasicHttpParams(), registry);
-
-        DefaultHttpClient client = new DefaultHttpClient(connManager, null);
-
-        // set credentials
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(serverProfile.getUsernameWithOrgId(), serverProfile.getPassword());
-        AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
-        client.getCredentialsProvider().setCredentials(authScope, credentials);
-
-        // set request factory
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory() {
+            @Override
+            protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+                super.prepareConnection(connection, httpMethod);
+                // Basic Authentication
+                String authorisation = serverProfile.getUsernameWithOrgId() + ":" + serverProfile.getPassword();
+                byte[] encodedAuthorisation = Base64.encode(authorisation.getBytes(), Base64.NO_WRAP);
+                connection.setRequestProperty("Authorization", "Basic " + new String(encodedAuthorisation));
+                // disable buggy keep-alive
+                connection.setRequestProperty("Connection", "close");
+            }
+        };
+        restTemplate.setRequestFactory(factory);
         updateRequestFactoryTimeouts();
     }
 
@@ -202,7 +196,7 @@ public class JsRestClient {
     /**
      * Gets the resource descriptor for the resource with specified URI.
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri resource URI (e.g. /reports/samples/)
      * @return the ResourceDescriptor value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
@@ -225,7 +219,7 @@ public class JsRestClient {
     /**
      * Deletes the resource with the specified URI
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri resource URI (e.g. /reports/samples/)
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public void deleteResource(String uri) throws RestClientException {
@@ -238,23 +232,33 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Gets the list of resource descriptors for all resources available in the specified repository URI.
+     * Gets the list of resource descriptors for all resources available in the folder specified in the URI.
      *
-     * @param uri repository URI (i.e. /reports/samples/)
+     * @param uri folder URI (e.g. /reports/samples/)
      * @return the list of ResourceDescriptor values
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public List<ResourceDescriptor> getResourcesList(String uri) throws RestClientException {
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for all resources available in the folder specified in the URI.
+     *
+     * @param uri folder URI (e.g. /reports/samples/)
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri) throws RestClientException {
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri;
+        return restTemplate.getForObject(fullUri, ResourcesList.class);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
      *                  is specified, either query or type. (can be <code>null</code>)
@@ -264,17 +268,33 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, Boolean recursive, Integer limit) throws RestClientException {
-        String uriVariablesTemplate = "?q={query}&recursive={recursive}&limit={limit}";
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class, query, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri, query, recursive, limit).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, Boolean recursive, Integer limit) throws RestClientException {
+        String uriVariablesTemplate = "?q={query}&recursive={recursive}&limit={limit}";
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
+        return restTemplate.getForObject(fullUri, ResourcesList.class, query, recursive, limit);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param type      Match only resources of the given type
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -286,17 +306,34 @@ public class JsRestClient {
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, String type, Boolean recursive,
                                                      Integer limit) throws RestClientException {
-        String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
-        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri, ResourcesList.class, query, type, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return getResources(uri, query, type, recursive, limit).getResourceDescriptors();
     }
 
     /**
-     * Gets the list of resource descriptors for the resources available in the specified repository URI
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
      * and matching the specified parameters.
      *
-     * @param uri       repository URI (i.e. /reports/samples/)
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param type      Match only resources of the given type
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, String type, Boolean recursive, Integer limit) throws RestClientException {
+        String uriVariablesTemplate = "?q={query}&type={type}&recursive={recursive}&limit={limit}";
+        String fullUri = restServicesUrl + REST_RESOURCES_URI + uri + uriVariablesTemplate;
+        return restTemplate.getForObject(fullUri, ResourcesList.class, query, type, recursive, limit);
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
      * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
      * @param types     Match only resources of the given types
      * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
@@ -308,6 +345,24 @@ public class JsRestClient {
      */
     public List<ResourceDescriptor> getResourcesList(String uri, String query, List<String> types, Boolean recursive,
                                                      Integer limit) throws RestClientException {
+        return getResources(uri, query, types, recursive, limit).getResourceDescriptors();
+    }
+
+    /**
+     * Gets the list of resource descriptors for the resources available in the folder specified in the URI
+     * and matching the specified parameters.
+     *
+     * @param uri       repository URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description (can be <code>null</code>)
+     * @param types     Match only resources of the given types
+     * @param recursive Get resources recursively and not only in the specified URI. Used only when a search criteria
+     *                  is specified, either query or type. (can be <code>null</code>)
+     * @param limit     Maximum number of items returned to the client. The default is 0 (can be <code>null</code>),
+     *                  meaning no limit.
+     * @return the ResourcesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourcesList getResources(String uri, String query, List<String> types, Boolean recursive, Integer limit) throws RestClientException {
         StringBuilder fullUri = new StringBuilder();
         fullUri.append(restServicesUrl).append(REST_RESOURCES_URI).append(uri);
         fullUri.append("?q={query}&recursive={recursive}&limit={limit}");
@@ -316,8 +371,7 @@ public class JsRestClient {
                 fullUri.append("&type=").append(type);
             }
         }
-        ResourcesList resourcesList = restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
-        return resourcesList.getResourceDescriptors();
+        return restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
     }
 
     //---------------------------------------------------------------------
@@ -383,7 +437,6 @@ public class JsRestClient {
             if (restTemplate.getErrorHandler().hasError(response)) {
                 restTemplate.getErrorHandler().handleError(response);
             }
-//            FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
             copyResponseToFile(response, file);
         } catch (IOException ex) {
             throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
@@ -534,7 +587,7 @@ public class JsRestClient {
     public List<ResourceProperty> getInputControlQueryData(String uri, String datasourceUri, List<ResourceParameter> params) throws RestClientException {
         ResourceDescriptor descriptor = getInputControlWithQueryData(uri, datasourceUri, params);
         ResourceProperty queryDataProperty = descriptor.getPropertyByName(ResourceDescriptor.PROP_QUERY_DATA);
-        
+
         List<ResourceProperty> listOfValues = new ArrayList<ResourceProperty>();
 
         if (queryDataProperty != null) {
@@ -564,113 +617,223 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     /**
-     * Gets the list of input controls for the report with specified URI
+     * Gets the list of all input controls for the report with specified URI.
      *
      * @param reportUri repository URI of the report
      * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
-     * @since 1.4
+     * @since 1.6
      */
-    public List<InputControl> getInputControlsForReport(String reportUri) throws RestClientException {
-        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUri
-                + REST_INPUT_CONTROLS_URI;
-        InputControlsList inputControlsList = restTemplate.getForObject(fullUri, InputControlsList.class);
-        return inputControlsList == null ? new ArrayList<InputControl>() : inputControlsList.getInputControls();
+    public List<InputControl> getInputControls(String reportUri) throws RestClientException {
+        return getInputControlsList(reportUri).getInputControls();
     }
 
     /**
-     * Gets the states with updated values for input controls with specified IDs and according to specified parameters
+     * Gets the list of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
      *
      * @param reportUri repository URI of the report
-     * @param ids list of input controls IDs
-     * @param selectedValues list of input controls selected values
-     * @return a list of the input controls states
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
-     *  @since 1.4
+     * @since 1.6
      */
-    public List<InputControlState> getUpdatedInputControlsValues(String reportUri, List<String> ids,
-            List<ReportParameter> selectedValues) throws RestClientException {
-        StringBuilder fullUri = new StringBuilder();
-        fullUri.append(jsServerProfile.getServerUrl()).append(REST_SERVICES_V2_URI).append(REST_REPORTS_URI)
-                .append(reportUri).append(REST_INPUT_CONTROLS_URI);
-        if (!ids.isEmpty()) {
-            fullUri.append("/");
-            for (String id : ids) {
-                fullUri.append(id).append(";");
-            }
-        }
-        fullUri.append(REST_VALUES_URI);
-
-        ReportParametersList parametersList = new ReportParametersList();
-        parametersList.setReportParameters(selectedValues);
-
-        InputControlStateList stateList = restTemplate.postForObject(fullUri.toString(), parametersList, InputControlStateList.class);
-        return stateList.getInputControlStateList();
+    public List<InputControl> getInputControls(String reportUri, List<String> controlsIds,
+                                               List<ReportParameter> selectedValues) throws RestClientException {
+        return getInputControlsList(reportUri, controlsIds, selectedValues).getInputControls();
     }
 
     /**
-     * Validates controls values on the server side and returns states only for invalid controls
+     * Gets the list of all input controls for the report with specified URI.
+     *
+     * @param reportUri repository URI of the report
+     * @return the InputControlsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlsList getInputControlsList(String reportUri) throws RestClientException {
+        return getInputControlsList(reportUri, new ArrayList<String>(), new ArrayList<ReportParameter>());
+    }
+
+    /**
+     * Gets the list of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the InputControlsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlsList getInputControlsList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        // generate full url
+        String url = generateInputControlsUrl(reportUri, controlsIds, false);
+        // add selected values to request
+        ReportParametersList parametersList = new ReportParametersList();
+        parametersList.setReportParameters(selectedValues);
+        // execute POST request
+        InputControlsList controlsList =
+                restTemplate.postForObject(url, parametersList, InputControlsList.class);
+        return (controlsList != null) ? controlsList : new InputControlsList();
+    }
+
+    /**
+     * Gets the list of states of all input controls for the report with specified URI.
+     *
+     * @param reportUri repository URI of the report
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public List<InputControlState> getInputControlsValues(String reportUri) throws RestClientException {
+        return getInputControlsValuesList(reportUri).getInputControlStates();
+    }
+
+    /**
+     * Gets the list of states of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     *  @since 1.6
+     */
+    public List<InputControlState> getInputControlsValues(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        return getInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
+    }
+
+    /**
+     * Gets the list of states of all input controls for the report with specified URI.
+     *
+     * @param reportUri repository URI of the report
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList getInputControlsValuesList(String reportUri) throws RestClientException {
+        return getInputControlsValuesList(reportUri, new ArrayList<String>(), new ArrayList<ReportParameter>());
+    }
+
+    /**
+     * Gets the list of states of input controls with specified IDs for the report with specified URI
+     * and according to selected values.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs
+     * @param selectedValues list of selected values
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList getInputControlsValuesList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        // generate full url
+        String url = generateInputControlsUrl(reportUri, controlsIds, true);
+        // add selected values to request
+        ReportParametersList parametersList = new ReportParametersList();
+        parametersList.setReportParameters(selectedValues);
+        // execute POST request
+        try {
+            return  restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
+        } catch (HttpMessageNotReadableException exception) {
+             return new InputControlStatesList();
+        }
+    }
+
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
      *
      * @param reportUri repository URI of the report
      * @param inputControls list of input controls that should be validated
-     * @return a list of the input controls states
+     * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      *
      * @since 1.4
      */
-    public List<InputControlState> validateInputControlsValues(String reportUri,
-            List<InputControl> inputControls) throws RestClientException {
-        if (inputControls.isEmpty()) {
-            return new ArrayList<InputControlState>();
-        } else {
-            List<String> ids = new ArrayList<String>();
-            List<ReportParameter> parameters = new ArrayList<ReportParameter>();
-            for(InputControl control : inputControls) {
-                ids.add(control.getId());
-                parameters.add(new ReportParameter(control.getId(), control.getSelectedValues()));
-            }
+    public List<InputControlState> validateInputControlsValues(String reportUri, List<InputControl> inputControls)
+            throws RestClientException {
+        return validateInputControlsValuesList(reportUri, inputControls).getInputControlStates();
+    }
 
-            List<InputControlState> stateList = getUpdatedInputControlsValues(reportUri, ids, parameters);
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs that should be validated
+     * @param selectedValues list of selected values for validation
+     * @return the list of the input controls states
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public List<InputControlState> validateInputControlsValues(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        return validateInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
+    }
 
-            Iterator<InputControlState> iterator = stateList.iterator();
-            while(iterator.hasNext()) {
-                InputControlState state = iterator.next();
-                if(state.getError() == null) {
-                    iterator.remove();
-                }
-            }
-            return stateList;
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param inputControls list of input controls that should be validated
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList validateInputControlsValuesList(String reportUri, List<InputControl> inputControls)
+            throws RestClientException {
+        List<String> controlsIds = new ArrayList<String>();
+        List<ReportParameter> selectedValues = new ArrayList<ReportParameter>();
+        for(InputControl control : inputControls) {
+            controlsIds.add(control.getId());
+            selectedValues.add(new ReportParameter(control.getId(), control.getSelectedValues()));
         }
+        // execute validation request
+        return validateInputControlsValuesList(reportUri, controlsIds, selectedValues);
+    }
+
+    /**
+     * Validates the input controls values on the server side and returns states only for invalid controls.
+     *
+     * @param reportUri repository URI of the report
+     * @param controlsIds list of input controls IDs that should be validated
+     * @param selectedValues list of selected values for validation
+     * @return the InputControlStatesList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     *
+     * @since 1.6
+     */
+    public InputControlStatesList validateInputControlsValuesList(String reportUri, List<String> controlsIds,
+            List<ReportParameter> selectedValues) throws RestClientException {
+        InputControlStatesList statesList = getInputControlsValuesList(reportUri, controlsIds, selectedValues);
+        // remove states without validation errors
+        Iterator<InputControlState> iterator = statesList.getInputControlStates().iterator();
+        while(iterator.hasNext()) {
+            if(iterator.next().getError() == null) {
+                iterator.remove();
+            }
+        }
+        return statesList;
     }
 
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------
-
-    private void updateRequestFactoryTimeouts() {
-        updateConnectTimeout();
-        updateReadTimeout();
-    }
-
-    private void updateConnectTimeout() {
-        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
-        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
-            ((HttpComponentsClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
-        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
-            ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(connectTimeout);
-        }
-    }
-
-    private void updateReadTimeout() {
-        ClientHttpRequestFactory factory = getRestTemplate().getRequestFactory();
-        if ( factory instanceof HttpComponentsClientHttpRequestFactory ) {
-            ((HttpComponentsClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
-        } else if ( factory instanceof SimpleClientHttpRequestFactory ) {
-            ((SimpleClientHttpRequestFactory) factory).setReadTimeout(readTimeout);
-        }
-    }
 
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
         File parentFolder = file.getParentFile();
@@ -678,6 +841,42 @@ public class JsRestClient {
             throw new IllegalStateException("Unable to create folder: " + parentFolder);
         }
         return FileCopyUtils.copy(response.getBody(), new FileOutputStream(file));
+    }
+
+    private void updateRequestFactoryTimeouts() {
+        updateConnectTimeout();
+        updateReadTimeout();
+    }
+
+    private void updateConnectTimeout() {
+        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
+        factory.setConnectTimeout(connectTimeout);
+    }
+
+    private void updateReadTimeout() {
+        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
+        factory.setReadTimeout(readTimeout);
+    }
+
+    private String generateInputControlsUrl(String reportUri, List<String> controlsIds, boolean valuesOnly) {
+        StringBuilder fullUri = new StringBuilder();
+        fullUri.append(jsServerProfile.getServerUrl())
+                .append(REST_SERVICES_V2_URI)
+                .append(REST_REPORTS_URI)
+                .append(reportUri)
+                .append(REST_INPUT_CONTROLS_URI);
+        // add ids to uri
+        if (!controlsIds.isEmpty()) {
+            fullUri.append("/");
+            for (String id : controlsIds) {
+                fullUri.append(id).append(";");
+            }
+        }
+        // add "values" suffix
+        if (valuesOnly) {
+            fullUri.append(REST_VALUES_URI);
+        }
+        return fullUri.toString();
     }
 
     //---------------------------------------------------------------------

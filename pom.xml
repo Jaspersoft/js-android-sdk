@@ -34,7 +34,7 @@
 
     <groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-aggregator</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -54,6 +54,16 @@
                 <groupId>org.springframework.android</groupId>
                 <artifactId>spring-android-rest-template</artifactId>
                 <version>1.0.1.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>com.octo.android.robospice</groupId>
+                <artifactId>robospice</artifactId>
+                <version>1.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.octo.android.robospice</groupId>
+                <artifactId>robospice-spring-android</artifactId>
+                <version>1.4.5</version>
             </dependency>
             <dependency>
                 <!-- Using Simple for XML marshaling -->
@@ -90,12 +100,6 @@
                 <version>1.9.0</version>
                 <scope>test</scope>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.pivotallabs</groupId>-->
-                <!--<artifactId>robolectric</artifactId>-->
-                <!--<version>1.0</version>-->
-                <!--<scope>test</scope>-->
-            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -105,8 +109,13 @@
                 <plugin>
                     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                     <artifactId>android-maven-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.6.0</version>
                     <extensions>true</extensions>
+                    <configuration>
+                        <sdk>
+                            <platform>14</platform>
+                        </sdk>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -35,7 +35,12 @@ import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
  * @author Ivan Gadzhega
  * @version $Id$
  * @since 1.0
+ *
+ * @deprecated Use {@link com.jaspersoft.android.sdk.client.async.request.ModifyResourceRequest ModifyResourceRequest}
+ * instead.
  */
+
+@Deprecated
 public class ModifyResourceAsyncTask extends JsRestAsyncTask<Object, Void> {
 
     private ResourceDescriptor resourceDescriptor;

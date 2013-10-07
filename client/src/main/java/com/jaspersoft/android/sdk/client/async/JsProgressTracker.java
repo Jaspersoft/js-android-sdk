@@ -33,9 +33,10 @@ import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
  *
  * @author Volodya Sabadosh (vsabadosh@jaspersoft.com)
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
  */
+
+@Deprecated
 public interface JsProgressTracker {
 
     /**

@@ -49,9 +49,9 @@ public class JsServerProfile {
      * Creates a new JsServerProfile entity with the specified parameters.
      *
      * @param alias        The name used to refer to this JsServerProfile. The alias is mainly used to display the name
-     *                     of this JsServerProfile in UI (i.e. when displaying a list of available servers).
+     *                     of this JsServerProfile in UI (e.g. when displaying a list of available servers).
      * @param serverUrl    The URL of JasperReports Server. The url does not include the /core/ portion of the uri,
-     *                     i.e. http://hostname:port/jasperserver
+     *                     e.g. http://hostname:port/jasperserver
      * @param organization The name of an organization (used in JasperReport Server Professional which supports multi-tenancy).
      *                     May be <code>null</code> or empty.
      * @param username     The username, must be a valid account on JasperReports Server.
@@ -66,9 +66,9 @@ public class JsServerProfile {
      *
      * @param id           Unique identifier of this JsServerProfile. May be <code>null</code>.
      * @param alias        The name used to refer to this JsServerProfile. The alias is mainly used to display the name
-     *                     of this JsServerProfile in UI (i.e. when displaying a list of available servers).
+     *                     of this JsServerProfile in UI (e.g. when displaying a list of available servers).
      * @param serverUrl    The URL of JasperReports Server. The url does not include the /core/ portion of the uri,
-     *                     i.e. http://hostname:port/jasperserver
+     *                     e.g. http://hostname:port/jasperserver
      * @param organization The name of an organization (used in JasperReport Server Professional which supports multi-tenancy).
      *                     May be <code>null</code> or empty.
      * @param username     The username, must be a valid account on JasperReports Server.
