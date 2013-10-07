@@ -31,11 +31,11 @@
     <parent>
         <artifactId>js-android-sdk-aggregator</artifactId>
         <groupId>com.jaspersoft.android.sdk</groupId>
-        <version>1.6-SNAPSHOT</version>
+        <version>1.6</version>
     </parent>
 
     <artifactId>js-android-sdk-ui</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6</version>
     <packaging>apklib</packaging>
 
     <dependencies>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.jaspersoft.android.sdk</groupId>
             <artifactId>js-android-sdk-client</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
