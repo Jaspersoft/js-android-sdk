@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -32,41 +32,33 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.ui.R;
 
 import java.util.List;
 
 /**
- * A concrete ArrayAdapter that is backed by an array of ResourceDescriptor objects.
+ * A concrete ArrayAdapter that is backed by an array of ResourceLookup objects.
  *
  * @author Ivan Gadzhega
- * @version $Id$
- * @since 1.0
+ * @since 1.7
  */
-public class ResourceDescriptorArrayAdapter extends ArrayAdapter<ResourceDescriptor>{
+public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
     private final Context context;
-    private final List<ResourceDescriptor> resourceDescriptors;
+    private final List<ResourceLookup> resourceLookups;
 
-    public ResourceDescriptorArrayAdapter(Context context, List<ResourceDescriptor> resourceDescriptors) {
-        super(context, R.layout.resource_list_item, resourceDescriptors);
+    public ResourceLookupArrayAdapter(Context context, List<ResourceLookup> resourceLookups) {
+        super(context, R.layout.resource_list_item, resourceLookups);
         this.context = context;
-        this.resourceDescriptors = resourceDescriptors;
+        this.resourceLookups = resourceLookups;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.resource_list_item, parent, false);
-
-        ImageView image = (ImageView) rowView.findViewById(R.id.resource_list_item_icon);
-        TextView label = (TextView) rowView.findViewById(R.id.resource_list_item_label);
-        TextView uri = (TextView) rowView.findViewById(R.id.resource_list_item_uri);
-
-        ResourceDescriptor resourceDescriptor = resourceDescriptors.get(position);
+        ResourceLookup resourceLookup = resourceLookups.get(position);
 
         Drawable drawable;
-        switch (resourceDescriptor.getWsType()) {
+        switch (resourceLookup.getResourceType()) {
             case folder:
                 drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
                 break;
@@ -76,23 +68,22 @@ public class ResourceDescriptorArrayAdapter extends ArrayAdapter<ResourceDescrip
             case dashboard:
                 drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
                 break;
-            case img:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_image);
-                break;
-            case css:
-            case xml:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_text);
-                break;
             default:
                 // for an unknown resource
                 drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
                 break;
         }
 
-        image.setImageDrawable(drawable);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rowView = inflater.inflate(R.layout.resource_list_item, parent, false);
 
-        label.setText(resourceDescriptor.getLabel());
-        uri.setText(resourceDescriptor.getUriString());
+        ImageView image = (ImageView) rowView.findViewById(R.id.resource_list_item_icon);
+        TextView label = (TextView) rowView.findViewById(R.id.resource_list_item_label);
+        TextView uri = (TextView) rowView.findViewById(R.id.resource_list_item_uri);
+
+        image.setImageDrawable(drawable);
+        label.setText(resourceLookup.getLabel());
+        uri.setText(resourceLookup.getUri());
 
         return rowView;
     }

@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
@@ -372,6 +373,71 @@ public class JsRestClient {
             }
         }
         return restTemplate.getForObject(fullUri.toString(), ResourcesList.class, query, recursive, limit);
+    }
+
+    //---------------------------------------------------------------------
+    // The Resources Service v2
+    //---------------------------------------------------------------------
+
+    /**
+     * Retrieves the list of resource lookup objects for the resources contained in the given parent folder
+     * and matching the specified parameters.
+     *
+     * @param folderUri parent folder URI (e.g. /reports/samples/)
+     * @param recursive Get resources recursively
+     * @param offset    Pagination. Start index for requested page.
+     * @param limit     Pagination. Resources count per page.
+     * @return the ResourceLookupsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookupsList getResourceLookups(String folderUri, boolean recursive, int offset, int limit) throws RestClientException {
+        return getResourceLookups(folderUri, null, null, recursive, offset, limit);
+    }
+
+    /**
+     * Retrieves the list of resource lookup objects for the resources contained in the given parent folder
+     * and matching the specified parameters.
+     *
+     * @param folderUri parent folder URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description.
+     *                  (can be <code>null</code>)
+     * @param types     Match only resources of the given types. Multiple resource types allowed.
+     *                  (can be <code>null</code>)
+     * @param recursive Get resources recursively
+     * @param offset    Pagination. Start index for requested page.
+     * @param limit     Pagination. Resources count per page.
+     * @return the ResourceLookupsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookupsList getResourceLookups(String folderUri, String query, List<String> types, boolean recursive,
+                                                  int offset, int limit) throws RestClientException {
+        StringBuilder fullUri = new StringBuilder();
+        fullUri.append(getServerProfile().getServerUrl())
+                .append(REST_SERVICES_V2_URI)
+                .append(REST_RESOURCES_URI)
+                .append("?folderUri={folderUri}")
+                .append("&q={query}")
+                .append("&recursive={recursive}")
+                .append("&offset={offset}")
+                .append("&limit={limit}");
+
+        if (types != null) {
+            for (String type : types) {
+                fullUri.append("&type=").append(type);
+            }
+        }
+
+        ResponseEntity<ResourceLookupsList> responseEntity = restTemplate.exchange(fullUri.toString(), HttpMethod.GET,
+                null, ResourceLookupsList.class, folderUri, query, recursive, offset, limit);
+
+        if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
+            return new ResourceLookupsList();
+        } else {
+            ResourceLookupsList resourceLookupsList = responseEntity.getBody();
+            resourceLookupsList.setResultCount(responseEntity.getHeaders().getFirst("Result-Count"));
+            resourceLookupsList.setTotalCount(responseEntity.getHeaders().getFirst("Total-Count"));
+            return resourceLookupsList;
+        }
     }
 
     //---------------------------------------------------------------------
