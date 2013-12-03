@@ -41,7 +41,6 @@ import java.util.List;
  * A concrete ArrayAdapter that is backed by an array of ResourceDescriptor objects.
  *
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.0
  */
 public class ResourceDescriptorArrayAdapter extends ArrayAdapter<ResourceDescriptor>{

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,27 +24,27 @@
 
 package com.jaspersoft.android.sdk.ui.adapters;
 
-import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 
 import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * @author Ivan Gadzhega
- * @since 1.4
+ * @since 1.7
  */
-public class ResourceDescriptorComparator implements Comparator<ResourceDescriptor>, Serializable {
+public class ResourceLookupComparator implements Comparator<ResourceLookup>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public int compare(ResourceDescriptor object1, ResourceDescriptor object2) {
-        if (object1.getWsType() == ResourceDescriptor.WsType.folder) {
-            if (object2.getWsType() != ResourceDescriptor.WsType.folder) {
+    public int compare(ResourceLookup object1, ResourceLookup object2) {
+        if (object1.getResourceType() == ResourceLookup.ResourceType.folder) {
+            if (object2.getResourceType() != ResourceLookup.ResourceType.folder) {
                 return -1;
             }
         } else {
-            if (object2.getWsType() == ResourceDescriptor.WsType.folder) {
+            if (object2.getResourceType() == ResourceLookup.ResourceType.folder) {
                 return 1;
             }
         }
