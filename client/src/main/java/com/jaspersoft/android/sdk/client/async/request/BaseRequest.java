@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.client.async.request;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.octo.android.robospice.request.SpiceRequest;
+import com.octo.android.robospice.retry.DefaultRetryPolicy;
 import roboguice.util.temp.Ln;
 
 /**
@@ -41,6 +42,7 @@ public abstract class BaseRequest<T> extends SpiceRequest<T> {
 
     public BaseRequest(JsRestClient jsRestClient, Class<T> clazz) {
         super(clazz);
+        this.setRetryPolicy(new DefaultRetryPolicy(0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         this.jsRestClient = jsRestClient;
     }
 
