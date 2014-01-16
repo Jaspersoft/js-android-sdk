@@ -79,7 +79,15 @@ public class ServerInfo {
             String[] subs = version.split("\\.");
             for (int i = 0; i < subs.length; i++) {
                 int exponent = ((subs.length - 1) - i) * 2;
-                versionCode += Integer.parseInt(subs[i]) * Math.pow(10, exponent);
+
+                int subVersion;
+                try {
+                    subVersion = Integer.parseInt(subs[i]);
+                } catch (NumberFormatException ex) {
+                    subVersion = 0;
+                }
+
+                versionCode += subVersion * Math.pow(10, exponent);
             }
         }
     }
