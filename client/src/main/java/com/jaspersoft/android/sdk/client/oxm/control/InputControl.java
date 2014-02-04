@@ -1,33 +1,36 @@
 /*
- * Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
- * http://www.jaspersoft.com.
+ * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
  * the following license terms apply:
  *
- * This program is free software: you can redistribute it and/or  modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of  the
- * License, or (at your option) any later version.
+ * This program is part of Jaspersoft Mobile SDK for Android.
  *
- * This program is distributed in the hope that it will be useful,
+ * Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public  License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
  */
 
 package com.jaspersoft.android.sdk.client.oxm.control;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.View;
-import com.jaspersoft.android.sdk.client.oxm.control.validation.DateTimeFormatValidationRule;
-import com.jaspersoft.android.sdk.client.oxm.control.validation.MandatoryValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRule;
+import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRulesList;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
@@ -37,12 +40,11 @@ import java.util.Set;
 
 /**
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
  */
 
 @Root(name="inputControl", strict=false)
-public class InputControl {
+public class InputControl implements Parcelable {
 
     public enum Type {
         bool,
@@ -61,7 +63,23 @@ public class InputControl {
     @Element
     private String label;
     @Element
+    private String uri;
+
+    @Element
     private boolean mandatory;
+    @Element
+    private boolean readOnly;
+    @Element
+    private boolean visible;
+
+    @Element
+    private Type type;
+
+    @Element
+    private InputControlState state;
+
+    @Element(required=false)
+    private ValidationRulesList validationRules;
 
     @ElementList(entry="controlId", empty=false)
     private List<String> masterDependencies;
@@ -69,24 +87,67 @@ public class InputControl {
     @ElementList(entry="controlId", empty=false)
     private List<String> slaveDependencies;
 
-    @Element
-    private InputControlState state;
-    @Element
-    private boolean readOnly;
-    @Element
-    private Type type;
-    @Element
-    private String uri;
-
-    @Element(required=false)
-    private ValidationRulesList validationRules;
-
-    @Element
-    private boolean visible;
-
     private View inputView;
     private View errorView;
 
+    public InputControl() {}
+
+    //---------------------------------------------------------------------
+    // Parcelable
+    //---------------------------------------------------------------------
+
+    public InputControl(Parcel source) {
+        this.id = source.readString();
+        this.label = source.readString();
+        this.uri = source.readString();
+
+        this.mandatory = source.readByte() != 0;
+        this.readOnly = source.readByte() != 0;
+        this.visible = source.readByte() != 0;
+
+        this.type = Type.values()[source.readInt()];
+        this.state = source.readParcelable(InputControlState.class.getClassLoader());
+        this.validationRules = source.readParcelable(ValidationRulesList.class.getClassLoader());
+
+        this.masterDependencies= source.createStringArrayList();
+        this.slaveDependencies = source.createStringArrayList();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public InputControl createFromParcel(Parcel source) {
+            return new InputControl(source);
+        }
+
+        public InputControl[] newArray(int size) {
+            return new InputControl[size];
+        }
+    };
+
+    @Override
+    public int describeContents(){
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(label);
+        dest.writeString(uri);
+
+        dest.writeByte((byte) (mandatory ? 1 : 0));
+        dest.writeByte((byte) (readOnly ? 1 : 0));
+        dest.writeByte((byte) (visible ? 1 : 0));
+
+        dest.writeInt(type.ordinal());
+        dest.writeParcelable(state, flags);
+        dest.writeParcelable(validationRules, flags);
+
+        dest.writeStringList(masterDependencies);
+        dest.writeStringList(slaveDependencies);
+    }
+
+    //---------------------------------------------------------------------
+    // Public
+    //---------------------------------------------------------------------
 
     public Set<String> getSelectedValues() {
         Set<String> values = new HashSet<String>();
@@ -248,36 +309,6 @@ public class InputControl {
 
     public void setErrorView(View errorView) {
         this.errorView = errorView;
-    }
-
-    //---------------------------------------------------------------------
-    // Inner classes
-    //---------------------------------------------------------------------
-
-    @Root(name="validationRules")
-    public static class ValidationRulesList {
-
-        @ElementListUnion({
-                @ElementList(entry="dateTimeFormatValidationRule", inline=true, type=DateTimeFormatValidationRule.class),
-                @ElementList(entry="mandatoryValidationRule", inline=true, type=MandatoryValidationRule.class)
-                // @ElementList(entry="rangeValidationRule", type=RangeValidationRule.class)
-                // @ElementList(entry="regexpValidationRule", type=RegexpValidationRule.class)
-        })
-        private List<ValidationRule> validationRules;
-
-        public ValidationRulesList() { }
-
-        public ValidationRulesList(List<ValidationRule> validationRules) {
-            this.validationRules = validationRules;
-        }
-
-        public List<ValidationRule> getValidationRules() {
-            return validationRules;
-        }
-
-        public void setValidationRules(List<ValidationRule> validationRules) {
-            this.validationRules = validationRules;
-        }
     }
 
 }

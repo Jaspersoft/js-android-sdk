@@ -25,45 +25,69 @@
 package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
 import android.os.Parcel;
-import org.simpleframework.xml.Element;
+import android.os.Parcelable;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 /**
  * @author Ivan Gadzhega
  * @since 1.4
  */
-@Root(strict=false)
-public class DateTimeFormatValidationRule extends ValidationRule {
+@Root(name="validationRules", strict=false)
+public class ValidationRulesList implements Parcelable {
 
-    @Element
-    private String format;
+    @ElementListUnion({
+            @ElementList(entry="dateTimeFormatValidationRule", inline=true, type=DateTimeFormatValidationRule.class),
+            @ElementList(entry="mandatoryValidationRule", inline=true, type=MandatoryValidationRule.class)
+    })
+    private List<ValidationRule> validationRules;
 
-    public DateTimeFormatValidationRule() { }
+    public ValidationRulesList() {}
 
     //---------------------------------------------------------------------
     // Parcelable
     //---------------------------------------------------------------------
 
-    public DateTimeFormatValidationRule(Parcel source) {
-        super(source);
-        this.format = source.readString();
+    public ValidationRulesList(List<ValidationRule> validationRules) {
+        this.validationRules = validationRules;
+    }
+
+    public ValidationRulesList(Parcel source) {
+        validationRules = source.createTypedArrayList(ValidationRule.CREATOR);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ValidationRulesList createFromParcel(Parcel source) {
+            return new ValidationRulesList(source);
+        }
+
+        public ValidationRulesList[] newArray(int size) {
+            return new ValidationRulesList[size];
+        }
+    };
+
+    @Override
+    public int describeContents(){
+        return 0;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(format);
+        dest.writeTypedList(validationRules);
     }
 
     //---------------------------------------------------------------------
     // Getters & Setters
     //---------------------------------------------------------------------
 
-    public String getFormat() {
-        return format;
+    public List<ValidationRule> getValidationRules() {
+        return validationRules;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public void setValidationRules(List<ValidationRule> validationRules) {
+        this.validationRules = validationRules;
     }
 
 }
