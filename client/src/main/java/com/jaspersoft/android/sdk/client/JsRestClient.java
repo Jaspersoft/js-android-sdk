@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -30,8 +30,7 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
-import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
-import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.report.*;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.springframework.http.*;
@@ -76,6 +75,7 @@ public class JsRestClient {
     public static final String REST_INPUT_CONTROLS_URI = "/inputControls";
     public static final String REST_VALUES_URI = "/values";
     public static final String REST_SERVER_INFO_URI = "/serverInfo";
+    public static final String REST_REPORT_EXECUTIONS= "/reportExecutions";
 
     // the timeout in milliseconds until a connection is established
     private int connectTimeout = 15 * 1000;
@@ -90,7 +90,6 @@ public class JsRestClient {
 
     public JsRestClient() {
         this.restTemplate = new RestTemplate(true);
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
     }
 
     //---------------------------------------------------------------------
@@ -492,21 +491,9 @@ public class JsRestClient {
     public void saveReportAttachmentToFile(String uuid, String name, File file) throws RestClientException {
         String fullUri = restServicesUrl + REST_REPORT_URI + "/{uuid}?file={name}";
         UriTemplate uriTemplate = new UriTemplate(fullUri);
-        URI expanded = uriTemplate.expand(uuid, name);
+        URI expandedUri = uriTemplate.expand(uuid, name);
 
-        ClientHttpResponse response = null;
-        try {
-            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(expanded, HttpMethod.GET);
-            response = request.execute();
-            if (restTemplate.getErrorHandler().hasError(response)) {
-                restTemplate.getErrorHandler().handleError(response);
-            }
-            copyResponseToFile(response, file);
-        } catch (IOException ex) {
-            throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
-        } finally {
-            if (response != null) response.close();
-        }
+        downloadFile(expandedUri, file);
     }
 
     //---------------------------------------------------------------------
@@ -597,19 +584,37 @@ public class JsRestClient {
             throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
         }
 
-        ClientHttpResponse response = null;
-        try {
-            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
-            response = request.execute();
-            if (restTemplate.getErrorHandler().hasError(response)) {
-                restTemplate.getErrorHandler().handleError(response);
-            }
-            copyResponseToFile(response, file);
-        } catch (IOException ex) {
-            throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
-        } finally {
-            if (response != null) response.close();
-        }
+        downloadFile(uri, file);
+    }
+
+    //---------------------------------------------------------------------
+    // Report Execution Service
+    //---------------------------------------------------------------------
+
+    public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
+        String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
+        return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
+    }
+
+    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
+        String outputResourceUri = "/{executionId}/exports/{exportOutput}/outputResource";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
+
+        UriTemplate uriTemplate = new UriTemplate(fullUri);
+        URI expandedUri = uriTemplate.expand(executionId, exportOutput);
+
+        downloadFile(expandedUri, file);
+    }
+
+    public void saveExportAttachmentToFile(String executionId, String exportOutput,
+                                           String attachmentName, File file) throws RestClientException {
+        String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
+
+        UriTemplate uriTemplate = new UriTemplate(fullUri);
+        URI expandedUri = uriTemplate.expand(executionId, exportOutput, attachmentName);
+
+        downloadFile(expandedUri, file);
     }
 
     //---------------------------------------------------------------------
@@ -898,6 +903,22 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------
+
+    private void downloadFile(URI uri, File file) throws RestClientException {
+        ClientHttpResponse response = null;
+        try {
+            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
+            response = request.execute();
+            if (restTemplate.getErrorHandler().hasError(response)) {
+                restTemplate.getErrorHandler().handleError(response);
+            }
+            copyResponseToFile(response, file);
+        } catch (IOException ex) {
+            throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
+        } finally {
+            if (response != null) response.close();
+        }
+    }
 
     protected int copyResponseToFile(ClientHttpResponse response, File file) throws IOException {
         File parentFolder = file.getParentFile();
