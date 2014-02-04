@@ -23,14 +23,38 @@
     <http://www.gnu.org/licenses/lgpl>.
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.jaspersoft.android.sdk.ui"
-      android:versionCode="6"
-      android:versionName="1.8-SNAPSHOT">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/list.item.layout"
+    android:orientation="horizontal" >
 
-    <!-- the minimum API Level required for the application to run -->
-    <uses-sdk
-        android:minSdkVersion="9"
+    <ImageView
+        android:id="@+id/file_list_item_icon"
+        style="@style/list.item.icon"
     />
 
-</manifest>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/list.item.text.layout" >
+
+        <TextView
+            android:id="@+id/file_list_item_label"
+            style="@style/list.item.text.label"
+        />
+
+        <TextView
+            android:id="@+id/file_list_item_date"
+            android:layout_below="@+id/file_list_item_label"
+            android:layout_alignParentLeft="true"
+            style="@style/list.item.text.description.grey"
+        />
+
+        <TextView
+            android:id="@+id/file_list_item_size"
+            android:layout_below="@+id/file_list_item_label"
+            android:layout_alignParentRight="true"
+            android:paddingRight="4dp"
+            style="@style/list.item.text.description.grey"
+        />
+
+    </RelativeLayout>
+
+</LinearLayout>

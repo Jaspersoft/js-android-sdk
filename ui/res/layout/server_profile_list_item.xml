@@ -42,7 +42,7 @@
 
         <TextView
             android:id="@+id/server_profiles_list_item_uri"
-            style="@style/list.item.text.uri"
+            style="@style/list.item.text.description.orange"
         />
 
     </LinearLayout>

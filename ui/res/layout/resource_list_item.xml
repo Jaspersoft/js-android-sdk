@@ -43,7 +43,7 @@
 
         <TextView
             android:id="@+id/resource_list_item_uri"
-            style="@style/list.item.text.uri"
+            style="@style/list.item.text.description.orange"
         />
 
     </LinearLayout>

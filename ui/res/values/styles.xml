@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+    Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
     http://community.jaspersoft.com/project/mobile-sdk-android
 
     Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -144,12 +144,19 @@
                 <item name="android:singleLine">true</item>
             </style>
 
-            <style name="list.item.text.uri">
+            <style name="list.item.text.description">
                 <item name="android:layout_height">wrap_content</item>
                 <item name="android:layout_width">wrap_content</item>
-                <item name="android:textColor">@color/cs_orange_white</item>
                 <item name="android:textSize">14sp</item>
                 <item name="android:singleLine">true</item>
+            </style>
+
+            <style name="list.item.text.description.orange">
+                <item name="android:textColor">@color/cs_orange_white</item>
+            </style>
+
+            <style name="list.item.text.description.grey">
+                <item name="android:textColor">@color/js_grey</item>
             </style>
 
     <!-- Server Profiles List -->
