@@ -596,25 +596,31 @@ public class JsRestClient {
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
 
-    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
+    public URI getExportOuptutResourceURI(String executionId, String exportOutput) {
         String outputResourceUri = "/{executionId}/exports/{exportOutput}/outputResource";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
 
         UriTemplate uriTemplate = new UriTemplate(fullUri);
-        URI expandedUri = uriTemplate.expand(executionId, exportOutput);
-
-        downloadFile(expandedUri, file);
+        return uriTemplate.expand(executionId, exportOutput);
     }
 
-    public void saveExportAttachmentToFile(String executionId, String exportOutput,
-                                           String attachmentName, File file) throws RestClientException {
+    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
+        URI outputResourceUri = getExportOuptutResourceURI(executionId, exportOutput);
+        downloadFile(outputResourceUri, file);
+    }
+
+    public URI getExportAttachmentURI(String executionId, String exportOutput, String attachmentName) {
         String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
 
         UriTemplate uriTemplate = new UriTemplate(fullUri);
-        URI expandedUri = uriTemplate.expand(executionId, exportOutput, attachmentName);
+        return uriTemplate.expand(executionId, exportOutput, attachmentName);
+    }
 
-        downloadFile(expandedUri, file);
+    public void saveExportAttachmentToFile(String executionId, String exportOutput,
+                                           String attachmentName, File file) throws RestClientException {
+        URI attachmentUri = getExportAttachmentURI(executionId, exportOutput, attachmentName);
+        downloadFile(attachmentUri, file);
     }
 
     //---------------------------------------------------------------------
