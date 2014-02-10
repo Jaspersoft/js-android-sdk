@@ -34,6 +34,7 @@ public class ServerInfo {
     public static class VERSION_CODES {
         public static final int UNKNOWN = 0;
         public static final int EMERALD = 50000;
+        public static final int EMERALD_MR1 = 50200;
         public static final int EMERALD_TWO = 50500;
     }
 
