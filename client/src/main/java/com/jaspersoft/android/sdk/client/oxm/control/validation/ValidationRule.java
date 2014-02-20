@@ -29,6 +29,8 @@ import android.os.Parcelable;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.lang.reflect.Constructor;
+
 /**
  * @author Ivan Gadzhega
  * @since 1.4
@@ -51,7 +53,14 @@ public class ValidationRule implements Parcelable {
 
     public static final Parcelable.Creator<ValidationRule> CREATOR = new Parcelable.Creator<ValidationRule>() {
         public ValidationRule createFromParcel(Parcel source) {
-            return new ValidationRule(source);
+            try {
+                String className = source.readString();
+                Class<?> clazz = Class.forName(className);
+                Constructor<?> constructor = clazz.getConstructor(Parcel.class);
+                return (ValidationRule) constructor.newInstance(source);
+            } catch (Exception ex) {
+                return new ValidationRule(source);
+            }
         }
 
         public ValidationRule[] newArray(int size) {
@@ -65,6 +74,7 @@ public class ValidationRule implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClass().getName());
         dest.writeString(errorMessage);
     }
 
