@@ -8,11 +8,12 @@ mobile applications based on Jaspersoft JasperReports Server web services.
 General Information
 -------------------------------
 
-Please see the JasperForge Mobile SDK for Android project page:
+Please see the Jaspersoft Mobile SDK for Android project page:
 http://community.jaspersoft.com/project/mobile-sdk-android
 
 
 Getting Started & Installation
 -------------------------------
 
-Please see "JasperReports-Server-Mobile-Guide" included in \docs\ folder for details.
+Please see the Documentation on Jaspersoft Community site:
+http://community.jaspersoft.com/documentation
