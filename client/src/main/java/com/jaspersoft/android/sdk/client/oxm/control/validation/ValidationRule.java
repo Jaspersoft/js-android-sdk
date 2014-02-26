@@ -58,6 +58,8 @@ public class ValidationRule implements Parcelable {
                 Class<?> clazz = Class.forName(className);
                 Constructor<?> constructor = clazz.getConstructor(Parcel.class);
                 return (ValidationRule) constructor.newInstance(source);
+            } catch (RuntimeException ex) {
+                throw ex;
             } catch (Exception ex) {
                 return new ValidationRule(source);
             }
