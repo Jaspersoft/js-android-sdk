@@ -22,48 +22,39 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.control.validation;
+package com.jaspersoft.android.sdk.client.oxm.report;
 
-import android.os.Parcel;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
  * @author Ivan Gadzhega
- * @since 1.4
+ * @since 1.8
  */
+
 @Root(strict=false)
-public class DateTimeFormatValidationRule extends ValidationRule {
+public class ReportOutputResource {
 
     @Element
-    private String format;
+    private String contentType;
 
-    public DateTimeFormatValidationRule() { }
+    @Element(required=false)
+    private String fileName;
 
-    //---------------------------------------------------------------------
-    // Parcelable
-    //---------------------------------------------------------------------
-
-    public DateTimeFormatValidationRule(Parcel source) {
-        super(source);
-        this.format = source.readString();
+    public String getContentType() {
+        return contentType;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(format);
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
-    //---------------------------------------------------------------------
-    // Getters & Setters
-    //---------------------------------------------------------------------
-
-    public String getFormat() {
-        return format;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 }

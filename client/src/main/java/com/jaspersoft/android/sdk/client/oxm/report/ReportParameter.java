@@ -1,38 +1,43 @@
 /*
- * Copyright (C) 2005 - 2012 Jaspersoft Corporation. All rights reserved.
- * http://www.jaspersoft.com.
+ * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
  * the following license terms apply:
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is part of Jaspersoft Mobile SDK for Android.
  *
- * This program is distributed in the hope that it will be useful,
+ * Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
  */
 
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Ivan Gadzhega
- * @version $Id$
  * @since 1.4
  */
-public class ReportParameter {
+public class ReportParameter implements Parcelable {
 
     @Attribute
     private String name;
@@ -51,8 +56,40 @@ public class ReportParameter {
         this.name = name;
         this.values = new HashSet<String>();
         this.values.add(value);
-
     }
+
+    //---------------------------------------------------------------------
+    // Parcelable
+    //---------------------------------------------------------------------
+
+    public ReportParameter(Parcel source) {
+        this.name = source.readString();
+        this.values = new HashSet<String>(source.createStringArrayList());
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ReportParameter createFromParcel(Parcel source) {
+            return new ReportParameter(source);
+        }
+
+        public ReportParameter[] newArray(int size) {
+            return new ReportParameter[size];
+        }
+    };
+
+    @Override
+    public int describeContents(){
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeStringList(new ArrayList<String>(values));
+    }
+
+    //---------------------------------------------------------------------
+    // Getters & Setters
+    //---------------------------------------------------------------------
 
     public String getName() {
         return name;
@@ -74,4 +111,5 @@ public class ReportParameter {
     public void setValues(Set<String> values) {
         this.values = values;
     }
+
 }

@@ -22,48 +22,65 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.control.validation;
+package com.jaspersoft.android.sdk.client.oxm.report;
 
-import android.os.Parcel;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.List;
 
 /**
  * @author Ivan Gadzhega
- * @since 1.4
+ * @since 1.8
  */
+
 @Root(strict=false)
-public class DateTimeFormatValidationRule extends ValidationRule {
+public class ExportExecution {
 
     @Element
-    private String format;
+    private String id;
 
-    public DateTimeFormatValidationRule() { }
+    @Element
+    private String status;
 
-    //---------------------------------------------------------------------
-    // Parcelable
-    //---------------------------------------------------------------------
+    @Element
+    private ReportOutputResource outputResource;
 
-    public DateTimeFormatValidationRule(Parcel source) {
-        super(source);
-        this.format = source.readString();
+    @ElementList(empty=false, entry="attachment", required=false)
+    private List<ReportOutputResource> attachments;
+
+
+    public String getId() {
+        return id;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(format);
+    public void setId(String id) {
+        this.id = id;
     }
 
-    //---------------------------------------------------------------------
-    // Getters & Setters
-    //---------------------------------------------------------------------
-
-    public String getFormat() {
-        return format;
+    public String getStatus() {
+        return status;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public ReportOutputResource getOutputResource() {
+        return outputResource;
+    }
+
+    public void setOutputResource(ReportOutputResource outputResource) {
+        this.outputResource = outputResource;
+    }
+
+    public List<ReportOutputResource> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<ReportOutputResource> attachments) {
+        this.attachments = attachments;
     }
 
 }

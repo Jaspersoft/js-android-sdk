@@ -34,7 +34,7 @@
 
     <groupId>com.jaspersoft.android.sdk</groupId>
     <artifactId>js-android-sdk-aggregator</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
-                <version>4.0.1.2</version>
+                <version>4.1.1.4</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -58,12 +58,12 @@
             <dependency>
                 <groupId>com.octo.android.robospice</groupId>
                 <artifactId>robospice</artifactId>
-                <version>1.4.5</version>
+                <version>1.4.11</version>
             </dependency>
             <dependency>
                 <groupId>com.octo.android.robospice</groupId>
                 <artifactId>robospice-spring-android</artifactId>
-                <version>1.4.5</version>
+                <version>1.4.11</version>
             </dependency>
             <dependency>
                 <!-- Using Simple for XML marshaling -->
@@ -113,7 +113,7 @@
                     <extensions>true</extensions>
                     <configuration>
                         <sdk>
-                            <platform>14</platform>
+                            <platform>16</platform>
                         </sdk>
                     </configuration>
                 </plugin>

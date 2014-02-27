@@ -34,6 +34,7 @@ public class ServerInfo {
     public static class VERSION_CODES {
         public static final int UNKNOWN = 0;
         public static final int EMERALD = 50000;
+        public static final int EMERALD_MR1 = 50200;
         public static final int EMERALD_TWO = 50500;
     }
 
@@ -79,7 +80,15 @@ public class ServerInfo {
             String[] subs = version.split("\\.");
             for (int i = 0; i < subs.length; i++) {
                 int exponent = ((subs.length - 1) - i) * 2;
-                versionCode += Integer.parseInt(subs[i]) * Math.pow(10, exponent);
+
+                int subVersion;
+                try {
+                    subVersion = Integer.parseInt(subs[i]);
+                } catch (NumberFormatException ex) {
+                    subVersion = 0;
+                }
+
+                versionCode += subVersion * Math.pow(10, exponent);
             }
         }
     }

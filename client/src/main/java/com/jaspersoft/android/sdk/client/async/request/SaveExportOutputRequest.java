@@ -22,48 +22,49 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.control.validation;
+package com.jaspersoft.android.sdk.client.async.request;
 
-import android.os.Parcel;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.jaspersoft.android.sdk.client.JsRestClient;
+
+import java.io.File;
 
 /**
  * @author Ivan Gadzhega
- * @since 1.4
+ * @since 1.8
  */
-@Root(strict=false)
-public class DateTimeFormatValidationRule extends ValidationRule {
+public class SaveExportOutputRequest extends BaseRequest<File> {
 
-    @Element
-    private String format;
+    private String executionId;
+    private String exportOutput;
+    private File outputFile;
 
-    public DateTimeFormatValidationRule() { }
-
-    //---------------------------------------------------------------------
-    // Parcelable
-    //---------------------------------------------------------------------
-
-    public DateTimeFormatValidationRule(Parcel source) {
-        super(source);
-        this.format = source.readString();
+    public SaveExportOutputRequest(JsRestClient jsRestClient, String executionId, String exportOutput, File outputFile) {
+        super(jsRestClient, File.class);
+        this.executionId = executionId;
+        this.exportOutput = exportOutput;
+        this.outputFile = outputFile;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(format);
+    @Override
+    public File loadDataFromNetwork() throws Exception {
+        getJsRestClient().saveExportOutputToFile(executionId, exportOutput, outputFile);
+        return outputFile;
     }
 
     //---------------------------------------------------------------------
     // Getters & Setters
     //---------------------------------------------------------------------
 
-    public String getFormat() {
-        return format;
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public String getExportOutput() {
+        return exportOutput;
+    }
+
+    public File getOutputFile() {
+        return outputFile;
     }
 
 }

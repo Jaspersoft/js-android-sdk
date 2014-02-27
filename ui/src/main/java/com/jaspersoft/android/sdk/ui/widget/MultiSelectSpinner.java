@@ -45,6 +45,10 @@ import java.util.List;
  */
 public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.OnMultiChoiceClickListener {
 
+    private static final String TEXT_SEPARATOR = ", ";
+    private static final String TEXT_ELLIPSIS = "\u2026";
+    private static final int TEXT_MAX_LENGTH = 100;
+
     private List<T> items;
     CharSequence[] stringItems;
     private boolean[] checkedItems;
@@ -146,7 +150,6 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
 
         for (int i = 0; i < size; i++) {
             stringItems[i] = items.get(i).toString();
-            // select firs element
             checkedItems[i] = false;
         }
 
@@ -235,7 +238,13 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
         StringBuilder spinnerBuilder = new StringBuilder();
         for (int i = 0; i < stringItems.length; i++) {
             if (checkedItems[i]) {
-                if(spinnerBuilder.length() > 0) spinnerBuilder.append(", ");
+                if(spinnerBuilder.length() > 0) {
+                    spinnerBuilder.append(TEXT_SEPARATOR);
+                }
+                if (spinnerBuilder.length() > TEXT_MAX_LENGTH) {
+                    spinnerBuilder.append(TEXT_ELLIPSIS);
+                    break;
+                }
                 spinnerBuilder.append(stringItems[i]);
             }
         }

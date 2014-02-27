@@ -26,47 +26,46 @@ package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;
 
-import java.lang.reflect.Constructor;
+import java.util.List;
 
 /**
  * @author Ivan Gadzhega
  * @since 1.4
  */
-@Root(strict=false)
-public class ValidationRule implements Parcelable {
+@Root(name="validationRules", strict=false)
+public class ValidationRulesList implements Parcelable {
 
-    @Element
-    private String errorMessage;
+    @ElementListUnion({
+            @ElementList(entry="dateTimeFormatValidationRule", inline=true, type=DateTimeFormatValidationRule.class),
+            @ElementList(entry="mandatoryValidationRule", inline=true, type=MandatoryValidationRule.class)
+    })
+    private List<ValidationRule> validationRules;
 
-    public ValidationRule() {}
+    public ValidationRulesList() {}
 
     //---------------------------------------------------------------------
     // Parcelable
     //---------------------------------------------------------------------
 
-    public ValidationRule(Parcel source) {
-        this.errorMessage = source.readString();
+    public ValidationRulesList(List<ValidationRule> validationRules) {
+        this.validationRules = validationRules;
     }
 
-    public static final Parcelable.Creator<ValidationRule> CREATOR = new Parcelable.Creator<ValidationRule>() {
-        public ValidationRule createFromParcel(Parcel source) {
-            try {
-                String className = source.readString();
-                Class<?> clazz = Class.forName(className);
-                Constructor<?> constructor = clazz.getConstructor(Parcel.class);
-                return (ValidationRule) constructor.newInstance(source);
-            } catch (RuntimeException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                return new ValidationRule(source);
-            }
+    public ValidationRulesList(Parcel source) {
+        validationRules = source.createTypedArrayList(ValidationRule.CREATOR);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ValidationRulesList createFromParcel(Parcel source) {
+            return new ValidationRulesList(source);
         }
 
-        public ValidationRule[] newArray(int size) {
-            return new ValidationRule[size];
+        public ValidationRulesList[] newArray(int size) {
+            return new ValidationRulesList[size];
         }
     };
 
@@ -76,20 +75,19 @@ public class ValidationRule implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClass().getName());
-        dest.writeString(errorMessage);
+        dest.writeTypedList(validationRules);
     }
 
     //---------------------------------------------------------------------
     // Getters & Setters
     //---------------------------------------------------------------------
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public List<ValidationRule> getValidationRules() {
+        return validationRules;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setValidationRules(List<ValidationRule> validationRules) {
+        this.validationRules = validationRules;
     }
 
 }
