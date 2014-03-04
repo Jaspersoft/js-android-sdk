@@ -30,7 +30,7 @@
 
         <style name="inputControl.layout">
             <item name="android:layout_height">wrap_content</item>
-            <item name="android:layout_width">fill_parent</item>
+            <item name="android:layout_width">match_parent</item>
             <item name="android:paddingBottom">7dp</item>
         </style>
 
@@ -57,7 +57,7 @@
 
             <style name="inputControl.boolean.checkBox">
                 <item name="android:layout_height">wrap_content</item>
-                <item name="android:layout_width">fill_parent</item>
+                <item name="android:layout_width">match_parent</item>
                 <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
                 <item name="android:textColor">@color/js_blue</item>
                 <item name="android:textStyle">bold</item>
@@ -68,7 +68,7 @@
 
             <style name="inputControl.singleValue.editText">
                 <item name="android:layout_height">wrap_content</item>
-                <item name="android:layout_width">fill_parent</item>
+                <item name="android:layout_width">match_parent</item>
                 <item name="android:singleLine">true</item>
             </style>
 
@@ -79,7 +79,7 @@
 
                 <style name="inputControl.date.inputContainer.layout">
                     <item name="android:layout_height">wrap_content</item>
-                    <item name="android:layout_width">fill_parent</item>
+                    <item name="android:layout_width">match_parent</item>
                 </style>
 
                 <style name="inputControl.date.inputContainer.editText">
@@ -106,7 +106,7 @@
         <style name="inputControl.select" />
 
             <style name="inputControl.select.spinner">
-                <item name="android:layout_width">fill_parent</item>
+                <item name="android:layout_width">match_parent</item>
                 <item name="android:layout_height">wrap_content</item>
             </style>
 
@@ -116,7 +116,7 @@
 
         <style name="list.item.layout">
             <item name="android:layout_height">wrap_content</item>
-            <item name="android:layout_width">fill_parent</item>
+            <item name="android:layout_width">match_parent</item>
             <item name="android:background">@drawable/bs_white_blue</item>
             <item name="android:gravity">center</item>
         </style>
@@ -131,7 +131,7 @@
 
             <style name="list.item.text.layout">
                 <item name="android:layout_height">wrap_content</item>
-                <item name="android:layout_width">fill_parent</item>
+                <item name="android:layout_width">match_parent</item>
                 <item name="android:paddingRight">4dp</item>
             </style>
 
@@ -171,7 +171,7 @@
         <item name="android:background">@drawable/gradient_light_grey</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_height">45dp</item>
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">match_parent</item>
     </style>
 
     <style name="breadCrumbs.labelSmall">
