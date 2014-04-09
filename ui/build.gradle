@@ -1,0 +1,5 @@
+description = 'js-android-sdk-ui'
+
+dependencies {
+    compile project(':js-android-sdk-client')
+}
