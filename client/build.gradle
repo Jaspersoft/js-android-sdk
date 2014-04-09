@@ -1,0 +1,24 @@
+description = 'js-android-sdk-client'
+
+android {
+    packagingOptions {
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+}
+
+dependencies {
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'com.octo.android.robospice:robospice:1.4.11'
+    compile 'com.octo.android.robospice:robospice-spring-android:1.4.11'
+    compile('org.simpleframework:simple-xml:2.7') {
+        exclude group: 'stax', module: 'stax'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+}
+
+
+

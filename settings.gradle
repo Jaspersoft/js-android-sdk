@@ -1,0 +1,5 @@
+include ':js-android-sdk-client'
+include ':js-android-sdk-ui'
+
+project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
+project(':js-android-sdk-ui').projectDir = "$rootDir/ui" as File
