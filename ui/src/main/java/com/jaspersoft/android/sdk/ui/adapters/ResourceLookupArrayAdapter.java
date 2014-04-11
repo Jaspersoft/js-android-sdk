@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,7 +35,12 @@ import android.widget.TextView;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.ui.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A concrete ArrayAdapter that is backed by an array of ResourceLookup objects.
@@ -46,9 +51,10 @@ import java.util.List;
 public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
     private final Context context;
     private final List<ResourceLookup> resourceLookups;
+    private String datetimeFormatPattern = "yyyy-MM-dd HH:mm:ss";
 
     public ResourceLookupArrayAdapter(Context context, List<ResourceLookup> resourceLookups) {
-        super(context, R.layout.resource_list_item, resourceLookups);
+        super(context, R.layout.resource_lookup_list_item, resourceLookups);
         this.context = context;
         this.resourceLookups = resourceLookups;
     }
@@ -58,33 +64,57 @@ public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
         ResourceLookup resourceLookup = resourceLookups.get(position);
 
         Drawable drawable;
-        switch (resourceLookup.getResourceType()) {
-            case folder:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
-                break;
-            case reportUnit:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_report);
-                break;
-            case dashboard:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
-                break;
-            default:
-                // for an unknown resource
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
-                break;
+        if (new Random().nextInt(2) > 0) {
+            drawable = context.getResources().getDrawable(R.drawable.tmp_preview_blue);
+        } else {
+            drawable = context.getResources().getDrawable(R.drawable.tmp_preview_grey);
         }
+//        switch (resourceLookup.getResourceType()) {
+//            case folder:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
+//                break;
+//            case reportUnit:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_report);
+//                break;
+//            case dashboard:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
+//                break;
+//            default:
+//                // for an unknown resource
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
+//                break;
+//        }
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.resource_list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.resource_lookup_list_item, parent, false);
 
-        ImageView image = (ImageView) rowView.findViewById(R.id.resource_list_item_icon);
-        TextView label = (TextView) rowView.findViewById(R.id.resource_list_item_label);
-        TextView uri = (TextView) rowView.findViewById(R.id.resource_list_item_uri);
+        ImageView image = (ImageView) rowView.findViewById(R.id.resource_icon);
+        TextView label = (TextView) rowView.findViewById(R.id.resource_label);
+        TextView description = (TextView) rowView.findViewById(R.id.resource_description);
+        TextView date = (TextView) rowView.findViewById(R.id.resource_date);
 
         image.setImageDrawable(drawable);
         label.setText(resourceLookup.getLabel());
-        uri.setText(resourceLookup.getUri());
+        description.setText(resourceLookup.getDescription());
+
+        String updateDate = resourceLookup.getUpdateDate();
+        String dateString;
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datetimeFormatPattern);
+            Date dateValue = simpleDateFormat.parse(updateDate);
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            dateString = dateFormat.format(dateValue);
+        } catch (ParseException ex) {
+            dateString = updateDate;
+        }
+//        date.setText("\u2022 " + dateString);
+        date.setText(dateString);
 
         return rowView;
     }
+
+    public void setDatetimeFormatPattern(String datetimeFormatPattern) {
+        this.datetimeFormatPattern = datetimeFormatPattern;
+    }
+
 }
