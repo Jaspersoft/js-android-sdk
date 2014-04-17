@@ -97,8 +97,9 @@ public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
         label.setText(resourceLookup.getLabel());
         description.setText(resourceLookup.getDescription());
 
-        String updateDate = resourceLookup.getUpdateDate();
         String dateString;
+        String updateDate = resourceLookup.getUpdateDate();
+        updateDate = (updateDate == null) ? "" : updateDate;
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datetimeFormatPattern);
             Date dateValue = simpleDateFormat.parse(updateDate);
@@ -107,7 +108,6 @@ public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
         } catch (ParseException ex) {
             dateString = updateDate;
         }
-//        date.setText("\u2022 " + dateString);
         date.setText(dateString);
 
         return rowView;
