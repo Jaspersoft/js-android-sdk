@@ -36,19 +36,21 @@ import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.ui.R;
 
 import java.util.List;
+import java.util.Random;
 
 /**
- * A concrete ArrayAdapter that is backed by an array of ResourceLookup objects.
+ * A concrete ArrayAdapter for a {@link android.widget.GridView}
+ * that is backed by an array of ResourceLookup objects.
  *
  * @author Ivan Gadzhega
- * @since 1.7
+ * @since 2.0
  */
-public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
+public class ResourceLookupGridAdapter extends ArrayAdapter<ResourceLookup>{
     private final Context context;
     private final List<ResourceLookup> resourceLookups;
 
-    public ResourceLookupArrayAdapter(Context context, List<ResourceLookup> resourceLookups) {
-        super(context, R.layout.resource_list_item, resourceLookups);
+    public ResourceLookupGridAdapter(Context context, List<ResourceLookup> resourceLookups) {
+        super(context, R.layout.resource_lookup_grid_item, resourceLookups);
         this.context = context;
         this.resourceLookups = resourceLookups;
     }
@@ -58,32 +60,36 @@ public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
         ResourceLookup resourceLookup = resourceLookups.get(position);
 
         Drawable drawable;
-        switch (resourceLookup.getResourceType()) {
-            case folder:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
-                break;
-            case reportUnit:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_report);
-                break;
-            case dashboard:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
-                break;
-            default:
-                // for an unknown resource
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
-                break;
+//        switch (resourceLookup.getResourceType()) {
+//            case folder:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
+//                break;
+//            case reportUnit:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_report);
+//                break;
+//            case dashboard:
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
+//                break;
+//            default:
+//                // for an unknown resource
+//                drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
+//                break;
+//        }
+
+        if (new Random().nextInt(2) > 0) {
+            drawable = context.getResources().getDrawable(R.drawable.tmp_preview_blue);
+        } else {
+            drawable = context.getResources().getDrawable(R.drawable.tmp_preview_grey);
         }
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.resource_list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.resource_lookup_grid_item, parent, false);
 
-        ImageView image = (ImageView) rowView.findViewById(R.id.resource_list_item_icon);
-        TextView label = (TextView) rowView.findViewById(R.id.resource_list_item_label);
-        TextView uri = (TextView) rowView.findViewById(R.id.resource_list_item_uri);
+        ImageView image = (ImageView) rowView.findViewById(R.id.resource_icon);
+        TextView label = (TextView) rowView.findViewById(R.id.resource_label);
 
         image.setImageDrawable(drawable);
         label.setText(resourceLookup.getLabel());
-        uri.setText(resourceLookup.getUri());
 
         return rowView;
     }

@@ -74,6 +74,6 @@
         android:textColor="@color/cs_light_grey_white"
         android:textSize="12sp"
         android:singleLine="true"
-        />
+    />
 
 </LinearLayout>
