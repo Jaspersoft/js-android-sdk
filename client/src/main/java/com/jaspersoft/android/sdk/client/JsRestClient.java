@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.*;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import org.springframework.http.*;
@@ -408,24 +409,69 @@ public class JsRestClient {
      */
     public ResourceLookupsList getResourceLookups(String folderUri, String query, List<String> types, boolean recursive,
                                                   int offset, int limit) throws RestClientException {
+        return getResourceLookups(folderUri, query, types, null, recursive, offset, limit);
+    }
+
+    /**
+     * Retrieves the list of resource lookup objects for the resources contained in the given parent folder
+     * and matching the specified parameters.
+     *
+     * @param folderUri parent folder URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description.
+     *                  (can be <code>null</code>)
+     * @param types     Match only resources of the given types. Multiple resource types allowed.
+     *                  (can be <code>null</code>)
+     * @param sortBy    Represents a field in the results to sort by: uri, label, description, type, creationDate,
+     *                  updateDate, accessTime, or popularity (based on access events).
+     *                  (can be <code>null</code>)
+     * @param recursive Get resources recursively
+     * @param offset    Pagination. Start index for requested page.
+     * @param limit     Pagination. Resources count per page.
+     * @return the ResourceLookupsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookupsList getResourceLookups(String folderUri, String query, List<String> types, String sortBy, boolean recursive,
+                                                  int offset, int limit) throws RestClientException {
+        ResourceLookupSearchCriteria criteria = new ResourceLookupSearchCriteria();
+        criteria.setFolderUri(folderUri);
+        criteria.setQuery(query);
+        criteria.setTypes(types);
+        criteria.setSortBy(sortBy);
+        criteria.setRecursive(recursive);
+        criteria.setOffset(offset);
+        criteria.setLimit(limit);
+        return getResourceLookups(criteria);
+    }
+
+    /**
+     * Retrieves the list of resource lookup objects matching the specified search criteria.
+     *
+     * @param searchCriteria the search criteria
+     * @return the ResourceLookupsList value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookupsList getResourceLookups(ResourceLookupSearchCriteria searchCriteria) throws RestClientException {
         StringBuilder fullUri = new StringBuilder();
         fullUri.append(getServerProfile().getServerUrl())
                 .append(REST_SERVICES_V2_URI)
                 .append(REST_RESOURCES_URI)
                 .append("?folderUri={folderUri}")
                 .append("&q={query}")
+                .append("&sortBy={sortBy}")
                 .append("&recursive={recursive}")
                 .append("&offset={offset}")
                 .append("&limit={limit}");
 
-        if (types != null) {
-            for (String type : types) {
+        if (searchCriteria.getTypes() != null) {
+            for (String type : searchCriteria.getTypes()) {
                 fullUri.append("&type=").append(type);
             }
         }
 
         ResponseEntity<ResourceLookupsList> responseEntity = restTemplate.exchange(fullUri.toString(), HttpMethod.GET,
-                null, ResourceLookupsList.class, folderUri, query, recursive, offset, limit);
+                null, ResourceLookupsList.class, searchCriteria.getFolderUri(), searchCriteria.getQuery(),
+                searchCriteria.getSortBy(), searchCriteria.isRecursive(), searchCriteria.getOffset(),
+                searchCriteria.getLimit());
 
         if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
             return new ResourceLookupsList();
