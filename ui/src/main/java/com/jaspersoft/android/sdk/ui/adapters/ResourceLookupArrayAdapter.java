@@ -35,7 +35,14 @@ import android.widget.TextView;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.ui.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+
+import static com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup.ResourceType;
 
 /**
  * A concrete ArrayAdapter that is backed by an array of ResourceLookup objects.
@@ -44,47 +51,173 @@ import java.util.List;
  * @since 1.7
  */
 public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
-    private final Context context;
-    private final List<ResourceLookup> resourceLookups;
 
+    private LayoutInfo layoutInfo;
+    private EnumMap<ResourceType, Integer> drawableIdsMap;
+    private String datetimeFormatPattern = "yyyy-MM-dd HH:mm:ss";
+
+    public ResourceLookupArrayAdapter(Context context, LayoutInfo layoutInfo, List<ResourceLookup> resourceLookups) {
+        this(context, layoutInfo, null, resourceLookups);
+    }
+
+    public ResourceLookupArrayAdapter(Context context, LayoutInfo layoutInfo,
+                                      EnumMap<ResourceType,Integer> drawableIdsMap, List<ResourceLookup> resourceLookups) {
+        super(context, layoutInfo.layoutResId, resourceLookups);
+        this.layoutInfo = layoutInfo;
+        this.drawableIdsMap = drawableIdsMap;
+    }
+
+    @Deprecated
     public ResourceLookupArrayAdapter(Context context, List<ResourceLookup> resourceLookups) {
-        super(context, R.layout.resource_list_item, resourceLookups);
-        this.context = context;
-        this.resourceLookups = resourceLookups;
+        this(context, new LayoutInfo(R.layout.resource_list_item),
+                new EnumMap<ResourceType, Integer>(ResourceType.class), resourceLookups);
+
+        layoutInfo.setIconViewId(R.id.resource_list_item_icon);
+        layoutInfo.setLabelViewId(R.id.resource_list_item_label);
+        layoutInfo.setUriViewId(R.id.resource_list_item_uri);
+
+        drawableIdsMap.put(ResourceType.folder, R.drawable.ic_type_folder);
+        drawableIdsMap.put(ResourceType.reportUnit, R.drawable.ic_type_report);
+        drawableIdsMap.put(ResourceType.dashboard, R.drawable.ic_type_dashboard);
+        drawableIdsMap.put(ResourceType.unknown, R.drawable.ic_type_unknown);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ResourceLookup resourceLookup = resourceLookups.get(position);
-
-        Drawable drawable;
-        switch (resourceLookup.getResourceType()) {
-            case folder:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_folder);
-                break;
-            case reportUnit:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_report);
-                break;
-            case dashboard:
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_dashboard);
-                break;
-            default:
-                // for an unknown resource
-                drawable = context.getResources().getDrawable(R.drawable.ic_type_unknown);
-                break;
+        ResourceLookup resourceLookup = getItem(position);
+        // reuse views
+        View rowView = convertView;
+        if (rowView == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(layoutInfo.layoutResId, parent, false);
+            // configure view holder
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.iconView = (ImageView) rowView.findViewById(layoutInfo.iconViewId);
+            viewHolder.labelView = (TextView) rowView.findViewById(layoutInfo.labelViewId);
+            viewHolder.descriptionView = (TextView) rowView.findViewById(layoutInfo.descriptionViewId);
+            viewHolder.dateView = (TextView) rowView.findViewById(layoutInfo.dateViewId);
+            viewHolder.uriView = (TextView) rowView.findViewById(layoutInfo.uriViewId);
+            rowView.setTag(viewHolder);
         }
-
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.resource_list_item, parent, false);
-
-        ImageView image = (ImageView) rowView.findViewById(R.id.resource_list_item_icon);
-        TextView label = (TextView) rowView.findViewById(R.id.resource_list_item_label);
-        TextView uri = (TextView) rowView.findViewById(R.id.resource_list_item_uri);
-
-        image.setImageDrawable(drawable);
-        label.setText(resourceLookup.getLabel());
-        uri.setText(resourceLookup.getUri());
-
+        // fill data
+        ViewHolder viewHolder = (ViewHolder) rowView.getTag();
+        if (viewHolder.iconView != null && drawableIdsMap != null) {
+            Drawable icon = getIconByType(resourceLookup.getResourceType());
+            viewHolder.iconView.setImageDrawable(icon);
+        }
+        if (viewHolder.labelView != null) {
+            String label = resourceLookup.getLabel();
+            viewHolder.labelView.setText(label);
+        }
+        if (viewHolder.descriptionView != null) {
+            String description = resourceLookup.getDescription();
+            viewHolder.descriptionView.setText(description);
+        }
+        if (viewHolder.dateView != null) {
+            String date = formatDateString(resourceLookup.getUpdateDate());
+            viewHolder.dateView.setText(date);
+        }
+        if (viewHolder.uriView != null) {
+            String uri = resourceLookup.getUri();
+            viewHolder.uriView.setText(uri);
+        }
+        // return configured view
         return rowView;
     }
+
+    public void setDatetimeFormatPattern(String datetimeFormatPattern) {
+        this.datetimeFormatPattern = datetimeFormatPattern;
+    }
+
+    //---------------------------------------------------------------------
+    // Helper methods
+    //---------------------------------------------------------------------
+
+    private Drawable getIconByType(ResourceType type) {
+        type = (drawableIdsMap.containsKey(type)) ? type : ResourceType.unknown;
+        int drawableResId = drawableIdsMap.get(type);
+        return getContext().getResources().getDrawable(drawableResId);
+    }
+
+    private String formatDateString(String updateDate) {
+        updateDate = (updateDate == null) ? "" : updateDate;
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datetimeFormatPattern);
+            Date dateValue = simpleDateFormat.parse(updateDate);
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            return dateFormat.format(dateValue);
+        } catch (ParseException ex) {
+            return updateDate;
+        }
+    }
+
+    //---------------------------------------------------------------------
+    // Nested Classes
+    //---------------------------------------------------------------------
+
+    public static class LayoutInfo {
+        private int layoutResId;
+        private int iconViewId;
+        private int labelViewId;
+        private int descriptionViewId;
+        private int dateViewId;
+        private int uriViewId;
+
+        public LayoutInfo(int layoutResId) {
+            this.layoutResId = layoutResId;
+        }
+
+        public int getLayoutResId() {
+            return layoutResId;
+        }
+
+        public int getIconViewId() {
+            return iconViewId;
+        }
+
+        public void setIconViewId(int iconViewId) {
+            this.iconViewId = iconViewId;
+        }
+
+        public int getLabelViewId() {
+            return labelViewId;
+        }
+
+        public void setLabelViewId(int labelViewId) {
+            this.labelViewId = labelViewId;
+        }
+
+        public int getDescriptionViewId() {
+            return descriptionViewId;
+        }
+
+        public void setDescriptionViewId(int descriptionViewId) {
+            this.descriptionViewId = descriptionViewId;
+        }
+
+        public int getDateViewId() {
+            return dateViewId;
+        }
+
+        public void setDateViewId(int dateViewId) {
+            this.dateViewId = dateViewId;
+        }
+
+        public int getUriViewId() {
+            return uriViewId;
+        }
+
+        public void setUriViewId(int uriViewId) {
+            this.uriViewId = uriViewId;
+        }
+    }
+
+    private static class ViewHolder {
+        private ImageView iconView;
+        private TextView labelView;
+        private TextView descriptionView;
+        private TextView dateView;
+        private TextView uriView;
+    }
+
 }
