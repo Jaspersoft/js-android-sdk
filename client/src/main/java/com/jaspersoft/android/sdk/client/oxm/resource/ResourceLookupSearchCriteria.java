@@ -21,13 +21,16 @@
 
 package com.jaspersoft.android.sdk.client.oxm.resource;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * @author Ivan Gadzhega
  * @since 2.0
  */
-public class ResourceLookupSearchCriteria {
+public class ResourceLookupSearchCriteria implements Parcelable {
 
     private String folderUri;
     private String query;
@@ -37,6 +40,48 @@ public class ResourceLookupSearchCriteria {
     private boolean recursive = true;
     private int offset = 1;
     private int limit = 100;
+
+    public ResourceLookupSearchCriteria() { }
+
+    //---------------------------------------------------------------------
+    // Parcelable
+    //---------------------------------------------------------------------
+
+    public ResourceLookupSearchCriteria(Parcel source) {
+        this.folderUri = source.readString();
+        this.query = source.readString();
+        this.types = source.createStringArrayList();
+        this.sortBy = source.readString();
+        this.recursive = source.readByte() != 0;
+        this.offset = source.readInt();
+        this.limit = source.readInt();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ResourceLookupSearchCriteria createFromParcel(Parcel source) {
+            return new ResourceLookupSearchCriteria(source);
+        }
+
+        public ResourceLookupSearchCriteria[] newArray(int size) {
+            return new ResourceLookupSearchCriteria[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(folderUri);
+        dest.writeString(query);
+        dest.writeStringList(types);
+        dest.writeString(sortBy);
+        dest.writeByte((byte) (recursive ? 1 : 0));
+        dest.writeInt(offset);
+        dest.writeInt(limit);
+    }
 
     //---------------------------------------------------------------------
     // Getters & Setters
