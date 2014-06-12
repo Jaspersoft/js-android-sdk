@@ -24,6 +24,7 @@ package com.jaspersoft.android.sdk.client.oxm.resource;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,18 @@ public class ResourceLookupSearchCriteria implements Parcelable {
     private int offset = 1;
     private int limit = 100;
 
-    public ResourceLookupSearchCriteria() { }
+    public ResourceLookupSearchCriteria() {
+    }
+
+    public ResourceLookupSearchCriteria(ResourceLookupSearchCriteria oldCriteria) {
+        this.folderUri = oldCriteria.getFolderUri();
+        this.query = oldCriteria.getQuery();
+        this.types = new ArrayList<String>(oldCriteria.getTypes());
+        this.sortBy = oldCriteria.getSortBy();
+        this.recursive = oldCriteria.isRecursive();
+        this.offset = oldCriteria.getOffset();
+        this.limit = oldCriteria.getLimit();
+    }
 
     //---------------------------------------------------------------------
     // Parcelable
