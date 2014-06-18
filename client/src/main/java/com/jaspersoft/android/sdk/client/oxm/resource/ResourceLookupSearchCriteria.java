@@ -39,7 +39,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
     private String sortBy;
 
     private boolean recursive = true;
-    private int offset = 1;
+    private int offset = 0;
     private int limit = 100;
 
     public ResourceLookupSearchCriteria() {
