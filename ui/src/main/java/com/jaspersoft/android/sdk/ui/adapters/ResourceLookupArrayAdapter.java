@@ -61,7 +61,8 @@ public class ResourceLookupArrayAdapter extends ArrayAdapter<ResourceLookup>{
     }
 
     public ResourceLookupArrayAdapter(Context context, LayoutInfo layoutInfo,
-                                      EnumMap<ResourceType,Integer> drawableIdsMap, List<ResourceLookup> resourceLookups) {
+                                      EnumMap<ResourceType,Integer> drawableIdsMap,
+                                      List<ResourceLookup> resourceLookups) {
         super(context, layoutInfo.layoutResId, resourceLookups);
         this.layoutInfo = layoutInfo;
         this.drawableIdsMap = drawableIdsMap;
