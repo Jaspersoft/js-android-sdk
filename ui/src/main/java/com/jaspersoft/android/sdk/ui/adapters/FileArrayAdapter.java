@@ -38,6 +38,7 @@ import com.jaspersoft.android.sdk.util.FileUtils;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -48,45 +49,87 @@ import java.util.List;
  */
 public class FileArrayAdapter extends ArrayAdapter<File> {
 
-    private final Context context;
-    private final List<File> files;
+    private LayoutInfo layoutInfo;
+    private EnumMap<FileType, Integer> drawableIdsMap;
 
+    @Deprecated
     public FileArrayAdapter(Context context, File[] files) {
         this(context, Arrays.asList(files));
     }
 
+    public FileArrayAdapter(Context context, LayoutInfo layoutInfo, File[] files) {
+        this(context, layoutInfo, Arrays.asList(files));
+    }
+
+    public FileArrayAdapter(Context context, LayoutInfo layoutInfo,
+                            EnumMap<FileType,Integer> drawableIdsMap, File[] files) {
+        this(context, layoutInfo, drawableIdsMap, Arrays.asList(files));
+    }
+
+    @Deprecated
     public FileArrayAdapter(Context context, List<File> files) {
-        super(context, R.layout.file_list_item, files);
-        this.context = context;
-        this.files = files;
+        this(context, new LayoutInfo(R.layout.file_list_item), new EnumMap<FileType, Integer>(FileType.class), files);
+
+        layoutInfo.setIconViewId(R.id.file_list_item_icon);
+        layoutInfo.setLabelViewId(R.id.file_list_item_label);
+        layoutInfo.setDateViewId(R.id.file_list_item_date);
+        layoutInfo.setSizeViewId(R.id.file_list_item_size);
+
+        drawableIdsMap.put(FileType.HTML, R.drawable.ic_type_html);
+        drawableIdsMap.put(FileType.PDF, R.drawable.ic_type_pdf);
+        drawableIdsMap.put(FileType.XLS, R.drawable.ic_type_xls);
+        drawableIdsMap.put(FileType.UNKNOWN, R.drawable.ic_type_unknown);
+    }
+
+    public FileArrayAdapter(Context context, LayoutInfo layoutInfo, List<File> files) {
+        this(context, layoutInfo, null, files);
+    }
+
+    public FileArrayAdapter(Context context, LayoutInfo layoutInfo,
+                            EnumMap<FileType, Integer> drawableIdsMap, List<File> files) {
+        super(context, layoutInfo.layoutResId, files);
+        this.layoutInfo = layoutInfo;
+        this.drawableIdsMap = drawableIdsMap;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        File file = files.get(position);
+        File file = getItem(position);
 
-        String fileName = file.getName();
-        String baseName = FileUtils.getBaseName(fileName);
-        String extension = FileUtils.getExtension(fileName);
+        // reuse views
+        View rowView = convertView;
+        if (rowView == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(layoutInfo.getLayoutResId(), parent, false);
+            // configure view holder
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.iconView = (ImageView) rowView.findViewById(layoutInfo.getIconViewId());
+            viewHolder.labelView = (TextView) rowView.findViewById(layoutInfo.getLabelViewId());
+            viewHolder.dateView = (TextView) rowView.findViewById(layoutInfo.getDateViewId());
+            viewHolder.sizeView = (TextView) rowView.findViewById(layoutInfo.getSizeViewId());
+            rowView.setTag(viewHolder);
+        }
+        // fill data
+        ViewHolder viewHolder = (ViewHolder) rowView.getTag();
+        if (viewHolder.iconView != null && drawableIdsMap != null) {
+            String extension = FileUtils.getExtension(file.getName());
+            Drawable icon = getFileIconByExtension(extension);
+            viewHolder.iconView.setImageDrawable(icon);
+        }
+        if (viewHolder.labelView != null) {
+            String baseName = FileUtils.getBaseName(file.getName());
+            viewHolder.labelView.setText(baseName);
+        }
+        if (viewHolder.dateView != null) {
+            String dateModified = getFormattedDateModified(file);
+            viewHolder.dateView.setText(dateModified);
+        }
+        if (viewHolder.sizeView != null) {
+            String size = getHumanReadableFileSize(file);
+            viewHolder.sizeView.setText(size);
+        }
 
-
-        Drawable icon = getFileIconByExtension(extension);
-        String dateModified = getFormattedDateModified(file);
-        String size = getHumanReadableFileSize(file);
-
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.file_list_item, parent, false);
-
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.file_list_item_icon);
-        TextView labelView = (TextView) rowView.findViewById(R.id.file_list_item_label);
-        TextView dateView = (TextView) rowView.findViewById(R.id.file_list_item_date);
-        TextView sizeView = (TextView) rowView.findViewById(R.id.file_list_item_size);
-
-        imageView.setImageDrawable(icon);
-        labelView.setText(baseName);
-        dateView.setText(dateModified);
-        sizeView.setText(size);
-
+        // return configured view
         return rowView;
     }
 
@@ -96,28 +139,20 @@ public class FileArrayAdapter extends ArrayAdapter<File> {
 
     private Drawable getFileIconByExtension(String extension) {
         FileType type = getFileTypeByExtension(extension);
+        int drawableResId = drawableIdsMap.get(type);
+        return getContext().getResources().getDrawable(drawableResId);
+    }
 
-        Drawable fileIcon;
-        switch (type) {
-            case HTML:
-                fileIcon = context.getResources().getDrawable(R.drawable.ic_type_html);
-                break;
-            case PDF:
-                fileIcon = context.getResources().getDrawable(R.drawable.ic_type_pdf);
-                break;
-            case XLS:
-                fileIcon = context.getResources().getDrawable(R.drawable.ic_type_xls);
-                break;
-            default:
-                fileIcon = context.getResources().getDrawable(R.drawable.ic_type_unknown);
-                break;
+    private FileType getFileTypeByExtension(String extension) {
+        try {
+            return FileType.valueOf(extension);
+        } catch (IllegalArgumentException ex) {
+            return FileType.UNKNOWN;
         }
-
-        return fileIcon;
     }
 
     private String getFormattedDateModified(File file) {
-        return DateUtils.formatDateTime(context, file.lastModified(),
+        return DateUtils.formatDateTime(getContext(), file.lastModified(),
                                         DateUtils.FORMAT_SHOW_DATE |
                                         DateUtils.FORMAT_SHOW_TIME |
                                         DateUtils.FORMAT_SHOW_YEAR |
@@ -131,23 +166,70 @@ public class FileArrayAdapter extends ArrayAdapter<File> {
         return FileUtils.getHumanReadableByteCount(bytes);
     }
 
-    private FileType getFileTypeByExtension(String extension) {
-        try {
-            return FileType.valueOf(extension);
-        } catch (IllegalArgumentException ex) {
-            return FileType.UNKNOWN;
-        }
-    }
-
     //---------------------------------------------------------------------
     // Nested Classes
     //---------------------------------------------------------------------
 
-    private enum FileType {
+    public enum FileType {
         HTML,
         PDF,
         XLS,
         UNKNOWN
+    }
+
+    public static class LayoutInfo {
+        private int layoutResId;
+        private int iconViewId;
+        private int labelViewId;
+        private int dateViewId;
+        private int sizeViewId;
+
+        public LayoutInfo(int layoutResId) {
+            this.layoutResId = layoutResId;
+        }
+
+        public int getLayoutResId() {
+            return layoutResId;
+        }
+
+        public int getIconViewId() {
+            return iconViewId;
+        }
+
+        public void setIconViewId(int iconViewId) {
+            this.iconViewId = iconViewId;
+        }
+
+        public int getLabelViewId() {
+            return labelViewId;
+        }
+
+        public void setLabelViewId(int labelViewId) {
+            this.labelViewId = labelViewId;
+        }
+
+        public int getDateViewId() {
+            return dateViewId;
+        }
+
+        public void setDateViewId(int dateViewId) {
+            this.dateViewId = dateViewId;
+        }
+
+        public int getSizeViewId() {
+            return sizeViewId;
+        }
+
+        public void setSizeViewId(int sizeViewId) {
+            this.sizeViewId = sizeViewId;
+        }
+    }
+
+    private static class ViewHolder {
+        private ImageView iconView;
+        private TextView labelView;
+        private TextView dateView;
+        private TextView sizeView;
     }
 
 }

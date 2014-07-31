@@ -23,20 +23,19 @@
     <http://www.gnu.org/licenses/lgpl>.
 -->
 
-<resources>
-    <!-- Primary Palette -->
-    <color name="js_blue">#0480ba</color>
-    <color name="js_orange">#ff790b</color>
-    <!-- Secondary Palette -->
-    <color name="js_light_blue">#1abafc</color>
-    <color name="js_light_orange">#ffac0b</color>
-    <color name="js_light_green">#b7cb2d</color>
-    <!-- Neutrals -->
-    <color name="js_dark_grey">#333333</color>
-    <color name="js_grey">#7d7d7d</color>
-    <color name="js_light_grey">#949494</color>
-    <color name="js_lighter_grey">#e7e7e7</color>
-    <!-- Others -->
-    <color name="red">#ff0000</color>
-    <color name="js_lighter_blue">#8ec2ef</color>
-</resources>
+<!--
+   ColorStateList that you can apply as a color, but will actually change colors,
+   depending on the state of the View object to which it is applied.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="false"
+          android:state_pressed="false"
+          android:state_focused="false"
+          android:color="@color/js_light_grey" />
+    <item android:state_pressed="true"
+          android:color="@android:color/white" />
+    <item android:state_selected="true"
+          android:color="@android:color/white" />
+    <item android:state_focused="true"
+          android:color="@android:color/white" />
+</selector>
