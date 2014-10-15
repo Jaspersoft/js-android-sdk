@@ -1,5 +1,12 @@
 description = 'js-android-sdk-ui'
 
+android {
+    lintOptions {
+        abortOnError false
+    }
+}
+
+
 dependencies {
     compile project(':js-android-sdk-client')
 }
