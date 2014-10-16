@@ -39,6 +39,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
     private String sortBy;
 
     private boolean recursive = true;
+    private boolean forceFullPage;
     private int offset = 0;
     private int limit = 100;
 
@@ -51,6 +52,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         this.types = new ArrayList<String>(oldCriteria.getTypes());
         this.sortBy = oldCriteria.getSortBy();
         this.recursive = oldCriteria.isRecursive();
+        this.forceFullPage = oldCriteria.isForceFullPage();
         this.offset = oldCriteria.getOffset();
         this.limit = oldCriteria.getLimit();
     }
@@ -65,6 +67,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         this.types = source.createStringArrayList();
         this.sortBy = source.readString();
         this.recursive = source.readByte() != 0;
+        this.forceFullPage = source.readByte() != 0;
         this.offset = source.readInt();
         this.limit = source.readInt();
     }
@@ -91,6 +94,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         dest.writeStringList(types);
         dest.writeString(sortBy);
         dest.writeByte((byte) (recursive ? 1 : 0));
+        dest.writeByte((byte) (forceFullPage ? 1 : 0));
         dest.writeInt(offset);
         dest.writeInt(limit);
     }
@@ -205,4 +209,33 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         this.limit = limit;
     }
 
+    /**
+     * {@link ResourceLookupSearchCriteria#setForceFullPage}
+     */
+    public boolean isForceFullPage() {
+        return forceFullPage;
+    }
+
+    /**
+     * With forceFullPage=false,
+     * This is the offset to request the next page.  The Next-Offset is equivalent to Start-Index+limit, except on the last page.
+     * On the the last page, the Next-Offset is omitted to indicate there are no further pages.
+     * {@link ResourceLookupSearchCriteria#setLimit}
+     */
+
+    /**
+     * With <b>forceFullPage=false</b> we receive different pagination experience. Considering header
+     * for response Next-Offset which is the offset to request the next page. The Next-Offset
+     * is equivalent to Start-Index+limit, except on the last page.
+     * On the the last page, the Next-Offset is omitted to indicate there are no further pages.
+     * <br/>
+     * <br/>
+     * With <b>forceFullPage=true</b> enables full page pagination. Depending on the type of search and
+     * user permissions, this parameter can cause significant performance delays.
+     *
+     * @param forceFullPage accepts boolean value
+     */
+    public void setForceFullPage(boolean forceFullPage) {
+        this.forceFullPage = forceFullPage;
+    }
 }

@@ -24,6 +24,8 @@ package com.jaspersoft.android.sdk.client.oxm.server;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.math.BigDecimal;
+
 /**
  * @author Ivan Gadzhega
  * @since 1.4
@@ -33,9 +35,11 @@ public class ServerInfo {
 
     public static class VERSION_CODES {
         public static final int UNKNOWN = 0;
-        public static final int EMERALD = 50000;
-        public static final int EMERALD_MR1 = 50200;
-        public static final int EMERALD_TWO = 50500;
+        public static final double EMERALD = 5.0;
+        public static final double EMERALD_MR1 = 5.2;
+        public static final double EMERALD_TWO = 5.5;
+        public static final double EMERALD_THREE = 5.6;
+        public static final double AMBER = 6.0;
     }
 
     public static class EDITIONS {
@@ -63,7 +67,7 @@ public class ServerInfo {
 
     private String version;
 
-    private int versionCode;
+    private double versionCode;
 
 
     public ServerInfo() {
@@ -78,18 +82,21 @@ public class ServerInfo {
         // update version code
         if (version != null) {
             String[] subs = version.split("\\.");
-            for (int i = 0; i < subs.length; i++) {
-                int exponent = ((subs.length - 1) - i) * 2;
 
-                int subVersion;
+            BigDecimal decimalSubVersion, decimalFactor, decimalResult;
+            BigDecimal decimalVersion = new BigDecimal("0");
+            for (int i = 0; i < subs.length; i++) {
                 try {
-                    subVersion = Integer.parseInt(subs[i]);
+                    decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
                 } catch (NumberFormatException ex) {
-                    subVersion = 0;
+                    decimalSubVersion = new BigDecimal("0");
                 }
 
-                versionCode += subVersion * Math.pow(10, exponent);
+                decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));
+                decimalResult = decimalSubVersion.multiply(decimalFactor);
+                decimalVersion = decimalVersion.add(decimalResult);
             }
+            versionCode = decimalVersion.doubleValue();
         }
     }
 
@@ -150,7 +157,7 @@ public class ServerInfo {
         this.licenseType = licenseType;
     }
 
-    public int getVersionCode() {
+    public double getVersionCode() {
         return versionCode;
     }
 
