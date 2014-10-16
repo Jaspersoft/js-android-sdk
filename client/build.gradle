@@ -1,6 +1,32 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:" + androidToolsBuildGradle
+        classpath 'com.github.dcendents:android-maven-plugin:1.0'
+    }
+}
+
+
+apply plugin: 'com.android.library'
+apply plugin: 'android-maven'
+
 description = 'js-android-sdk-client'
 
 android {
+    compileSdkVersion androidCompileSdkVersion
+    buildToolsVersion androidBuildToolsVersion
+
+    defaultConfig {
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+
+        versionCode 9020000
+        versionName version
+    }
+
     packagingOptions {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/license.txt'
@@ -9,6 +35,13 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            runProguard false
+            testCoverageEnabled = true
+        }
     }
 }
 
