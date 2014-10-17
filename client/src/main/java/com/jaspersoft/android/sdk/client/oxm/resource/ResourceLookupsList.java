@@ -35,6 +35,7 @@ import java.util.List;
 
 @Root(name="resources")
 public class ResourceLookupsList {
+    public static int NO_OFFSET = -1;
 
     @ElementList(entry="resourceLookup", inline=true, required=false, empty=false)
     private List<ResourceLookup> resourceLookups;
@@ -110,7 +111,7 @@ public class ResourceLookupsList {
     }
 
     public void setNextOffset(String nextOffset) {
-        this.nextOffset = (nextOffset != null) ? Integer.parseInt(nextOffset) : 0;
+        this.nextOffset = (nextOffset != null) ? Integer.parseInt(nextOffset) : NO_OFFSET;
     }
 
     public void setNextOffset(int nextOffset) {
