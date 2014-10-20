@@ -161,7 +161,7 @@ public class ServerInfo {
         return versionCode;
     }
 
-    public void setVersionCode(int versionCode) {
+    public void setVersionCode(double versionCode) {
         this.versionCode = versionCode;
     }
 
