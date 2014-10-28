@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.JsServerProfile;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -40,8 +43,18 @@ import java.util.List;
 @Root
 public class ReportExecutionRequest {
 
+    public static final String DEFAULT_ATTACHMENT_PREFIX = "/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
+    public static final String MARKUP_TYPE_EMBEDDABLE  = "embeddable";
+    public static final String MARKUP_TYPE_FULL  = "full";
+
     @Element
     private String reportUnitUri;
+
+    @Element(required=false)
+    private String markupType;
+
+    @Element(required=false)
+    private String baseUrl;
 
     @Element(required=false)
     private boolean async;
@@ -70,6 +83,12 @@ public class ReportExecutionRequest {
     @ElementList(required=false)
     private List<ReportParameter> parameters;
 
+    public void configureExecutionForProfile(JsRestClient jsRestClient) {
+        JsServerProfile jsServerProfile = jsRestClient.getServerProfile();
+        String serverUrl = jsServerProfile.getServerUrl();
+        setAttachmentsPrefix(serverUrl + DEFAULT_ATTACHMENT_PREFIX);
+        setBaseUrl(serverUrl);
+    }
 
     public void setAttachmentsPrefix(String attachmentsPrefix) {
         try {
@@ -157,4 +176,19 @@ public class ReportExecutionRequest {
         this.parameters = parameters;
     }
 
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getMarkupType() {
+        return markupType;
+    }
+
+    public void setMarkupType(String markupType) {
+        this.markupType = markupType;
+    }
 }
