@@ -459,6 +459,7 @@ public class JsRestClient {
                 .append("&q={query}")
                 .append("&sortBy={sortBy}")
                 .append("&recursive={recursive}")
+                .append("&forceFullPage={forceFullPage}")
                 .append("&offset={offset}")
                 .append("&limit={limit}");
 
@@ -470,8 +471,8 @@ public class JsRestClient {
 
         ResponseEntity<ResourceLookupsList> responseEntity = restTemplate.exchange(fullUri.toString(), HttpMethod.GET,
                 null, ResourceLookupsList.class, searchCriteria.getFolderUri(), searchCriteria.getQuery(),
-                searchCriteria.getSortBy(), searchCriteria.isRecursive(), searchCriteria.getOffset(),
-                searchCriteria.getLimit());
+                searchCriteria.getSortBy(), searchCriteria.isRecursive(), searchCriteria.isForceFullPage(),
+                searchCriteria.getOffset(), searchCriteria.getLimit());
 
         if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
             return new ResourceLookupsList();
@@ -479,6 +480,8 @@ public class JsRestClient {
             ResourceLookupsList resourceLookupsList = responseEntity.getBody();
             resourceLookupsList.setResultCount(responseEntity.getHeaders().getFirst("Result-Count"));
             resourceLookupsList.setTotalCount(responseEntity.getHeaders().getFirst("Total-Count"));
+            resourceLookupsList.setStartIndex(responseEntity.getHeaders().getFirst("Start-Index"));
+            resourceLookupsList.setNextOffset(responseEntity.getHeaders().getFirst("Next-Offset"));
             return resourceLookupsList;
         }
     }

@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  * @since 1.0
  */
+@Deprecated
 public class InputControlWrapper {
 
     public static final String NULL_SUBSTITUTE = "~NULL~";
