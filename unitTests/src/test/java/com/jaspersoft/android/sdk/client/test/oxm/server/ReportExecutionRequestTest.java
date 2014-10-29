@@ -42,9 +42,8 @@ public class ReportExecutionRequestTest extends UnitTestSpecification {
     @Test
     public void test_ConfigureExecutionForProfileMethod_MutatesAttachmentsPrefix() throws UnsupportedEncodingException {
         executionRequest.configureExecutionForProfile(jsRestClient);
-        String attachmentsPrefix = "http://build-master.jaspersoft.com/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
-        String encodedPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
-        assertThat(executionRequest.getAttachmentsPrefix(), is(encodedPrefix));
+        String attachmentsPrefix = "http://build-master.jaspersoft.com/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
+        assertThat(executionRequest.getAttachmentsPrefix(), is(attachmentsPrefix));
     }
 
     @Test

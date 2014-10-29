@@ -32,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 import android.view.WindowManager;
+
 import com.jaspersoft.android.sdk.client.async.task.JsAsyncTask;
 
 import java.util.ArrayList;

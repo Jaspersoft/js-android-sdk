@@ -22,7 +22,6 @@ android {
     defaultConfig {
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-
         versionCode 9020000
         versionName version
     }
@@ -40,7 +39,6 @@ android {
     buildTypes {
         debug {
             runProguard false
-            testCoverageEnabled = true
         }
     }
 }
