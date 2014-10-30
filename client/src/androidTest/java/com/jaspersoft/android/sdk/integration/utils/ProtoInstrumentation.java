@@ -12,12 +12,12 @@ import com.jaspersoft.android.sdk.client.JsServerProfile;
 public abstract class ProtoInstrumentation extends InstrumentationTestCase {
 
     private static final String DEFAULT_ALIAS = "Mobile Demo";
-    private static final String DEFAULT_ORGANIZATION = "";
-    private static final String DEFAULT_SERVER_URL = "http://build-master.jaspersoft.com:6680/jrs-pro-feature-visualizejs";
-    private static final String DEFAULT_USERNAME = "superuser";
-    private static final String DEFAULT_PASS = "superuser";
+    private static final String DEFAULT_ORGANIZATION = "organization_1";
+    private static final String DEFAULT_SERVER_URL = "http://mobiledemo.jaspersoft.com/jasperserver-pro";
+    private static final String DEFAULT_USERNAME = "phoneuser";
+    private static final String DEFAULT_PASS = "phoneuser";
 
-    public static final String RESOURCE_URI = "/public/Samples/Reports/AllAccounts";
+    public static final String RESOURCE_URI = "/Reports/1._Geographic_Results_by_Segment_Report";
 
     private JsServerProfile testProfile;
     private JsRestClient jsRestClient;
@@ -34,8 +34,6 @@ public abstract class ProtoInstrumentation extends InstrumentationTestCase {
 
         jsRestClient = new JsRestClient();
         jsRestClient.setServerProfile(testProfile);
-
-
     }
 
     @Override

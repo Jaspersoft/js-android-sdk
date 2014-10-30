@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.integration;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.jaspersoft.android.sdk.client.async.request.RunReportExecutionRequest;
+import com.jaspersoft.android.sdk.client.async.request.RunReportExportOutputRequest;
 import com.jaspersoft.android.sdk.client.async.request.RunReportExportsRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportExecution;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportsRequest;
@@ -32,7 +33,7 @@ public class RunReportExportsRequestTest extends ProtoInstrumentation {
         String requestId = runReportExecutionResponse.getRequestId();
 
         ExportsRequest exr = new ExportsRequest();
-        exr.configureExecutionForProfile(getJsRestClient());
+//        exr.configureExecutionForProfile(getJsRestClient());
         exr.setMarkupType(ReportExecutionRequest.MARKUP_TYPE_EMBEDDABLE);
         exr.setAllowInlineScripts(false);
         exr.setOutputFormat("html");
@@ -41,6 +42,12 @@ public class RunReportExportsRequestTest extends ProtoInstrumentation {
         RunReportExportsRequest runReportExportsRequest = new RunReportExportsRequest(getJsRestClient(), exr, requestId);
         ExportExecution runReportExportsResponse = runReportExportsRequest.loadDataFromNetwork();
         assertFalse(runReportExportsResponse == null);
+
+        String executionId = runReportExportsResponse.getId();
+        RunReportExportOutputRequest runReportExportOutputRequest
+                = new RunReportExportOutputRequest(getJsRestClient(), requestId, executionId);
+        Object response = runReportExportOutputRequest.loadDataFromNetwork();
+        assertFalse(response == null);
     }
 
 }

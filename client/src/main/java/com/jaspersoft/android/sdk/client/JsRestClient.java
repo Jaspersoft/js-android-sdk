@@ -110,15 +110,16 @@ public class JsRestClient {
     // the socket timeout in milliseconds for waiting for data
     private int readTimeout = 120 * 1000;
 
-    private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
     private String restServicesUrl;
     private ServerInfo serverInfo;
-    private SimpleClientHttpRequestFactory requestFactory;
 
+    private final RestTemplate restTemplate;
+    private final SimpleClientHttpRequestFactory requestFactory;
 
     public JsRestClient() {
         this.restTemplate = new RestTemplate(true);
+        this.requestFactory = new SimpleClientHttpRequestFactory();
 
         fetchXmlConverter();
         configureAnnotationStrategy();
@@ -163,7 +164,6 @@ public class JsRestClient {
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        requestFactory = new SimpleClientHttpRequestFactory();
         restTemplate.setRequestFactory(requestFactory);
 
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
@@ -735,6 +735,17 @@ public class JsRestClient {
     public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
         URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
         downloadFile(outputResourceUri, file);
+    }
+
+    /**
+     * Load output data for export on current request.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return Basically it will be 3 cases HTML/JSON/XML types.
+     */
+    public String runExportOutputResource(String executionId, String exportOutput) {
+        return restTemplate.getForObject(getExportOutputResourceURI(executionId, exportOutput), String.class);
     }
 
     /**
