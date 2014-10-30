@@ -778,9 +778,29 @@ public class JsRestClient {
     public URI getExportAttachmentURI(String executionId, String exportOutput, String attachmentName) {
         String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
+        return new UriTemplate(fullUri).expand(executionId, exportOutput, attachmentName);
+    }
 
-        UriTemplate uriTemplate = new UriTemplate(fullUri);
-        return uriTemplate.expand(executionId, exportOutput, attachmentName);
+    /**
+     * Sends request for retrieving report details data.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return response which expose current report details.
+     */
+    public ReportExecutionResponse runReportDetailsRequest(String executionId) {
+        return restTemplate.getForObject(getReportDetailsURI(executionId), ReportExecutionResponse.class);
+    }
+
+    /**
+     * Generates link for requesting details on specified report.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}"
+     */
+    public URI getReportDetailsURI(String executionId) {
+        String attachmentUri = "/{executionId}";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
+        return new UriTemplate(fullUri).expand(executionId);
     }
 
     //---------------------------------------------------------------------

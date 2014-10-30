@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.integration;
+package com.jaspersoft.android.sdk.integration.utils;
 
 import android.test.InstrumentationTestCase;
 
@@ -34,6 +34,8 @@ public abstract class ProtoInstrumentation extends InstrumentationTestCase {
 
         jsRestClient = new JsRestClient();
         jsRestClient.setServerProfile(testProfile);
+
+
     }
 
     @Override

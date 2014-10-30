@@ -5,6 +5,8 @@ import com.jaspersoft.android.sdk.client.async.request.RunReportExecutionRequest
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
+import com.jaspersoft.android.sdk.integration.utils.ProtoInstrumentation;
+import com.jaspersoft.android.sdk.integration.utils.SampleData;
 
 /**
  * @author Tom Koptel
@@ -17,23 +19,11 @@ public class CheckReportStatusRequestTest extends ProtoInstrumentation {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        ReportExecutionRequest reportExecutionRequest = new ReportExecutionRequest();
-        reportExecutionRequest.configureExecutionForProfile(getJsRestClient());
-        reportExecutionRequest.setReportUnitUri(RESOURCE_URI);
-        reportExecutionRequest.setMarkupType(ReportExecutionRequest.MARKUP_TYPE_EMBEDDABLE);
-        reportExecutionRequest.setOutputFormat("HTML");
-        reportExecutionRequest.setPages("1");
-        reportExecutionRequest.setAsync(true);
-        reportExecutionRequest.setInteractive(true);
-        reportExecutionRequest.setFreshData(false);
-        reportExecutionRequest.setSaveDataSnapshot(false);
-        reportExecutionRequest.setAllowInlineScripts(false);
-
+        ReportExecutionRequest reportExecutionRequest = SampleData.getSampleExecutionData(getJsRestClient(), RESOURCE_URI);
         runReportExecutionRequest = new RunReportExecutionRequest(getJsRestClient(), reportExecutionRequest);
     }
 
-    public void test_requestForExportsOnReport() throws Exception {
+    public void test_requestReportStatus() throws Exception {
         ReportExecutionResponse runReportExecutionResponse = runReportExecutionRequest.loadDataFromNetwork();
         String requestId = runReportExecutionResponse.getRequestId();
 
