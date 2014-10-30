@@ -659,12 +659,92 @@ public class JsRestClient {
     // Report Execution Service
     //---------------------------------------------------------------------
 
+    /**
+     * Forms and executes url "{server url}/rest_v2/reportExecutions"
+     *
+     * @param request we delegate to the restTemplate.
+     * @return report execution response. Includes executionId for later use.
+     * @throws RestClientException
+     */
     public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
         String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
 
-    public URI getExportOuptutResourceURI(String executionId, String exportOutput) {
+    /**
+     * Sends request with porpose to fetch current export datum.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param request we delegate to the restTemplate.
+     * @return response with all exports datum associated with request.
+     * @throws RestClientException
+     */
+    public ExportExecution runExportForReport(String executionId, ExportsRequest request) throws RestClientException {
+        return restTemplate.postForObject(getExportForReportURI(executionId), request, ExportExecution.class);
+    }
+
+    /**
+     * Generates link for requesting data on specified export resource.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports"
+     */
+    public URI getExportForReportURI(String executionId) {
+        String outputResourceUri = "/{executionId}";
+        String fullUri = jsServerProfile.getServerUrl() +
+                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
+                outputResourceUri + REST_REPORT_EXPORTS;
+
+        return new UriTemplate(fullUri).expand(executionId, executionId);
+    }
+
+    /**
+     * Sends request for the current running report for the status check.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return response which expose current report status.
+     */
+    public ReportStatusResponse runReportStatusCheck(String executionId) {
+        return restTemplate.getForObject(getReportStatusCheckURI(executionId), ReportStatusResponse.class);
+    }
+
+    /**
+     * Generates link for requesting report execution status.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/status"
+     */
+    public URI getReportStatusCheckURI(String executionId) {
+        String outputResourceUri = "/{executionId}";
+
+        String fullUri = jsServerProfile.getServerUrl() +
+                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
+                outputResourceUri + REST_REPORT_STATUS;
+
+        return new UriTemplate(fullUri).expand(executionId);
+    }
+
+    /**
+     * Saves resource ouput in file.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @param file         The file in which the output will be saved
+     * @throws RestClientException
+     */
+    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
+        URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
+        downloadFile(outputResourceUri, file);
+    }
+
+    /**
+     * Generates link for requesting report output resource datum.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/outputResource"
+     */
+    public URI getExportOutputResourceURI(String executionId, String exportOutput) {
         String outputResourceUri = "/{executionId}/exports/{exportOutput}/outputResource";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
 
@@ -672,49 +752,35 @@ public class JsRestClient {
         return uriTemplate.expand(executionId, exportOutput);
     }
 
-    public ExportExecution runExportForReport(String executionId, ExportsRequest request) throws RestClientException {
-        URI uri = getExportForReportURI(executionId);
-        return restTemplate.postForObject(uri, request, ExportExecution.class);
+    /**
+     * Save report in file with specified name.
+     *
+     * @param executionId    Identifies current id of running report.
+     * @param exportOutput   Identifier which refers to current requested export.
+     * @param attachmentName Name of attachment we store on JRS side.
+     * @param file           The file in which the output will be saved
+     * @throws RestClientException
+     */
+    public void saveExportAttachmentToFile(String executionId, String exportOutput,
+                                           String attachmentName, File file) throws RestClientException {
+        URI attachmentUri = getExportAttachmentURI(executionId, exportOutput, attachmentName);
+        downloadFile(attachmentUri, file);
     }
 
-    public URI getExportForReportURI(String executionId) {
-        String outputResourceUri = "/{executionId}";
-        String fullUri = jsServerProfile.getServerUrl() +
-                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
-                outputResourceUri + REST_REPORT_EXPORTS;
-
-        UriTemplate uriTemplate = new UriTemplate(fullUri);
-        return uriTemplate.expand(executionId, executionId);
-    }
-
-    public ReportStatusResponse checkReportStatus(String executionId) {
-        String outputResourceUri = "/{executionId}";
-
-        String fullUri = jsServerProfile.getServerUrl() +
-                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
-                outputResourceUri + REST_REPORT_STATUS;
-
-        URI uri = new UriTemplate(fullUri).expand(executionId, executionId);
-        return restTemplate.getForObject(uri, ReportStatusResponse.class);
-    }
-
-    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
-        URI outputResourceUri = getExportOuptutResourceURI(executionId, exportOutput);
-        downloadFile(outputResourceUri, file);
-    }
-
+    /**
+     * Generates link for requesting of report export attachemnt data.
+     *
+     * @param executionId    Identifies current id of running report.
+     * @param exportOutput   Identifier which refers to current requested export.
+     * @param attachmentName Name of attachment we store on JRS side.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/attachments/{attachment}"
+     */
     public URI getExportAttachmentURI(String executionId, String exportOutput, String attachmentName) {
         String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
 
         UriTemplate uriTemplate = new UriTemplate(fullUri);
         return uriTemplate.expand(executionId, exportOutput, attachmentName);
-    }
-
-    public void saveExportAttachmentToFile(String executionId, String exportOutput,
-                                           String attachmentName, File file) throws RestClientException {
-        URI attachmentUri = getExportAttachmentURI(executionId, exportOutput, attachmentName);
-        downloadFile(attachmentUri, file);
     }
 
     //---------------------------------------------------------------------

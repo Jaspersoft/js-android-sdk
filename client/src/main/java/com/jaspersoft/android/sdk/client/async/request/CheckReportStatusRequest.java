@@ -28,7 +28,7 @@ public class CheckReportStatusRequest extends BaseRequest<ReportStatusResponse> 
 
     @Override
     public ReportStatusResponse loadDataFromNetwork() throws Exception {
-        return getJsRestClient().checkReportStatus(executionId);
+        return getJsRestClient().runReportStatusCheck(executionId);
     }
 
     public String getExportExecutionId() {
