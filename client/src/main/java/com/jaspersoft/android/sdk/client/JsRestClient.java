@@ -39,11 +39,16 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.AnnotationStrategy;
+import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -54,7 +59,9 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -96,6 +103,7 @@ public class JsRestClient {
     public static final String REST_REPORT_EXECUTIONS = "/reportExecutions";
     public static final String REST_REPORT_EXPORTS = "/exports";
     public static final String REST_REPORT_STATUS = "/status";
+    private SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter;
 
     // the timeout in milliseconds until a connection is established
     private int connectTimeout = 15 * 1000;
@@ -111,6 +119,9 @@ public class JsRestClient {
 
     public JsRestClient() {
         this.restTemplate = new RestTemplate(true);
+
+        fetchXmlConverter();
+        configureAnnotationStrategy();
     }
 
     //---------------------------------------------------------------------
@@ -676,6 +687,17 @@ public class JsRestClient {
         return uriTemplate.expand(executionId, executionId);
     }
 
+    public ReportStatusResponse checkReportStatus(String executionId) {
+        String outputResourceUri = "/{executionId}";
+
+        String fullUri = jsServerProfile.getServerUrl() +
+                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
+                outputResourceUri + REST_REPORT_STATUS;
+
+        URI uri = new UriTemplate(fullUri).expand(executionId, executionId);
+        return restTemplate.getForObject(uri, ReportStatusResponse.class);
+    }
+
     public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
         URI outputResourceUri = getExportOuptutResourceURI(executionId, exportOutput);
         downloadFile(outputResourceUri, file);
@@ -1026,6 +1048,24 @@ public class JsRestClient {
             fullUri.append(REST_VALUES_URI);
         }
         return fullUri.toString();
+    }
+
+    private void fetchXmlConverter() {
+        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+        for (HttpMessageConverter<?> converter : converters) {
+            if (converter instanceof SimpleXmlHttpMessageConverter) {
+                simpleXmlHttpMessageConverter =
+                        (SimpleXmlHttpMessageConverter) converter;
+            }
+        }
+    }
+
+    private void configureAnnotationStrategy() {
+        if (simpleXmlHttpMessageConverter != null) {
+            Strategy annotationStrategy = new AnnotationStrategy();
+            Serializer serializer = new Persister(annotationStrategy);
+            simpleXmlHttpMessageConverter.setSerializer(serializer);
+        }
     }
 
     //---------------------------------------------------------------------
