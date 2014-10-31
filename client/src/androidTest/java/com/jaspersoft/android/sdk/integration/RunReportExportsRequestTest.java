@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.client.async.request.RunReportExportOutputRequ
 import com.jaspersoft.android.sdk.client.async.request.RunReportExportsRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportExecution;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportsRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.integration.utils.ProtoInstrumentation;
@@ -46,7 +47,7 @@ public class RunReportExportsRequestTest extends ProtoInstrumentation {
         String executionId = runReportExportsResponse.getId();
         RunReportExportOutputRequest runReportExportOutputRequest
                 = new RunReportExportOutputRequest(getJsRestClient(), requestId, executionId);
-        Object response = runReportExportOutputRequest.loadDataFromNetwork();
+        ReportDataResponse response = runReportExportOutputRequest.loadDataFromNetwork();
         assertFalse(response == null);
     }
 

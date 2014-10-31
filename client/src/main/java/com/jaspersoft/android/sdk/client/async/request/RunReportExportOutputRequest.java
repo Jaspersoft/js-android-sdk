@@ -1,27 +1,28 @@
 package com.jaspersoft.android.sdk.client.async.request;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
 
 /**
  * @author Tom Koptel
  * @since 1.9
  */
-public class RunReportExportOutputRequest extends BaseRequest<String> {
+public class RunReportExportOutputRequest extends BaseRequest<ReportDataResponse> {
     private String requestId;
     private String executionId;
 
     public RunReportExportOutputRequest(JsRestClient jsRestClient) {
-        super(jsRestClient, String.class);
+        super(jsRestClient, ReportDataResponse.class);
     }
 
     public RunReportExportOutputRequest(JsRestClient jsRestClient, String requestId, String executionId) {
-        super(jsRestClient, String.class);
+        super(jsRestClient, ReportDataResponse.class);
         this.requestId = requestId;
         this.executionId = executionId;
     }
 
     @Override
-    public String loadDataFromNetwork() throws Exception {
+    public ReportDataResponse loadDataFromNetwork() throws Exception {
         return getJsRestClient().runExportOutputResource(requestId, executionId);
     }
 

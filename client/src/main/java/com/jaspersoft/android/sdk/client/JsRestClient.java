@@ -35,6 +35,7 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportExecution;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportsRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
@@ -745,8 +746,22 @@ public class JsRestClient {
      * @param exportOutput Identifier which refers to current requested export.
      * @return Basically it will be 3 cases HTML/JSON/XML types.
      */
-    public String runExportOutputResource(String executionId, String exportOutput) {
-        return restTemplate.getForObject(getExportOutputResourceURI(executionId, exportOutput), String.class);
+    public ReportDataResponse runExportOutputResource(String executionId, String exportOutput) {
+        ResponseEntity<String> response = restTemplate.exchange(
+                getExportOutputResourceURI(executionId, exportOutput), HttpMethod.GET, null, String.class);
+
+        boolean isFinal;
+        boolean hasOutputFinal = response.getHeaders().containsKey("output-final");
+        String data = response.getBody();
+
+        if (hasOutputFinal) {
+            isFinal = Boolean.valueOf(response.getHeaders().getFirst("output-final"));
+        } else {
+            // "output-final" header is missing for JRS 5.5 and lower,
+            // so we consider request to be final by default
+            isFinal = true;
+        }
+        return new ReportDataResponse(isFinal, data);
     }
 
     /**
