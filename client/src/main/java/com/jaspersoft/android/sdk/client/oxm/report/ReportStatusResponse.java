@@ -29,6 +29,10 @@ public class ReportStatusResponse {
         mStatus = status;
     }
 
+    public ReportStatus getReportStatus() {
+        return ReportStatus.valueOf(mStatus.toUpperCase());
+    }
+
     public String getStatus() {
         return mStatus;
     }
