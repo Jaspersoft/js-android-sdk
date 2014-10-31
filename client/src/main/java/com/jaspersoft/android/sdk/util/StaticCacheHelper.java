@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.util;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class StaticCacheHelper {
 
-    private static final int TIME_TO_LIVE = 43200000; // 12 hours
+    private static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(20);
 
     private static final Map<String, Element> cacheMap = new HashMap<String, Element>();
 

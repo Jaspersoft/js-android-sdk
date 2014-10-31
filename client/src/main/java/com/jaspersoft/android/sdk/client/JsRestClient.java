@@ -44,6 +44,7 @@ import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriter
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -1083,6 +1084,13 @@ public class JsRestClient {
             }
         }
         return statesList;
+    }
+
+    /**
+     * Method which flashes all stared cookies.
+     */
+    public static void flushCookies() {
+        StaticCacheHelper.clearCache();
     }
 
     //---------------------------------------------------------------------
