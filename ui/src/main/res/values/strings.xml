@@ -26,6 +26,7 @@
 <resources>
 
     <!-- MultiSelectSpinner -->
-    <string name="mss_btn_uncheck_all">Uncheck All</string>
+    <string name="mss_btn_check_all">Check all</string>
+    <string name="mss_btn_uncheck_all">Uncheck all</string>
 
 </resources>
