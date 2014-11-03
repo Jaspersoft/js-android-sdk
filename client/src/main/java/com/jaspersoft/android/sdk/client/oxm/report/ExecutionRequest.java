@@ -1,13 +1,8 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
-import com.jaspersoft.android.sdk.client.JsRestClient;
-import com.jaspersoft.android.sdk.client.JsServerProfile;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -58,21 +53,8 @@ public class ExecutionRequest {
     @ElementList(required=false)
     protected List<ReportParameter> parameters;
 
-    public void configureExecutionForProfile(JsRestClient jsRestClient) {
-        JsServerProfile jsServerProfile = jsRestClient.getServerProfile();
-        String serverUrl = jsServerProfile.getServerUrl();
-        this.attachmentsPrefix = (serverUrl + JsRestClient.REST_SERVICES_V2_URI + DEFAULT_ATTACHMENT_PREFIX);
-        setBaseUrl(serverUrl);
-    }
-
     public void setAttachmentsPrefix(String attachmentsPrefix) {
-        try {
-            this.attachmentsPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
-        } catch (UnsupportedEncodingException exception) {
-            this.attachmentsPrefix = attachmentsPrefix;
-        } catch (NullPointerException exception) {
-            this.attachmentsPrefix = attachmentsPrefix;
-        }
+        this.attachmentsPrefix = attachmentsPrefix;
     }
 
     public String getAttachmentsPrefix() {
