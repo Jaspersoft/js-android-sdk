@@ -38,22 +38,22 @@ import org.simpleframework.xml.Element;
 public class ResourceLookup implements Parcelable {
 
     @Element(required=false)
-    private String label;
+    protected String label;
     @Element(required=false)
-    private String description;
+    protected String description;
     @Element
-    private String uri;
-    @Element
-    private String resourceType;
+    protected String uri;
+    @Element(required=false)
+    protected String resourceType;
 
     @Element(required=false)
-    private int version;
+    protected int version;
     @Element(required=false)
-    private int permissionMask;
+    protected int permissionMask;
     @Element(required=false)
-    private String creationDate;
+    protected String creationDate;
     @Element(required=false)
-    private String updateDate;
+    protected String updateDate;
 
     public ResourceLookup() { }
 

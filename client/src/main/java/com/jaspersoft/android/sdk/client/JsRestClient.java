@@ -35,6 +35,7 @@ import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportExecution;
 import com.jaspersoft.android.sdk.client.oxm.report.ExportsRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.FolderDataResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
@@ -508,6 +509,22 @@ public class JsRestClient {
             resourceLookupsList.setNextOffset(responseEntity.getHeaders().getFirst("Next-Offset"));
             return resourceLookupsList;
         }
+    }
+
+    /**
+     * Retrives all data for the root folder
+     */
+    public FolderDataResponse getRootFolderData() {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", "application/repository.folder+xml");
+        headers.add("Content-Type", "application/xml");
+        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+
+        ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FolderDataResponse.class);
+
+        return responseEntity.getBody();
     }
 
     //---------------------------------------------------------------------
