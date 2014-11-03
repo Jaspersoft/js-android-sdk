@@ -758,8 +758,8 @@ public class JsRestClient {
             isFinal = Boolean.valueOf(response.getHeaders().getFirst("output-final"));
         } else {
             // "output-final" header is missing for JRS 5.5 and lower,
-            // so we consider request to be final by default
-            isFinal = true;
+            // so we consider request to be not final by default
+            isFinal = false;
         }
         return new ReportDataResponse(isFinal, data);
     }
