@@ -66,8 +66,6 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
      */
     private OnItemsSelectedListener onItemsSelectedListener;
 
-    private boolean mCheckedAll;
-
     public MultiSelectSpinner(Context context) {
         super(context);
     }
@@ -114,23 +112,24 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 dialog.getListView().setAdapter(initCustomAdapter(dialog));
+                Button button = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                button.setText(ifAnyChecked() ? R.string.mss_btn_uncheck_all : R.string.mss_btn_check_all);
 
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
                         .setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Button button = (Button) view;
-                                button.setText(mCheckedAll ? R.string.mss_btn_check_all : R.string.mss_btn_uncheck_all);
+                                boolean ifAnyChecked = ifAnyChecked();
+                                button.setText(ifAnyChecked ? R.string.mss_btn_check_all : R.string.mss_btn_uncheck_all);
 
-                                if (mCheckedAll) {
+                                if (ifAnyChecked) {
                                     unselectAll();
                                 } else {
                                     selectAll();
                                 }
 
-                                mCheckedAll = !mCheckedAll;
                                 dialog.getListView().setAdapter(initCustomAdapter(dialog));
-
                                 updateState();
                             }
                         });
@@ -138,6 +137,14 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
         });
         dialog.show();
         return true;
+    }
+
+    private boolean ifAnyChecked() {
+        boolean ifAnyCheckedMask = false;
+        for (boolean checkedItem : checkedItems) {
+            ifAnyCheckedMask = ifAnyCheckedMask || checkedItem;
+        }
+        return ifAnyCheckedMask;
     }
 
     private BaseAdapter initCustomAdapter(final AlertDialog dialog) {
