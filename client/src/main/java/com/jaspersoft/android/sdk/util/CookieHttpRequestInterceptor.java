@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class CookieHttpRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final String SET_COOKIE = "set-cookie";
-    private static final String COOKIE = "cookie";
+    private static final String COOKIE = "Cookie";
     private static final String COOKIE_STORE = "cookieStore";
     private final JsServerProfile jsServerProfile;
 
