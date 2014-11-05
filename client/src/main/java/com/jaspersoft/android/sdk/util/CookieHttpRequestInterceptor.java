@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.jaspersoft.android.sdk.client.JsServerProfile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class CookieHttpRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final String SET_COOKIE = "set-cookie";
-    private static final String COOKIE = "cookie";
+    private static final String COOKIE = "Cookie";
     private static final String COOKIE_STORE = "cookieStore";
     private final JsServerProfile jsServerProfile;
 
@@ -38,9 +39,7 @@ public class CookieHttpRequestInterceptor implements ClientHttpRequestIntercepto
             List<String> cookieStore = (List<String>) StaticCacheHelper.retrieveObjectFromCache(COOKIE_STORE);
             // if we have stored cookies, add them to the headers
             if (cookieStore != null) {
-                for (String cookie : cookieStore) {
-                    request.getHeaders().add(COOKIE, cookie);
-                }
+                request.getHeaders().add(COOKIE, StringUtils.join(cookieStore, ";"));
             } else {
                 Log.d(getClass().getSimpleName(), "Setting basic auth");
                 // Basic Authentication

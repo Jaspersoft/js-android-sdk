@@ -46,6 +46,7 @@ import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriter
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.simpleframework.xml.Serializer;
@@ -170,6 +171,7 @@ public class JsRestClient {
         restTemplate.setRequestFactory(requestFactory);
 
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+        interceptors.add(new LocalesHttpRequestInterceptor());
         interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
         restTemplate.setInterceptors(interceptors);
 
