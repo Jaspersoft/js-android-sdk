@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.client.ic;
 
 import android.view.View;
+
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceParameter;
 import com.jaspersoft.android.sdk.client.oxm.ResourceProperty;

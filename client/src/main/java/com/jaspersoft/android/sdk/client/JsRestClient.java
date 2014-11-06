@@ -24,22 +24,48 @@
 
 package com.jaspersoft.android.sdk.client;
 
-import android.util.Base64;
-import com.jaspersoft.android.sdk.client.oxm.*;
+import com.jaspersoft.android.sdk.client.oxm.ReportDescriptor;
+import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
+import com.jaspersoft.android.sdk.client.oxm.ResourceParameter;
+import com.jaspersoft.android.sdk.client.oxm.ResourceProperty;
+import com.jaspersoft.android.sdk.client.oxm.ResourcesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlState;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
-import com.jaspersoft.android.sdk.client.oxm.report.*;
+import com.jaspersoft.android.sdk.client.oxm.report.ExportExecution;
+import com.jaspersoft.android.sdk.client.oxm.report.ExportsRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.FolderDataResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
-import org.springframework.http.*;
+import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.StaticCacheHelper;
+
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.AnnotationStrategy;
+import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -51,7 +77,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -76,21 +104,29 @@ public class JsRestClient {
     public static final String REST_INPUT_CONTROLS_URI = "/inputControls";
     public static final String REST_VALUES_URI = "/values";
     public static final String REST_SERVER_INFO_URI = "/serverInfo";
-    public static final String REST_REPORT_EXECUTIONS= "/reportExecutions";
+    public static final String REST_REPORT_EXECUTIONS = "/reportExecutions";
+    public static final String REST_REPORT_EXPORTS = "/exports";
+    public static final String REST_REPORT_STATUS = "/status";
+    private SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter;
 
     // the timeout in milliseconds until a connection is established
     private int connectTimeout = 15 * 1000;
     // the socket timeout in milliseconds for waiting for data
     private int readTimeout = 120 * 1000;
 
-    private RestTemplate restTemplate;
     private JsServerProfile jsServerProfile;
     private String restServicesUrl;
     private ServerInfo serverInfo;
 
+    private final RestTemplate restTemplate;
+    private final SimpleClientHttpRequestFactory requestFactory;
 
     public JsRestClient() {
         this.restTemplate = new RestTemplate(true);
+        this.requestFactory = new SimpleClientHttpRequestFactory();
+
+        fetchXmlConverter();
+        configureAnnotationStrategy();
     }
 
     //---------------------------------------------------------------------
@@ -101,7 +137,6 @@ public class JsRestClient {
      * Set the underlying URLConnection's connect timeout. A timeout value of 0 specifies an infinite timeout.
      *
      * @param timeout the timeout value in milliseconds
-     *
      * @since 1.5
      */
     public void setConnectTimeout(int timeout) {
@@ -111,8 +146,8 @@ public class JsRestClient {
 
     /**
      * Set the underlying URLConnection's read timeout. A timeout value of 0 specifies an infinite timeout.
-     * @param timeout the timeout value in milliseconds
      *
+     * @param timeout the timeout value in milliseconds
      * @since 1.5
      */
     public void setReadTimeout(int timeout) {
@@ -133,19 +168,13 @@ public class JsRestClient {
         this.jsServerProfile = serverProfile;
         this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory() {
-            @Override
-            protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-                super.prepareConnection(connection, httpMethod);
-                // Basic Authentication
-                String authorisation = serverProfile.getUsernameWithOrgId() + ":" + serverProfile.getPassword();
-                byte[] encodedAuthorisation = Base64.encode(authorisation.getBytes(), Base64.NO_WRAP);
-                connection.setRequestProperty("Authorization", "Basic " + new String(encodedAuthorisation));
-                // disable buggy keep-alive
-                connection.setRequestProperty("Connection", "close");
-            }
-        };
-        restTemplate.setRequestFactory(factory);
+        restTemplate.setRequestFactory(requestFactory);
+
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+        interceptors.add(new LocalesHttpRequestInterceptor());
+        interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
+        restTemplate.setInterceptors(interceptors);
+
         updateRequestFactoryTimeouts();
     }
 
@@ -154,7 +183,6 @@ public class JsRestClient {
      *
      * @return the ServerInfo value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.4
      */
     public ServerInfo getServerInfo() throws RestClientException {
@@ -167,11 +195,10 @@ public class JsRestClient {
      * @param forceUpdate set to <code>true</code> to force update of the server info
      * @return the ServerInfo value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.4
      */
     public ServerInfo getServerInfo(boolean forceUpdate) throws RestClientException {
-        if(forceUpdate || serverInfo == null) {
+        if (forceUpdate || serverInfo == null) {
             String uri = getServerProfile().getServerUrl() + REST_SERVICES_V2_URI + REST_SERVER_INFO_URI;
             try {
                 serverInfo = restTemplate.getForObject(uri, ServerInfo.class);
@@ -486,6 +513,22 @@ public class JsRestClient {
         }
     }
 
+    /**
+     * Retrives all data for the root folder
+     */
+    public FolderDataResponse getRootFolderData() {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", "application/repository.folder+xml");
+        headers.add("Content-Type", "application/xml");
+        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+
+        ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FolderDataResponse.class);
+
+        return responseEntity.getBody();
+    }
+
     //---------------------------------------------------------------------
     // The Report Service
     //---------------------------------------------------------------------
@@ -495,8 +538,8 @@ public class JsRestClient {
      * with the ID of the saved output for downloading later with a GET request.
      *
      * @param resourceDescriptor resource descriptor of this report
-     * @param format The format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV,
-     *               XML, JRPRINT. The Default is PDF.
+     * @param format             The format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV,
+     *                           XML, JRPRINT. The Default is PDF.
      * @return ReportDescriptor
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
@@ -552,10 +595,9 @@ public class JsRestClient {
     /**
      * Generates the fully qualified report URL to receive all pages report output in HTML format.
      *
-     * @param reportUri repository URI of the report
+     * @param reportUri  repository URI of the report
      * @param parameters list of report parameter/input control values
      * @return the fully qualified report URL
-     *
      * @since 1.4
      */
     public String generateReportUrl(String reportUri, List<ReportParameter> parameters) {
@@ -565,11 +607,10 @@ public class JsRestClient {
     /**
      * Generates the fully qualified report URL to receive all pages report output in specified format.
      *
-     * @param reportUri repository URI of the report
+     * @param reportUri  repository URI of the report
      * @param parameters list of report parameter/input control values
-     * @param format the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
+     * @param format     the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
      * @return the fully qualified report URL
-     *
      * @since 1.4
      */
     public String generateReportUrl(String reportUri, List<ReportParameter> parameters, String format) {
@@ -580,12 +621,11 @@ public class JsRestClient {
      * Generates the fully qualified report URL according to specified parameters. The new v2/reports service allows clients
      * to receive report output in a single request-response using this url.
      *
-     * @param reportUri repository URI of the report
+     * @param reportUri  repository URI of the report
      * @param parameters list of report parameter/input control values
-     * @param page a positive integer value used to output a specific page or 0 to output all pages
-     * @param format the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
+     * @param page       a positive integer value used to output a specific page or 0 to output all pages
+     * @param format     the format of the report output. Possible values: PDF, HTML, XLS, RTF, CSV, XML.
      * @return the fully qualified report URL
-     *
      * @since 1.4
      */
     public String generateReportUrl(String reportUri, List<ReportParameter> parameters, int page, String format) {
@@ -594,9 +634,9 @@ public class JsRestClient {
         reportUrl.append(REST_REPORTS_URI).append(reportUri).append(".").append(format);
 
         if (parameters == null) parameters = new ArrayList<ReportParameter>();
-        if(page > 0) parameters.add(new ReportParameter("page", Integer.toString(page)));
+        if (page > 0) parameters.add(new ReportParameter("page", Integer.toString(page)));
 
-        if (!parameters.isEmpty() ) {
+        if (!parameters.isEmpty()) {
             reportUrl.append("?");
             Iterator<ReportParameter> paramIterator = parameters.iterator();
             while (paramIterator.hasNext()) {
@@ -606,7 +646,8 @@ public class JsRestClient {
                     try {
                         String value = URLEncoder.encode(valueIterator.next(), "UTF-8");
                         reportUrl.append(parameter.getName()).append("=").append(value);
-                        if (paramIterator.hasNext() || valueIterator.hasNext() ) reportUrl.append("&");
+                        if (paramIterator.hasNext() || valueIterator.hasNext())
+                            reportUrl.append("&");
                     } catch (UnsupportedEncodingException ex) {
                         throw new IllegalArgumentException(ex);
                     }
@@ -620,9 +661,8 @@ public class JsRestClient {
      * Downloads report output, once it has been generated and saves it in the specified file.
      *
      * @param reportUrl the fully qualified report URL
-     * @param file The file in which the output will be saved
+     * @param file      The file in which the output will be saved
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.4
      */
     public void saveReportOutputToFile(String reportUrl, File file) throws RestClientException {
@@ -640,12 +680,117 @@ public class JsRestClient {
     // Report Execution Service
     //---------------------------------------------------------------------
 
+    /**
+     * Forms and executes url "{server url}/rest_v2/reportExecutions"
+     *
+     * @param request we delegate to the restTemplate.
+     * @return report execution response. Includes executionId for later use.
+     * @throws RestClientException
+     */
     public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
         String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
 
-    public URI getExportOuptutResourceURI(String executionId, String exportOutput) {
+    /**
+     * Sends request with porpose to fetch current export datum.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param request we delegate to the restTemplate.
+     * @return response with all exports datum associated with request.
+     * @throws RestClientException
+     */
+    public ExportExecution runExportForReport(String executionId, ExportsRequest request) throws RestClientException {
+        return restTemplate.postForObject(getExportForReportURI(executionId), request, ExportExecution.class);
+    }
+
+    /**
+     * Generates link for requesting data on specified export resource.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports"
+     */
+    public URI getExportForReportURI(String executionId) {
+        String outputResourceUri = "/{executionId}";
+        String fullUri = jsServerProfile.getServerUrl() +
+                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
+                outputResourceUri + REST_REPORT_EXPORTS;
+
+        return new UriTemplate(fullUri).expand(executionId, executionId);
+    }
+
+    /**
+     * Sends request for the current running report for the status check.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return response which expose current report status.
+     */
+    public ReportStatusResponse runReportStatusCheck(String executionId) {
+        return restTemplate.getForObject(getReportStatusCheckURI(executionId), ReportStatusResponse.class);
+    }
+
+    /**
+     * Generates link for requesting report execution status.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/status"
+     */
+    public URI getReportStatusCheckURI(String executionId) {
+        String outputResourceUri = "/{executionId}";
+
+        String fullUri = jsServerProfile.getServerUrl() +
+                REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS +
+                outputResourceUri + REST_REPORT_STATUS;
+
+        return new UriTemplate(fullUri).expand(executionId);
+    }
+
+    /**
+     * Saves resource ouput in file.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @param file         The file in which the output will be saved
+     * @throws RestClientException
+     */
+    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
+        URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
+        downloadFile(outputResourceUri, file);
+    }
+
+    /**
+     * Load output data for export on current request.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return Basically it will be 3 cases HTML/JSON/XML types.
+     */
+    public ReportDataResponse runExportOutputResource(String executionId, String exportOutput) {
+        ResponseEntity<String> response = restTemplate.exchange(
+                getExportOutputResourceURI(executionId, exportOutput), HttpMethod.GET, null, String.class);
+
+        boolean isFinal;
+        boolean hasOutputFinal = response.getHeaders().containsKey("output-final");
+        String data = response.getBody();
+
+        if (hasOutputFinal) {
+            isFinal = Boolean.valueOf(response.getHeaders().getFirst("output-final"));
+        } else {
+            // "output-final" header is missing for JRS 5.5 and lower,
+            // so we consider request to be not final by default
+            isFinal = false;
+        }
+        return new ReportDataResponse(isFinal, data);
+    }
+
+    /**
+     * Generates link for requesting report output resource datum.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/outputResource"
+     */
+    public URI getExportOutputResourceURI(String executionId, String exportOutput) {
         String outputResourceUri = "/{executionId}/exports/{exportOutput}/outputResource";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
 
@@ -653,23 +798,55 @@ public class JsRestClient {
         return uriTemplate.expand(executionId, exportOutput);
     }
 
-    public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
-        URI outputResourceUri = getExportOuptutResourceURI(executionId, exportOutput);
-        downloadFile(outputResourceUri, file);
-    }
-
-    public URI getExportAttachmentURI(String executionId, String exportOutput, String attachmentName) {
-        String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
-        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
-
-        UriTemplate uriTemplate = new UriTemplate(fullUri);
-        return uriTemplate.expand(executionId, exportOutput, attachmentName);
-    }
-
+    /**
+     * Save report in file with specified name.
+     *
+     * @param executionId    Identifies current id of running report.
+     * @param exportOutput   Identifier which refers to current requested export.
+     * @param attachmentName Name of attachment we store on JRS side.
+     * @param file           The file in which the output will be saved
+     * @throws RestClientException
+     */
     public void saveExportAttachmentToFile(String executionId, String exportOutput,
                                            String attachmentName, File file) throws RestClientException {
         URI attachmentUri = getExportAttachmentURI(executionId, exportOutput, attachmentName);
         downloadFile(attachmentUri, file);
+    }
+
+    /**
+     * Generates link for requesting of report export attachemnt data.
+     *
+     * @param executionId    Identifies current id of running report.
+     * @param exportOutput   Identifier which refers to current requested export.
+     * @param attachmentName Name of attachment we store on JRS side.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/attachments/{attachment}"
+     */
+    public URI getExportAttachmentURI(String executionId, String exportOutput, String attachmentName) {
+        String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
+        return new UriTemplate(fullUri).expand(executionId, exportOutput, attachmentName);
+    }
+
+    /**
+     * Sends request for retrieving report details data.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return response which expose current report details.
+     */
+    public ReportExecutionResponse runReportDetailsRequest(String executionId) {
+        return restTemplate.getForObject(getReportDetailsURI(executionId), ReportExecutionResponse.class);
+    }
+
+    /**
+     * Generates link for requesting details on specified report.
+     *
+     * @param executionId Identifies current id of running report.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}"
+     */
+    public URI getReportDetailsURI(String executionId) {
+        String attachmentUri = "/{executionId}";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
+        return new UriTemplate(fullUri).expand(executionId);
     }
 
     //---------------------------------------------------------------------
@@ -680,9 +857,9 @@ public class JsRestClient {
      * Gets the resource descriptor of a query-based input control that contains query data
      * according to specified parameters.
      *
-     * @param uri repository URI of the input control
+     * @param uri           repository URI of the input control
      * @param datasourceUri repository URI of a datasource for the control
-     * @param params parameters for the input control (can be <code>null</code>)
+     * @param params        parameters for the input control (can be <code>null</code>)
      * @return the ResourceDescriptor of a query-based input control that contains query data
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
@@ -691,7 +868,7 @@ public class JsRestClient {
         fullUri.append(restServicesUrl).append(REST_RESOURCE_URI).append(uri);
         fullUri.append("?IC_GET_QUERY_DATA=").append(datasourceUri);
         if (params != null) {
-            for(ResourceParameter parameter : params) {
+            for (ResourceParameter parameter : params) {
                 fullUri.append(parameter.isListItem() ? "&PL_" : "&P_");
                 fullUri.append(parameter.getName()).append("=").append(parameter.getValue());
             }
@@ -702,9 +879,9 @@ public class JsRestClient {
     /**
      * Gets the query data of a query-based input control, according to specified parameters.
      *
-     * @param uri repository URI of the input control
+     * @param uri           repository URI of the input control
      * @param datasourceUri repository URI of a datasource for the control
-     * @param params parameters for the input control (can be <code>null</code>)
+     * @param params        parameters for the input control (can be <code>null</code>)
      * @return The query data as list of ResourceProperty objects
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      */
@@ -722,8 +899,8 @@ public class JsRestClient {
                 property.setName(queryDataRow.getValue());
                 //cols
                 StringBuilder value = new StringBuilder();
-                for(ResourceProperty queryDataCol : queryDataRow.getProperties()) {
-                    if(ResourceDescriptor.PROP_QUERY_DATA_ROW_COLUMN.equals(queryDataCol.getName())) {
+                for (ResourceProperty queryDataCol : queryDataRow.getProperties()) {
+                    if (ResourceDescriptor.PROP_QUERY_DATA_ROW_COLUMN.equals(queryDataCol.getName())) {
                         if (value.length() > 0) value.append(" | ");
                         value.append(queryDataCol.getValue());
                     }
@@ -746,7 +923,6 @@ public class JsRestClient {
      * @param reportUri repository URI of the report
      * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public List<InputControl> getInputControls(String reportUri) throws RestClientException {
@@ -757,12 +933,11 @@ public class JsRestClient {
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs
      * @param selectedValues list of selected values
      * @return a list of input controls
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public List<InputControl> getInputControls(String reportUri, List<String> controlsIds,
@@ -776,7 +951,6 @@ public class JsRestClient {
      * @param reportUri repository URI of the report
      * @return the InputControlsList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlsList getInputControlsList(String reportUri) throws RestClientException {
@@ -787,16 +961,15 @@ public class JsRestClient {
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs
      * @param selectedValues list of selected values
      * @return the InputControlsList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlsList getInputControlsList(String reportUri, List<String> controlsIds,
-            List<ReportParameter> selectedValues) throws RestClientException {
+                                                  List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, false);
         // add selected values to request
@@ -814,7 +987,6 @@ public class JsRestClient {
      * @param reportUri repository URI of the report
      * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public List<InputControlState> getInputControlsValues(String reportUri) throws RestClientException {
@@ -825,16 +997,15 @@ public class JsRestClient {
      * Gets the list of states of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs
      * @param selectedValues list of selected values
      * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
-     *  @since 1.6
+     * @since 1.6
      */
     public List<InputControlState> getInputControlsValues(String reportUri, List<String> controlsIds,
-            List<ReportParameter> selectedValues) throws RestClientException {
+                                                          List<ReportParameter> selectedValues) throws RestClientException {
         return getInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
     }
 
@@ -844,7 +1015,6 @@ public class JsRestClient {
      * @param reportUri repository URI of the report
      * @return the InputControlStatesList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlStatesList getInputControlsValuesList(String reportUri) throws RestClientException {
@@ -855,16 +1025,15 @@ public class JsRestClient {
      * Gets the list of states of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs
      * @param selectedValues list of selected values
      * @return the InputControlStatesList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlStatesList getInputControlsValuesList(String reportUri, List<String> controlsIds,
-            List<ReportParameter> selectedValues) throws RestClientException {
+                                                             List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, true);
         // add selected values to request
@@ -872,20 +1041,19 @@ public class JsRestClient {
         parametersList.setReportParameters(selectedValues);
         // execute POST request
         try {
-            return  restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
+            return restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
         } catch (HttpMessageNotReadableException exception) {
-             return new InputControlStatesList();
+            return new InputControlStatesList();
         }
     }
 
     /**
      * Validates the input controls values on the server side and returns states only for invalid controls.
      *
-     * @param reportUri repository URI of the report
+     * @param reportUri     repository URI of the report
      * @param inputControls list of input controls that should be validated
      * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.4
      */
     public List<InputControlState> validateInputControlsValues(String reportUri, List<InputControl> inputControls)
@@ -896,34 +1064,32 @@ public class JsRestClient {
     /**
      * Validates the input controls values on the server side and returns states only for invalid controls.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs that should be validated
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs that should be validated
      * @param selectedValues list of selected values for validation
      * @return the list of the input controls states
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public List<InputControlState> validateInputControlsValues(String reportUri, List<String> controlsIds,
-            List<ReportParameter> selectedValues) throws RestClientException {
+                                                               List<ReportParameter> selectedValues) throws RestClientException {
         return validateInputControlsValuesList(reportUri, controlsIds, selectedValues).getInputControlStates();
     }
 
     /**
      * Validates the input controls values on the server side and returns states only for invalid controls.
      *
-     * @param reportUri repository URI of the report
+     * @param reportUri     repository URI of the report
      * @param inputControls list of input controls that should be validated
      * @return the InputControlStatesList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlStatesList validateInputControlsValuesList(String reportUri, List<InputControl> inputControls)
             throws RestClientException {
         List<String> controlsIds = new ArrayList<String>();
         List<ReportParameter> selectedValues = new ArrayList<ReportParameter>();
-        for(InputControl control : inputControls) {
+        for (InputControl control : inputControls) {
             controlsIds.add(control.getId());
             selectedValues.add(new ReportParameter(control.getId(), control.getSelectedValues()));
         }
@@ -934,25 +1100,31 @@ public class JsRestClient {
     /**
      * Validates the input controls values on the server side and returns states only for invalid controls.
      *
-     * @param reportUri repository URI of the report
-     * @param controlsIds list of input controls IDs that should be validated
+     * @param reportUri      repository URI of the report
+     * @param controlsIds    list of input controls IDs that should be validated
      * @param selectedValues list of selected values for validation
      * @return the InputControlStatesList value
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
-     *
      * @since 1.6
      */
     public InputControlStatesList validateInputControlsValuesList(String reportUri, List<String> controlsIds,
-            List<ReportParameter> selectedValues) throws RestClientException {
+                                                                  List<ReportParameter> selectedValues) throws RestClientException {
         InputControlStatesList statesList = getInputControlsValuesList(reportUri, controlsIds, selectedValues);
         // remove states without validation errors
         Iterator<InputControlState> iterator = statesList.getInputControlStates().iterator();
-        while(iterator.hasNext()) {
-            if(iterator.next().getError() == null) {
+        while (iterator.hasNext()) {
+            if (iterator.next().getError() == null) {
                 iterator.remove();
             }
         }
         return statesList;
+    }
+
+    /**
+     * Method which flashes all stared cookies.
+     */
+    public static void flushCookies() {
+        StaticCacheHelper.clearCache();
     }
 
     //---------------------------------------------------------------------
@@ -989,13 +1161,11 @@ public class JsRestClient {
     }
 
     private void updateConnectTimeout() {
-        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
-        factory.setConnectTimeout(connectTimeout);
+        requestFactory.setConnectTimeout(connectTimeout);
     }
 
     private void updateReadTimeout() {
-        SimpleClientHttpRequestFactory factory = (SimpleClientHttpRequestFactory) getRestTemplate().getRequestFactory();
-        factory.setReadTimeout(readTimeout);
+        requestFactory.setConnectTimeout(readTimeout);
     }
 
     private String generateInputControlsUrl(String reportUri, List<String> controlsIds, boolean valuesOnly) {
@@ -1017,6 +1187,24 @@ public class JsRestClient {
             fullUri.append(REST_VALUES_URI);
         }
         return fullUri.toString();
+    }
+
+    private void fetchXmlConverter() {
+        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+        for (HttpMessageConverter<?> converter : converters) {
+            if (converter instanceof SimpleXmlHttpMessageConverter) {
+                simpleXmlHttpMessageConverter =
+                        (SimpleXmlHttpMessageConverter) converter;
+            }
+        }
+    }
+
+    private void configureAnnotationStrategy() {
+        if (simpleXmlHttpMessageConverter != null) {
+            Strategy annotationStrategy = new AnnotationStrategy();
+            Serializer serializer = new Persister(annotationStrategy);
+            simpleXmlHttpMessageConverter.setSerializer(serializer);
+        }
     }
 
     //---------------------------------------------------------------------

@@ -106,4 +106,7 @@ public class ReportExecutionResponse {
         this.totalPages = totalPages;
     }
 
+    public ReportStatus getReportStatus() {
+        return ReportStatus.valueOf(status.toUpperCase());
+    }
 }

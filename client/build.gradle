@@ -22,7 +22,6 @@ android {
     defaultConfig {
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-
         versionCode 9020000
         versionName version
     }
@@ -40,15 +39,14 @@ android {
     buildTypes {
         debug {
             runProguard false
-            testCoverageEnabled = true
         }
     }
 }
 
 dependencies {
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'com.octo.android.robospice:robospice:1.4.11'
-    compile 'com.octo.android.robospice:robospice-spring-android:1.4.11'
+    compile 'com.octo.android.robospice:robospice:1.4.14'
+    compile 'com.octo.android.robospice:robospice-spring-android:1.4.14'
     compile('org.simpleframework:simple-xml:2.7') {
         exclude group: 'stax', module: 'stax'
         exclude group: 'stax', module: 'stax-api'

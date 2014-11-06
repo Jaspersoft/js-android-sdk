@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (C) 2012 Jaspersoft Corporation. All rights reserved.
+    Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
     http://community.jaspersoft.com/project/mobile-sdk-android
 
     Unless you have purchased a commercial license agreement from Jaspersoft,
     the following license terms apply:
 
-    This program is part of Jaspersoft Mobile for Android.
+    This program is part of Jaspersoft Mobile SDK for Android.
 
-    Jaspersoft Mobile is free software: you can redistribute it and/or modify
+    Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Jaspersoft Mobile is distributed in the hope that it will be useful,
+    Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
 
     You should have received a copy of the GNU Lesser General Public License
-    along with Jaspersoft Mobile for Android. If not, see
+    along with Jaspersoft Mobile SDK for Android. If not, see
     <http://www.gnu.org/licenses/lgpl>.
 -->
 
-<resources>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jaspersoft.android.sdk.integration" >
 
-    <!-- MultiSelectSpinner -->
-    <string name="mss_btn_check_all">Check all</string>
-    <string name="mss_btn_uncheck_all">Uncheck all</string>
+    <application/>
 
-</resources>
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:targetPackage="com.jaspersoft.android.sdk.integration" />
+
+</manifest>
