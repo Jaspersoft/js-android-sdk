@@ -121,9 +121,22 @@ public class JsRestClient {
     private final RestTemplate restTemplate;
     private final SimpleClientHttpRequestFactory requestFactory;
 
+    //---------------------------------------------------------------------
+    // Constructors
+    //---------------------------------------------------------------------
+
     public JsRestClient() {
-        this.restTemplate = new RestTemplate(true);
-        this.requestFactory = new SimpleClientHttpRequestFactory();
+        this(new RestTemplate(true), new SimpleClientHttpRequestFactory());
+    }
+
+    public JsRestClient(RestTemplate restTemplate) {
+        this(restTemplate, new SimpleClientHttpRequestFactory());
+    }
+
+    public JsRestClient(RestTemplate restTemplate,
+                        SimpleClientHttpRequestFactory factory) {
+        this.restTemplate = restTemplate;
+        this.requestFactory = factory;
 
         fetchXmlConverter();
         configureAnnotationStrategy();
