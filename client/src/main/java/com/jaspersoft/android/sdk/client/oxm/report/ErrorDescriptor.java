@@ -16,7 +16,7 @@ import java.io.StringWriter;
 public class ErrorDescriptor {
     @Element
     private String errorCode;
-    @Element
+    @Element(required = false)
     private String message;
     @Element(required = false)
     private String parameters;

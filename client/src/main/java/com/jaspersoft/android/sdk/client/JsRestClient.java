@@ -179,16 +179,20 @@ public class JsRestClient {
     public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
-        this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        restTemplate.setRequestFactory(requestFactory);
+        // We allow user to set profile to null value
+        if (jsServerProfile != null) {
+            this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
-        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-        interceptors.add(new LocalesHttpRequestInterceptor());
-        interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
-        restTemplate.setInterceptors(interceptors);
+            restTemplate.setRequestFactory(requestFactory);
 
-        updateRequestFactoryTimeouts();
+            List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+            interceptors.add(new LocalesHttpRequestInterceptor());
+            interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
+            restTemplate.setInterceptors(interceptors);
+
+            updateRequestFactoryTimeouts();
+        }
     }
 
     /**
