@@ -183,6 +183,7 @@ public class ResourceLookup implements Parcelable {
         folder,
         reportUnit,
         dashboard,
+        legacyDashboard,
         unknown
     }
 
