@@ -12,14 +12,12 @@ import java.io.StringWriter;
  * @author Tom Koptel
  * @since 1.9
  */
-@Root
+@Root(strict = false)
 public class ErrorDescriptor {
     @Element
     private String errorCode;
     @Element(required = false)
     private String message;
-    @Element(required = false)
-    private String parameters;
 
     public static ErrorDescriptor valueOf(HttpStatusCodeException exception) {
         String response = exception.getResponseBodyAsString();
