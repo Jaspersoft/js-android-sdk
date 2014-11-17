@@ -38,6 +38,7 @@ import android.widget.Spinner;
 import com.jaspersoft.android.sdk.ui.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     private List<T> items;
     CharSequence[] stringItems;
     private boolean[] checkedItems;
+    private boolean[] defaultCheckedItems;
     /**
      * the text that displays on the spinner if there is nothing selected.
      */
@@ -88,6 +90,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     @Override
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
         checkedItems[which] = isChecked;
+        updateState(false);
     }
 
     @Override
@@ -97,6 +100,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
         if (getPrompt() != null) {
             builder.setTitle(getPrompt());
         }
+        defaultCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
         builder.setMultiChoiceItems(stringItems, checkedItems, this);
         builder.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
@@ -130,9 +134,16 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
                                 }
 
                                 dialog.getListView().setAdapter(initCustomAdapter(dialog));
-                                updateState();
+                                updateState(false);
                             }
                         });
+            }
+        });
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                checkedItems = defaultCheckedItems;
+                updateState(false);
             }
         });
         dialog.show();
@@ -284,6 +295,10 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     //---------------------------------------------------------------------
 
     private void updateState() {
+        updateState(true);
+    }
+
+    private void updateState(boolean notifyListener) {
         // refresh text on spinner
         StringBuilder spinnerBuilder = new StringBuilder();
         for (int i = 0; i < stringItems.length; i++) {
