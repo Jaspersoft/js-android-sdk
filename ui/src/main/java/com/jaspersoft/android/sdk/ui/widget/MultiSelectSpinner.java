@@ -321,7 +321,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
                 new String[]{spinnerText});
         setAdapter(adapter);
 
-        if (onItemsSelectedListener != null) {
+        if (onItemsSelectedListener != null && notifyListener) {
             onItemsSelectedListener.onItemsSelected(getSelectedItems());
         }
     }
