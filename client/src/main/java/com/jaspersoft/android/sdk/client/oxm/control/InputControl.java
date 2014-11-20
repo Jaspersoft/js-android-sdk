@@ -52,6 +52,7 @@ public class InputControl implements Parcelable {
         bool,
         singleValueText,
         singleValueNumber,
+        singleValueTime,
         singleValueDate,
         singleValueDatetime,
         singleSelect,
