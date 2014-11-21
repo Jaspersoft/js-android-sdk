@@ -107,6 +107,8 @@ public class JsRestClient {
     public static final String REST_REPORT_EXECUTIONS = "/reportExecutions";
     public static final String REST_REPORT_EXPORTS = "/exports";
     public static final String REST_REPORT_STATUS = "/status";
+    public static final String REST_THUMBNAILS = "/thumbnails";
+
     private SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter;
 
     // the timeout in milliseconds until a connection is established
@@ -1142,6 +1144,32 @@ public class JsRestClient {
      */
     public static void flushCookies() {
         StaticCacheHelper.clearCache();
+    }
+
+    //---------------------------------------------------------------------
+    // Thumbnails API
+    //---------------------------------------------------------------------
+
+    /**
+     * Returns thumbnail image or encoded image of the requested URI without placeholder
+     *
+     * @param resourceUri Uri of resource
+     * @return {serverUrl}/rest_v2/thumbnails/{resourceUri}?defaultAllowed=false
+     */
+    public String generateThumbNailUri(String resourceUri) {
+        return generateThumbNailUri(resourceUri, false);
+    }
+
+    /**
+     * Returns thumbnail image or encoded image of the requested URI
+     *
+     * @param resourceUri Uri of resource
+     * @param defaultAllowed If true, a placeholder thumbnail will be provided when no thumbnail is available (default: false)
+     * @return {serverUrl}/rest_v2/thumbnails/{resourceUri}?defaultAllowed={allowedFlag}
+     */
+    public String generateThumbNailUri(String resourceUri, boolean defaultAllowed) {
+        return jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_THUMBNAILS
+                + resourceUri + "?defaultAllowed=" + Boolean.toString(defaultAllowed);
     }
 
     //---------------------------------------------------------------------
