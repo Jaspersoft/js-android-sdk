@@ -62,6 +62,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
@@ -120,22 +121,22 @@ public class JsRestClient {
     private ServerInfo serverInfo;
 
     private final RestTemplate restTemplate;
-    private final QueuedClientHttpRequestFactory requestFactory;
+    private final SimpleClientHttpRequestFactory requestFactory;
 
     //---------------------------------------------------------------------
     // Constructors
     //---------------------------------------------------------------------
 
     public JsRestClient() {
-        this(new RestTemplate(true), new QueuedClientHttpRequestFactory());
+        this(new RestTemplate(true), new SimpleClientHttpRequestFactory());
     }
 
     public JsRestClient(RestTemplate restTemplate) {
-        this(restTemplate, new QueuedClientHttpRequestFactory());
+        this(restTemplate, new SimpleClientHttpRequestFactory());
     }
 
     public JsRestClient(RestTemplate restTemplate,
-                        QueuedClientHttpRequestFactory factory) {
+                        SimpleClientHttpRequestFactory factory) {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
 
@@ -146,13 +147,6 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // Timeouts
     //---------------------------------------------------------------------
-
-    /**
-     * Interrupts all requests associated with {@link JsRestClient}
-     */
-    public void interruptAllRequests() {
-        requestFactory.disconnectAll();
-    }
 
     /**
      * Set the underlying URLConnection's connect timeout. A timeout value of 0 specifies an infinite timeout.
