@@ -158,6 +158,7 @@ public class InputControl implements Parcelable {
             case bool:
             case singleValueText:
             case singleValueNumber:
+            case singleValueTime:
             case singleValueDate:
             case singleValueDatetime:
                 if (getState().getValue() != null) {
