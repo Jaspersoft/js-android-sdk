@@ -186,14 +186,13 @@ public class JsRestClient {
         if (jsServerProfile != null) {
             this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
 
+            updateRequestFactoryTimeouts();
             restTemplate.setRequestFactory(requestFactory);
 
             List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
             interceptors.add(new LocalesHttpRequestInterceptor());
             interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
             restTemplate.setInterceptors(interceptors);
-
-            updateRequestFactoryTimeouts();
         }
     }
 
@@ -1210,7 +1209,7 @@ public class JsRestClient {
     }
 
     private void updateReadTimeout() {
-        requestFactory.setConnectTimeout(readTimeout);
+        requestFactory.setReadTimeout(readTimeout);
     }
 
     private String generateInputControlsUrl(String reportUri, List<String> controlsIds, boolean valuesOnly) {
