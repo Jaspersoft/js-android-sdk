@@ -3,6 +3,8 @@ package com.jaspersoft.android.sdk.client.oxm.report;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -55,6 +57,16 @@ public class ExecutionRequest {
 
     public void setAttachmentsPrefix(String attachmentsPrefix) {
         this.attachmentsPrefix = attachmentsPrefix;
+    }
+
+    public void setEscapedAttachmentsPrefix(String attachmentsPrefix) {
+        try {
+            this.attachmentsPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
+        } catch (UnsupportedEncodingException exception) {
+            this.attachmentsPrefix = attachmentsPrefix;
+        } catch (NullPointerException exception) {
+            this.attachmentsPrefix = attachmentsPrefix;
+        }
     }
 
     public String getAttachmentsPrefix() {
