@@ -23,7 +23,8 @@ public class LocalesHttpRequestInterceptor implements ClientHttpRequestIntercept
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         String timeZone = createGmtOffsetString(true, true, TimeZone.getDefault().getRawOffset());
-        String locale = Locale.getDefault().getLanguage();
+        // Because of HTTP accepts this type separator '-' we replace default one
+        String locale = Locale.getDefault().toString().replaceAll("_", "-");
 
         request.getHeaders().setAcceptLanguage(locale);
         request.getHeaders().add(ACCEPT_TIMEZONE, timeZone);
