@@ -44,8 +44,9 @@ public class JsXmlSpiceService extends SpiceService {
     @Override
     public CacheManager createCacheManager(Application application) throws CacheCreationException {
         CacheManager cacheManager = new CacheManager();
-        cacheManager.addPersister(new SimpleSerializerObjectPersisterFactory(application));
+        // It is really important to keep proper persister order.
         cacheManager.addPersister(new InFileStringObjectPersister(application));
+        cacheManager.addPersister(new SimpleSerializerObjectPersisterFactory(application));
         return cacheManager;
     }
 
