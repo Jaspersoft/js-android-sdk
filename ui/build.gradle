@@ -1,19 +1,13 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "com.android.tools.build:gradle:" + androidToolsBuildGradle
-        classpath 'com.github.dcendents:android-maven-plugin:1.0'
-    }
-}
-
-
 apply plugin: 'com.android.library'
-apply plugin: 'android-maven'
 
 description = 'js-android-sdk-ui'
+
+ext {
+    PUBLISH_GROUP_ID = group
+    PUBLISH_ARTIFACT_ID = description
+    PUBLISH_VERSION = '1.9.0'
+}
+
 
 android {
     compileSdkVersion androidCompileSdkVersion
@@ -36,3 +30,5 @@ android {
 dependencies {
     compile project(':js-android-sdk-client')
 }
+
+apply from: '../scripts/android-release-aar.gradle'

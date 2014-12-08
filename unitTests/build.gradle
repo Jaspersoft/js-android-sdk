@@ -23,9 +23,12 @@
  */
 
 buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
     dependencies {
-        classpath "com.android.tools.build:gradle:" + androidToolsBuildGradle
-        classpath "com.novoda:gradle-android-test-plugin:0.9.9-SNAPSHOT"
+        classpath "com.novoda:gradle-android-test-plugin:0.10.0"
     }
 }
 
@@ -67,6 +70,6 @@ dependencies {
     }
 }
 
-apply from: '../scripts/jacoco-support.gradle'
+//apply from: '../scripts/jacoco-support.gradle'
 
-apply from: '../scripts/android-studio-robolectric-support.gradle'
+//apply from: '../scripts/android-studio-robolectric-support.gradle'

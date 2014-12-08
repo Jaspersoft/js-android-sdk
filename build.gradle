@@ -1,11 +1,13 @@
-configure(allprojects) { project ->
-    buildscript {
-        repositories {
-            jcenter()
-            mavenCentral()
-            maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-            mavenLocal()
-        }
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        mavenLocal()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:0.12.1"
+        classpath "com.github.dcendents:android-maven-plugin:1.2"
     }
 }
 
@@ -13,7 +15,6 @@ subprojects {
     group = 'com.jaspersoft.android.sdk'
     version = '1.9'
 
-    ext.androidToolsBuildGradle = '0.12.1'
     ext.androidMinSdkVersion = 9
     ext.androidTargetSdkVersion = 19
     ext.androidCompileSdkVersion = 19
