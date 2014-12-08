@@ -11,7 +11,7 @@ configure(allprojects) { project ->
 
 subprojects {
     group = 'com.jaspersoft.android.sdk'
-    version = '2.0-SNAPSHOT'
+    version = '1.9'
 
     ext.androidToolsBuildGradle = '0.12.1'
     ext.androidMinSdkVersion = 9

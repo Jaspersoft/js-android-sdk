@@ -22,7 +22,7 @@ android {
     defaultConfig {
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-        versionCode 9020000
+        versionCode 9010900
         versionName version
     }
 
