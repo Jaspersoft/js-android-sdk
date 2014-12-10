@@ -30,7 +30,7 @@ public class ReportStatusResponse {
     }
 
     public ReportStatus getReportStatus() {
-        return ReportStatus.valueOf(mStatus.toUpperCase());
+        return ReportStatus.valueOf(mStatus);
     }
 
     public String getStatus() {
