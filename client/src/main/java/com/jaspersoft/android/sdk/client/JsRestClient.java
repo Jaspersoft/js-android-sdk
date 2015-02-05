@@ -45,9 +45,6 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
-import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
-import com.jaspersoft.android.sdk.util.KeepAliveHttpRequestInterceptor;
-import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.simpleframework.xml.Serializer;
@@ -188,16 +185,12 @@ public class JsRestClient {
         // We allow user to set profile to null value
         if (jsServerProfile != null) {
             this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
-
             updateRequestFactoryTimeouts();
-            restTemplate.setRequestFactory(requestFactory);
-
-            List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-            interceptors.add(new LocalesHttpRequestInterceptor());
-            interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
-            interceptors.add(new KeepAliveHttpRequestInterceptor());
-            restTemplate.setInterceptors(interceptors);
         }
+    }
+
+    public void setRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+        restTemplate.setInterceptors(interceptors);
     }
 
     /**

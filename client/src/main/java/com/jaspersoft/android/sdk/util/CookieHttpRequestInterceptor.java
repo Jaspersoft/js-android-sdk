@@ -18,6 +18,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 1.9
  */
+@Deprecated
 public class CookieHttpRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final String SET_COOKIE = "set-cookie";
     private static final String COOKIE = "Cookie";
