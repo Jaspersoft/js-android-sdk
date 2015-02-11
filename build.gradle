@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        mavenLocal()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:0.14.2"
+        classpath "com.github.dcendents:android-maven-plugin:1.2"
+    }
+}
+
+subprojects {
+    group = 'com.jaspersoft.android.sdk'
+    version = '1.9'
+
+    ext.androidMinSdkVersion = 9
+    ext.androidTargetSdkVersion = 19
+    ext.androidCompileSdkVersion = 19
+    ext.androidBuildToolsVersion = "19.1"
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url "file://${System.getenv("ANDROID_HOME")}/extras/android/m2repository" }
+    }
+}
+
+apply plugin: 'java' // ensure clean is also triggered for root build folder
+apply plugin: 'build-dashboard'
+
+buildDashboard {
+    reports.html.destination = "build/"
+}
+
+test.reports.html.enabled = false     // just clean up dashboard from not generated reports
+test.reports.junitXml.enabled = false // just clean up dashboard from not generated reports
+

@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;

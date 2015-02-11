@@ -139,4 +139,31 @@ public class JsServerProfile {
         this.password = password;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JsServerProfile that = (JsServerProfile) o;
+
+        if (!alias.equals(that.alias)) return false;
+        if (organization != null ? !organization.equals(that.organization) : that.organization != null)
+            return false;
+        if (!password.equals(that.password)) return false;
+        if (!serverUrl.equals(that.serverUrl)) return false;
+        if (!username.equals(that.username)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + alias.hashCode();
+        result = 31 * result + serverUrl.hashCode();
+        result = 31 * result + (organization != null ? organization.hashCode() : 0);
+        result = 31 * result + username.hashCode();
+        result = 31 * result + password.hashCode();
+        return result;
+    }
 }

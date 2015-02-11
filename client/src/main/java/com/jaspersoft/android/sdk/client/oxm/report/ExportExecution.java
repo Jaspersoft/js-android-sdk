@@ -44,7 +44,7 @@ public class ExportExecution {
     @Element
     private String status;
 
-    @Element
+    @Element(required=false)
     private ReportOutputResource outputResource;
 
     @ElementList(empty=false, entry="attachment", required=false)

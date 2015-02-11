@@ -35,6 +35,7 @@ import java.util.List;
 
 @Root(name="resources")
 public class ResourceLookupsList {
+    public static int NO_OFFSET = -1;
 
     @ElementList(entry="resourceLookup", inline=true, required=false, empty=false)
     private List<ResourceLookup> resourceLookups;
@@ -44,6 +45,12 @@ public class ResourceLookupsList {
 
     @Element(required=false)
     private int totalCount;
+
+    @Element(required=false)
+    private int nextOffset;
+
+    @Element(required=false)
+    private int startIndex;
 
     public ResourceLookupsList() {
         this.resourceLookups = new ArrayList<ResourceLookup>();
@@ -85,5 +92,29 @@ public class ResourceLookupsList {
 
     public void setTotalCount(String totalCount) {
         this.totalCount = (totalCount != null) ? Integer.parseInt(totalCount) : 0;
+    }
+
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    public void setStartIndex(String startIndex) {
+        this.startIndex = (startIndex != null) ? Integer.parseInt(startIndex) : 0;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public int getNextOffset() {
+        return nextOffset;
+    }
+
+    public void setNextOffset(String nextOffset) {
+        this.nextOffset = (nextOffset != null) ? Integer.parseInt(nextOffset) : NO_OFFSET;
+    }
+
+    public void setNextOffset(int nextOffset) {
+        this.nextOffset = nextOffset;
     }
 }
