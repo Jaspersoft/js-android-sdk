@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 description = 'js-android-sdk-ui'
-
+version = '1.9'
 ext {
     PUBLISH_GROUP_ID = group
     PUBLISH_ARTIFACT_ID = description

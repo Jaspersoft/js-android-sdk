@@ -13,7 +13,6 @@ buildscript {
 
 subprojects {
     group = 'com.jaspersoft.android.sdk'
-    version = '1.9'
 
     ext.androidMinSdkVersion = 9
     ext.androidTargetSdkVersion = 19
