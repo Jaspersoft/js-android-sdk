@@ -6,14 +6,13 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:0.14.2"
+        classpath 'com.android.tools.build:gradle:1.0.0'
         classpath "com.github.dcendents:android-maven-plugin:1.2"
     }
 }
 
 subprojects {
     group = 'com.jaspersoft.android.sdk'
-    version = '1.9'
 
     ext.androidMinSdkVersion = 9
     ext.androidTargetSdkVersion = 19
