@@ -107,6 +107,6 @@ public class ReportExecutionResponse {
     }
 
     public ReportStatus getReportStatus() {
-        return ReportStatus.valueOf(status.toUpperCase());
+        return ReportStatus.valueOf(status);
     }
 }

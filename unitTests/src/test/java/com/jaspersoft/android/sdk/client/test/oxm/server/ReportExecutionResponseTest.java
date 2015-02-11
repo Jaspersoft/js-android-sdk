@@ -26,25 +26,31 @@ public class ReportExecutionResponseTest extends UnitTestSpecification {
     @Test
     public void test_getReportStatus_for_queued() {
         reportExecutionResponse.setStatus("queued");
-        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.QUEUED));
+        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.queued));
     }
 
     @Test
     public void test_getReportStatus_for_ready() {
         reportExecutionResponse.setStatus("ready");
-        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.READY));
+        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.ready));
     }
 
     @Test
     public void test_getReportStatus_for_failed() {
         reportExecutionResponse.setStatus("failed");
-        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.FAILED));
+        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.failed));
     }
 
     @Test
     public void test_getReportStatus_for_execution() {
         reportExecutionResponse.setStatus("execution");
-        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.EXECUTION));
+        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.execution));
+    }
+
+    @Test
+    public void test_getReportStatus_for_cancelled() {
+        reportExecutionResponse.setStatus("cancelled");
+        assertThat(reportExecutionResponse.getReportStatus(), is(ReportStatus.cancelled));
     }
 
 }

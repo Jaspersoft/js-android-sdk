@@ -5,5 +5,5 @@ package com.jaspersoft.android.sdk.client.oxm.report;
  * @since 1.9
  */
 public enum ReportStatus {
-    QUEUED, READY, FAILED, EXECUTION
+    execution, ready, cancelled, failed, queued
 }

@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.client;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * The <code>JsServerProfile</code> object represents an instance of a JasperReports Server
  * including authentication credentials.
@@ -32,7 +35,7 @@ package com.jaspersoft.android.sdk.client;
  * @version $Id$
  * @since 1.0
  */
-public class JsServerProfile {
+public class JsServerProfile implements Parcelable {
     private long id;
     private String alias;
     private String serverUrl;
@@ -166,4 +169,39 @@ public class JsServerProfile {
         result = 31 * result + password.hashCode();
         return result;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.alias);
+        dest.writeString(this.serverUrl);
+        dest.writeString(this.organization);
+        dest.writeString(this.username);
+        dest.writeString(this.password);
+    }
+
+    private JsServerProfile(Parcel in) {
+        this.id = in.readLong();
+        this.alias = in.readString();
+        this.serverUrl = in.readString();
+        this.organization = in.readString();
+        this.username = in.readString();
+        this.password = in.readString();
+    }
+
+    public static final Parcelable.Creator<JsServerProfile> CREATOR = new Parcelable.Creator<JsServerProfile>() {
+        public JsServerProfile createFromParcel(Parcel source) {
+            return new JsServerProfile(source);
+        }
+
+        public JsServerProfile[] newArray(int size) {
+            return new JsServerProfile[size];
+        }
+    };
 }
