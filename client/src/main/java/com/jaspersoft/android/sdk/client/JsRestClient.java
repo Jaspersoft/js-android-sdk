@@ -64,8 +64,12 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -81,6 +85,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +115,6 @@ public class JsRestClient {
     public static final String REST_REPORT_STATUS = "/status";
     public static final String REST_THUMBNAILS = "/thumbnails";
 
-    private SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter;
 
     // the timeout in milliseconds until a connection is established
     private int connectTimeout = 15 * 1000;
@@ -129,7 +133,7 @@ public class JsRestClient {
     //---------------------------------------------------------------------
 
     public JsRestClient() {
-        this(new RestTemplate(true), new SimpleClientHttpRequestFactory());
+        this(new RestTemplate(false), new SimpleClientHttpRequestFactory());
     }
 
     public JsRestClient(RestTemplate restTemplate) {
@@ -140,9 +144,7 @@ public class JsRestClient {
                         SimpleClientHttpRequestFactory factory) {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
-
-        fetchXmlConverter();
-        configureAnnotationStrategy();
+        configureMessageConverters();
     }
 
     //---------------------------------------------------------------------
@@ -1235,22 +1237,24 @@ public class JsRestClient {
         return fullUri.toString();
     }
 
-    private void fetchXmlConverter() {
-        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-        for (HttpMessageConverter<?> converter : converters) {
-            if (converter instanceof SimpleXmlHttpMessageConverter) {
-                simpleXmlHttpMessageConverter =
-                        (SimpleXmlHttpMessageConverter) converter;
-            }
-        }
+    private void configureMessageConverters() {
+        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
+        messageConverters.add(new ByteArrayHttpMessageConverter());
+        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        messageConverters.add(new ResourceHttpMessageConverter());
+        messageConverters.add(new FormHttpMessageConverter());
+
+        SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter
+                = new SimpleXmlHttpMessageConverter();
+        configureAnnotationStrategy(simpleXmlHttpMessageConverter);
+        messageConverters.add(simpleXmlHttpMessageConverter);
     }
 
-    private void configureAnnotationStrategy() {
-        if (simpleXmlHttpMessageConverter != null) {
-            Strategy annotationStrategy = new AnnotationStrategy();
-            Serializer serializer = new Persister(annotationStrategy);
-            simpleXmlHttpMessageConverter.setSerializer(serializer);
-        }
+    private void configureAnnotationStrategy(
+            SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter) {
+        Strategy annotationStrategy = new AnnotationStrategy();
+        Serializer serializer = new Persister(annotationStrategy);
+        simpleXmlHttpMessageConverter.setSerializer(serializer);
     }
 
     //---------------------------------------------------------------------
