@@ -28,8 +28,4 @@
 
     <application/>
 
-    <instrumentation
-        android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="com.jaspersoft.android.sdk.integration" />
-
 </manifest>
