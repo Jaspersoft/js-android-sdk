@@ -45,6 +45,9 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
+import com.jaspersoft.android.sdk.util.CookieHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.KeepAliveHttpRequestInterceptor;
+import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.simpleframework.xml.Serializer;
@@ -186,6 +189,26 @@ public class JsRestClient {
         if (jsServerProfile != null) {
             this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
             updateRequestFactoryTimeouts();
+        }
+    }
+
+    @Deprecated
+    public void setLegacyServerProfile(final JsServerProfile serverProfile) {
+        this.serverInfo = null;
+        this.jsServerProfile = serverProfile;
+
+        // We allow user to set profile to null value
+        if (jsServerProfile != null) {
+            this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
+
+            updateRequestFactoryTimeouts();
+            restTemplate.setRequestFactory(requestFactory);
+
+            List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+            interceptors.add(new LocalesHttpRequestInterceptor());
+            interceptors.add(new CookieHttpRequestInterceptor(jsServerProfile));
+            interceptors.add(new KeepAliveHttpRequestInterceptor());
+            restTemplate.setInterceptors(interceptors);
         }
     }
 
