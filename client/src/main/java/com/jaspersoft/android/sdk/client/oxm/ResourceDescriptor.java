@@ -22,6 +22,7 @@
 package com.jaspersoft.android.sdk.client.oxm;
 
 import android.util.Log;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;

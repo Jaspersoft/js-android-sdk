@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.client.ic;
 
 import android.view.View;
+
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceParameter;
 import com.jaspersoft.android.sdk.client.oxm.ResourceProperty;
@@ -41,6 +42,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  * @since 1.0
  */
+@Deprecated
 public class InputControlWrapper {
 
     public static final String NULL_SUBSTITUTE = "~NULL~";

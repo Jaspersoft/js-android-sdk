@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.client.oxm.resource;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.simpleframework.xml.Element;
 
 /**
@@ -32,25 +35,69 @@ import org.simpleframework.xml.Element;
  * @author Ivan Gadzhega
  * @since 1.7
  */
-public class ResourceLookup {
+public class ResourceLookup implements Parcelable {
 
     @Element(required=false)
-    private String label;
+    protected String label;
     @Element(required=false)
-    private String description;
+    protected String description;
     @Element
-    private String uri;
-    @Element
-    private String resourceType;
+    protected String uri;
+    @Element(required=false)
+    protected String resourceType;
 
     @Element(required=false)
-    private Integer version;
+    protected int version;
     @Element(required=false)
-    private Integer permissionMask;
+    protected int permissionMask;
     @Element(required=false)
-    private String creationDate;
+    protected String creationDate;
     @Element(required=false)
-    private String updateDate;
+    protected String updateDate;
+
+    public ResourceLookup() { }
+
+    //---------------------------------------------------------------------
+    // Parcelable
+    //---------------------------------------------------------------------
+
+    public ResourceLookup(Parcel source) {
+        this.label = source.readString();
+        this.description = source.readString();
+        this.uri = source.readString();
+        this.resourceType = source.readString();
+        this.creationDate = source.readString();
+        this.updateDate = source.readString();
+        this.version = source.readInt();
+        this.permissionMask = source.readInt();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ResourceLookup createFromParcel(Parcel source) {
+            return new ResourceLookup(source);
+        }
+
+        public ResourceLookup[] newArray(int size) {
+            return new ResourceLookup[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(label);
+        dest.writeString(description);
+        dest.writeString(uri);
+        dest.writeString(resourceType);
+        dest.writeString(creationDate);
+        dest.writeString(updateDate);
+        dest.writeInt(version);
+        dest.writeInt(permissionMask);
+    }
 
     //---------------------------------------------------------------------
     // Getters & Setters
@@ -96,19 +143,19 @@ public class ResourceLookup {
         this.uri = uri;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 
-    public Integer getPermissionMask() {
+    public int getPermissionMask() {
         return permissionMask;
     }
 
-    public void setPermissionMask(Integer permissionMask) {
+    public void setPermissionMask(int permissionMask) {
         this.permissionMask = permissionMask;
     }
 
@@ -136,6 +183,7 @@ public class ResourceLookup {
         folder,
         reportUnit,
         dashboard,
+        legacyDashboard,
         unknown
     }
 

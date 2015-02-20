@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+apply plugin: 'android-maven'
+
+description = 'js-android-sdk-client'
+
+ext {
+    PUBLISH_GROUP_ID = group
+    PUBLISH_ARTIFACT_ID = description
+    PUBLISH_VERSION = '1.9'
+}
+
+android {
+    compileSdkVersion androidCompileSdkVersion
+    buildToolsVersion androidBuildToolsVersion
+
+    defaultConfig {
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+        versionCode 9010900
+        versionName version
+    }
+
+    packagingOptions {
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            runProguard false
+        }
+    }
+}
+
+dependencies {
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'com.octo.android.robospice:robospice:1.4.14'
+    compile 'com.octo.android.robospice:robospice-spring-android:1.4.14'
+    compile('org.simpleframework:simple-xml:2.7') {
+        exclude group: 'stax', module: 'stax'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+}
+
+apply from: '../scripts/android-release-aar.gradle'

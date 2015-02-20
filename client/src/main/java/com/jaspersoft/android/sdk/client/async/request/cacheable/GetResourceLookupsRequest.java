@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.client.async.request.cacheable;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 
 import java.util.List;
@@ -38,12 +39,7 @@ import java.util.List;
  */
 public class GetResourceLookupsRequest extends CacheableRequest<ResourceLookupsList> {
 
-    private String folderUri;
-    private String query;
-    private List<String> types;
-    private boolean recursive;
-    private int offset;
-    private int limit;
+    private ResourceLookupSearchCriteria searchCriteria;
 
     /**
      * Creates a new instance of {@link GetResourceLookupsRequest}.
@@ -84,53 +80,70 @@ public class GetResourceLookupsRequest extends CacheableRequest<ResourceLookupsL
      */
     public GetResourceLookupsRequest(JsRestClient jsRestClient, String folderUri, String query, List<String> types,
                                      boolean recursive, int offset, int limit) {
-        super(jsRestClient, ResourceLookupsList.class);
-        this.folderUri = folderUri;
-        this.query = query;
-        this.types = types;
-        this.recursive = recursive;
-        this.offset = offset;
-        this.limit = limit;
+        this(jsRestClient, folderUri, query, types, null, recursive, offset, limit);
     }
 
+    /**
+     * Creates a new instance of {@link GetResourceLookupsRequest}.
+     *
+     * @param folderUri parent folder URI (e.g. /reports/samples/)
+     * @param query     Match only resources having the specified text in the name or description.
+     *                  (can be <code>null</code>)
+     * @param types     Match only resources of the given types. Multiple resource types allowed.
+     *                  (can be <code>null</code>)
+     * @param sortBy    Represents a field in the results to sort by: uri, label, description, type, creationDate,
+     *                  updateDate, accessTime, or popularity (based on access events).
+     *                  (can be <code>null</code>)
+     * @param recursive Get resources recursively
+     * @param offset    Pagination. Start index for requested page.
+     * @param limit     Pagination. Resources count per page.
+     */
+    public GetResourceLookupsRequest(JsRestClient jsRestClient, String folderUri, String query, List<String> types,
+                                     String sortBy, boolean recursive, int offset, int limit) {
+        super(jsRestClient, ResourceLookupsList.class);
+        searchCriteria = new ResourceLookupSearchCriteria();
+        searchCriteria.setFolderUri(folderUri);
+        searchCriteria.setQuery(query);
+        searchCriteria.setTypes(types);
+        searchCriteria.setSortBy(sortBy);
+        searchCriteria.setRecursive(recursive);
+        searchCriteria.setOffset(offset);
+        searchCriteria.setLimit(limit);
+    }
+
+    /**
+     * Creates a new instance of {@link GetResourceLookupsRequest}.
+     *
+     * @param searchCriteria the search criteria
+     */
+    public GetResourceLookupsRequest(JsRestClient jsRestClient, ResourceLookupSearchCriteria searchCriteria) {
+        super(jsRestClient, ResourceLookupsList.class);
+        this.searchCriteria = searchCriteria;
+    }
 
     @Override
     public ResourceLookupsList loadDataFromNetwork() throws Exception {
-        return getJsRestClient().getResourceLookups(folderUri, query, types, recursive, offset, limit);
+        return getJsRestClient().getResourceLookups(searchCriteria);
     }
 
     @Override
     protected String createCacheKeyString() {
-        return super.createCacheKeyString() + folderUri + query + types + recursive + offset + limit;
+        return super.createCacheKeyString()
+                + searchCriteria.getFolderUri()
+                + searchCriteria.getQuery()
+                + searchCriteria.getTypes()
+                + searchCriteria.getSortBy()
+                + searchCriteria.isRecursive()
+                + searchCriteria.getOffset()
+                + searchCriteria.getLimit();
     }
 
     //---------------------------------------------------------------------
     // Getters & Setters
     //---------------------------------------------------------------------
 
-
-    public String getFolderUri() {
-        return folderUri;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public boolean isRecursive() {
-        return recursive;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public int getLimit() {
-        return limit;
+    public ResourceLookupSearchCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 
 }

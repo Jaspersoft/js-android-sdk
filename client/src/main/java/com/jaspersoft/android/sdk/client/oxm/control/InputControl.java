@@ -27,8 +27,10 @@ package com.jaspersoft.android.sdk.client.oxm.control;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
+
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRulesList;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -50,6 +52,7 @@ public class InputControl implements Parcelable {
         bool,
         singleValueText,
         singleValueNumber,
+        singleValueTime,
         singleValueDate,
         singleValueDatetime,
         singleSelect,
@@ -155,6 +158,7 @@ public class InputControl implements Parcelable {
             case bool:
             case singleValueText:
             case singleValueNumber:
+            case singleValueTime:
             case singleValueDate:
             case singleValueDatetime:
                 if (getState().getValue() != null) {

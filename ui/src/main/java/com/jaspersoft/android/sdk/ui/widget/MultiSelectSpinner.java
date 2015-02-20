@@ -28,11 +28,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+
 import com.jaspersoft.android.sdk.ui.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,6 +58,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     private List<T> items;
     CharSequence[] stringItems;
     private boolean[] checkedItems;
+    private boolean[] defaultCheckedItems;
     /**
      * the text that displays on the spinner if there is nothing selected.
      */
@@ -76,33 +83,25 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     /**
      * This method will be invoked when an item in the dialog is clicked.
      *
-     * @param dialog The dialog where the selection was made.
-     * @param which The position of the item in the list that was clicked.
+     * @param dialog    The dialog where the selection was made.
+     * @param which     The position of the item in the list that was clicked.
      * @param isChecked True if the click checked the item, else false.
      */
     @Override
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
         checkedItems[which] = isChecked;
+        updateState(false);
     }
 
     @Override
     public boolean performClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         // The prompt to display when the dialog is shown
         if (getPrompt() != null) {
             builder.setTitle(getPrompt());
         }
+        defaultCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
         builder.setMultiChoiceItems(stringItems, checkedItems, this);
-        builder.setNegativeButton(R.string.mss_btn_uncheck_all,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        unselectAll();
-                        updateState();
-                        performClick();
-                    }
-
-                });
         builder.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -110,14 +109,76 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
                         updateState();
                     }
                 });
-        builder.show();
+        builder.setNegativeButton(R.string.mss_btn_check_all, null);
+
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getListView().setAdapter(initCustomAdapter(dialog));
+                Button button = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                button.setText(ifAnyChecked() ? R.string.mss_btn_uncheck_all : R.string.mss_btn_check_all);
+
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                        .setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Button button = (Button) view;
+                                boolean ifAnyChecked = ifAnyChecked();
+                                button.setText(ifAnyChecked ? R.string.mss_btn_check_all : R.string.mss_btn_uncheck_all);
+
+                                if (ifAnyChecked) {
+                                    unselectAll();
+                                } else {
+                                    selectAll();
+                                }
+
+                                dialog.getListView().setAdapter(initCustomAdapter(dialog));
+                                updateState(false);
+                            }
+                        });
+            }
+        });
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                checkedItems = defaultCheckedItems;
+                updateState(false);
+            }
+        });
+        dialog.show();
         return true;
+    }
+
+    private boolean ifAnyChecked() {
+        boolean ifAnyCheckedMask = false;
+        for (boolean checkedItem : checkedItems) {
+            ifAnyCheckedMask = ifAnyCheckedMask || checkedItem;
+        }
+        return ifAnyCheckedMask;
+    }
+
+    private BaseAdapter initCustomAdapter(final AlertDialog dialog) {
+        return new ArrayAdapter<CharSequence>(
+                getContext(), R.layout.select_dialog_multichoice, android.R.id.text1, stringItems) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                if (checkedItems != null) {
+                    boolean isItemChecked = checkedItems[position];
+                    if (isItemChecked) {
+                        dialog.getListView().setItemChecked(position, true);
+                    }
+                }
+                return view;
+            }
+        };
     }
 
     /**
      * Gets a list of items displayed in the spinner.
      *
-     * @return  list of items
+     * @return list of items
      */
     public List<T> getItems() {
         return items;
@@ -135,7 +196,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     /**
      * Sets a list of items to be displayed in the spinner.
      *
-     * @param items list of items
+     * @param items       list of items
      * @param defaultText the text that displays on the spinner if there is nothing selected.
      */
     public void setItemsList(List<T> items, String defaultText) {
@@ -154,7 +215,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item, new String[] { defaultText });
+                android.R.layout.simple_spinner_item, new String[]{defaultText});
         setAdapter(adapter);
     }
 
@@ -206,7 +267,7 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
      */
     public List<T> getSelectedItems() {
         List<T> selectedItems = new ArrayList<T>();
-        for(Integer position : getSelectedItemsPositions()) {
+        for (Integer position : getSelectedItemsPositions()) {
             selectedItems.add(items.get(position));
         }
         return selectedItems;
@@ -234,11 +295,15 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
     //---------------------------------------------------------------------
 
     private void updateState() {
+        updateState(true);
+    }
+
+    private void updateState(boolean notifyListener) {
         // refresh text on spinner
         StringBuilder spinnerBuilder = new StringBuilder();
         for (int i = 0; i < stringItems.length; i++) {
             if (checkedItems[i]) {
-                if(spinnerBuilder.length() > 0) {
+                if (spinnerBuilder.length() > 0) {
                     spinnerBuilder.append(TEXT_SEPARATOR);
                 }
                 if (spinnerBuilder.length() > TEXT_MAX_LENGTH) {
@@ -249,21 +314,29 @@ public class MultiSelectSpinner<T> extends Spinner implements DialogInterface.On
             }
         }
 
-        String spinnerText = (spinnerBuilder.length() > 0) ? spinnerBuilder.toString() : defaultText ;
+        String spinnerText = (spinnerBuilder.length() > 0) ? spinnerBuilder.toString() : defaultText;
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item,
-                new String[] { spinnerText });
+                new String[]{spinnerText});
         setAdapter(adapter);
 
-        if (onItemsSelectedListener != null) {
+        if (onItemsSelectedListener != null && notifyListener) {
             onItemsSelectedListener.onItemsSelected(getSelectedItems());
         }
     }
 
+    private void selectAll() {
+        setSelection(true);
+    }
+
     private void unselectAll() {
-        for (int i=0; i < checkedItems.length; i++) {
-            checkedItems[i] = false;
+        setSelection(false);
+    }
+
+    private void setSelection(boolean isSelected) {
+        for (int i = 0; i < checkedItems.length; i++) {
+            checkedItems[i] = isSelected;
         }
     }
 }
