@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 description = 'js-android-sdk-client'
-version = '1.9.1'
+version = '1.9.2'
 
 ext {
     PUBLISH_GROUP_ID = group
     PUBLISH_ARTIFACT_ID = description
-    PUBLISH_VERSION = '1.9.1'
+    PUBLISH_VERSION = '1.9.2'
 }
 
 android {
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-        versionCode 9010910
+        versionCode 9010920
         versionName version
     }
 
