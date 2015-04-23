@@ -181,7 +181,7 @@ public class JsRestClient {
         return jsServerProfile;
     }
 
-    public void setServerProfile(final JsServerProfile serverProfile) {
+    public void updateServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
 
@@ -189,11 +189,12 @@ public class JsRestClient {
         if (jsServerProfile != null) {
             this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
             updateRequestFactoryTimeouts();
+            restTemplate.setRequestFactory(requestFactory);
         }
     }
 
     @Deprecated
-    public void setLegacyServerProfile(final JsServerProfile serverProfile) {
+    public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
 
