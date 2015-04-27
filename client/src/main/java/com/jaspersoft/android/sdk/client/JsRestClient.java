@@ -785,6 +785,32 @@ public class JsRestClient {
     }
 
     /**
+     * Sends request for the current running export for the status check.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return response which expose current export status.
+     */
+    public ReportStatusResponse runExportStatusCheck(String executionId, String exportOutput) {
+        return restTemplate.getForObject(getExportStatusCheckURI(executionId, exportOutput), ReportStatusResponse.class);
+    }
+
+    /**
+     * Generates link for requesting report execution status.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/status"
+     */
+    public URI getExportStatusCheckURI(String executionId, String exportOutput) {
+        String outputResourceUri = "/{executionId}/exports/{exportOutput}/status";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
+
+        UriTemplate uriTemplate = new UriTemplate(fullUri);
+        return uriTemplate.expand(executionId, exportOutput);
+    }
+
+    /**
      * Saves resource ouput in file.
      *
      * @param executionId  Identifies current id of running report.
