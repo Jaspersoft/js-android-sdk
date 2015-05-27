@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 description = 'js-android-sdk-client'
-version = '1.9.3-SNAPSHOT'
+version = '1.9.3'
 
 ext {
     PUBLISH_GROUP_ID = group
     PUBLISH_ARTIFACT_ID = description
-    PUBLISH_VERSION = '1.9.3-SNAPSHOT'
+    PUBLISH_VERSION = '1.9.3'
 }
 
 android {
