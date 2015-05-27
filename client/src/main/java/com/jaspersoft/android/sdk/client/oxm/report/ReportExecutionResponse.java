@@ -57,6 +57,9 @@ public class ReportExecutionResponse {
     @Element(required=false)
     private int totalPages;
 
+    @Element(required=false)
+    ErrorDescriptor errorDescriptor;
+
 
     public String getRequestId() {
         return requestId;
@@ -109,4 +112,13 @@ public class ReportExecutionResponse {
     public ReportStatus getReportStatus() {
         return ReportStatus.valueOf(status);
     }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
+    }
+
+    public void setErrorDescriptor(ErrorDescriptor errorDescriptor) {
+        this.errorDescriptor = errorDescriptor;
+    }
+
 }

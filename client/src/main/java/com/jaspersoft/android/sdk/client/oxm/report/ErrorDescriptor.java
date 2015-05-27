@@ -1,12 +1,14 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -18,6 +20,9 @@ public class ErrorDescriptor {
     private String errorCode;
     @Element(required = false)
     private String message;
+
+    @ElementList(name = "parameters", entry = "parameter", required = false)
+    private List<String> parameters;
 
     public static ErrorDescriptor valueOf(HttpStatusCodeException exception) {
         String response = exception.getResponseBodyAsString();
@@ -46,4 +51,13 @@ public class ErrorDescriptor {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public List<String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<String> parameters) {
+        this.parameters = parameters;
+    }
+
 }

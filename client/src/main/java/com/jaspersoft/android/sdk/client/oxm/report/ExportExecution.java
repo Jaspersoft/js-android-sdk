@@ -50,6 +50,9 @@ public class ExportExecution {
     @ElementList(empty=false, entry="attachment", required=false)
     private List<ReportOutputResource> attachments;
 
+    @Element(required=false)
+    private ErrorDescriptor errorDescriptor;
+
 
     public String getId() {
         return id;
@@ -81,6 +84,14 @@ public class ExportExecution {
 
     public void setAttachments(List<ReportOutputResource> attachments) {
         this.attachments = attachments;
+    }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
+    }
+
+    public void setErrorDescriptor(ErrorDescriptor errorDescriptor) {
+        this.errorDescriptor = errorDescriptor;
     }
 
 }

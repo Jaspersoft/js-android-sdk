@@ -181,6 +181,33 @@ public class JsRestClient {
         return jsServerProfile;
     }
 
+    /**
+     * Alternative way to change server profile.
+     * This method mutates request factory.
+     * This method doesn't mutates interceptors collection.
+     *
+     * @param serverProfile store of user auth credentials
+     */
+    public void updateServerProfile(final JsServerProfile serverProfile) {
+        this.serverInfo = null;
+        this.jsServerProfile = serverProfile;
+
+        // We allow user to set profile to null value
+        if (jsServerProfile != null) {
+            this.restServicesUrl = serverProfile.getServerUrl() + REST_SERVICES_URI;
+            updateRequestFactoryTimeouts();
+            restTemplate.setRequestFactory(requestFactory);
+        }
+    }
+
+    /**
+     * Legacy way to change server profile.
+     * This method mutates request factory.
+     * This method mutates interceptors collection.
+     *
+     * @param serverProfile store of user auth credentials
+     */
+    @Deprecated
     public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
@@ -198,6 +225,15 @@ public class JsRestClient {
             interceptors.add(new KeepAliveHttpRequestInterceptor());
             restTemplate.setInterceptors(interceptors);
         }
+    }
+
+    /**
+     * Allows to mutate list of request request interceptors.
+     *
+     * @param interceptors list of new request interceptors.
+     */
+    public void setRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+        restTemplate.setInterceptors(interceptors);
     }
 
     /**
@@ -765,6 +801,32 @@ public class JsRestClient {
                 outputResourceUri + REST_REPORT_STATUS;
 
         return new UriTemplate(fullUri).expand(executionId);
+    }
+
+    /**
+     * Sends request for the current running export for the status check.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return response which expose current export status.
+     */
+    public ReportStatusResponse runExportStatusCheck(String executionId, String exportOutput) {
+        return restTemplate.getForObject(getExportStatusCheckURI(executionId, exportOutput), ReportStatusResponse.class);
+    }
+
+    /**
+     * Generates link for requesting report execution status.
+     *
+     * @param executionId Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/status"
+     */
+    public URI getExportStatusCheckURI(String executionId, String exportOutput) {
+        String outputResourceUri = "/{executionId}/exports/{exportOutput}/status";
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + outputResourceUri;
+
+        UriTemplate uriTemplate = new UriTemplate(fullUri);
+        return uriTemplate.expand(executionId, exportOutput);
     }
 
     /**
