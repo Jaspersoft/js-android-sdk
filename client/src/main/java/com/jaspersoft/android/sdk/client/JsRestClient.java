@@ -181,6 +181,13 @@ public class JsRestClient {
         return jsServerProfile;
     }
 
+    /**
+     * Alternative way to change server profile.
+     * This method mutates request factory.
+     * This method doesn't mutates interceptors collection.
+     *
+     * @param serverProfile store of user auth credentials
+     */
     public void updateServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
         this.jsServerProfile = serverProfile;
@@ -193,6 +200,13 @@ public class JsRestClient {
         }
     }
 
+    /**
+     * Legacy way to change server profile.
+     * This method mutates request factory.
+     * This method mutates interceptors collection.
+     *
+     * @param serverProfile store of user auth credentials
+     */
     @Deprecated
     public void setServerProfile(final JsServerProfile serverProfile) {
         this.serverInfo = null;
@@ -213,6 +227,11 @@ public class JsRestClient {
         }
     }
 
+    /**
+     * Allows to mutate list of request request interceptors.
+     *
+     * @param interceptors list of new request interceptors.
+     */
     public void setRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
         restTemplate.setInterceptors(interceptors);
     }
