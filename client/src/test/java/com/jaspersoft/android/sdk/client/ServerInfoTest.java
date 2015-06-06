@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.test.oxm.server;
+package com.jaspersoft.android.sdk.client;
 
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 

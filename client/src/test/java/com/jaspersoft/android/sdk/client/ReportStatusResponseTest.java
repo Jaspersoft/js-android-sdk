@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.client.test.oxm.server;
+package com.jaspersoft.android.sdk.client;
 
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatus;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;

@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.client.test;
+package com.jaspersoft.android.sdk.client.integration;
 
 import com.jaspersoft.android.sdk.client.BuildConfig;
 import com.jaspersoft.android.sdk.client.JsRestClient;
