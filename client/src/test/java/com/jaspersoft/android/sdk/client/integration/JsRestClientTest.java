@@ -1,13 +1,16 @@
-package com.jaspersoft.android.sdk.client.test;
+package com.jaspersoft.android.sdk.client.integration;
 
+import com.jaspersoft.android.sdk.client.BuildConfig;
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.JsServerProfile;
-import com.jaspersoft.android.sdk.client.test.support.UnitTestSpecification;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.net.URI;
 
@@ -19,14 +22,15 @@ import static org.mockito.Mockito.when;
  * @author Tom Koptel
  * @since 1.9
  */
-public class JsRestClientTest extends UnitTestSpecification {
-
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
+public class JsRestClientTest {
     private static final String SERVER_URL = "http://build-master.jaspersoft.com/jasperserver-pro";
     private static final String REQUEST_ID = "da977e74-561a-47ac-a92f-f3f3d98aac72";
 
-    JsRestClient jsRestClient;
+    private JsRestClient jsRestClient;
     @Mock
-    JsServerProfile jsServerProfile;
+    private JsServerProfile jsServerProfile;
 
     @Before
     public void setUp() {

@@ -6,15 +6,34 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 
 /**
  * @author Tom Koptel
- * @since 1.9
+ * @since 1.10
  */
-public class SampleData {
+public class FactoryGirl {
+    public static final String RESOURCE_URI = "/Reports/1._Geographic_Results_by_Segment_Report";
     private static final String ATTACHMENT_PREFIX_5_6 = "/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
     private static final String ATTACHMENT_PREFIX_5_0 = "/reportExecutions/{reportExecutionId}/exports/{exportOptions}/attachments/";
 
-    private SampleData() {}
+    public static FactoryGirl newInstance() {
+        return new FactoryGirl();
+    }
 
-    public static ReportExecutionRequest getSampleExecutionData(JsRestClient jsRestClient, String resourceUri) {
+    public JsRestClient createJsRestClient() {
+        JsRestClient jsRestClient = new JsRestClient();
+        jsRestClient.setServerProfile(createJsServerProfile());
+        return jsRestClient;
+    }
+
+    public JsServerProfile createJsServerProfile() {
+        return JsServerProfileAdapter
+                .newInstance()
+                .adapt(ServerUnderTest.createDefault());
+    }
+
+    public ReportExecutionRequest createExecutionData(JsRestClient jsRestClient) {
+        return createExecutionData(jsRestClient, getResourceUri());
+    }
+
+    public ReportExecutionRequest createExecutionData(JsRestClient jsRestClient, String resourceUri) {
         ReportExecutionRequest reportExecutionRequest = new ReportExecutionRequest();
 
         String prefix = ATTACHMENT_PREFIX_5_6;
@@ -36,4 +55,7 @@ public class SampleData {
         return reportExecutionRequest;
     }
 
+    public String getResourceUri() {
+        return RESOURCE_URI;
+    }
 }

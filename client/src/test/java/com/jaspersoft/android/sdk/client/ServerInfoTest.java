@@ -22,10 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.test.oxm.server;
+package com.jaspersoft.android.sdk.client;
 
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
-import com.jaspersoft.android.sdk.client.test.support.UnitTestSpecification;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,9 +40,8 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 1.9
  */
-public class ServerInfoTest extends UnitTestSpecification {
-
-    ServerInfo mockServerInfo;
+public class ServerInfoTest {
+    private ServerInfo mockServerInfo;
 
     @Before
     public void setMocks() {
