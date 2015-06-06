@@ -2,7 +2,6 @@ package com.jaspersoft.android.sdk.client.test.oxm.server;
 
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatus;
-import com.jaspersoft.android.sdk.client.test.support.UnitTestSpecification;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +13,7 @@ import static org.hamcrest.core.Is.is;
  * @author Tom Koptel
  * @since 1.9
  */
-public class ReportExecutionResponseTest extends UnitTestSpecification {
-
+public class ReportExecutionResponseTest {
     private ReportExecutionResponse reportExecutionResponse;
 
     @Before
