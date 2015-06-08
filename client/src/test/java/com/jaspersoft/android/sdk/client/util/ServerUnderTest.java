@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.integration.utils;
+package com.jaspersoft.android.sdk.client.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
