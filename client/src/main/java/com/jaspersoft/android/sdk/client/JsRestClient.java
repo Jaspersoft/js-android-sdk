@@ -42,6 +42,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ReportExecutionRequestAdapter;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
@@ -145,6 +146,18 @@ public class JsRestClient {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
         configureMessageConverters();
+    }
+
+    //---------------------------------------------------------------------
+    // Getters & Setters
+    //---------------------------------------------------------------------
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public String getRestServicesUrl() {
+        return restServicesUrl;
     }
 
     //---------------------------------------------------------------------
@@ -746,6 +759,8 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
+        checkForProfile();
+        request = ReportExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
         String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
@@ -1319,16 +1334,10 @@ public class JsRestClient {
         simpleXmlHttpMessageConverter.setSerializer(serializer);
     }
 
-    //---------------------------------------------------------------------
-    // Getters & Setters
-    //---------------------------------------------------------------------
-
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
-    }
-
-    public String getRestServicesUrl() {
-        return restServicesUrl;
+    private void checkForProfile() {
+        if (jsServerProfile == null) {
+            throw new IllegalStateException("Server profile is missing.");
+        }
     }
 
 }

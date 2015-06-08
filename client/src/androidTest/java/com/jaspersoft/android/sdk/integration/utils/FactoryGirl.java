@@ -18,8 +18,16 @@ public class FactoryGirl {
     }
 
     public JsRestClient createJsRestClient() {
+        return createJsRestClient(createJsServerProfile());
+    }
+
+    public JsRestClient createJsRestClient(ServerUnderTest serverUnderTest) {
+        return createJsRestClient(JsServerProfileAdapter.newInstance().adapt(serverUnderTest));
+    }
+
+    public JsRestClient createJsRestClient(JsServerProfile jsServerProfile) {
         JsRestClient jsRestClient = new JsRestClient();
-        jsRestClient.setServerProfile(createJsServerProfile());
+        jsRestClient.setServerProfile(jsServerProfile);
         return jsRestClient;
     }
 

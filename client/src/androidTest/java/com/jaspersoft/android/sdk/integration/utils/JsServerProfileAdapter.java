@@ -18,6 +18,8 @@ public class JsServerProfileAdapter {
         adaptee.setOrganization(serverUnderTest.getOrganization());
         adaptee.setUsername(serverUnderTest.getUsername());
         adaptee.setPassword(serverUnderTest.getPassword());
+        adaptee.setVersionCode(serverUnderTest.getVersionCode());
+        adaptee.setServerEdition(serverUnderTest.getServerEdition());
         return adaptee;
     }
 }

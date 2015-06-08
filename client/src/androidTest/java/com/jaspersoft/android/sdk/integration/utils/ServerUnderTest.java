@@ -13,6 +13,8 @@ public class ServerUnderTest {
     private final String serverUrl;
     private final String username;
     private final String password;
+    private final String versionCode;
+    private final String serverEdition;
 
     private ServerUnderTest(Builder builder) {
         this.alias = builder.alias;
@@ -20,6 +22,8 @@ public class ServerUnderTest {
         this.serverUrl = builder.serverUrl;
         this.username = builder.username;
         this.password = builder.password;
+        this.versionCode = builder.versionCode;
+        this.serverEdition = builder.serverEdition;
     }
 
     public static ServerUnderTest createDefault() {
@@ -29,6 +33,8 @@ public class ServerUnderTest {
                 .withDefaultServerUrl()
                 .withDefaultUsername()
                 .withDefaultPassword()
+                .withDefaultServerEdition()
+                .withDefaultVersionName()
                 .build();
     }
 
@@ -56,12 +62,22 @@ public class ServerUnderTest {
         return password;
     }
 
+    public String getServerEdition() {
+        return serverEdition;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
     public static class Builder {
         private String alias;
         private String organization;
         private String serverUrl;
         private String username;
         private String password;
+        private String versionCode;
+        private String serverEdition;
 
         public Builder setAlias(String alias) {
             this.alias = alias;
@@ -85,6 +101,16 @@ public class ServerUnderTest {
 
         public Builder setPassword(String pass) {
             this.password = pass;
+            return this;
+        }
+
+        public Builder setServerEdition(String serverEdition) {
+            this.serverEdition = serverEdition;
+            return this;
+        }
+
+        public Builder setVersionCode(String versionCode) {
+            this.versionCode = versionCode;
             return this;
         }
 
@@ -113,6 +139,16 @@ public class ServerUnderTest {
             return this;
         }
 
+        public Builder withDefaultVersionName() {
+            this.password = "5.5";
+            return this;
+        }
+
+        public Builder withDefaultServerEdition() {
+            this.password = "PRO";
+            return this;
+        }
+
         public ServerUnderTest build() {
             checkValues();
             return new ServerUnderTest(this);
@@ -124,6 +160,8 @@ public class ServerUnderTest {
             assertProperty(serverUrl, "serverUrl");
             assertProperty(username, "username");
             assertProperty(password, "password");
+            assertProperty(versionCode, "versionCode");
+            assertProperty(serverEdition, "serverEdition");
             serverUrl = trimUrl(serverUrl);
             try {
                 new URL(serverUrl);
