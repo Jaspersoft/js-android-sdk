@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 1.10
  */
 class MessageConvertersFactory {
     private final RestTemplate restTemplate;
@@ -52,7 +52,6 @@ class MessageConvertersFactory {
     public static MessageConvertersFactory newInstance(RestTemplate restTemplate, JsRestClient.DataType dataType) {
         return new MessageConvertersFactory(restTemplate, dataType);
     }
-
 
     public List<HttpMessageConverter<?>> createMessageConverters() {
         List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();

@@ -51,10 +51,6 @@ import com.jaspersoft.android.sdk.util.KeepAliveHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.AnnotationStrategy;
-import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -65,13 +61,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -86,7 +76,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -155,16 +144,16 @@ public class JsRestClient {
        this(restTemplate, factory, DataType.XML);
     }
 
+    private JsRestClient(Builder builder) {
+        this(builder.restTemplate, new SimpleClientHttpRequestFactory(), builder.dataType);
+    }
+
     private JsRestClient(RestTemplate restTemplate,
-                        SimpleClientHttpRequestFactory factory, DataType dataType) {
+                         SimpleClientHttpRequestFactory factory, DataType dataType) {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
         this.dataType = dataType;
         configureMessageConverters();
-    }
-
-    private JsRestClient(Builder builder) {
-        this(builder.restTemplate, new SimpleClientHttpRequestFactory(), builder.dataType);
     }
 
     //---------------------------------------------------------------------
@@ -1342,23 +1331,7 @@ public class JsRestClient {
     }
 
     private void configureMessageConverters() {
-        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
-        messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
-        messageConverters.add(new ResourceHttpMessageConverter());
-        messageConverters.add(new FormHttpMessageConverter());
-
-        SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter
-                = new SimpleXmlHttpMessageConverter();
-        configureAnnotationStrategy(simpleXmlHttpMessageConverter);
-        messageConverters.add(simpleXmlHttpMessageConverter);
-    }
-
-    private void configureAnnotationStrategy(
-            SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter) {
-        Strategy annotationStrategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(annotationStrategy);
-        simpleXmlHttpMessageConverter.setSerializer(serializer);
+        MessageConvertersFactory.newInstance(restTemplate, dataType);
     }
 
     private void checkForProfile() {
