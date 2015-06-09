@@ -128,6 +128,15 @@ public class JsRestClient {
 
     private final RestTemplate restTemplate;
     private final SimpleClientHttpRequestFactory requestFactory;
+    private final DataType dataType;
+
+    //---------------------------------------------------------------------
+    // Factory methods
+    //---------------------------------------------------------------------
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     //---------------------------------------------------------------------
     // Constructors
@@ -143,9 +152,19 @@ public class JsRestClient {
 
     public JsRestClient(RestTemplate restTemplate,
                         SimpleClientHttpRequestFactory factory) {
+       this(restTemplate, factory, DataType.XML);
+    }
+
+    private JsRestClient(RestTemplate restTemplate,
+                        SimpleClientHttpRequestFactory factory, DataType dataType) {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
+        this.dataType = dataType;
         configureMessageConverters();
+    }
+
+    private JsRestClient(Builder builder) {
+        this(builder.restTemplate, new SimpleClientHttpRequestFactory(), builder.dataType);
     }
 
     //---------------------------------------------------------------------
@@ -158,6 +177,18 @@ public class JsRestClient {
 
     public String getRestServicesUrl() {
         return restServicesUrl;
+    }
+
+    public JsServerProfile getServerProfile() {
+        return jsServerProfile;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public SimpleClientHttpRequestFactory getRequestFactory() {
+        return requestFactory;
     }
 
     //---------------------------------------------------------------------
@@ -189,10 +220,6 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // Server Profiles & Info
     //---------------------------------------------------------------------
-
-    public JsServerProfile getServerProfile() {
-        return jsServerProfile;
-    }
 
     /**
      * Alternative way to change server profile.
@@ -1337,6 +1364,43 @@ public class JsRestClient {
     private void checkForProfile() {
         if (jsServerProfile == null) {
             throw new IllegalStateException("Server profile is missing.");
+        }
+    }
+
+    //---------------------------------------------------------------------
+    // Inner classes
+    //---------------------------------------------------------------------
+
+    public enum DataType {
+        XML, JSON
+    }
+
+    public static class Builder {
+        private RestTemplate restTemplate;
+        private JsRestClient.DataType dataType;
+
+        public Builder setRestTemplate(RestTemplate restTemplate) {
+            this.restTemplate = restTemplate;
+            return this;
+        }
+
+        public Builder setDataType(JsRestClient.DataType dataType) {
+            this.dataType = dataType;
+            return this;
+        }
+
+        public JsRestClient build() {
+            ensureSaneDefaults();
+            return new JsRestClient(this);
+        }
+
+        private void ensureSaneDefaults() {
+            if (restTemplate == null) {
+                restTemplate = new RestTemplate(false);
+            }
+            if (dataType == null) {
+                dataType = DataType.XML;
+            }
         }
     }
 
