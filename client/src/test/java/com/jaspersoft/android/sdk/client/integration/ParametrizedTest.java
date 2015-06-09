@@ -35,7 +35,7 @@ import java.util.Collection;
  */
 public abstract class ParametrizedTest {
     public static Collection<Object[]> data() {
-        return ServerCollection.newInstance().getAll();
+        return ServerCollection.newInstance().load();
     }
 
     protected final ServerUnderTest mServer;

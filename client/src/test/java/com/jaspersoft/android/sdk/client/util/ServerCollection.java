@@ -25,10 +25,19 @@
 package com.jaspersoft.android.sdk.client.util;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,86 +46,90 @@ import java.util.Set;
  */
 public class ServerCollection {
     private final List<Object[]> params = new ArrayList<>();
-    private final ServerJsonModel[] servers;
+    private final Set<String> servers;
 
-    private ServerCollection() {
-        String data = TestResource.getJson().rawData("servers_under_test");
-        servers = new Gson().fromJson(data, ServerJsonModel[].class);
+    private ServerCollection(String resourceName) {
+        String data = TestResource.getJson().rawData(resourceName);
+        Type type = new TypeToken<Set<String>>() {
+        }.getType();
+        servers = new Gson().fromJson(data, type);
     }
 
     public static ServerCollection newInstance() {
-        return new ServerCollection();
+        return new ServerCollection("servers_under_test");
     }
 
-    public Collection<Object[]> getAll() {
-        return create5_5().create5_6().create5_6_1().create6_0().create6_0_1().create6_1().get();
-    }
-
-    public ServerCollection create5_5() {
-        loadParamsForServerVersion("5.5");
-        return this;
-    }
-
-    public ServerCollection create5_6() {
-        loadParamsForServerVersion("5.6");
-        return this;
-    }
-
-    public ServerCollection create5_6_1() {
-        loadParamsForServerVersion("5.6.1");
-        return this;
-    }
-
-    public ServerCollection create6_0() {
-        loadParamsForServerVersion("6.0");
-        return this;
-    }
-
-    public ServerCollection create6_0_1() {
-        loadParamsForServerVersion("6.0.1");
-        return this;
-    }
-
-    public ServerCollection create6_1() {
-        loadParamsForServerVersion("6.1");
-        return this;
-    }
-
-    public Collection<Object[]> get() {
+    public Collection<Object[]> load() {
         if (params.isEmpty()) {
-            throw new IllegalStateException("Oops! It looks like you forgot to setup data set 'servers_under_test.json'");
+            for (String serveUrl : servers) {
+                createParams(readServerData(serveUrl));
+            }
+        }
+        if (params.isEmpty()) {
+            throw new IllegalStateException("Oops! It looks like you forgot to setup 'servers_under_test.json' resource");
         }
         return params;
     }
 
-    private ServerCollection loadParamsForServerVersion(String version) {
-        Set<String> serverUrls = getServerUrls(version);
-        for (String serverUrl : serverUrls) {
-            params.add(new Object[]{version, serverUrl, "XML"});
-            params.add(new Object[]{version, serverUrl, "JSON"});
-        }
-        return this;
+    private void createParams(Map<String, String> serverData) {
+        String version = serverData.get("version");
+        String url = serverData.get("url");
+        params.add(new Object[]{version, url, "XML"});
+        params.add(new Object[]{version, url, "JSON"});
     }
 
-    private Set<String> getServerUrls(String version) {
-        for (ServerJsonModel model : servers) {
-            if (model.getVersion().equals(version)) {
-                return model.getServers();
+    private Map<String, String> readServerData(String serveUrl) {
+        try {
+            URL url = new URL(serveUrl + "/rest_v2/serverInfo");
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            connection.setUseCaches(true);
+            connection.setDoOutput(true);
+
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if not Java 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
             }
-        }
-        throw new IllegalStateException("No server urls found for version: " + version);
-    }
+            rd.close();
 
-    private static class ServerJsonModel {
-        private String version;
-        private Set<String> servers;
+            String json = response.toString();
+            Type type = new TypeToken<Map<String, String>>() {
+            }.getType();
 
-        public Set<String> getServers() {
-            return servers;
-        }
-
-        public String getVersion() {
-            return version;
+            Map<String, String> serverData = new Gson().fromJson(json, type);
+            serverData.put("url", serveUrl);
+            serverData.put("version", normalizeServerVersion(serverData.get("version")));
+            return serverData;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
+
+    private static String normalizeServerVersion(String version) {
+        String[] subs = version.split("\\.");
+
+        BigDecimal decimalSubVersion, decimalFactor, decimalResult;
+        BigDecimal decimalVersion = new BigDecimal("0");
+        for (int i = 0; i < subs.length; i++) {
+            try {
+                decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
+            } catch (NumberFormatException ex) {
+                decimalSubVersion = new BigDecimal("0");
+            }
+
+            decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));
+            decimalResult = decimalSubVersion.multiply(decimalFactor);
+            decimalVersion = decimalVersion.add(decimalResult);
+        }
+        return String.valueOf(decimalVersion.doubleValue());
+    }
+
 }

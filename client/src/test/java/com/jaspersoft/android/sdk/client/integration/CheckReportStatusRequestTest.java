@@ -7,8 +7,6 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.util.FactoryGirl;
-import com.jaspersoft.android.sdk.client.util.ServerCollection;
-import com.jaspersoft.android.sdk.client.util.ServerUnderTest;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.junit.Test;
@@ -21,7 +19,6 @@ import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 /**
  * @author Tom Koptel
