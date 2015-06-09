@@ -15,7 +15,7 @@ import org.simpleframework.xml.convert.Convert;
 public class ReportStatusResponse {
 
     @Element(required = false)
-    private String mStatus;
+    private String value;
 
     /**
      * Otherwise, the framework cannot instantiate the class for deserialization.
@@ -26,18 +26,18 @@ public class ReportStatusResponse {
     }
 
     public ReportStatusResponse(String status) {
-        mStatus = status;
+        value = status;
     }
 
     public ReportStatus getReportStatus() {
-        return ReportStatus.valueOf(mStatus);
+        return ReportStatus.valueOf(value);
     }
 
     public String getStatus() {
-        return mStatus;
+        return value;
     }
 
     public void setStatus(String status) {
-        this.mStatus = status;
+        this.value = status;
     }
 }

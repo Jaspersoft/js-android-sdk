@@ -53,6 +53,7 @@ public class ReportExecutionRequestAdapter {
         if (isAmberMR2()) {
             adaptee.setAllowInlineScripts(null);
             adaptee.setBaseUrl(null);
+            adaptee.setMarkupType(null);
         }
         return adaptee;
     }

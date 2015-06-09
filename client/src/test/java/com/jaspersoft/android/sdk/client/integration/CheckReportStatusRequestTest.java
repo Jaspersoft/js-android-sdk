@@ -30,20 +30,23 @@ import static org.robolectric.ParameterizedRobolectricTestRunner.*;
 @Config(manifest = Config.NONE)
 public class CheckReportStatusRequestTest {
 
-    @Parameters(name = "Server version = {0} url = {1}")
+    @Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"5.5", "http://mobiledemo.jaspersoft.com/jasperserver-pro"},
+                {"5.5", "http://mobiledemo.jaspersoft.com/jasperserver-pro", "XML"},
+                {"5.5", "http://mobiledemo.jaspersoft.com/jasperserver-pro", "JSON"},
         });
     }
 
     private final ServerUnderTest mServer;
+    private final String mDataType;
 
-    public CheckReportStatusRequestTest(String versionCode, String url) {
+    public CheckReportStatusRequestTest(String versionCode, String url, String dataType) {
         mServer = ServerUnderTest.createBuilderWithDefaults()
                 .setVersionCode(versionCode)
                 .setServerUrl(url)
                 .build();
+        mDataType = dataType;
     }
 
     @Test
@@ -51,7 +54,7 @@ public class CheckReportStatusRequestTest {
         FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
 
         FactoryGirl factoryGirl = FactoryGirl.newInstance();
-        JsRestClient jsRestClient = factoryGirl.createJsRestClient(mServer);
+        JsRestClient jsRestClient = factoryGirl.createJsRestClient(mDataType, mServer);
         ReportExecutionRequest reportExecutionRequest = factoryGirl.createExecutionData(jsRestClient);
         RunReportExecutionRequest runReportExecutionRequest = new RunReportExecutionRequest(jsRestClient, reportExecutionRequest);
 

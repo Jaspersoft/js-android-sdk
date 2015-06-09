@@ -1331,7 +1331,7 @@ public class JsRestClient {
     }
 
     private void configureMessageConverters() {
-        MessageConvertersFactory.newInstance(restTemplate, dataType);
+        MessageConvertersFactory.newInstance(restTemplate, dataType).createMessageConverters();
     }
 
     private void checkForProfile() {

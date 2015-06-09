@@ -136,7 +136,7 @@ public class ServerUnderTest {
         }
 
         public Builder withDefaultOrganization() {
-            this.organization = "organization_1";
+            this.organization = "";
             return this;
         }
 
@@ -146,12 +146,12 @@ public class ServerUnderTest {
         }
 
         public Builder withDefaultUsername() {
-            this.username = "phoneuser";
+            this.username = "superuser";
             return this;
         }
 
         public Builder withDefaultPassword() {
-            this.password = "phoneuser";
+            this.password = "superuser";
             return this;
         }
 
@@ -171,13 +171,13 @@ public class ServerUnderTest {
         }
 
         private void checkValues() {
-            assertProperty(alias, "alias");
-            assertProperty(organization, "organization");
-            assertProperty(serverUrl, "serverUrl");
-            assertProperty(username, "username");
-            assertProperty(password, "password");
-            assertProperty(versionCode, "versionCode");
-            assertProperty(serverEdition, "serverEdition");
+            assertPropertyNotEmpty(alias, "alias");
+            assertPropertyNotNull(organization, "organization");
+            assertPropertyNotEmpty(serverUrl, "serverUrl");
+            assertPropertyNotEmpty(username, "username");
+            assertPropertyNotEmpty(password, "password");
+            assertPropertyNotEmpty(versionCode, "versionCode");
+            assertPropertyNotEmpty(serverEdition, "serverEdition");
             serverUrl = trimUrl(serverUrl);
             try {
                 new URL(serverUrl);
@@ -186,7 +186,14 @@ public class ServerUnderTest {
             }
         }
 
-        private void assertProperty(String property, String propertyName) {
+        private void assertPropertyNotNull(String property, String propertyName) {
+            if (property == null) {
+                throw new IllegalStateException(
+                        propertyName + " invalid should not be: " + String.valueOf(property));
+            }
+        }
+
+        private void assertPropertyNotEmpty(String property, String propertyName) {
             if (isEmpty(property)) {
                 throw new IllegalStateException(
                         propertyName + " invalid should not be: " + String.valueOf(property));

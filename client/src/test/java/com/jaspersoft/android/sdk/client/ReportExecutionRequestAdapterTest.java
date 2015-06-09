@@ -80,6 +80,19 @@ public class ReportExecutionRequestAdapterTest {
         assertThat(json, is(EMPTY_JSON));
     }
 
+    @Test
+    public void shouldExcludeMarkupTypeForEMERALD_MR2() {
+        ReportExecutionRequestAdapter adapter =
+                ReportExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
+
+        ReportExecutionRequest request = new ReportExecutionRequest();
+        request.setMarkupType("some_type");
+
+        request = adapter.adapt(request);
+        String json = new Gson().toJson(request);
+        assertThat(json, is(EMPTY_JSON));
+    }
+
     public Object[] getNullVersionCodes() {
         return new Object[] {
                 null, "", "  "
