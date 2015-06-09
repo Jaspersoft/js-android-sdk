@@ -24,17 +24,13 @@
 
 package com.jaspersoft.android.sdk.client;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.AnnotationStrategy;
-import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
+import android.support.annotation.Nullable;
+
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
@@ -65,33 +61,27 @@ class MessageConvertersFactory {
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new FormHttpMessageConverter());
 
-        resolveDataTypeConverter(messageConverters);
+        createDataTypeConverter(messageConverters);
 
         return messageConverters;
     }
 
-    private void resolveDataTypeConverter(List<HttpMessageConverter<?>> messageConverters) {
-        switch (dataType) {
-            case XML:
-                addXMLConverter(messageConverters);
-                break;
-            case JSON:
-                addJSONConverter(messageConverters);
-                break;
+    private void createDataTypeConverter(List<HttpMessageConverter<?>> messageConverters) {
+        DataTypeConverterCreator dataTypeConverterCreator = resolveDataTypeConverter();
+        if (dataTypeConverterCreator != null) {
+            HttpMessageConverter<?> converter = dataTypeConverterCreator.create();
+            messageConverters.add(converter);
         }
     }
 
-    private void addXMLConverter(List<HttpMessageConverter<?>> messageConverters) {
-        SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter
-                = new SimpleXmlHttpMessageConverter();
-        Strategy annotationStrategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(annotationStrategy);
-        simpleXmlHttpMessageConverter.setSerializer(serializer);
-
-        messageConverters.add(simpleXmlHttpMessageConverter);
-    }
-
-    private void addJSONConverter(List<HttpMessageConverter<?>> messageConverters) {
-        messageConverters.add(new GsonHttpMessageConverter());
+    @Nullable
+    private DataTypeConverterCreator resolveDataTypeConverter() {
+        switch (dataType) {
+            case XML:
+                return new XmlDataTypeConverterCreator();
+            case JSON:
+                return new GsonDataTypeConverterCreator();
+        }
+        return null;
     }
 }
