@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,29 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client;
+package com.jaspersoft.android.sdk.client.integration;
 
-import android.support.annotation.NonNull;
+import com.jaspersoft.android.sdk.client.util.ServerCollection;
+import com.jaspersoft.android.sdk.client.util.ServerUnderTest;
 
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Tom Koptel
- * @since 1.10
+ * @since 2.0
  */
-class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpMessageConverter> {
-    @NonNull
-    @Override
-    public GsonHttpMessageConverter create() {
-        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-        List<MediaType> supportedMediaTypes = new ArrayList<>(2);
-        supportedMediaTypes.add(new MediaType("application", "json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        supportedMediaTypes.add(new MediaType("application", "repository.folder+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        converter.setSupportedMediaTypes(supportedMediaTypes);
-        return converter;
+public abstract class ParametrizedTest {
+    public static Collection<Object[]> data() {
+        return ServerCollection.newInstance().getAll();
+    }
+
+    protected final ServerUnderTest mServer;
+    protected final String mDataType;
+
+    protected ParametrizedTest(String versionCode, String url, String dataType) {
+        mServer = ServerUnderTest.createBuilderWithDefaults()
+                .setVersionCode(versionCode)
+                .setServerUrl(url)
+                .build();
+        mDataType = dataType;
     }
 }

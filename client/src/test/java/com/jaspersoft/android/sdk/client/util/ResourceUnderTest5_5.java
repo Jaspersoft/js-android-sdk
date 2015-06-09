@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,29 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client;
-
-import android.support.annotation.NonNull;
-
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.jaspersoft.android.sdk.client.util;
 
 /**
  * @author Tom Koptel
  * @since 1.10
  */
-class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpMessageConverter> {
-    @NonNull
+class ResourceUnderTest5_5 implements ResourceUnderTest {
+    public static final String RESOURCE_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
+    private static final String ATTACHMENT_PREFIX = "/reportExecutions/{reportExecutionId}/exports/{exportOptions}/attachments/";
+
     @Override
-    public GsonHttpMessageConverter create() {
-        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-        List<MediaType> supportedMediaTypes = new ArrayList<>(2);
-        supportedMediaTypes.add(new MediaType("application", "json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        supportedMediaTypes.add(new MediaType("application", "repository.folder+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        converter.setSupportedMediaTypes(supportedMediaTypes);
-        return converter;
+    public String getUri() {
+        return RESOURCE_URI;
+    }
+
+    @Override
+    public String getAttachmentPrefix() {
+        return ATTACHMENT_PREFIX;
     }
 }

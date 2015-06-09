@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,29 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client;
+package com.jaspersoft.android.sdk.client.util;
 
-import android.support.annotation.NonNull;
-
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.jaspersoft.android.sdk.client.JsServerProfile;
 
 /**
  * @author Tom Koptel
  * @since 1.10
  */
-class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpMessageConverter> {
-    @NonNull
-    @Override
-    public GsonHttpMessageConverter create() {
-        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-        List<MediaType> supportedMediaTypes = new ArrayList<>(2);
-        supportedMediaTypes.add(new MediaType("application", "json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        supportedMediaTypes.add(new MediaType("application", "repository.folder+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        converter.setSupportedMediaTypes(supportedMediaTypes);
-        return converter;
+class ResourceUnderTestFactory {
+    private final JsServerProfile jsServerProfile;
+
+    private ResourceUnderTestFactory(JsServerProfile jsServerProfile) {
+        this.jsServerProfile = jsServerProfile;
+    }
+
+    public static ResourceUnderTestFactory newInstance(JsServerProfile jsServerProfile) {
+        return new ResourceUnderTestFactory(jsServerProfile);
+    }
+
+    public ResourceUnderTest create() {
+        if (jsServerProfile.getVersionCode().equals("5.5")) {
+            return new ResourceUnderTest5_5();
+        } else {
+            return new ResourceUnderTestGreater5_5();
+        }
     }
 }

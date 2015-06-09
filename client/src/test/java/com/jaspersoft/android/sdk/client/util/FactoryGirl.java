@@ -9,7 +9,6 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
  * @since 1.10
  */
 public class FactoryGirl {
-    public static final String RESOURCE_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
     private static final String ATTACHMENT_PREFIX_5_6 = "/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
     private static final String ATTACHMENT_PREFIX_5_0 = "/reportExecutions/{reportExecutionId}/exports/{exportOptions}/attachments/";
 
@@ -29,7 +28,7 @@ public class FactoryGirl {
         return createJsRestClient(dataType, JsServerProfileAdapter.newInstance().adapt(serverUnderTest));
     }
 
-     public JsRestClient createJsRestClient(JsServerProfile jsServerProfile) {
+    public JsRestClient createJsRestClient(JsServerProfile jsServerProfile) {
         return createJsRestClient(JsRestClient.DataType.XML.toString(), jsServerProfile);
     }
 
@@ -49,20 +48,24 @@ public class FactoryGirl {
     }
 
     public ReportExecutionRequest createExecutionData(JsRestClient jsRestClient) {
-        return createExecutionData(jsRestClient, getResourceUri());
+        return createExecutionData(
+                jsRestClient,
+                ResourceUnderTestFactory
+                        .newInstance(jsRestClient.getServerProfile())
+                        .create()
+        );
     }
 
-    public ReportExecutionRequest createExecutionData(JsRestClient jsRestClient, String resourceUri) {
+    public ReportExecutionRequest createExecutionData(JsRestClient jsRestClient, ResourceUnderTest resourceUnderTest) {
         ReportExecutionRequest reportExecutionRequest = new ReportExecutionRequest();
 
-        String prefix = ATTACHMENT_PREFIX_5_6;
         JsServerProfile jsServerProfile = jsRestClient.getServerProfile();
         String serverUrl = jsServerProfile.getServerUrl();
-        String attachmentsPrefix = (jsServerProfile.getServerUrl() + JsRestClient.REST_SERVICES_V2_URI + prefix);
+        String attachmentsPrefix = (jsServerProfile.getServerUrl() + JsRestClient.REST_SERVICES_V2_URI + resourceUnderTest.getAttachmentPrefix());
         reportExecutionRequest.setAttachmentsPrefix(attachmentsPrefix);
         reportExecutionRequest.setBaseUrl(serverUrl);
 
-        reportExecutionRequest.setReportUnitUri(resourceUri);
+        reportExecutionRequest.setReportUnitUri(resourceUnderTest.getUri());
         reportExecutionRequest.setMarkupType(ReportExecutionRequest.MARKUP_TYPE_EMBEDDABLE);
         reportExecutionRequest.setOutputFormat("HTML");
         reportExecutionRequest.setPages("1");
@@ -72,9 +75,5 @@ public class FactoryGirl {
         reportExecutionRequest.setSaveDataSnapshot(false);
         reportExecutionRequest.setAllowInlineScripts(false);
         return reportExecutionRequest;
-    }
-
-    public String getResourceUri() {
-        return RESOURCE_URI;
     }
 }

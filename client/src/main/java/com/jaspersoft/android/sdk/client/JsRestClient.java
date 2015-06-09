@@ -606,8 +606,13 @@ public class JsRestClient {
     public FolderDataResponse getRootFolderData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", "application/repository.folder+xml");
-        headers.add("Content-Type", "application/xml");
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.folder+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.folder+xml");
+            headers.add("Content-Type", "application/xml");
+        }
         HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
 
         ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,

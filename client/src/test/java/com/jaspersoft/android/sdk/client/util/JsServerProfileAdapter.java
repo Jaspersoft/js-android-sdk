@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.client.JsServerProfile;
 
 /**
  * @author Tom Koptel
- * @since 2.1
+ * @since 1.10
  */
 public class JsServerProfileAdapter {
     public static JsServerProfileAdapter newInstance() {
