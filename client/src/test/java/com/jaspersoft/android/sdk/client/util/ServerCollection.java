@@ -74,7 +74,7 @@ public class ServerCollection {
     private void createParams(Map<String, String> serverData) {
         String version = serverData.get("version");
         String url = serverData.get("url");
-        params.add(new Object[]{version, url, "XML"});
+//        params.add(new Object[]{version, url, "XML"});
         params.add(new Object[]{version, url, "JSON"});
     }
 

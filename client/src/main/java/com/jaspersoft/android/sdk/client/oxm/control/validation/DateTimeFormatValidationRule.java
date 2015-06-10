@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.client.oxm.control.validation;
 
 import android.os.Parcel;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -36,6 +38,7 @@ import org.simpleframework.xml.Root;
 @Root(strict=false)
 public class DateTimeFormatValidationRule extends ValidationRule {
 
+    @Expose
     @Element
     private String format;
 

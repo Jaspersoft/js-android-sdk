@@ -21,6 +21,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm.resource;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -37,18 +39,23 @@ import java.util.List;
 public class ResourceLookupsList {
     public static int NO_OFFSET = -1;
 
+    @Expose
     @ElementList(entry="resourceLookup", inline=true, required=false, empty=false)
     private List<ResourceLookup> resourceLookups;
 
-    @Element(required=false)
+   @Expose
+   @Element(required=false)
     private int resultCount;
 
+    @Expose
     @Element(required=false)
     private int totalCount;
 
+    @Expose
     @Element(required=false)
     private int nextOffset;
 
+    @Expose
     @Element(required=false)
     private int startIndex;
 

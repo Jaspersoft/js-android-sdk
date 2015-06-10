@@ -21,6 +21,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -35,6 +37,7 @@ import java.util.List;
 @Root(name="resourceDescriptors")
 public class ResourcesList {
 
+    @Expose
     @ElementList(entry="resourceDescriptor", inline=true, required=false, empty=false)
     private List<ResourceDescriptor> resourceDescriptors;
 

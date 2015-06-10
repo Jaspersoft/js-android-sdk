@@ -21,6 +21,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
@@ -35,9 +37,11 @@ import org.simpleframework.xml.Text;
 @Root(name="file")
 public class ReportAttachment {
 
+    @Expose
     @Attribute
     private String type;
 
+    @Expose
     @Text
     private String name;
 

@@ -49,6 +49,8 @@ public class ReportDetailsRequestTest extends ParametrizedTest {
 
         ReportDetailsRequest reportDetailsRequest = new ReportDetailsRequest(jsRestClient, requestId);
         ReportExecutionResponse response = reportDetailsRequest.loadDataFromNetwork();
-        assertThat(response, notNullValue());
+        assertThat(response.getReportURI(), notNullValue());
+        assertThat(response.getRequestId(), notNullValue());
+        assertThat(response.getStatus(), notNullValue());
     }
 }

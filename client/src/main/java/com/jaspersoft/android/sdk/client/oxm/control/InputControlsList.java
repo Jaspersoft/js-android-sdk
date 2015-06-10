@@ -43,11 +43,9 @@ public class InputControlsList {
     @ElementList(entry="inputControl", inline=true, empty=false)
     private List<InputControl> inputControls;
 
-
     public InputControlsList() {
         this.inputControls = new ArrayList<InputControl>();
     }
-
 
     public List<InputControl> getInputControls() {
         return inputControls;

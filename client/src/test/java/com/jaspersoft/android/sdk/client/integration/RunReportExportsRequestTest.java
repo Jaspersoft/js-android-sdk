@@ -58,12 +58,13 @@ public class RunReportExportsRequestTest extends ParametrizedTest {
 
         RunReportExportsRequest runReportExportsRequest = new RunReportExportsRequest(jsRestClient, exr, requestId);
         ExportExecution runReportExportsResponse = runReportExportsRequest.loadDataFromNetwork();
-        assertThat(runReportExportsResponse, notNullValue());
+        assertThat(runReportExportsResponse.getStatus(), notNullValue());
+        assertThat(runReportExportsResponse.getId(), notNullValue());
 
         String executionId = runReportExportsResponse.getId();
         RunReportExportOutputRequest runReportExportOutputRequest
                 = new RunReportExportOutputRequest(jsRestClient, requestId, executionId);
         ReportDataResponse response = runReportExportOutputRequest.loadDataFromNetwork();
-        assertThat(response, notNullValue());
+        assertThat(response.getData(), notNullValue());
     }
 }
