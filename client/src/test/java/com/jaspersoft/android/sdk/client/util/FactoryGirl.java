@@ -3,6 +3,10 @@ package com.jaspersoft.android.sdk.client.util;
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.JsServerProfile;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
+
+import java.util.ArrayList;
 
 /**
  * @author Tom Koptel
@@ -81,5 +85,21 @@ public class FactoryGirl {
         return ResourceUnderTestFactory
                 .newInstance(jsRestClient.getServerProfile())
                 .create().getUri();
+    }
+
+    public ResourceLookupSearchCriteria createSearchCriteria() {
+        ResourceLookupSearchCriteria searchCriteria = new ResourceLookupSearchCriteria();
+        searchCriteria.setForceFullPage(true);
+        searchCriteria.setLimit(10);
+        searchCriteria.setRecursive(true);
+        searchCriteria.setTypes(new ArrayList<String>() {
+            {
+                add(ResourceLookup.ResourceType.dashboard.toString());
+                add(ResourceLookup.ResourceType.legacyDashboard.toString());
+            }
+        });
+        searchCriteria.setFolderUri("/");
+        searchCriteria.setSortBy("label");
+        return searchCriteria;
     }
 }

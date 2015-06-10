@@ -26,29 +26,28 @@ package com.jaspersoft.android.sdk.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.util.TestResource;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
 /**
  * @author Tom Koptel
  * @since 1.10
  */
-public class InputControlStatesListTest {
+public class ResourceLookupsListTest {
     @Test
     public void shouldSerializeJson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
 
-        String json = TestResource.getJson().rawData("input_control_states_list");
-        InputControlStatesList controlsList = gson.fromJson(json, InputControlStatesList.class);
-        assertThat(controlsList.getInputControlStates(), is(not(empty())));
-        assertThat(controlsList.getInputControlStates().get(0).getOptions(), is(not(empty())));
+        String json = TestResource.getJson().rawData("resource_lookup");
+        ResourceLookupsList lookupsList = gson.fromJson(json, ResourceLookupsList.class);
+        assertThat(lookupsList.getResourceLookups(), is(not(empty())));
     }
 }
