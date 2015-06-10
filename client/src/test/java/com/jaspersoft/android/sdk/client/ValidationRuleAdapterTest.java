@@ -25,10 +25,15 @@
 package com.jaspersoft.android.sdk.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.util.TestResource;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -38,11 +43,18 @@ import static org.hamcrest.core.Is.is;
  * @author Tom Koptel
  * @since 1.10
  */
-public class InputControlsAdapterTest {
+@RunWith(JUnitParamsRunner.class)
+public class ValidationRuleAdapterTest {
+
+    @Parameters({"controls_01", "controls_04", "controls_06", "controls_07"})
     @Test
-    public void shouldSerialize() {
-        String json = TestResource.getJson().rawData("controls");
-        InputControlsList controlsList = new Gson().fromJson(json, InputControlsList.class);
+    public void shouldSerialize(String jsonSourceFileName) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+
+        String json = TestResource.getJson().rawData(jsonSourceFileName);
+        InputControlsList controlsList = gson.fromJson(json, InputControlsList.class);
         assertThat(controlsList.getInputControls().get(0).getValidationRules(), is(notNullValue()));
     }
+
 }

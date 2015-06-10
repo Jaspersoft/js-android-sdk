@@ -29,9 +29,10 @@ import android.os.Parcelable;
 import android.view.View;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.JsonAdapter;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRulesList;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ValidationRulesListTypeAdapter;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -91,12 +92,10 @@ public class InputControl implements Parcelable {
     @Element
     private InputControlState state;
 
-    @Element(required=false, name = "validationRules")
-    private ValidationRulesList validationRulesXml;
-
-    @SerializedName("validationRules")
     @Element(required=false)
-    private List<ValidationRule> validationRulesJson;
+    @Expose
+    @JsonAdapter(ValidationRulesListTypeAdapter.class)
+    private ValidationRulesList validationRules;
 
     @Expose
     @ElementList(entry="controlId", empty=false)
@@ -126,7 +125,7 @@ public class InputControl implements Parcelable {
 
         this.type = Type.values()[source.readInt()];
         this.state = source.readParcelable(InputControlState.class.getClassLoader());
-        this.validationRulesXml = source.readParcelable(ValidationRulesList.class.getClassLoader());
+        this.validationRules = source.readParcelable(ValidationRulesList.class.getClassLoader());
 
         this.masterDependencies= source.createStringArrayList();
         this.slaveDependencies = source.createStringArrayList();
@@ -158,11 +157,7 @@ public class InputControl implements Parcelable {
 
         dest.writeInt(type.ordinal());
         dest.writeParcelable(state, flags);
-
-        if (validationRulesJson != null) {
-            validationRulesXml.setValidationRules(validationRulesJson);
-        }
-        dest.writeParcelable(validationRulesXml, flags);
+        dest.writeParcelable(validationRules, flags);
 
         dest.writeStringList(masterDependencies);
         dest.writeStringList(slaveDependencies);
@@ -206,21 +201,18 @@ public class InputControl implements Parcelable {
     }
 
     public void setValidationRules(List<ValidationRule> rulesList) {
-        if (validationRulesXml == null) {
-            validationRulesXml = new ValidationRulesList();
+        if (validationRules == null) {
+            validationRules = new ValidationRulesList();
         }
-        validationRulesXml.setValidationRules(rulesList);
+        validationRules.setValidationRules(rulesList);
     }
 
     public List<ValidationRule> getValidationRules() {
-        if (validationRulesJson != null) {
-            return validationRulesJson;
-        }
-        if (validationRulesXml == null) {
+        if (validationRules == null) {
             List<ValidationRule> rules = new ArrayList<ValidationRule>();
-            validationRulesXml = new ValidationRulesList(rules);
+            validationRules = new ValidationRulesList(rules);
         }
-        return validationRulesXml.getValidationRules();
+        return validationRules.getValidationRules();
     }
 
     @SuppressWarnings("unchecked")
