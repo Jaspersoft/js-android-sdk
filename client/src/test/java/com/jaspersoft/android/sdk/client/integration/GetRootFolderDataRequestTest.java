@@ -8,10 +8,8 @@
 
 package com.jaspersoft.android.sdk.client.integration;
 
-import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.GetRootFolderDataRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.FolderDataResponse;
-import com.jaspersoft.android.sdk.client.util.FactoryGirl;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.junit.Test;
@@ -47,10 +45,7 @@ public class GetRootFolderDataRequestTest extends ParametrizedTest {
         StaticCacheHelper.clearCache();
         FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
 
-        FactoryGirl factoryGirl = FactoryGirl.newInstance();
-        JsRestClient jsRestClient = factoryGirl.createJsRestClient(mDataType, mServer);
-
-        GetRootFolderDataRequest request = new GetRootFolderDataRequest(jsRestClient);
+        GetRootFolderDataRequest request = new GetRootFolderDataRequest(getJsRestClient());
         FolderDataResponse response = request.loadDataFromNetwork();
         assertThat(response.getUri(), is("/"));
     }

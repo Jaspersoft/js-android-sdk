@@ -54,6 +54,3 @@ com_crashlytics_export_strings.xml.DS_Store
 out
 bin
 gen
-
-# We are excluding this file in order to not expose our internal server settings
-./client/src/test/resources/servers_under_test.json

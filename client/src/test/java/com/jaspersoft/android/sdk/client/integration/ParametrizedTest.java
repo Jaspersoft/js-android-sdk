@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.client.integration;
 
+import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.util.FactoryGirl;
 import com.jaspersoft.android.sdk.client.util.ServerCollection;
 import com.jaspersoft.android.sdk.client.util.ServerUnderTest;
 
@@ -31,21 +33,41 @@ import java.util.Collection;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 1.10
  */
 public abstract class ParametrizedTest {
+    private final JsRestClient jsRestClient;
+    private final FactoryGirl factoryGirl;
+    private final ServerUnderTest mServer;
+    private final String mDatatype;
+
     public static Collection<Object[]> data() {
         return ServerCollection.newInstance().load();
     }
-
-    protected final ServerUnderTest mServer;
-    protected final String mDataType;
 
     protected ParametrizedTest(String versionCode, String url, String dataType) {
         mServer = ServerUnderTest.createBuilderWithDefaults()
                 .setVersionCode(versionCode)
                 .setServerUrl(url)
                 .build();
-        mDataType = dataType;
+        mDatatype = dataType;
+        factoryGirl = FactoryGirl.newInstance();
+        jsRestClient = factoryGirl.createJsRestClient(dataType, mServer);
+    }
+
+    public JsRestClient getJsRestClient() {
+        return jsRestClient;
+    }
+
+    public FactoryGirl getFactoryGirl() {
+        return factoryGirl;
+    }
+
+    public String getDatatype() {
+        return mDatatype;
+    }
+
+    public ServerUnderTest getServer() {
+        return mServer;
     }
 }

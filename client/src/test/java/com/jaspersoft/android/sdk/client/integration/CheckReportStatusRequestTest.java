@@ -6,7 +6,6 @@ import com.jaspersoft.android.sdk.client.async.request.RunReportExecutionRequest
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
-import com.jaspersoft.android.sdk.client.util.FactoryGirl;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.junit.Test;
@@ -42,9 +41,8 @@ public class CheckReportStatusRequestTest extends ParametrizedTest {
         StaticCacheHelper.clearCache();
         FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
 
-        FactoryGirl factoryGirl = FactoryGirl.newInstance();
-        JsRestClient jsRestClient = factoryGirl.createJsRestClient(mDataType, mServer);
-        ReportExecutionRequest reportExecutionRequest = factoryGirl.createExecutionData(jsRestClient);
+        JsRestClient jsRestClient = getJsRestClient();
+        ReportExecutionRequest reportExecutionRequest = getFactoryGirl().createExecutionData(jsRestClient);
         RunReportExecutionRequest runReportExecutionRequest = new RunReportExecutionRequest(jsRestClient, reportExecutionRequest);
 
         ReportExecutionResponse runReportExecutionResponse = runReportExecutionRequest.loadDataFromNetwork();
