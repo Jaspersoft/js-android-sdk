@@ -51,16 +51,16 @@ import static org.hamcrest.core.IsNot.not;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @TargetDataType(values = {"XML", "JSON"})
-public class ResourceLookupTest extends ParametrizedTest {
+public class ResourceLookupRequestTest extends ParametrizedTest {
     @Rule
     public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data(RunReportExportsRequestTest.class);
+        return ParametrizedTest.data(ResourceLookupRequestTest.class);
     }
 
-    public ResourceLookupTest(String versionCode, String url, String dataType) {
+    public ResourceLookupRequestTest(String versionCode, String url, String dataType) {
         super(versionCode, url, dataType);
     }
 
