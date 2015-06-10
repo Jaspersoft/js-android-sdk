@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.client.integration;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.cacheable.GetInputControlsRequest;
+import com.jaspersoft.android.sdk.client.async.request.cacheable.GetInputControlsValuesRequest;
 import com.jaspersoft.android.sdk.client.async.request.cacheable.ValidateInputControlsValuesRequest;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
@@ -78,5 +79,9 @@ public class ValidateInputControlsRequestTest extends ParametrizedTest {
                 new ValidateInputControlsValuesRequest(jsRestClient, uri, inputControlsList.getInputControls());
         InputControlStatesList statesList = validateRequest.loadDataFromNetwork();
         assertThat(statesList.getInputControlStates(), is(empty()));
+
+        GetInputControlsValuesRequest valuesRequest = new GetInputControlsValuesRequest(jsRestClient, uri, inputControlsList.getInputControls());
+        InputControlStatesList statesList2 = valuesRequest.loadDataFromNetwork();
+        assertThat(statesList2.getInputControlStates(), is(not(empty())));
     }
 }
