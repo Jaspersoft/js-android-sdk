@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.client;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
-import com.jaspersoft.android.sdk.client.oxm.report.adapter.ReportExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import com.jaspersoft.android.sdk.client.util.ServerVersion;
 
@@ -44,20 +44,20 @@ import static org.hamcrest.core.Is.is;
  * @since 1.10
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportExecutionRequestAdapterTest {
+public class ExecutionRequestAdapterTest {
     private static final String v5_5 = String.valueOf(ServerInfo.VERSION_CODES.EMERALD_TWO);
     private static final String EMPTY_JSON = "{}";
 
     @Parameters(method = "getNullVersionCodes")
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotAcceptInvalidVersionCode(String versionCode) {
-        ReportExecutionRequestAdapter.newInstance(versionCode);
+        ExecutionRequestAdapter.newInstance(versionCode);
     }
 
     @Test
     public void shouldExcludeInlineScriptsForEMERALD_MR2() {
-        ReportExecutionRequestAdapter adapter =
-                ReportExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
+        ExecutionRequestAdapter adapter =
+                ExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
 
         ReportExecutionRequest request = new ReportExecutionRequest();
         request.setAllowInlineScripts(true);
@@ -69,8 +69,8 @@ public class ReportExecutionRequestAdapterTest {
 
     @Test
     public void shouldExcludeBaseUrlForEMERALD_MR2() {
-        ReportExecutionRequestAdapter adapter =
-                ReportExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
+        ExecutionRequestAdapter adapter =
+                ExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
 
         ReportExecutionRequest request = new ReportExecutionRequest();
         request.setBaseUrl("some_base_url");
@@ -82,8 +82,8 @@ public class ReportExecutionRequestAdapterTest {
 
     @Test
     public void shouldExcludeMarkupTypeForEMERALD_MR2() {
-        ReportExecutionRequestAdapter adapter =
-                ReportExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
+        ExecutionRequestAdapter adapter =
+                ExecutionRequestAdapter.newInstance(ServerVersion.V5_5.get());
 
         ReportExecutionRequest request = new ReportExecutionRequest();
         request.setMarkupType("some_type");

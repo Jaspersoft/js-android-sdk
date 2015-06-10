@@ -42,7 +42,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
-import com.jaspersoft.android.sdk.client.oxm.report.adapter.ReportExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
@@ -781,7 +781,7 @@ public class JsRestClient {
      */
     public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
         checkForProfile();
-        request = ReportExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
+        request = ExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
         String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
@@ -795,7 +795,10 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public ExportExecution runExportForReport(String executionId, ExportsRequest request) throws RestClientException {
-        return restTemplate.postForObject(getExportForReportURI(executionId), request, ExportExecution.class);
+        checkForProfile();
+        request = ExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
+        URI uri = getExportForReportURI(executionId);
+        return restTemplate.postForObject(uri, request, ExportExecution.class);
     }
 
     /**

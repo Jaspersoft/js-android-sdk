@@ -24,32 +24,32 @@
 
 package com.jaspersoft.android.sdk.client.oxm.report.adapter;
 
-import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.ExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 
 /**
  * @author Tom Koptel
  * @since 1.10
  */
-public class ReportExecutionRequestAdapter {
+public class ExecutionRequestAdapter {
 
     private final String versionCode;
 
-    private ReportExecutionRequestAdapter(String versionCode) {
+    private ExecutionRequestAdapter(String versionCode) {
         this.versionCode = versionCode;
     }
 
-    public static ReportExecutionRequestAdapter newInstance(String versionCode) {
+    public static ExecutionRequestAdapter newInstance(String versionCode) {
         if (versionCode == null) {
             throw new IllegalArgumentException("VersionCode should not be null");
         }
         if (versionCode.trim().length() == 0) {
             throw new IllegalArgumentException("VersionCode should not be empty");
         }
-        return new ReportExecutionRequestAdapter(versionCode);
+        return new ExecutionRequestAdapter(versionCode);
     }
 
-    public ReportExecutionRequest adapt(ReportExecutionRequest adaptee) {
+    public <T extends ExecutionRequest> T adapt(T adaptee) {
         if (isAmberMR2()) {
             adaptee.setAllowInlineScripts(null);
             adaptee.setBaseUrl(null);
