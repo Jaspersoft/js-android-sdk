@@ -76,4 +76,10 @@ public class FactoryGirl {
         reportExecutionRequest.setAllowInlineScripts(false);
         return reportExecutionRequest;
     }
+
+    public String getResourceUri(JsRestClient jsRestClient) {
+        return ResourceUnderTestFactory
+                .newInstance(jsRestClient.getServerProfile())
+                .create().getUri();
+    }
 }

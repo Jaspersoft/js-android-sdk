@@ -26,6 +26,9 @@ package com.jaspersoft.android.sdk.client;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 
@@ -40,11 +43,15 @@ class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpM
     @NonNull
     @Override
     public GsonHttpMessageConverter create() {
-        GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+
+        GsonHttpMessageConverter converter = new GsonHttpMessageConverter(gson);
         List<MediaType> supportedMediaTypes = new ArrayList<>(2);
         supportedMediaTypes.add(new MediaType("application", "json", GsonHttpMessageConverter.DEFAULT_CHARSET));
         supportedMediaTypes.add(new MediaType("application", "repository.folder+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
         converter.setSupportedMediaTypes(supportedMediaTypes);
+
         return converter;
     }
 }

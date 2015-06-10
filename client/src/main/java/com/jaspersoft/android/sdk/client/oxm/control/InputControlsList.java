@@ -21,6 +21,9 @@
 
 package com.jaspersoft.android.sdk.client.oxm.control;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -35,6 +38,8 @@ import java.util.List;
 @Root(name="inputControls")
 public class InputControlsList {
 
+    @Expose
+    @SerializedName("inputControl")
     @ElementList(entry="inputControl", inline=true, empty=false)
     private List<InputControl> inputControls;
 
