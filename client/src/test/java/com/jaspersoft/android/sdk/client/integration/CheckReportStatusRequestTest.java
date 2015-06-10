@@ -6,13 +6,13 @@ import com.jaspersoft.android.sdk.client.async.request.RunReportExecutionRequest
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
-import com.jaspersoft.android.sdk.util.StaticCacheHelper;
+import com.jaspersoft.android.sdk.client.util.RealHttpRule;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.FakeHttp;
 
 import java.util.Collection;
 
@@ -26,6 +26,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CheckReportStatusRequestTest extends ParametrizedTest {
+    @Rule
+    public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
@@ -38,9 +40,6 @@ public class CheckReportStatusRequestTest extends ParametrizedTest {
 
     @Test
     public void requestShouldReportStatus() throws Exception {
-        StaticCacheHelper.clearCache();
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-
         JsRestClient jsRestClient = getJsRestClient();
         ReportExecutionRequest reportExecutionRequest = getFactoryGirl().createExecutionData(jsRestClient);
         RunReportExecutionRequest runReportExecutionRequest = new RunReportExecutionRequest(jsRestClient, reportExecutionRequest);
