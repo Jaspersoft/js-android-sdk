@@ -41,8 +41,8 @@ public abstract class ParametrizedTest {
     private final ServerUnderTest mServer;
     private final String mDatatype;
 
-    public static Collection<Object[]> data() {
-        return ServerCollection.newInstance().load();
+    public static Collection<Object[]> data(Class<?> targetClass) {
+        return ServerCollection.newInstance(targetClass).load();
     }
 
     protected ParametrizedTest(String versionCode, String url, String dataType) {

@@ -30,6 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
@@ -47,16 +48,26 @@ import java.util.Set;
 public class ServerCollection {
     private final List<Object[]> params = new ArrayList<>();
     private final Set<String> servers;
+    private final String[] mDataTypes;
 
-    private ServerCollection(String resourceName) {
+    private ServerCollection(String resourceName, String[] dataTypes) {
         String data = TestResource.getJson().rawData(resourceName);
         Type type = new TypeToken<Set<String>>() {
         }.getType();
         servers = new Gson().fromJson(data, type);
+        mDataTypes = dataTypes;
     }
 
-    public static ServerCollection newInstance() {
-        return new ServerCollection("servers_under_test");
+    public static ServerCollection newInstance(Class<?> targetClass) {
+        Annotation[] annotations = targetClass.getAnnotations();
+        String[] dataTypes = {"XML"};
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof TargetDataType) {
+                TargetDataType dataType = (TargetDataType) annotation;
+                dataTypes = dataType.values();
+            }
+        }
+        return new ServerCollection("servers_under_test", dataTypes);
     }
 
     public Collection<Object[]> load() {
@@ -74,8 +85,9 @@ public class ServerCollection {
     private void createParams(Map<String, String> serverData) {
         String version = serverData.get("version");
         String url = serverData.get("url");
-//        params.add(new Object[]{version, url, "XML"});
-        params.add(new Object[]{version, url, "JSON"});
+        for (String dataType : mDataTypes) {
+            params.add(new Object[]{version, url, dataType});
+        }
     }
 
     private Map<String, String> readServerData(String serveUrl) {

@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.cacheable.GetInputControlsRequest;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.util.RealHttpRule;
+import com.jaspersoft.android.sdk.client.util.TargetDataType;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,13 +48,14 @@ import static org.hamcrest.core.IsNull.notNullValue;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@TargetDataType(values = {"XML", "JSON"})
 public class GetInputControlsRequestTest extends ParametrizedTest {
     @Rule
     public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data();
+        return ParametrizedTest.data(GetInputControlsRequest.class);
     }
 
     public GetInputControlsRequestTest(String versionCode, String url, String dataType) {

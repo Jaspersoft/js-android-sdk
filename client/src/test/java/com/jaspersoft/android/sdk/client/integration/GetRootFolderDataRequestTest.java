@@ -11,6 +11,7 @@ package com.jaspersoft.android.sdk.client.integration;
 import com.jaspersoft.android.sdk.client.async.request.GetRootFolderDataRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.FolderDataResponse;
 import com.jaspersoft.android.sdk.client.util.RealHttpRule;
+import com.jaspersoft.android.sdk.client.util.TargetDataType;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
 import org.junit.Rule;
@@ -31,13 +32,14 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@TargetDataType(values = {"XML", "JSON"})
 public class GetRootFolderDataRequestTest extends ParametrizedTest {
     @Rule
     public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data();
+        return ParametrizedTest.data(GetRootFolderDataRequestTest.class);
     }
 
     public GetRootFolderDataRequestTest(String versionCode, String url, String dataType) {
@@ -53,5 +55,4 @@ public class GetRootFolderDataRequestTest extends ParametrizedTest {
         FolderDataResponse response = request.loadDataFromNetwork();
         assertThat(response.getUri(), is("/"));
     }
-
 }

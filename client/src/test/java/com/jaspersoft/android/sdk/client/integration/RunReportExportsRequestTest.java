@@ -10,6 +10,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportDataResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.util.RealHttpRule;
+import com.jaspersoft.android.sdk.client.util.TargetDataType;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,13 +29,14 @@ import static org.hamcrest.core.IsNull.notNullValue;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@TargetDataType(values = {"XML", "JSON"})
 public class RunReportExportsRequestTest extends ParametrizedTest {
     @Rule
     public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data();
+        return ParametrizedTest.data(RunReportExportsRequestTest.class);
     }
 
     public RunReportExportsRequestTest(String versionCode, String url, String dataType) {
