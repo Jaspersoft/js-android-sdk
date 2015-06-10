@@ -77,8 +77,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 
@@ -1053,6 +1056,8 @@ public class JsRestClient {
     }
 
     /**
+     * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
+     *
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1063,6 +1068,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      * @since 1.6
      */
+    @Deprecated
     public List<InputControl> getInputControls(String reportUri, List<String> controlsIds,
                                                List<ReportParameter> selectedValues) throws RestClientException {
         return getInputControlsList(reportUri, controlsIds, selectedValues).getInputControls();
@@ -1081,6 +1087,8 @@ public class JsRestClient {
     }
 
     /**
+     * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
+     *
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1091,16 +1099,14 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      * @since 1.6
      */
+    @Deprecated
     public InputControlsList getInputControlsList(String reportUri, List<String> controlsIds,
                                                   List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, false);
-        // add selected values to request
-        ReportParametersList parametersList = new ReportParametersList();
-        parametersList.setReportParameters(selectedValues);
         // execute POST request
         InputControlsList controlsList =
-                restTemplate.postForObject(url, parametersList, InputControlsList.class);
+                restTemplate.getForObject(url, InputControlsList.class);
         return (controlsList != null) ? controlsList : new InputControlsList();
     }
 
@@ -1159,12 +1165,26 @@ public class JsRestClient {
                                                              List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, true);
-        // add selected values to request
-        ReportParametersList parametersList = new ReportParametersList();
-        parametersList.setReportParameters(selectedValues);
+
+        Object request = null;
+        if (dataType == DataType.JSON) {
+            Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+            for (ReportParameter reportParameter : selectedValues) {
+                map.put(reportParameter.getName(), reportParameter.getValues());
+            }
+            request = map;
+        } else if (dataType == DataType.XML) {
+            // add selected values to request
+            ReportParametersList parametersList = new ReportParametersList();
+            parametersList.setReportParameters(selectedValues);
+            request = parametersList;
+        }
+        if (request == null) {
+            throw new IllegalStateException("Failed to create request object");
+        }
         // execute POST request
         try {
-            return restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
+            return restTemplate.postForObject(url, request, InputControlStatesList.class);
         } catch (HttpMessageNotReadableException exception) {
             return new InputControlStatesList();
         }

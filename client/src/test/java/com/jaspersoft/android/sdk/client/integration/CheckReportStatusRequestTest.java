@@ -33,7 +33,7 @@ public class CheckReportStatusRequestTest extends ParametrizedTest {
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data(CheckReportStatusRequest.class);
+        return ParametrizedTest.data(CheckReportStatusRequestTest.class);
     }
 
     public CheckReportStatusRequestTest(String versionCode, String url, String dataType) {

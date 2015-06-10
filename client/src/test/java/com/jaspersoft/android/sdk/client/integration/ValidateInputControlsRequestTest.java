@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.client.integration;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.cacheable.GetInputControlsRequest;
+import com.jaspersoft.android.sdk.client.async.request.cacheable.ValidateInputControlsValuesRequest;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 import com.jaspersoft.android.sdk.client.util.RealHttpRule;
 import com.jaspersoft.android.sdk.client.util.TargetDataType;
@@ -39,8 +41,9 @@ import org.robolectric.annotation.Config;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * @author Tom Koptel
@@ -49,16 +52,16 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @TargetDataType(values = {"XML", "JSON"})
-public class GetInputControlsRequestTest extends ParametrizedTest {
+public class ValidateInputControlsRequestTest extends ParametrizedTest {
     @Rule
     public RealHttpRule realHttpRule = new RealHttpRule();
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Data type = {2} Server version = {0} url = {1}")
     public static Collection<Object[]> data() {
-        return ParametrizedTest.data(GetInputControlsRequest.class);
+        return ParametrizedTest.data(ValidateInputControlsRequestTest.class);
     }
 
-    public GetInputControlsRequestTest(String versionCode, String url, String dataType) {
+    public ValidateInputControlsRequestTest(String versionCode, String url, String dataType) {
         super(versionCode, url, dataType);
     }
 
@@ -68,6 +71,12 @@ public class GetInputControlsRequestTest extends ParametrizedTest {
         GetInputControlsRequest request =
                 new GetInputControlsRequest(jsRestClient, getFactoryGirl().getResourceUri(jsRestClient));
         InputControlsList inputControlsList = request.loadDataFromNetwork();
-        assertThat(inputControlsList, is(notNullValue()));
+        assertThat(inputControlsList.getInputControls(), is(not(empty())));
+
+        String uri = getFactoryGirl().getResourceUri(jsRestClient);
+        ValidateInputControlsValuesRequest validateRequest =
+                new ValidateInputControlsValuesRequest(jsRestClient, uri, inputControlsList.getInputControls());
+        InputControlStatesList statesList = validateRequest.loadDataFromNetwork();
+        assertThat(statesList.getInputControlStates(), is(empty()));
     }
 }

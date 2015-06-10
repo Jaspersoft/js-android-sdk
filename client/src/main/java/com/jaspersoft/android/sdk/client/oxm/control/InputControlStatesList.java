@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.client.oxm.control;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.simpleframework.xml.ElementList;
 
@@ -36,16 +37,14 @@ import java.util.List;
  * @since 1.4
  */
 public class InputControlStatesList {
-
     @Expose
+    @SerializedName("inputControlState")
     @ElementList(entry="inputControlState", inline=true, empty=false)
     private List<InputControlState> inputControlStates;
-
 
     public InputControlStatesList() {
         this.inputControlStates = new ArrayList<InputControlState>();
     }
-
 
     public List<InputControlState> getInputControlStates() {
         return inputControlStates;
