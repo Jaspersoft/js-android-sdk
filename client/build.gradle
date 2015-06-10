@@ -73,15 +73,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
     testCompile 'org.robolectric:shadows-httpclient:3.0-rc3'
-    // Hamcrest Matchers for Integration tests
-    androidTestCompile 'org.hamcrest:hamcrest-all:1.3'
-    // Android JUnit4 runner
-    androidTestCompile('com.android.support.test:runner:0.3') {
-        exclude group: 'org.hamcrest'
-    }
-    androidTestCompile('pl.pragmatists:JUnitParams:1.0.4') {
-        exclude group: 'org.hamcrest'
-    }
 }
 
 apply from: '../scripts/android-release-aar.gradle'
