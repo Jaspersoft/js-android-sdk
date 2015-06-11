@@ -29,7 +29,7 @@ package com.jaspersoft.android.sdk.client.util;
  * @since 1.10
  */
 class ResourceUnderTest5_5 implements ResourceUnderTest {
-    public static final String RESOURCE_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
+    public static final String RESOURCE_URI = "/Reports/1._Geographic_Results_by_Segment_Report";
     private static final String ATTACHMENT_PREFIX = "/reportExecutions/{reportExecutionId}/exports/{exportOptions}/attachments/";
 
     @Override

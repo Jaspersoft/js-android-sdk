@@ -136,7 +136,7 @@ public class ServerUnderTest {
         }
 
         public Builder withDefaultOrganization() {
-            this.organization = "";
+            this.organization = "organization_1";
             return this;
         }
 
@@ -146,12 +146,12 @@ public class ServerUnderTest {
         }
 
         public Builder withDefaultUsername() {
-            this.username = "superuser";
+            this.username = "joeuser";
             return this;
         }
 
         public Builder withDefaultPassword() {
-            this.password = "superuser";
+            this.password = "joeuser";
             return this;
         }
 

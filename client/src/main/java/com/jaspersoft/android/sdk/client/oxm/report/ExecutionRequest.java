@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -65,9 +66,12 @@ public class ExecutionRequest {
     @Element(required=false)
     protected String attachmentsPrefix;
 
-    @Expose
     @ElementList(required=false)
     protected List<ReportParameter> parameters;
+
+    @Expose
+    @SerializedName("parameters")
+    protected ReportParametersList reportParameters;
 
     public void setAttachmentsPrefix(String attachmentsPrefix) {
         this.attachmentsPrefix = attachmentsPrefix;
@@ -157,6 +161,9 @@ public class ExecutionRequest {
 
     public void setParameters(List<ReportParameter> parameters) {
         this.parameters = parameters;
+        ReportParametersList reportParametersList = new ReportParametersList();
+        reportParametersList.setReportParameters(parameters);
+        this.reportParameters = reportParametersList;
     }
 
     public String getBaseUrl() {

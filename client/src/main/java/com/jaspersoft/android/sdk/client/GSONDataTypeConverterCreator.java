@@ -28,6 +28,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ReportParametersListDeserializer;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -44,6 +46,7 @@ class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpM
     @Override
     public GsonHttpMessageConverter create() {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ReportParametersList.class, new ReportParametersListDeserializer());
         Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
 
         GsonHttpMessageConverter converter = new GsonHttpMessageConverter(gson);

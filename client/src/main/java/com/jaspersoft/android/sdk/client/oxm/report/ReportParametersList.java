@@ -22,6 +22,7 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -38,9 +39,9 @@ import java.util.List;
 public class ReportParametersList {
 
     @Expose
+    @SerializedName("reportParameter")
     @ElementList(inline=true, empty=false)
     private List<ReportParameter> reportParameters = new ArrayList<ReportParameter>();
-
 
     public List<ReportParameter> getReportParameters() {
         return reportParameters;
@@ -49,4 +50,5 @@ public class ReportParametersList {
     public void setReportParameters(List<ReportParameter> reportParameters) {
         this.reportParameters = reportParameters;
     }
+
 }

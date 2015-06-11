@@ -28,6 +28,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
@@ -47,6 +48,7 @@ public class ReportParameter implements Parcelable {
     private String name;
 
     @Expose
+    @SerializedName("value")
     @ElementList(entry="value", inline=true, empty=false)
     private Set<String> values;
 

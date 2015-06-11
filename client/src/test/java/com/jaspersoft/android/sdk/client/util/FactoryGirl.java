@@ -1,8 +1,12 @@
 package com.jaspersoft.android.sdk.client.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.JsServerProfile;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ReportParametersListDeserializer;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 
@@ -78,6 +82,15 @@ public class FactoryGirl {
         reportExecutionRequest.setFreshData(false);
         reportExecutionRequest.setSaveDataSnapshot(false);
         reportExecutionRequest.setAllowInlineScripts(false);
+
+        String json = TestResource.getJson().rawData("report_parameters");
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ReportParametersList.class, new ReportParametersListDeserializer());
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+        ReportParametersList reportParameter = gson.fromJson(json, ReportParametersList.class);
+        reportExecutionRequest.setParameters(reportParameter.getReportParameters());
+
         return reportExecutionRequest;
     }
 
