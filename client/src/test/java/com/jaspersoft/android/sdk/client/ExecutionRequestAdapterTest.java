@@ -25,11 +25,12 @@
 package com.jaspersoft.android.sdk.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
-import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
 import com.jaspersoft.android.sdk.client.util.ServerVersion;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,13 +46,18 @@ import static org.hamcrest.core.Is.is;
  */
 @RunWith(JUnitParamsRunner.class)
 public class ExecutionRequestAdapterTest {
-    private static final String v5_5 = String.valueOf(ServerInfo.VERSION_CODES.EMERALD_TWO);
     private static final String EMPTY_JSON = "{}";
+    private Gson gson;
 
     @Parameters(method = "getNullVersionCodes")
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotAcceptInvalidVersionCode(String versionCode) {
         ExecutionRequestAdapter.newInstance(versionCode);
+    }
+
+    @Before
+    public void setup() {
+        gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 
     @Test
@@ -63,7 +69,7 @@ public class ExecutionRequestAdapterTest {
         request.setAllowInlineScripts(true);
 
         request = adapter.adapt(request);
-        String json = new Gson().toJson(request);
+        String json = gson.toJson(request);
         assertThat(json, is(EMPTY_JSON));
     }
 
@@ -76,7 +82,7 @@ public class ExecutionRequestAdapterTest {
         request.setBaseUrl("some_base_url");
 
         request = adapter.adapt(request);
-        String json = new Gson().toJson(request);
+        String json = gson.toJson(request);
         assertThat(json, is(EMPTY_JSON));
     }
 
@@ -89,7 +95,7 @@ public class ExecutionRequestAdapterTest {
         request.setMarkupType("some_type");
 
         request = adapter.adapt(request);
-        String json = new Gson().toJson(request);
+        String json = gson.toJson(request);
         assertThat(json, is(EMPTY_JSON));
     }
 
