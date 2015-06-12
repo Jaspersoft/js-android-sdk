@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -35,9 +37,11 @@ import org.simpleframework.xml.Root;
 @Root(strict=false)
 public class ReportOutputResource {
 
+    @Expose
     @Element
     private String contentType;
 
+    @Expose
     @Element(required=false)
     private String fileName;
 

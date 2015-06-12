@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.client.oxm.control.validation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;
@@ -40,6 +42,7 @@ import java.util.List;
 @Root(name="validationRules", strict=false)
 public class ValidationRulesList implements Parcelable {
 
+    @Expose
     @ElementListUnion({
             @ElementList(entry="dateTimeFormatValidationRule", inline=true, type=DateTimeFormatValidationRule.class),
             @ElementList(entry="mandatoryValidationRule", inline=true, type=MandatoryValidationRule.class)

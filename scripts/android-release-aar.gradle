@@ -10,6 +10,7 @@ def localReleaseDest = "${buildDir}/release/${version}"
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.encoding = 'ISO-8859-1'
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {

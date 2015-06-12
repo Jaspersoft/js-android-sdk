@@ -1,0 +1,40 @@
+{
+  "reportUnitUri":"/public/Samples/Reports/1._Geographic_Results_by_Segment_Report",
+  "async":true,
+  "freshData":false,
+  "saveDataSnapshot":false,
+  "outputFormat":"HTML",
+  "interactive":true,
+  "pages":"1",
+  "attachmentsPrefix":"http://mobiledemo.jaspersoft.com/jasperserver-pro/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportOptions}/attachments/",
+  "parameters":{
+    "reportParameter":[
+      {
+        "name":"sales_fact_ALL__store_sales_2013_1",
+        "value":[
+          "19"
+        ]
+      },
+      {
+        "name":"sales__product__low_fat_1",
+        "value":[
+          "false",
+          "true"
+        ]
+      },
+      {
+        "name":"sales__product__recyclable_package_1",
+        "value":[
+          "false",
+          "true"
+        ]
+      },
+      {
+        "name":"sales__product__product_name_1",
+        "value":[
+
+        ]
+      }
+    ]
+  }
+}

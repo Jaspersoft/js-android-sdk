@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -16,11 +18,14 @@ import java.util.List;
  */
 @Root(strict = false)
 public class ErrorDescriptor {
+    @Expose
     @Element
     private String errorCode;
+    @Expose
     @Element(required = false)
     private String message;
 
+    @Expose
     @ElementList(name = "parameters", entry = "parameter", required = false)
     private List<String> parameters;
 

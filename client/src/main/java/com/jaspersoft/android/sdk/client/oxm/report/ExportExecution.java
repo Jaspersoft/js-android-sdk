@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -38,18 +40,23 @@ import java.util.List;
 @Root(strict=false)
 public class ExportExecution {
 
+    @Expose
     @Element
     private String id;
 
+    @Expose
     @Element
     private String status;
 
+    @Expose
     @Element(required=false)
     private ReportOutputResource outputResource;
 
+    @Expose
     @ElementList(empty=false, entry="attachment", required=false)
     private List<ReportOutputResource> attachments;
 
+    @Expose
     @Element(required=false)
     private ErrorDescriptor errorDescriptor;
 

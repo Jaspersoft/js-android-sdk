@@ -1,10 +1,10 @@
-package com.jaspersoft.android.sdk.integration.utils;
+package com.jaspersoft.android.sdk.client.util;
 
 import com.jaspersoft.android.sdk.client.JsServerProfile;
 
 /**
  * @author Tom Koptel
- * @since 2.1
+ * @since 1.10
  */
 public class JsServerProfileAdapter {
     public static JsServerProfileAdapter newInstance() {
@@ -18,6 +18,8 @@ public class JsServerProfileAdapter {
         adaptee.setOrganization(serverUnderTest.getOrganization());
         adaptee.setUsername(serverUnderTest.getUsername());
         adaptee.setPassword(serverUnderTest.getPassword());
+        adaptee.setVersionCode(serverUnderTest.getVersionCode());
+        adaptee.setServerEdition(serverUnderTest.getServerEdition());
         return adaptee;
     }
 }

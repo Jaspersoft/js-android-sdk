@@ -21,6 +21,8 @@
 
 package com.jaspersoft.android.sdk.client.oxm.server;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -47,21 +49,27 @@ public class ServerInfo {
         public static final String PRO = "PRO";
     }
 
+    @Expose
     @Element(required=false)
     private String build;
 
+    @Expose
     @Element
     private String edition;
 
+    @Expose
     @Element(required=false)
     private String editionName;
 
+    @Expose
     @Element(required=false)
     private String expiration;
 
+    @Expose
     @Element(required=false)
     private String features;
 
+    @Expose
     @Element(required=false)
     private String licenseType;
 

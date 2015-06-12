@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
 import com.jaspersoft.android.sdk.client.oxm.converter.ReportStatusConverter;
 
 import org.simpleframework.xml.Element;
@@ -14,8 +15,9 @@ import org.simpleframework.xml.convert.Convert;
 @Convert(ReportStatusConverter.class)
 public class ReportStatusResponse {
 
+    @Expose
     @Element(required = false)
-    private String mStatus;
+    private String value;
 
     /**
      * Otherwise, the framework cannot instantiate the class for deserialization.
@@ -26,18 +28,18 @@ public class ReportStatusResponse {
     }
 
     public ReportStatusResponse(String status) {
-        mStatus = status;
+        value = status;
     }
 
     public ReportStatus getReportStatus() {
-        return ReportStatus.valueOf(mStatus);
+        return ReportStatus.valueOf(value);
     }
 
     public String getStatus() {
-        return mStatus;
+        return value;
     }
 
     public void setStatus(String status) {
-        this.mStatus = status;
+        this.value = status;
     }
 }
