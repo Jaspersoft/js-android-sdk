@@ -14,8 +14,8 @@ buildscript {
 subprojects {
     group = 'com.jaspersoft.android.sdk'
 
-    ext.clientModuleVersion = '1.10-SNAPSHOT'
-    ext.clientModuleVersionCode = 9011000
+    ext.clientModuleVersion = '1.10.1-SNAPSHOT'
+    ext.clientModuleVersionCode = 9011010
 
     ext.androidMinSdkVersion = 9
     ext.androidBuildToolsVersion = '21.1.2'
