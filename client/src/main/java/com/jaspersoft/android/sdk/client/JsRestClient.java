@@ -578,7 +578,8 @@ public class JsRestClient {
                 .append("&recursive={recursive}")
                 .append("&forceFullPage={forceFullPage}")
                 .append("&offset={offset}")
-                .append("&limit={limit}");
+                .append("&limit={limit}")
+                .append("&accessType={accessType}");
 
         if (searchCriteria.getTypes() != null) {
             for (String type : searchCriteria.getTypes()) {
@@ -589,7 +590,7 @@ public class JsRestClient {
         ResponseEntity<ResourceLookupsList> responseEntity = restTemplate.exchange(fullUri.toString(), HttpMethod.GET,
                 null, ResourceLookupsList.class, searchCriteria.getFolderUri(), searchCriteria.getQuery(),
                 searchCriteria.getSortBy(), searchCriteria.isRecursive(), searchCriteria.isForceFullPage(),
-                searchCriteria.getOffset(), searchCriteria.getLimit());
+                searchCriteria.getOffset(), searchCriteria.getLimit(), searchCriteria.getAccessType());
 
         if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
             return new ResourceLookupsList();
