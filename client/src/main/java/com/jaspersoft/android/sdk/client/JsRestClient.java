@@ -885,6 +885,18 @@ public class JsRestClient {
     }
 
     /**
+     * Returns response for export request in order to process InputStream directly.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @throws RestClientException
+     */
+    public ClientHttpResponse getExportOutputResponse(String executionId, String exportOutput) throws RestClientException {
+        URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
+        return requestFile(outputResourceUri);
+    }
+
+    /**
      * Load output data for export on current request.
      *
      * @param executionId  Identifies current id of running report.
@@ -1303,16 +1315,26 @@ public class JsRestClient {
     private void downloadFile(URI uri, File file) throws RestClientException {
         ClientHttpResponse response = null;
         try {
-            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
-            response = request.execute();
-            if (restTemplate.getErrorHandler().hasError(response)) {
-                restTemplate.getErrorHandler().handleError(response);
-            }
+            response = requestFile(uri);
             copyResponseToFile(response, file);
         } catch (IOException ex) {
             throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
         } finally {
             if (response != null) response.close();
+        }
+    }
+
+    private ClientHttpResponse requestFile(URI uri) throws RestClientException {
+        ClientHttpResponse response = null;
+        try {
+            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
+            response = request.execute();
+            if (restTemplate.getErrorHandler().hasError(response)) {
+                restTemplate.getErrorHandler().handleError(response);
+            }
+            return response;
+        } catch (IOException ex) {
+            throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
         }
     }
 
