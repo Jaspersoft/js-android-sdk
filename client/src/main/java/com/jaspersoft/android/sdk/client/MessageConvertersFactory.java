@@ -77,9 +77,9 @@ class MessageConvertersFactory {
     private DataTypeConverterCreator resolveDataTypeConverter() {
         switch (dataType) {
             case XML:
-                return new XmlDataTypeConverterCreator();
+                return new XMLDataTypeConverterCreator();
             case JSON:
-                return new GsonDataTypeConverterCreator();
+                return new GSONDataTypeConverterCreator();
         }
         return null;
     }

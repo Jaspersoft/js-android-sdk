@@ -41,7 +41,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 1.10
  */
-class GsonDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpMessageConverter> {
+class GSONDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpMessageConverter> {
     @NonNull
     @Override
     public GsonHttpMessageConverter create() {

@@ -36,7 +36,7 @@ import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
  * @author Tom Koptel
  * @since 1.10
  */
-class XmlDataTypeConverterCreator implements DataTypeConverterCreator<SimpleXmlHttpMessageConverter> {
+class XMLDataTypeConverterCreator implements DataTypeConverterCreator<SimpleXmlHttpMessageConverter> {
     @NonNull
     @Override
     public SimpleXmlHttpMessageConverter create() {

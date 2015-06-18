@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,10 +35,10 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-public class GsonDataTypeConverterCreatorTest {
+public class GSONDataTypeConverterCreatorTest {
     @Test
     public void shouldCreateJSONConverter() {
-        GsonDataTypeConverterCreator xmlDataTypeConverterCreator = new GsonDataTypeConverterCreator();
+        GSONDataTypeConverterCreator xmlDataTypeConverterCreator = new GSONDataTypeConverterCreator();
         GsonHttpMessageConverter converter = xmlDataTypeConverterCreator.create();
         assertThat(converter, is(notNullValue()));
     }

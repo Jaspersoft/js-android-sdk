@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,10 +35,10 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 1.10
  */
-public class XmlDataTypeConverterCreatorTest {
+public class XMLDataTypeConverterCreatorTest {
     @Test
     public void shouldCreateXMLConverter() {
-        XmlDataTypeConverterCreator xmlDataTypeConverterCreator = new XmlDataTypeConverterCreator();
+        XMLDataTypeConverterCreator xmlDataTypeConverterCreator = new XMLDataTypeConverterCreator();
         SimpleXmlHttpMessageConverter converter = xmlDataTypeConverterCreator.create();
         assertThat(converter, is(notNullValue()));
     }
