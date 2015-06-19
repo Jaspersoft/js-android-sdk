@@ -43,6 +43,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
@@ -310,7 +311,13 @@ public class JsRestClient {
     // The Resource Service
     //---------------------------------------------------------------------
 
-
+    /**
+     * Gets the single resource lookup for the specified URI.
+     *
+     * @param uri resource URI (e.g. /reports/samples/)
+     * @return the ResourceDescriptor value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
     public ResourceLookup getReportResource(String uri) throws RestClientException {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + uri;
 
@@ -325,8 +332,8 @@ public class JsRestClient {
 
         HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
 
-        ResourceLookup resourceLookup = restTemplate.exchange(fullUri,
-                HttpMethod.GET, httpEntity, ResourceLookup.class).getBody();
+        ReportUnit resourceLookup = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, ReportUnit.class).getBody();
         resourceLookup.setResourceType(ResourceLookup.ResourceType.reportUnit);
 
         return resourceLookup;
