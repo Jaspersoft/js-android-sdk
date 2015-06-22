@@ -22,7 +22,7 @@ import java.io.IOException;
 public class KeepAliveHttpRequestInterceptor  implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        request.getHeaders().add("Connection", "Close");
+        request.getHeaders().add("Connection", "close");
         return execution.execute(request, body);
     }
 }
