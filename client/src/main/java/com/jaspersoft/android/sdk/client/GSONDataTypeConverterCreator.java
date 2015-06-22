@@ -52,8 +52,7 @@ class GSONDataTypeConverterCreator implements DataTypeConverterCreator<GsonHttpM
         GsonHttpMessageConverter converter = new GsonHttpMessageConverter(gson);
         List<MediaType> supportedMediaTypes = new ArrayList<>(3);
         supportedMediaTypes.add(new MediaType("application", "json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        supportedMediaTypes.add(new MediaType("application", "repository.folder+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
-        supportedMediaTypes.add(new MediaType("application", "repository.reportUnit+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
+        supportedMediaTypes.add(new MediaType("application", "*+json", GsonHttpMessageConverter.DEFAULT_CHARSET));
         converter.setSupportedMediaTypes(supportedMediaTypes);
 
         return converter;
