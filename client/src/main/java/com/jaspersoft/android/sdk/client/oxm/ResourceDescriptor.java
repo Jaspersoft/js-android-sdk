@@ -218,15 +218,15 @@ public class ResourceDescriptor {
 
     @Expose
     @ElementList(entry="resourceProperty", inline=true, required=false, empty=false)
-    private List<ResourceProperty> properties;
+    private List<ResourceProperty> properties = new ArrayList<ResourceProperty>();
 
     @Expose
     @ElementList(entry="resourceDescriptor", inline=true, required=false, empty=false)
-    private List<ResourceDescriptor> internalResources;
+    private List<ResourceDescriptor> internalResources = new ArrayList<ResourceDescriptor>();
 
     @Expose
     @ElementList(entry="parameter", inline=true, required=false, empty=false)
-    private List<ResourceParameter> parameters;
+    private List<ResourceParameter> parameters = new ArrayList<ResourceParameter>();
 
 
     /**

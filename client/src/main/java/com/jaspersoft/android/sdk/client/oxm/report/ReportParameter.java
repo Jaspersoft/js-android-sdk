@@ -50,7 +50,7 @@ public class ReportParameter implements Parcelable {
     @Expose
     @SerializedName("value")
     @ElementList(entry="value", inline=true, empty=false)
-    private Set<String> values;
+    private Set<String> values = new HashSet<String>();
 
     public ReportParameter() {}
 

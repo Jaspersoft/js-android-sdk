@@ -40,11 +40,7 @@ public class InputControlStatesList {
     @Expose
     @SerializedName("inputControlState")
     @ElementList(entry="inputControlState", inline=true, empty=false)
-    private List<InputControlState> inputControlStates;
-
-    public InputControlStatesList() {
-        this.inputControlStates = new ArrayList<InputControlState>();
-    }
+    private List<InputControlState> inputControlStates = new ArrayList<InputControlState>();
 
     public List<InputControlState> getInputControlStates() {
         return inputControlStates;

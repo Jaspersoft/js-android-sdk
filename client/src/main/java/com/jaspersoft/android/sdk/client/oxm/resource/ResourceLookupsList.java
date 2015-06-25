@@ -43,7 +43,7 @@ public class ResourceLookupsList {
     @Expose
     @SerializedName("resourceLookup")
     @ElementList(entry = "resourceLookup", inline = true, required = false, empty = false)
-    private List<ResourceLookup> resourceLookups;
+    private List<ResourceLookup> resourceLookups = new ArrayList<ResourceLookup>();
 
     @Expose
     @Element(required = false)
@@ -62,7 +62,6 @@ public class ResourceLookupsList {
     private int startIndex;
 
     public ResourceLookupsList() {
-        this.resourceLookups = new ArrayList<ResourceLookup>();
         this.resultCount = 0;
         this.totalCount = 0;
     }

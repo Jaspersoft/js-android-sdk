@@ -99,11 +99,11 @@ public class InputControl implements Parcelable {
 
     @Expose
     @ElementList(entry="controlId", empty=false)
-    private List<String> masterDependencies;
+    private List<String> masterDependencies = new ArrayList<String>();
 
     @Expose
     @ElementList(entry="controlId", empty=false)
-    private List<String> slaveDependencies;
+    private List<String> slaveDependencies = new ArrayList<String>();
 
     private View inputView;
     private View errorView;

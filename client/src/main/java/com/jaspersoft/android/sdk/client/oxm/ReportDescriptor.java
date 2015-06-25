@@ -27,6 +27,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class ReportDescriptor {
     private Integer endPage;
 
     @ElementList(entry="file", inline=true, empty=false)
-    private List<ReportAttachment> attachments;
+    private List<ReportAttachment> attachments = new ArrayList<ReportAttachment>();
 
 
     public String getUuid() {

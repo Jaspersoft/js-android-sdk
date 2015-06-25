@@ -33,6 +33,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class InputControlState implements Parcelable {
 
     @Expose
     @ElementList(required=false, empty=false)
-    private List<InputControlOption> options;
+    private List<InputControlOption> options = new ArrayList<InputControlOption>();
 
     public InputControlState() {}
 

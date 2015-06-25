@@ -30,6 +30,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,12 +55,11 @@ public class ExportExecution {
 
     @Expose
     @ElementList(empty=false, entry="attachment", required=false)
-    private List<ReportOutputResource> attachments;
+    private List<ReportOutputResource> attachments = new ArrayList<ReportOutputResource>();
 
     @Expose
     @Element(required=false)
     private ErrorDescriptor errorDescriptor;
-
 
     public String getId() {
         return id;

@@ -31,6 +31,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ import java.util.List;
  * @since 1.8
  */
 
-@Root(name="reportExecution", strict=false)
+@Root(name = "reportExecution", strict = false)
 public class ReportExecutionResponse {
 
     @Expose
@@ -54,19 +55,19 @@ public class ReportExecutionResponse {
     private String status;
 
     @Expose
-    @ElementList(empty=false)
-    private List<ExportExecution> exports;
+    @ElementList(empty = false)
+    private List<ExportExecution> exports = new ArrayList<ExportExecution>();
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     private int currentPage;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     private int totalPages;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     ErrorDescriptor errorDescriptor;
 
 

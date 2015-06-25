@@ -29,6 +29,7 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.util.Entry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class ResourceProperty implements Entry {
 
     @Expose
     @ElementList(entry="resourceProperty", inline=true, required=false, empty=false)
-    private List<ResourceProperty> properties;
+    private List<ResourceProperty> properties = new ArrayList<ResourceProperty>();
 
 
     public String getName() {
