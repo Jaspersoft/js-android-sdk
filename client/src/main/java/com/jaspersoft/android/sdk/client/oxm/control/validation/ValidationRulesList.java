@@ -33,6 +33,7 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.ElementListUnion;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public class ValidationRulesList implements Parcelable {
             @ElementList(entry="dateTimeFormatValidationRule", inline=true, type=DateTimeFormatValidationRule.class),
             @ElementList(entry="mandatoryValidationRule", inline=true, type=MandatoryValidationRule.class)
     })
-    private List<ValidationRule> validationRules;
+    private List<ValidationRule> validationRules = new ArrayList<ValidationRule>();
 
     public ValidationRulesList() {}
 

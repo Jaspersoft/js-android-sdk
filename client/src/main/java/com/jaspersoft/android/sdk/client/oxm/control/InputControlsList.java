@@ -41,11 +41,7 @@ public class InputControlsList {
     @Expose
     @SerializedName("inputControl")
     @ElementList(entry="inputControl", inline=true, empty=false)
-    private List<InputControl> inputControls;
-
-    public InputControlsList() {
-        this.inputControls = new ArrayList<InputControl>();
-    }
+    private List<InputControl> inputControls = new ArrayList<InputControl>();
 
     public List<InputControl> getInputControls() {
         return inputControls;

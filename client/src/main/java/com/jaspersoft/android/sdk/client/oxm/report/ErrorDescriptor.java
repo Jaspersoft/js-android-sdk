@@ -10,6 +10,7 @@ import org.simpleframework.xml.core.Persister;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class ErrorDescriptor {
 
     @Expose
     @ElementList(name = "parameters", entry = "parameter", required = false)
-    private List<String> parameters;
+    private List<String> parameters = new ArrayList<String>();
 
     public static ErrorDescriptor valueOf(HttpStatusCodeException exception) {
         String response = exception.getResponseBodyAsString();

@@ -8,6 +8,7 @@ import org.simpleframework.xml.ElementList;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ public class ExecutionRequest {
     protected String attachmentsPrefix;
 
     @ElementList(required=false)
-    protected List<ReportParameter> parameters;
+    protected List<ReportParameter> parameters = new ArrayList<ReportParameter>();
 
     @Expose
     @SerializedName("parameters")
