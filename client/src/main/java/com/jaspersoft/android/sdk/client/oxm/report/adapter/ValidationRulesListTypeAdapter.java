@@ -60,16 +60,12 @@ public class ValidationRulesListTypeAdapter extends TypeAdapter<ValidationRulesL
             in.beginObject();
             while (in.hasNext()) {
                 ValidationRule rule;
-                switch (in.nextName()) {
-                    case "mandatoryValidationRule":
-                        rule = gson.fromJson(in, MandatoryValidationRule.class);
-                        rules.add(rule);
-                        break;
-                    case "dateTimeFormatValidationRule":
-                        rule = gson.fromJson(in, DateTimeFormatValidationRule.class);
-                        rules.add(rule);
-                        break;
+                if (in.nextName().equals("dateTimeFormatValidationRule")) {
+                    rule = gson.fromJson(in, DateTimeFormatValidationRule.class);
+                } else {
+                    rule = gson.fromJson(in, MandatoryValidationRule.class);
                 }
+                rules.add(rule);
             }
             in.endObject();
         }
