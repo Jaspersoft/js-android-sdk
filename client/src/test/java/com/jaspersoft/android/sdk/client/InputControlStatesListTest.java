@@ -26,9 +26,14 @@ package com.jaspersoft.android.sdk.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControl;
 import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
+import com.jaspersoft.android.sdk.client.oxm.control.validation.DateTimeFormatValidationRule;
+import com.jaspersoft.android.sdk.client.oxm.control.validation.MandatoryValidationRule;
 import com.jaspersoft.android.sdk.client.util.TestResource;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +47,7 @@ import static org.hamcrest.core.IsNot.not;
  */
 public class InputControlStatesListTest {
     @Test
-    public void shouldSerializeJson() {
+    public void shouldDeserializeControlStateList() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
 
@@ -50,5 +55,17 @@ public class InputControlStatesListTest {
         InputControlStatesList controlsList = gson.fromJson(json, InputControlStatesList.class);
         assertThat(controlsList.getInputControlStates(), is(not(empty())));
         assertThat(controlsList.getInputControlStates().get(0).getOptions(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldAssignValidClassForSpecificValidationRule() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+
+        String json = TestResource.getJson().rawData("input_controls_date");
+        InputControlsList controlsList = gson.fromJson(json, InputControlsList.class);
+        InputControl inputControl = controlsList.getInputControls().get(0);
+        Assert.assertThat(inputControl.getValidationRules(DateTimeFormatValidationRule.class), is(not(empty())));
+        Assert.assertThat(inputControl.getValidationRules(MandatoryValidationRule.class), is(not(empty())));
     }
 }

@@ -27,14 +27,15 @@ package com.jaspersoft.android.sdk.client.oxm.report.adapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.jaspersoft.android.sdk.client.oxm.control.validation.DateTimeFormatValidationRule;
+import com.jaspersoft.android.sdk.client.oxm.control.validation.MandatoryValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRulesList;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,9 +53,28 @@ public class ValidationRulesListTypeAdapter extends TypeAdapter<ValidationRulesL
     @Override
     public ValidationRulesList read(JsonReader in) throws IOException {
         ValidationRulesList ruleList = new ValidationRulesList();
-        Type type = new TypeToken<List<ValidationRule>>() {
-        }.getType();
-        List<ValidationRule> rules = gson.fromJson(in, type);
+        List<ValidationRule> rules = new ArrayList<ValidationRule>();
+
+        in.beginArray();
+        while (in.hasNext()) {
+            in.beginObject();
+            while (in.hasNext()) {
+                ValidationRule rule;
+                switch (in.nextName()) {
+                    case "mandatoryValidationRule":
+                        rule = gson.fromJson(in, MandatoryValidationRule.class);
+                        rules.add(rule);
+                        break;
+                    case "dateTimeFormatValidationRule":
+                        rule = gson.fromJson(in, DateTimeFormatValidationRule.class);
+                        rules.add(rule);
+                        break;
+                }
+            }
+            in.endObject();
+        }
+        in.endArray();
+
         ruleList.setValidationRules(rules);
         return ruleList;
     }
