@@ -28,8 +28,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRule;
 import com.jaspersoft.android.sdk.client.oxm.control.validation.ValidationRulesList;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ValidationRulesListTypeAdapter;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -61,34 +64,46 @@ public class InputControl implements Parcelable {
         multiSelectCheckbox,
     }
 
+    @Expose
     @Element
     private String id;
+    @Expose
     @Element
     private String label;
+    @Expose
     @Element
     private String uri;
 
+    @Expose
     @Element
     private boolean mandatory;
+    @Expose
     @Element
     private boolean readOnly;
+    @Expose
     @Element
     private boolean visible;
 
+    @Expose
     @Element
     private Type type;
 
+    @Expose
     @Element
     private InputControlState state;
 
     @Element(required=false)
+    @Expose
+    @JsonAdapter(ValidationRulesListTypeAdapter.class)
     private ValidationRulesList validationRules;
 
+    @Expose
     @ElementList(entry="controlId", empty=false)
-    private List<String> masterDependencies;
+    private List<String> masterDependencies = new ArrayList<String>();
 
+    @Expose
     @ElementList(entry="controlId", empty=false)
-    private List<String> slaveDependencies;
+    private List<String> slaveDependencies = new ArrayList<String>();
 
     private View inputView;
     private View errorView;
@@ -196,7 +211,6 @@ public class InputControl implements Parcelable {
         if (validationRules == null) {
             List<ValidationRule> rules = new ArrayList<ValidationRule>();
             validationRules = new ValidationRulesList(rules);
-
         }
         return validationRules.getValidationRules();
     }

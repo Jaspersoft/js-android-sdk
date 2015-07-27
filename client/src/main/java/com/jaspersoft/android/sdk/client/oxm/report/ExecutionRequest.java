@@ -1,10 +1,14 @@
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,44 +20,59 @@ public class ExecutionRequest {
     public static final String MARKUP_TYPE_EMBEDDABLE  = "embeddable";
     public static final String MARKUP_TYPE_FULL  = "full";
 
+    @Expose
     @Element(required=false)
     protected String reportUnitUri;
 
+    @Expose
     @Element(required=false)
     protected String markupType;
 
     @Element(required=false)
     protected String baseUrl;
 
+    @Expose
     @Element(required=false)
     protected Boolean async;
 
+    @Expose
     @Element(required=false)
     protected Boolean freshData;
 
+    @Expose
     @Element(required=false)
     protected Boolean saveDataSnapshot;
 
+    @Expose
     @Element
     protected String outputFormat;
 
+    @Expose
     @Element(required=false)
     protected Boolean interactive;
 
+    @Expose
     @Element(required=false)
     protected Boolean ignorePagination;
 
+    @Expose
     @Element(required=false)
     protected Boolean allowInlineScripts;
 
+    @Expose
     @Element(required=false)
     protected String pages;
 
+    @Expose
     @Element(required=false)
     protected String attachmentsPrefix;
 
     @ElementList(required=false)
-    protected List<ReportParameter> parameters;
+    protected List<ReportParameter> parameters = new ArrayList<ReportParameter>();
+
+    @Expose
+    @SerializedName("parameters")
+    protected ReportParametersList reportParameters;
 
     public void setAttachmentsPrefix(String attachmentsPrefix) {
         this.attachmentsPrefix = attachmentsPrefix;
@@ -143,6 +162,9 @@ public class ExecutionRequest {
 
     public void setParameters(List<ReportParameter> parameters) {
         this.parameters = parameters;
+        ReportParametersList reportParametersList = new ReportParametersList();
+        reportParametersList.setReportParameters(parameters);
+        this.reportParameters = reportParametersList;
     }
 
     public String getBaseUrl() {

@@ -47,7 +47,11 @@ public abstract class CacheableRequest<T> extends BaseRequest<T> {
 
     protected String createCacheKeyString() {
         JsServerProfile profile = getJsRestClient().getServerProfile();
-        return createCacheKeyTag() + profile.getServerUrl() + profile.getOrganization() + profile.getUsername();
+        if (profile == null) {
+            return createCacheKeyTag();
+        } else {
+            return createCacheKeyTag() + profile.getServerUrl() + profile.getOrganization() + profile.getUsername();
+        }
     }
 
     protected String createCacheKeyTag() {

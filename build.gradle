@@ -6,7 +6,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath "com.github.dcendents:android-maven-plugin:1.2"
     }
 }
@@ -14,15 +14,16 @@ buildscript {
 subprojects {
     group = 'com.jaspersoft.android.sdk'
 
+    ext.clientModuleVersion = '1.10'
+    ext.clientModuleVersionCode = 9011000
+
     ext.androidMinSdkVersion = 9
-    ext.androidTargetSdkVersion = 19
-    ext.androidCompileSdkVersion = 19
-    ext.androidBuildToolsVersion = "19.1"
+    ext.androidBuildToolsVersion = '21.1.2'
+    ext.androidCompileSdkVersion = 21
+    ext.androidTargetSdkVersion = 21
 
     repositories {
         jcenter()
-        mavenCentral()
-        mavenLocal()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url "file://${System.getenv("ANDROID_HOME")}/extras/android/m2repository" }
     }

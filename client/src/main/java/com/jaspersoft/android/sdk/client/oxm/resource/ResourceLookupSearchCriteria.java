@@ -37,6 +37,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
     private String query;
     private List<String> types;
     private String sortBy;
+    private String accessType;
 
     private boolean recursive = true;
     private boolean forceFullPage;
@@ -55,6 +56,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         this.forceFullPage = oldCriteria.isForceFullPage();
         this.offset = oldCriteria.getOffset();
         this.limit = oldCriteria.getLimit();
+        this.accessType = oldCriteria.getAccessType();
     }
 
     //---------------------------------------------------------------------
@@ -70,6 +72,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         this.forceFullPage = source.readByte() != 0;
         this.offset = source.readInt();
         this.limit = source.readInt();
+        this.accessType = source.readString();
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -97,6 +100,7 @@ public class ResourceLookupSearchCriteria implements Parcelable {
         dest.writeByte((byte) (forceFullPage ? 1 : 0));
         dest.writeInt(offset);
         dest.writeInt(limit);
+        dest.writeString(accessType);
     }
 
     //---------------------------------------------------------------------
@@ -152,6 +156,20 @@ public class ResourceLookupSearchCriteria implements Parcelable {
      */
     public String getSortBy() {
         return sortBy;
+    }
+
+    /**
+     * Filtering by access events. Can be viewed or modified.
+     */
+    public String getAccessType() {
+        return accessType;
+    }
+
+    /**
+     * Filtering by access events. Can be viewed or modified.
+     */
+    public void setAccessType(String accessType) {
+        this.accessType = accessType;
     }
 
     /**

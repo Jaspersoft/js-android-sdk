@@ -23,6 +23,8 @@ package com.jaspersoft.android.sdk.client.oxm;
 
 import android.util.Log;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -191,30 +193,40 @@ public class ResourceDescriptor {
     // Convenient TAG for logging purposes
     private static final String TAG = "ResourceDescriptor";
 
+    @Expose
     @Attribute(required=false)
     private String name;
+    @Expose
     @Attribute
     private String wsType;
+    @Expose
     @Attribute(required=false)
     private String uriString;
+    @Expose
     @Attribute(required=false)
     private Boolean isNew;
 
+    @Expose
     @Element(required=false)
     private String label;
     @Element(required=false)
+    @Expose
     private String description;
+    @Expose
     @Element(required=false)
     private String creationDate;
 
+    @Expose
     @ElementList(entry="resourceProperty", inline=true, required=false, empty=false)
-    private List<ResourceProperty> properties;
+    private List<ResourceProperty> properties = new ArrayList<ResourceProperty>();
 
+    @Expose
     @ElementList(entry="resourceDescriptor", inline=true, required=false, empty=false)
-    private List<ResourceDescriptor> internalResources;
+    private List<ResourceDescriptor> internalResources = new ArrayList<ResourceDescriptor>();
 
+    @Expose
     @ElementList(entry="parameter", inline=true, required=false, empty=false)
-    private List<ResourceParameter> parameters;
+    private List<ResourceParameter> parameters = new ArrayList<ResourceParameter>();
 
 
     /**

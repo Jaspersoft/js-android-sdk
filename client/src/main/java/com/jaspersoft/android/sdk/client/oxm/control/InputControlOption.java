@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.client.oxm.control;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -37,12 +39,15 @@ import org.simpleframework.xml.Root;
 @Root(name="option", strict=false)
 public class InputControlOption implements Parcelable {
 
+    @Expose
     @Element
     private String label;
 
+    @Expose
     @Element
     private String value;
 
+    @Expose
     @Element
     private boolean selected;
 

@@ -27,6 +27,9 @@ package com.jaspersoft.android.sdk.client.oxm.report;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
@@ -40,11 +43,14 @@ import java.util.Set;
  */
 public class ReportParameter implements Parcelable {
 
+    @Expose
     @Attribute
     private String name;
 
+    @Expose
+    @SerializedName("value")
     @ElementList(entry="value", inline=true, empty=false)
-    private Set<String> values;
+    private Set<String> values = new HashSet<String>();
 
     public ReportParameter() {}
 

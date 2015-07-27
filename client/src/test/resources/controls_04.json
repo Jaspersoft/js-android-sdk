@@ -1,0 +1,41 @@
+{
+  "inputControl": [
+    {
+      "id": "sales__store__store_contact__store_country_1",
+      "type": "singleSelect",
+      "uri": "repo:/public/Samples/Ad_Hoc_Views/04__Product_Results_by_Store_Type_files/sales__store__store_contact__store_country_1",
+      "label": "Country",
+      "mandatory": false,
+      "readOnly": false,
+      "visible": true,
+      "masterDependencies": [],
+      "slaveDependencies": [],
+      "state": {
+        "uri": "/public/Samples/Ad_Hoc_Views/04__Product_Results_by_Store_Type_files/sales__store__store_contact__store_country_1",
+        "id": "sales__store__store_contact__store_country_1",
+        "options": [
+          {
+            "selected": false,
+            "label": "---",
+            "value": "~NOTHING~"
+          },
+          {
+            "selected": true,
+            "label": "Canada",
+            "value": "Canada"
+          },
+          {
+            "selected": false,
+            "label": "Mexico",
+            "value": "Mexico"
+          },
+          {
+            "selected": false,
+            "label": "USA",
+            "value": "USA"
+          }
+        ]
+      }
+    }
+  ]
+}

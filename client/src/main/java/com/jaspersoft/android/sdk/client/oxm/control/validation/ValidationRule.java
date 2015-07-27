@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.client.oxm.control.validation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -39,6 +41,7 @@ import java.lang.reflect.Constructor;
 @Root(strict=false)
 public class ValidationRule implements Parcelable {
 
+    @Expose
     @Element
     private String errorMessage;
 

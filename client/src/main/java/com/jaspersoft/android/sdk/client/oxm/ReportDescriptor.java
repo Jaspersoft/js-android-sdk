@@ -21,10 +21,13 @@
 
 package com.jaspersoft.android.sdk.client.oxm;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,19 +41,24 @@ import java.util.List;
 @Root(name="report", strict=false)
 public class ReportDescriptor {
 
+    @Expose
     @Element
     private String uuid;
+    @Expose
     @Element
     private String originalUri;
+    @Expose
     @Element
     private Integer totalPages;
+    @Expose
     @Element
     private Integer startPage;
+    @Expose
     @Element
     private Integer endPage;
 
     @ElementList(entry="file", inline=true, empty=false)
-    private List<ReportAttachment> attachments;
+    private List<ReportAttachment> attachments = new ArrayList<ReportAttachment>();
 
 
     public String getUuid() {

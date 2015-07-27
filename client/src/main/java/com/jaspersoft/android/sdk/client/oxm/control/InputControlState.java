@@ -27,10 +27,13 @@ package com.jaspersoft.android.sdk.client.oxm.control;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,20 +43,25 @@ import java.util.List;
 @Root(name="state", strict=false)
 public class InputControlState implements Parcelable {
 
+    @Expose
     @Element
     private String id;
 
+    @Expose
     @Element
     private String uri;
 
+    @Expose
     @Element(required=false)
     private String value;
 
+    @Expose
     @Element(required=false)
     private String error;
 
+    @Expose
     @ElementList(required=false, empty=false)
-    private List<InputControlOption> options;
+    private List<InputControlOption> options = new ArrayList<InputControlOption>();
 
     public InputControlState() {}
 

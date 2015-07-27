@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.client.oxm.resource;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 
 /**
@@ -37,21 +39,29 @@ import org.simpleframework.xml.Element;
  */
 public class ResourceLookup implements Parcelable {
 
+    @Expose
     @Element(required=false)
     protected String label;
+    @Expose
     @Element(required=false)
     protected String description;
+    @Expose
     @Element
     protected String uri;
+    @Expose
     @Element(required=false)
     protected String resourceType;
 
+    @Expose
     @Element(required=false)
     protected int version;
+    @Expose
     @Element(required=false)
     protected int permissionMask;
+    @Expose
     @Element(required=false)
     protected String creationDate;
+    @Expose
     @Element(required=false)
     protected String updateDate;
 

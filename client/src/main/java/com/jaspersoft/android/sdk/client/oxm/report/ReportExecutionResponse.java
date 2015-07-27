@@ -25,10 +25,13 @@
 
 package com.jaspersoft.android.sdk.client.oxm.report;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,28 +39,35 @@ import java.util.List;
  * @since 1.8
  */
 
-@Root(name="reportExecution", strict=false)
+@Root(name = "reportExecution", strict = false)
 public class ReportExecutionResponse {
 
+    @Expose
     @Element
     private String requestId;
 
+    @Expose
     @Element
     private String reportURI;
 
+    @Expose
     @Element
     private String status;
 
-    @ElementList(empty=false)
-    private List<ExportExecution> exports;
+    @Expose
+    @ElementList(empty = false)
+    private List<ExportExecution> exports = new ArrayList<ExportExecution>();
 
-    @Element(required=false)
+    @Expose
+    @Element(required = false)
     private int currentPage;
 
-    @Element(required=false)
+    @Expose
+    @Element(required = false)
     private int totalPages;
 
-    @Element(required=false)
+    @Expose
+    @Element(required = false)
     ErrorDescriptor errorDescriptor;
 
 

@@ -21,12 +21,15 @@
 
 package com.jaspersoft.android.sdk.client.oxm;
 
+import com.google.gson.annotations.Expose;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.util.Entry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,14 +43,17 @@ import java.util.List;
 @Root(strict=false)
 public class ResourceProperty implements Entry {
 
+    @Expose
     @Attribute
     private String name;
 
+    @Expose
     @Element(required=false)
     private String value;
 
+    @Expose
     @ElementList(entry="resourceProperty", inline=true, required=false, empty=false)
-    private List<ResourceProperty> properties;
+    private List<ResourceProperty> properties = new ArrayList<ResourceProperty>();
 
 
     public String getName() {

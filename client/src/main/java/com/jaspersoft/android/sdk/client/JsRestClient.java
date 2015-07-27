@@ -42,6 +42,9 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportExecutionResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupsList;
 import com.jaspersoft.android.sdk.client.oxm.server.ServerInfo;
@@ -50,10 +53,6 @@ import com.jaspersoft.android.sdk.util.KeepAliveHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.LocalesHttpRequestInterceptor;
 import com.jaspersoft.android.sdk.util.StaticCacheHelper;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.AnnotationStrategy;
-import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -64,13 +63,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -85,10 +78,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 
@@ -127,6 +122,15 @@ public class JsRestClient {
 
     private final RestTemplate restTemplate;
     private final SimpleClientHttpRequestFactory requestFactory;
+    private final DataType dataType;
+
+    //---------------------------------------------------------------------
+    // Factory methods
+    //---------------------------------------------------------------------
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     //---------------------------------------------------------------------
     // Constructors
@@ -142,9 +146,43 @@ public class JsRestClient {
 
     public JsRestClient(RestTemplate restTemplate,
                         SimpleClientHttpRequestFactory factory) {
+       this(restTemplate, factory, DataType.XML);
+    }
+
+    private JsRestClient(Builder builder) {
+        this(builder.restTemplate, new SimpleClientHttpRequestFactory(), builder.dataType);
+    }
+
+    private JsRestClient(RestTemplate restTemplate,
+                         SimpleClientHttpRequestFactory factory, DataType dataType) {
         this.restTemplate = restTemplate;
         this.requestFactory = factory;
+        this.dataType = dataType;
         configureMessageConverters();
+    }
+
+    //---------------------------------------------------------------------
+    // Getters & Setters
+    //---------------------------------------------------------------------
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public String getRestServicesUrl() {
+        return restServicesUrl;
+    }
+
+    public JsServerProfile getServerProfile() {
+        return jsServerProfile;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public SimpleClientHttpRequestFactory getRequestFactory() {
+        return requestFactory;
     }
 
     //---------------------------------------------------------------------
@@ -176,10 +214,6 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // Server Profiles & Info
     //---------------------------------------------------------------------
-
-    public JsServerProfile getServerProfile() {
-        return jsServerProfile;
-    }
 
     /**
      * Alternative way to change server profile.
@@ -276,6 +310,34 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // The Resource Service
     //---------------------------------------------------------------------
+
+    /**
+     * Gets the single resource lookup for the specified URI.
+     *
+     * @param uri resource URI (e.g. /reports/samples/)
+     * @return the ResourceDescriptor value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookup getReportResource(String uri) throws RestClientException {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + uri;
+
+        HttpHeaders headers = new HttpHeaders();
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.reportUnit+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.reportUnit+xml");
+            headers.add("Content-Type", "application/xml");
+        }
+
+        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+
+        ReportUnit resourceLookup = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, ReportUnit.class).getBody();
+        resourceLookup.setResourceType(ResourceLookup.ResourceType.reportUnit);
+
+        return resourceLookup;
+    }
 
     /**
      * Gets the resource descriptor for the resource with specified URI.
@@ -546,7 +608,8 @@ public class JsRestClient {
                 .append("&recursive={recursive}")
                 .append("&forceFullPage={forceFullPage}")
                 .append("&offset={offset}")
-                .append("&limit={limit}");
+                .append("&limit={limit}")
+                .append("&accessType={accessType}");
 
         if (searchCriteria.getTypes() != null) {
             for (String type : searchCriteria.getTypes()) {
@@ -557,7 +620,7 @@ public class JsRestClient {
         ResponseEntity<ResourceLookupsList> responseEntity = restTemplate.exchange(fullUri.toString(), HttpMethod.GET,
                 null, ResourceLookupsList.class, searchCriteria.getFolderUri(), searchCriteria.getQuery(),
                 searchCriteria.getSortBy(), searchCriteria.isRecursive(), searchCriteria.isForceFullPage(),
-                searchCriteria.getOffset(), searchCriteria.getLimit());
+                searchCriteria.getOffset(), searchCriteria.getLimit(), searchCriteria.getAccessType());
 
         if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
             return new ResourceLookupsList();
@@ -577,8 +640,13 @@ public class JsRestClient {
     public FolderDataResponse getRootFolderData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", "application/repository.folder+xml");
-        headers.add("Content-Type", "application/xml");
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.folder+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.folder+xml");
+            headers.add("Content-Type", "application/xml");
+        }
         HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
 
         ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,
@@ -746,6 +814,8 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public ReportExecutionResponse runReportExecution(ReportExecutionRequest request) throws RestClientException {
+        checkForProfile();
+        request = ExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
         String url = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS;
         return restTemplate.postForObject(url, request, ReportExecutionResponse.class);
     }
@@ -759,7 +829,10 @@ public class JsRestClient {
      * @throws RestClientException
      */
     public ExportExecution runExportForReport(String executionId, ExportsRequest request) throws RestClientException {
-        return restTemplate.postForObject(getExportForReportURI(executionId), request, ExportExecution.class);
+        checkForProfile();
+        request = ExecutionRequestAdapter.newInstance(jsServerProfile.getVersionCode()).adapt(request);
+        URI uri = getExportForReportURI(executionId);
+        return restTemplate.postForObject(uri, request, ExportExecution.class);
     }
 
     /**
@@ -840,6 +913,18 @@ public class JsRestClient {
     public void saveExportOutputToFile(String executionId, String exportOutput, File file) throws RestClientException {
         URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
         downloadFile(outputResourceUri, file);
+    }
+
+    /**
+     * Returns response for export request in order to process InputStream directly.
+     *
+     * @param executionId  Identifies current id of running report.
+     * @param exportOutput Identifier which refers to current requested export.
+     * @throws RestClientException
+     */
+    public ClientHttpResponse getExportOutputResponse(String executionId, String exportOutput) throws RestClientException {
+        URI outputResourceUri = getExportOutputResourceURI(executionId, exportOutput);
+        return requestFile(outputResourceUri);
     }
 
     /**
@@ -1014,6 +1099,8 @@ public class JsRestClient {
     }
 
     /**
+     * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
+     *
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1024,6 +1111,7 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      * @since 1.6
      */
+    @Deprecated
     public List<InputControl> getInputControls(String reportUri, List<String> controlsIds,
                                                List<ReportParameter> selectedValues) throws RestClientException {
         return getInputControlsList(reportUri, controlsIds, selectedValues).getInputControls();
@@ -1042,6 +1130,8 @@ public class JsRestClient {
     }
 
     /**
+     * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
+     *
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1052,16 +1142,14 @@ public class JsRestClient {
      * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
      * @since 1.6
      */
+    @Deprecated
     public InputControlsList getInputControlsList(String reportUri, List<String> controlsIds,
                                                   List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, false);
-        // add selected values to request
-        ReportParametersList parametersList = new ReportParametersList();
-        parametersList.setReportParameters(selectedValues);
         // execute POST request
         InputControlsList controlsList =
-                restTemplate.postForObject(url, parametersList, InputControlsList.class);
+                restTemplate.getForObject(url, InputControlsList.class);
         return (controlsList != null) ? controlsList : new InputControlsList();
     }
 
@@ -1120,12 +1208,26 @@ public class JsRestClient {
                                                              List<ReportParameter> selectedValues) throws RestClientException {
         // generate full url
         String url = generateInputControlsUrl(reportUri, controlsIds, true);
-        // add selected values to request
-        ReportParametersList parametersList = new ReportParametersList();
-        parametersList.setReportParameters(selectedValues);
+
+        Object request = null;
+        if (dataType == DataType.JSON) {
+            Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+            for (ReportParameter reportParameter : selectedValues) {
+                map.put(reportParameter.getName(), reportParameter.getValues());
+            }
+            request = map;
+        } else if (dataType == DataType.XML) {
+            // add selected values to request
+            ReportParametersList parametersList = new ReportParametersList();
+            parametersList.setReportParameters(selectedValues);
+            request = parametersList;
+        }
+        if (request == null) {
+            throw new IllegalStateException("Failed to create request object");
+        }
         // execute POST request
         try {
-            return restTemplate.postForObject(url, parametersList, InputControlStatesList.class);
+            return restTemplate.postForObject(url, request, InputControlStatesList.class);
         } catch (HttpMessageNotReadableException exception) {
             return new InputControlStatesList();
         }
@@ -1244,16 +1346,26 @@ public class JsRestClient {
     private void downloadFile(URI uri, File file) throws RestClientException {
         ClientHttpResponse response = null;
         try {
-            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
-            response = request.execute();
-            if (restTemplate.getErrorHandler().hasError(response)) {
-                restTemplate.getErrorHandler().handleError(response);
-            }
+            response = requestFile(uri);
             copyResponseToFile(response, file);
         } catch (IOException ex) {
             throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
         } finally {
             if (response != null) response.close();
+        }
+    }
+
+    private ClientHttpResponse requestFile(URI uri) throws RestClientException {
+        ClientHttpResponse response = null;
+        try {
+            ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(uri, HttpMethod.GET);
+            response = request.execute();
+            if (restTemplate.getErrorHandler().hasError(response)) {
+                restTemplate.getErrorHandler().handleError(response);
+            }
+            return response;
+        } catch (IOException ex) {
+            throw new ResourceAccessException("I/O error: " + ex.getMessage(), ex);
         }
     }
 
@@ -1300,35 +1412,50 @@ public class JsRestClient {
     }
 
     private void configureMessageConverters() {
-        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
-        messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
-        messageConverters.add(new ResourceHttpMessageConverter());
-        messageConverters.add(new FormHttpMessageConverter());
-
-        SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter
-                = new SimpleXmlHttpMessageConverter();
-        configureAnnotationStrategy(simpleXmlHttpMessageConverter);
-        messageConverters.add(simpleXmlHttpMessageConverter);
+        MessageConvertersFactory.newInstance(restTemplate, dataType).createMessageConverters();
     }
 
-    private void configureAnnotationStrategy(
-            SimpleXmlHttpMessageConverter simpleXmlHttpMessageConverter) {
-        Strategy annotationStrategy = new AnnotationStrategy();
-        Serializer serializer = new Persister(annotationStrategy);
-        simpleXmlHttpMessageConverter.setSerializer(serializer);
+    private void checkForProfile() {
+        if (jsServerProfile == null) {
+            throw new IllegalStateException("Server profile is missing.");
+        }
     }
 
     //---------------------------------------------------------------------
-    // Getters & Setters
+    // Inner classes
     //---------------------------------------------------------------------
 
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
+    public enum DataType {
+        XML, JSON
     }
 
-    public String getRestServicesUrl() {
-        return restServicesUrl;
+    public static class Builder {
+        private RestTemplate restTemplate;
+        private JsRestClient.DataType dataType;
+
+        public Builder setRestTemplate(RestTemplate restTemplate) {
+            this.restTemplate = restTemplate;
+            return this;
+        }
+
+        public Builder setDataType(JsRestClient.DataType dataType) {
+            this.dataType = dataType;
+            return this;
+        }
+
+        public JsRestClient build() {
+            ensureSaneDefaults();
+            return new JsRestClient(this);
+        }
+
+        private void ensureSaneDefaults() {
+            if (restTemplate == null) {
+                restTemplate = new RestTemplate(false);
+            }
+            if (dataType == null) {
+                dataType = DataType.XML;
+            }
+        }
     }
 
 }

@@ -42,6 +42,8 @@ public class JsServerProfile implements Parcelable {
     private String organization;
     private String username;
     private String password;
+    private String versionCode;
+    private String serverEdition;
 
     /**
      * Creates an empty JsServerProfile entity.
@@ -142,6 +144,22 @@ public class JsServerProfile implements Parcelable {
         this.password = password;
     }
 
+    public String getServerEdition() {
+        return serverEdition;
+    }
+
+    public void setServerEdition(String serverEdition) {
+        this.serverEdition = serverEdition;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,14 +167,17 @@ public class JsServerProfile implements Parcelable {
 
         JsServerProfile that = (JsServerProfile) o;
 
+        if (id != that.id) return false;
         if (!alias.equals(that.alias)) return false;
+        if (!serverUrl.equals(that.serverUrl)) return false;
         if (organization != null ? !organization.equals(that.organization) : that.organization != null)
             return false;
-        if (!password.equals(that.password)) return false;
-        if (!serverUrl.equals(that.serverUrl)) return false;
         if (!username.equals(that.username)) return false;
+        if (!password.equals(that.password)) return false;
+        if (versionCode != null ? !versionCode.equals(that.versionCode) : that.versionCode != null)
+            return false;
+        return !(serverEdition != null ? !serverEdition.equals(that.serverEdition) : that.serverEdition != null);
 
-        return true;
     }
 
     @Override
@@ -167,6 +188,8 @@ public class JsServerProfile implements Parcelable {
         result = 31 * result + (organization != null ? organization.hashCode() : 0);
         result = 31 * result + username.hashCode();
         result = 31 * result + password.hashCode();
+        result = 31 * result + (versionCode != null ? versionCode.hashCode() : 0);
+        result = 31 * result + (serverEdition != null ? serverEdition.hashCode() : 0);
         return result;
     }
 
@@ -184,18 +207,22 @@ public class JsServerProfile implements Parcelable {
         dest.writeString(this.organization);
         dest.writeString(this.username);
         dest.writeString(this.password);
+        dest.writeString(this.versionCode);
+        dest.writeString(this.serverEdition);
     }
 
-    private JsServerProfile(Parcel in) {
+    protected JsServerProfile(Parcel in) {
         this.id = in.readLong();
         this.alias = in.readString();
         this.serverUrl = in.readString();
         this.organization = in.readString();
         this.username = in.readString();
         this.password = in.readString();
+        this.versionCode = in.readString();
+        this.serverEdition = in.readString();
     }
 
-    public static final Parcelable.Creator<JsServerProfile> CREATOR = new Parcelable.Creator<JsServerProfile>() {
+    public static final Creator<JsServerProfile> CREATOR = new Creator<JsServerProfile>() {
         public JsServerProfile createFromParcel(Parcel source) {
             return new JsServerProfile(source);
         }
