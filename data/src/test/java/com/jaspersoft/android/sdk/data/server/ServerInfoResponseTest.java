@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.data.server;
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -23,16 +23,39 @@ package com.jaspersoft.android.sdk.data.server;
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
+
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class ServerInfoResponseTest {
-    @Test
-    public void shouldParseDefaultJsonResponse() {}
+    @ResourceFile("json/default_server_info.json")
+    TestResource mJsonResource;
+    @ResourceFile("xml/default_server_info.xml")
+    TestResource mXmlResource;
+
+    @Before
+    public void setup() {
+        TestResourceInjector.inject(this);
+    }
 
     @Test
-    public void shouldParseDefaultXmlResponse() {}
+    public void shouldParseDefaultJsonResponse() {
+        assertThat(mJsonResource.asString(), is(notNullValue()));
+    }
+
+    @Test
+    public void shouldParseDefaultXmlResponse() {
+        assertThat(mXmlResource.asString(), is(notNullValue()));
+    }
 }
