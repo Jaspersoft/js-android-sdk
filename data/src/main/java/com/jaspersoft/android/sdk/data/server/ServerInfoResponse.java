@@ -29,11 +29,11 @@ import org.simpleframework.xml.Root;
 import java.math.BigDecimal;
 
 /**
- * @author Ivan Gadzhega
- * @since 1.4
+ * @author Tom Koptel
+ * @since 2.0
  */
 @Root(strict=false)
-public class ServerInfo {
+public final class ServerInfoResponse {
 
     public static class VERSION_CODES {
         public static final int UNKNOWN = 0;
@@ -77,8 +77,7 @@ public class ServerInfo {
 
     private double versionCode;
 
-
-    public ServerInfo() {
+    public ServerInfoResponse() {
         edition = EDITIONS.CE;
         version = String.valueOf(VERSION_CODES.UNKNOWN);
     }
