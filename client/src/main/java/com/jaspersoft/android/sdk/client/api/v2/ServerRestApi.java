@@ -44,20 +44,24 @@ public interface ServerRestApi {
 
     class Builder {
         private final String mBaseUrl;
-        private boolean mXmlDataType;
+        private DataType mDataType = DataType.XML;
 
         Builder(@Nullable String baseUrl) {
             mBaseUrl = baseUrl;
-            mXmlDataType = true;
         }
 
-        public Builder useXmlDataType() {
-            mXmlDataType = true;
+        public Builder setDataType(DataType dataType) {
+            mDataType = dataType;
             return this;
         }
 
-        public Builder useJsonDataType() {
-            mXmlDataType = false;
+        public Builder consumeJson() {
+            mDataType = DataType.JSON;
+            return this;
+        }
+
+        public Builder consumeXml() {
+            mDataType = DataType.JSON;
             return this;
         }
 
@@ -65,8 +69,7 @@ public interface ServerRestApi {
             Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
 
             RestAdapter.Builder builder = new RestAdapter.Builder();
-            builder.setRequestInterceptor(mXmlDataType ? new XmlHttpRequestInterceptor() : new JsonHttpRequestInterceptor());
-//            builder.setConverter(mXmlDataType ? new SimpleXMLConverter() : new JsonHttpRequestInterceptor());
+            builder.setConverter(ConverterFactory.create(mDataType));
             builder.setEndpoint(endpoint);
             RestAdapter restAdapter = builder.build();
 

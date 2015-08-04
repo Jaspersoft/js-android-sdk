@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -53,7 +53,7 @@ public class ServerRestApiTest {
     @Test
     public void shouldRequestInfoForXml() {
         ServerRestApi restApi = new ServerRestApi.Builder("http://mobiledemo.jaspersoft.com/jasperserver-pro")
-                .useXmlDataType()
+                .consumeJson()
                 .build();
 
         ServerInfo serverInfo = restApi.getServerInfo();
@@ -66,7 +66,7 @@ public class ServerRestApiTest {
     @Test
     public void shouldRequestInfoForJson() {
         ServerRestApi restApi = new ServerRestApi.Builder("http://mobiledemo.jaspersoft.com/jasperserver-pro")
-                .useJsonDataType()
+                .consumeXml()
                 .build();
 
         ServerInfo serverInfo = restApi.getServerInfo();
