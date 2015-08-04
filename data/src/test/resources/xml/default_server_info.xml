@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<serverInfo>
+    <build>20150527_1447</build>
+    <dateFormatPattern>yyyy-MM-dd</dateFormatPattern>
+    <datetimeFormatPattern>yyyy-MM-dd'T'HH:mm:ss</datetimeFormatPattern>
+    <edition>PRO</edition>
+    <editionName>Enterprise for AWS</editionName>
+    <features>Fusion AHD EXP DB AUD ANA MT </features>
+    <licenseType>Commercial</licenseType>
+    <version>6.1</version>
+</serverInfo>
