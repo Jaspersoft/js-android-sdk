@@ -24,38 +24,41 @@
 
 package com.jaspersoft.android.sdk.data;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(GsonBuilder.class)
+@PrepareForTest({GsonBuilder.class, GsonFactory.class})
 public class GsonFactoryTest {
-
-    GsonBuilder mBuilder;
-    GsonFactory underTest;
-
-    @Before
-    public void setup() {
-        mBuilder = PowerMockito.spy(new GsonBuilder());
-        underTest = new GsonFactory(mBuilder);
+    @Test
+    public void shouldEnableGsonExposeAnnotationField() throws Exception {
+        GsonBuilder gsonBuilder = PowerMockito.mock(GsonBuilder.class);
+        whenNew(GsonBuilder.class).withNoArguments().thenReturn(gsonBuilder);
+        GsonFactory.create();
+        verify(gsonBuilder, times(1)).excludeFieldsWithoutExposeAnnotation();
+        PowerMockito.verifyNew(GsonBuilder.class).withNoArguments();
     }
 
     @Test
-    public void shouldEnableGsonExposeAnnotationField() {
-        underTest.get();
-        verify(mBuilder, times(1)).excludeFieldsWithoutExposeAnnotation();
+    public void shouldCreateInstanceOfGson() {
+        Gson gson = GsonFactory.create();
+        assertThat(gson, is(notNullValue()));
     }
 }

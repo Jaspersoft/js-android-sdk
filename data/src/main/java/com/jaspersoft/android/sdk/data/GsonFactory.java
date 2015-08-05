@@ -32,20 +32,9 @@ import com.google.gson.GsonBuilder;
  * @since 2.0
  */
 public final class GsonFactory {
-    private final GsonBuilder mBuilder;
-
-    GsonFactory(GsonBuilder gsonBuilder) {
-        mBuilder = gsonBuilder;
-    }
-
     public static Gson create() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        GsonFactory gsonFactory = new GsonFactory(gsonBuilder);
-        return gsonFactory.get();
-    }
-
-    Gson get() {
-        mBuilder.excludeFieldsWithoutExposeAnnotation();
-        return mBuilder.create();
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        return gsonBuilder.create();
     }
 }
