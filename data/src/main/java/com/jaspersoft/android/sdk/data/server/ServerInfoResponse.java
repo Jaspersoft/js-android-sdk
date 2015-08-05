@@ -24,47 +24,35 @@ package com.jaspersoft.android.sdk.data.server;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@Root(strict=false)
 public final class ServerInfoResponse {
 
     @Expose
-    @Element
     private String dateFormatPattern;
 
     @Expose
-    @Element
     private String datetimeFormatPattern;
 
     @Expose
-    @Element
     @JsonAdapter(ServerVersionAdapter.class)
     private ServerVersion version;
 
     @Expose
-    @Element
     private ServerEdition edition;
 
     @Expose
-    @Element(required=false)
     private String licenseType;
 
     @Expose
-    @Element(required=false)
     private String build;
 
     @Expose
-    @Element(required=false)
     private String editionName;
 
     @Expose
-    @Element(required=false)
     @JsonAdapter(FeaturesAdapter.class)
     private FeatureSet features;
 

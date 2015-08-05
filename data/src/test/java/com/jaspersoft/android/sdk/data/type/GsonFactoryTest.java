@@ -22,11 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.json;
+package com.jaspersoft.android.sdk.data.type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

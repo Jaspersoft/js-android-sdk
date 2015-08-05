@@ -26,16 +26,12 @@ package com.jaspersoft.android.sdk.data.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.simpleframework.xml.Serializer;
-
-import java.io.ByteArrayOutputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -49,11 +45,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class ServerInfoResponseTest {
     @ResourceFile("json/default_server_info.json")
     TestResource mJsonResource;
-    @ResourceFile("xml/default_server_info.xml")
-    TestResource mXmlResource;
 
     Gson mGson = GsonFactory.create();
-    Serializer mSerializer = XmlSerializerFactory.create();
 
     @Before
     public void setup() {
@@ -64,7 +57,9 @@ public class ServerInfoResponseTest {
     public void shouldParseDefaultJsonResponse() {
         ServerInfoResponse response = mGson.fromJson(mJsonResource.asString(), ServerInfoResponse.class);
         assertThat(response, is(notNullValue()));
-        assertFields(response);
+        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
+        assertThat(response.getEdition(), is(ServerEdition.PRO));
+        assertThat(response.getFeatureSet().asSet(), hasItems("Fusion", "AHD", "EXP", "DB", "AUD", "ANA", "MT"));
     }
 
     @Test
@@ -88,58 +83,10 @@ public class ServerInfoResponseTest {
         assertThat(serializedVersion, is("Fusion AHD EXP DB AUD ANA MT "));
     }
 
-    @Test
-    public void shouldParseDefaultXmlResponse() throws Exception {
-        ServerInfoResponse response = mSerializer.read(ServerInfoResponse.class, mXmlResource.asString());
-        assertThat(response, is(notNullValue()));
-        assertFields(response);
-    }
-
-    @Test
-    public void shouldSerializeServerVersionToXml() throws Exception {
-        ServerInfoResponse[] dtoArray = serializeXml();
-        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
-        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
-        assertThat(serverInfoResponse1.getVersion(), is(serverInfoResponse2.getVersion()));
-    }
-
-    @Test
-    public void shouldSerializeServerEditionToXml() throws Exception {
-        ServerInfoResponse[] dtoArray = serializeXml();
-        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
-        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
-        assertThat(serverInfoResponse1.getEdition(), is(serverInfoResponse2.getEdition()));
-    }
-
-    @Test
-    public void shouldSerializeFeaturesToXml() throws Exception {
-        ServerInfoResponse[] dtoArray = serializeXml();
-        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
-        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
-        assertThat(serverInfoResponse1.getFeatureSet(), is(serverInfoResponse2.getFeatureSet()));
-    }
-
-    private void assertFields(ServerInfoResponse response) {
-        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
-        assertThat(response.getEdition(), is(ServerEdition.PRO));
-        assertThat(response.getFeatureSet().asSet(), hasItems("Fusion", "AHD", "EXP", "DB", "AUD", "ANA", "MT"));
-    }
-
     private JsonElement serializeJson() {
         String initialJson = mJsonResource.asString();
         ServerInfoResponse response = mGson.fromJson(initialJson, ServerInfoResponse.class);
         return mGson.toJsonTree(response, ServerInfoResponse.class);
     }
 
-    private ServerInfoResponse[] serializeXml() throws Exception {
-        String initialXml = mXmlResource.asString();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ServerInfoResponse serverInfoResponse1 = mSerializer.read(ServerInfoResponse.class, initialXml);
-        mSerializer.write(serverInfoResponse1, outputStream);
-
-        String xml = new String(outputStream.toByteArray());
-        ServerInfoResponse serverInfoResponse2 = mSerializer.read(ServerInfoResponse.class, xml);
-
-        return new ServerInfoResponse[] {serverInfoResponse1, serverInfoResponse2};
-    }
 }

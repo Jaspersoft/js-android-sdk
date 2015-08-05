@@ -24,12 +24,8 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.server;
 
-import com.jaspersoft.android.sdk.client.retrofit.converter.ConverterFactory;
-import com.jaspersoft.android.sdk.data.DataType;
 import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
-import retrofit.Endpoint;
-import retrofit.Endpoints;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
 
@@ -38,41 +34,16 @@ import retrofit.http.GET;
  * @since 2.0
  */
 public interface ServerRestApi {
-
     @GET(value = "/rest_v2/serverInfo")
     ServerInfoResponse getServerInfo();
 
-    class Builder {
-        private final String mBaseUrl;
-        private DataType mDataType = DataType.XML;
-
+    class Builder extends RestBuilder<ServerRestApi> {
         public Builder(String baseUrl) {
-            mBaseUrl = baseUrl;
+           super(baseUrl);
         }
 
-        public Builder setDataType(DataType dataType) {
-            mDataType = dataType;
-            return this;
-        }
-
-        public Builder consumeJson() {
-            mDataType = DataType.JSON;
-            return this;
-        }
-
-        public Builder consumeXml() {
-            mDataType = DataType.JSON;
-            return this;
-        }
-
-        public ServerRestApi build() {
-            Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
-
-            RestAdapter.Builder builder = new RestAdapter.Builder();
-            builder.setConverter(ConverterFactory.create(mDataType));
-            builder.setEndpoint(endpoint);
-            RestAdapter restAdapter = builder.build();
-
+        @Override
+        protected ServerRestApi createApiService(RestAdapter restAdapter) {
             return restAdapter.create(ServerRestApi.class);
         }
     }

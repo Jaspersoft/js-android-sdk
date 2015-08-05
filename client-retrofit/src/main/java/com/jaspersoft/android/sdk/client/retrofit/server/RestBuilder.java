@@ -22,39 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
+package com.jaspersoft.android.sdk.client.retrofit.server;
 
-import org.simpleframework.xml.transform.Matcher;
-import org.simpleframework.xml.transform.Transform;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import retrofit.Endpoint;
+import retrofit.Endpoints;
+import retrofit.RestAdapter;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CommonMatcher implements Matcher {
+abstract class RestBuilder<Api> {
+    private final String mBaseUrl;
 
-    private final Collection<Matcher> mMatchers = new ArrayList<>();
-
-    public void registerMatcher(Matcher matcher) {
-        mMatchers.add(matcher);
+    public RestBuilder(String baseUrl) {
+        mBaseUrl = baseUrl;
     }
 
-    @Override
-    public Transform match(Class type) throws Exception {
-        return findTransformer(type);
-    }
+    protected abstract Api createApiService(RestAdapter restAdapter);
 
-    private Transform findTransformer(Class type) throws Exception {
-        for (Matcher matcher : mMatchers) {
-            Transform transformer = matcher.match(type);
-            if (transformer != null) {
-                return transformer;
-            }
-        }
-        return null;
-    }
+    public Api build() {
+        Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
 
+        RestAdapter.Builder builder = new RestAdapter.Builder();
+        builder.setEndpoint(endpoint);
+        RestAdapter restAdapter = builder.build();
+
+        return createApiService(restAdapter);
+    }
 }
