@@ -24,9 +24,12 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.server;
 
+import com.jaspersoft.android.sdk.data.json.GsonFactory;
+
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
 
 /**
  * @author Tom Koptel
@@ -46,6 +49,7 @@ abstract class RestBuilder<Api> {
 
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setEndpoint(endpoint);
+        builder.setConverter(new GsonConverter(GsonFactory.create()));
         RestAdapter restAdapter = builder.build();
 
         return createApiService(restAdapter);

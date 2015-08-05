@@ -24,16 +24,21 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.server;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
 import retrofit.RestAdapter;
 import retrofit.http.GET;
+import retrofit.http.Headers;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface ServerRestApi {
+    @NonNull
+    @Headers("Accept: application/json")
     @GET(value = "/rest_v2/serverInfo")
     ServerInfoResponse getServerInfo();
 

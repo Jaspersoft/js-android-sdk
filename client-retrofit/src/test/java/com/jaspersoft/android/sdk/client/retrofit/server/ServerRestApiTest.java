@@ -24,9 +24,17 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.server;
 
+
 import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.FakeHttp;
+
+import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -36,14 +44,22 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class ServerRestApiTest {
 
-    String fixedEndpoint = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+
+    @Before
+    public void setup() {
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+    }
 
     @Test
-    public void shouldRequestServerInfo() {
-        ServerRestApi restApi = new ServerRestApi.Builder(fixedEndpoint).build();
-        ServerInfoResponse response = restApi.getServerInfo();
+    public void shouldRequestServerInfo() throws IOException {
+        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
+        ServerInfoResponse response = api.getServerInfo();
         assertThat(response, is(notNullValue()));
     }
+
 }
