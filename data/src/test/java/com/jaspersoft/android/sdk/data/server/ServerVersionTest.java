@@ -62,9 +62,9 @@ public class ServerVersionTest {
             "5.2, EMERALD_MR1",
             "5.5, EMERALD_MR2",
             "5.6, EMERALD_MR3",
-            "5.61, EMERALD_MR4",
+            "5.6.1, EMERALD_MR4",
             "6.0, AMBER",
-            "6.01, AMBER_MR1",
+            "6.0.1, AMBER_MR1",
             "6.1, AMBER_MR2",
     })
     public void shouldParseCode(String versionCode, String enumName) {
