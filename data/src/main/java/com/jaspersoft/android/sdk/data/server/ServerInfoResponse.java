@@ -49,7 +49,7 @@ public final class ServerInfoResponse {
 
     @Expose
     @Element
-    private String edition;
+    private ServerEdition edition;
 
     @Expose
     @Element(required=false)
@@ -87,7 +87,7 @@ public final class ServerInfoResponse {
         return datetimeFormatPattern;
     }
 
-    public String getEdition() {
+    public ServerEdition getEdition() {
         return edition;
     }
 

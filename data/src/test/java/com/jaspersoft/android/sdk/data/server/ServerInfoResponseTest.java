@@ -64,25 +64,54 @@ public class ServerInfoResponseTest {
         ServerInfoResponse response = mGson.fromJson(mJsonResource.asString(), ServerInfoResponse.class);
         assertThat(response, is(notNullValue()));
         assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
+        assertThat(response.getEdition(), is(ServerEdition.PRO));
     }
 
     @Test
     public void shouldSerializeServerVersionToJson() {
-        String initialJson = mJsonResource.asString();
-        ServerInfoResponse response = mGson.fromJson(initialJson, ServerInfoResponse.class);
-        JsonElement element = mGson.toJsonTree(response, ServerInfoResponse.class);
+        JsonElement element = serializeJson();
         String serializedVersion = element.getAsJsonObject().get("version").getAsString();
         assertThat(serializedVersion, is("6.1"));
+    }
+
+    @Test
+    public void shouldSerializeServerEditionToJson() {
+        JsonElement element = serializeJson();
+        String serializedVersion = element.getAsJsonObject().get("edition").getAsString();
+        assertThat(serializedVersion, is("PRO"));
     }
 
     @Test
     public void shouldParseDefaultXmlResponse() throws Exception {
         ServerInfoResponse response = mSerializer.read(ServerInfoResponse.class, mXmlResource.asString());
         assertThat(response, is(notNullValue()));
+        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
+        assertThat(response.getEdition(), is(ServerEdition.PRO));
     }
 
     @Test
     public void shouldSerializeServerVersionToXml() throws Exception {
+        ServerInfoResponse[] dtoArray = serializeXml();
+        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
+        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
+        assertThat(serverInfoResponse1.getVersion(), is(serverInfoResponse2.getVersion()));
+    }
+
+    @Test
+    public void shouldSerializeServerEditionToXml() throws Exception {
+        ServerInfoResponse[] dtoArray = serializeXml();
+        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
+        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
+        assertThat(serverInfoResponse1.getEdition(), is(serverInfoResponse2.getEdition()));
+    }
+
+    private JsonElement serializeJson() {
+        String initialJson = mJsonResource.asString();
+        ServerInfoResponse response = mGson.fromJson(initialJson, ServerInfoResponse.class);
+        return mGson.toJsonTree(response, ServerInfoResponse.class);
+    }
+
+    private ServerInfoResponse[] serializeXml() throws Exception {
         String initialXml = mXmlResource.asString();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ServerInfoResponse serverInfoResponse1 = mSerializer.read(ServerInfoResponse.class, initialXml);
@@ -90,6 +119,7 @@ public class ServerInfoResponseTest {
 
         String xml = new String(outputStream.toByteArray());
         ServerInfoResponse serverInfoResponse2 = mSerializer.read(ServerInfoResponse.class, xml);
-        assertThat(serverInfoResponse1.getVersion(), is(serverInfoResponse2.getVersion()));
+
+        return new ServerInfoResponse[] {serverInfoResponse1, serverInfoResponse2};
     }
 }
