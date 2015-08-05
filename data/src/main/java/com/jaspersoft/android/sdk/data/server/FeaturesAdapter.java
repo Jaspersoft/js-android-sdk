@@ -22,39 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
+package com.jaspersoft.android.sdk.data.server;
 
-import org.simpleframework.xml.transform.Matcher;
-import org.simpleframework.xml.transform.Transform;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CommonMatcher implements Matcher {
-
-    private final Collection<Matcher> mMatchers = new ArrayList<>();
-
-    public void registerMatcher(Matcher matcher) {
-        mMatchers.add(matcher);
+final class FeaturesAdapter extends TypeAdapter<FeatureSet> {
+    @Override
+    public void write(JsonWriter out, FeatureSet value) throws IOException {
+        out.value(value.asString());
     }
 
     @Override
-    public Transform match(Class type) throws Exception {
-        return findTransformer(type);
+    public FeatureSet read(JsonReader in) throws IOException {
+        String rawFeatures = in.nextString();
+        return FeatureSet.create(rawFeatures);
     }
-
-    private Transform findTransformer(Class type) throws Exception {
-        for (Matcher matcher : mMatchers) {
-            Transform transformer = matcher.match(type);
-            if (transformer != null) {
-                return transformer;
-            }
-        }
-        return null;
-    }
-
 }

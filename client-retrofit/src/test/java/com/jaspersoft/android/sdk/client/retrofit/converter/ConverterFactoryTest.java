@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.converter;
 
+import com.jaspersoft.android.sdk.client.retrofit.server.ServerRestApi;
 import com.jaspersoft.android.sdk.data.DataType;
 import com.jaspersoft.android.sdk.data.type.GsonFactory;
 import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
@@ -76,6 +77,9 @@ public class ConverterFactoryTest {
 
         assertThat(converter, is(instanceOf(SimpleXMLConverter.class)));
         assertThat(converter, is(notNullValue()));
+
+        ServerRestApi serverRestApi = new ServerRestApi.Builder("").build();
+        serverRestApi.getServerInfo();
     }
 
     @Test

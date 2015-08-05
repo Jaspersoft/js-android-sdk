@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
@@ -63,8 +64,7 @@ public class ServerInfoResponseTest {
     public void shouldParseDefaultJsonResponse() {
         ServerInfoResponse response = mGson.fromJson(mJsonResource.asString(), ServerInfoResponse.class);
         assertThat(response, is(notNullValue()));
-        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
-        assertThat(response.getEdition(), is(ServerEdition.PRO));
+        assertFields(response);
     }
 
     @Test
@@ -82,11 +82,17 @@ public class ServerInfoResponseTest {
     }
 
     @Test
+    public void shouldSerializeFeaturesToJson() {
+        JsonElement element = serializeJson();
+        String serializedVersion = element.getAsJsonObject().get("features").getAsString();
+        assertThat(serializedVersion, is("Fusion AHD EXP DB AUD ANA MT "));
+    }
+
+    @Test
     public void shouldParseDefaultXmlResponse() throws Exception {
         ServerInfoResponse response = mSerializer.read(ServerInfoResponse.class, mXmlResource.asString());
         assertThat(response, is(notNullValue()));
-        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
-        assertThat(response.getEdition(), is(ServerEdition.PRO));
+        assertFields(response);
     }
 
     @Test
@@ -103,6 +109,20 @@ public class ServerInfoResponseTest {
         ServerInfoResponse serverInfoResponse1 = dtoArray[0];
         ServerInfoResponse serverInfoResponse2 = dtoArray[1];
         assertThat(serverInfoResponse1.getEdition(), is(serverInfoResponse2.getEdition()));
+    }
+
+    @Test
+    public void shouldSerializeFeaturesToXml() throws Exception {
+        ServerInfoResponse[] dtoArray = serializeXml();
+        ServerInfoResponse serverInfoResponse1 = dtoArray[0];
+        ServerInfoResponse serverInfoResponse2 = dtoArray[1];
+        assertThat(serverInfoResponse1.getFeatureSet(), is(serverInfoResponse2.getFeatureSet()));
+    }
+
+    private void assertFields(ServerInfoResponse response) {
+        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
+        assertThat(response.getEdition(), is(ServerEdition.PRO));
+        assertThat(response.getFeatureSet().asSet(), hasItems("Fusion", "AHD", "EXP", "DB", "AUD", "ANA", "MT"));
     }
 
     private JsonElement serializeJson() {

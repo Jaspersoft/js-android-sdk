@@ -22,39 +22,49 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
+package com.jaspersoft.android.sdk.data.server;
 
-import org.simpleframework.xml.transform.Matcher;
-import org.simpleframework.xml.transform.Transform;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CommonMatcher implements Matcher {
+public final class FeatureSet {
+    private final String mRawData;
 
-    private final Collection<Matcher> mMatchers = new ArrayList<>();
+    FeatureSet(String rawData) {
+        mRawData = rawData;
+    }
 
-    public void registerMatcher(Matcher matcher) {
-        mMatchers.add(matcher);
+    public Set<String> asSet() {
+        String[] split = mRawData.split(" ");
+        return new HashSet<>(Arrays.asList(split));
+    }
+
+    public String asString() {
+        return mRawData;
+    }
+
+    public static FeatureSet create(String rawString) {
+        return new FeatureSet(rawString);
     }
 
     @Override
-    public Transform match(Class type) throws Exception {
-        return findTransformer(type);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FeatureSet that = (FeatureSet) o;
+
+        return !(mRawData != null ? !mRawData.equals(that.mRawData) : that.mRawData != null);
+
     }
 
-    private Transform findTransformer(Class type) throws Exception {
-        for (Matcher matcher : mMatchers) {
-            Transform transformer = matcher.match(type);
-            if (transformer != null) {
-                return transformer;
-            }
-        }
-        return null;
+    @Override
+    public int hashCode() {
+        return mRawData != null ? mRawData.hashCode() : 0;
     }
-
 }

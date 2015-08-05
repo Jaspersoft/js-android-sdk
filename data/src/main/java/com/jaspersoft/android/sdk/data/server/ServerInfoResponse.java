@@ -65,11 +65,8 @@ public final class ServerInfoResponse {
 
     @Expose
     @Element(required=false)
-    private String expiration;
-
-    @Expose
-    @Element(required=false)
-    private String features;
+    @JsonAdapter(FeaturesAdapter.class)
+    private FeatureSet features;
 
     //---------------------------------------------------------------------
     // Getters
@@ -95,11 +92,7 @@ public final class ServerInfoResponse {
         return editionName;
     }
 
-    public String getExpiration() {
-        return expiration;
-    }
-
-    public String getFeatures() {
+    public FeatureSet getFeatureSet() {
         return features;
     }
 

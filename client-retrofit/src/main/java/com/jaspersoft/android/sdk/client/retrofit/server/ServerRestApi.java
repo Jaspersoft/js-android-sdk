@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -46,7 +46,7 @@ public interface ServerRestApi {
         private final String mBaseUrl;
         private DataType mDataType = DataType.XML;
 
-        Builder(String baseUrl) {
+        public Builder(String baseUrl) {
             mBaseUrl = baseUrl;
         }
 

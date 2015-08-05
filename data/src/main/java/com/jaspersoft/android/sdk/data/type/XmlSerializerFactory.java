@@ -45,6 +45,7 @@ public final class XmlSerializerFactory {
 
         CommonMatcher commonMatcher = new CommonMatcher();
         commonMatcher.registerMatcher(new ServerVersionMatcher());
+        commonMatcher.registerMatcher(new FeatureSetMatcher());
 
         return new Persister(annotationStrategy, commonMatcher);
     }

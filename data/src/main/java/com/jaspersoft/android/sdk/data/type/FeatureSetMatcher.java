@@ -24,37 +24,33 @@
 
 package com.jaspersoft.android.sdk.data.type;
 
+import com.jaspersoft.android.sdk.data.server.FeatureSet;
+
 import org.simpleframework.xml.transform.Matcher;
 import org.simpleframework.xml.transform.Transform;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CommonMatcher implements Matcher {
-
-    private final Collection<Matcher> mMatchers = new ArrayList<>();
-
-    public void registerMatcher(Matcher matcher) {
-        mMatchers.add(matcher);
-    }
-
+final class FeatureSetMatcher implements Matcher {
     @Override
     public Transform match(Class type) throws Exception {
-        return findTransformer(type);
-    }
-
-    private Transform findTransformer(Class type) throws Exception {
-        for (Matcher matcher : mMatchers) {
-            Transform transformer = matcher.match(type);
-            if (transformer != null) {
-                return transformer;
-            }
+        if (type.equals(FeatureSet.class)) {
+            return new FeatureSetTransformer();
         }
         return null;
     }
 
+    private static class FeatureSetTransformer implements Transform<FeatureSet> {
+        @Override
+        public FeatureSet read(String value) throws Exception {
+            return FeatureSet.create(value);
+        }
+
+        @Override
+        public String write(FeatureSet value) throws Exception {
+            return value.asString();
+        }
+    }
 }
