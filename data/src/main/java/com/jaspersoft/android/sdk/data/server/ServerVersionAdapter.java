@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.converter;
+package com.jaspersoft.android.sdk.data.server;
 
-import com.jaspersoft.android.sdk.data.DataType;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ConverterFactory {
-    public static Converter create(DataType dataType) {
-        if (dataType == null) {
-            throw new IllegalArgumentException("DataType should not be null");
-        }
-        if (dataType == DataType.JSON) {
-            return new GsonConverter(GsonFactory.create());
-        }
-        if (dataType == DataType.XML) {
-            return new SimpleXMLConverter(XmlSerializerFactory.create());
-        }
-        throw new UnsupportedOperationException("Supplied DataType[ " + dataType + " ] invalid");
+final class ServerVersionAdapter extends TypeAdapter<ServerVersion> {
+    @Override
+    public void write(JsonWriter out, ServerVersion value) throws IOException {
+        out.value(value.getRawValue());
+    }
+
+    @Override
+    public ServerVersion read(JsonReader in) throws IOException {
+        String rawValue = in.nextString();
+        return ServerVersion.defaultParser().parse(rawValue);
     }
 }

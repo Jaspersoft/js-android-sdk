@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data;
+package com.jaspersoft.android.sdk.data.type;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(XmlSerializerFactory.class)
+@PrepareForTest(com.jaspersoft.android.sdk.data.type.XmlSerializerFactory.class)
 public class XmlSerializerFactoryTest {
     @Mock
     Persister mPersister;
@@ -61,13 +61,13 @@ public class XmlSerializerFactoryTest {
     @Test
     public void shouldCreatePersisterWithAnnotationStrategy() throws Exception {
         whenNew(Persister.class).withParameterTypes(Strategy.class).withArguments(Mockito.any(Strategy.class)).thenReturn(mPersister);
-        XmlSerializerFactory.create();
+        com.jaspersoft.android.sdk.data.type.XmlSerializerFactory.create();
         PowerMockito.verifyNew(Persister.class).withArguments(Mockito.any(AnnotationStrategy.class));
     }
 
     @Test
     public void shouldCreateSerializerInstance() {
-        Serializer serializer = XmlSerializerFactory.create();
+        Serializer serializer = com.jaspersoft.android.sdk.data.type.XmlSerializerFactory.create();
         assertThat(serializer, is(notNullValue()));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,51 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.converter;
-
-import com.jaspersoft.android.sdk.data.DataType;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
-
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+package com.jaspersoft.android.sdk.data.server;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ConverterFactory {
-    public static Converter create(DataType dataType) {
-        if (dataType == null) {
-            throw new IllegalArgumentException("DataType should not be null");
-        }
-        if (dataType == DataType.JSON) {
-            return new GsonConverter(GsonFactory.create());
-        }
-        if (dataType == DataType.XML) {
-            return new SimpleXMLConverter(XmlSerializerFactory.create());
-        }
-        throw new UnsupportedOperationException("Supplied DataType[ " + dataType + " ] invalid");
+public enum ServerVersion {
+    UNKNOWN(0d),
+    EMERALD(5.0d),
+    EMERALD_MR1(5.2d),
+    EMERALD_MR2(5.5d),
+    EMERALD_MR3(5.6d),
+    EMERALD_MR4(5.61d),
+    AMBER(6.0d),
+    AMBER_MR1(6.01d),
+    AMBER_MR2(6.1d);
+
+    private double mVersionCode;
+    private String mRawValue;
+
+    ServerVersion(double versionCode) {
+        this.mVersionCode = versionCode;
+    }
+
+    public String getRawValue() {
+        return mRawValue;
+    }
+
+    public double getVersionCode() {
+        return mVersionCode;
+    }
+
+    void setVersionCode(double versionCode) {
+        mVersionCode = versionCode;
+    }
+
+    void setRawValue(String rawValue) {
+        mRawValue = rawValue;
+    }
+
+    public static Parser defaultParser() {
+        return DefaultVersionParser.INSTANCE;
+    }
+
+    public interface Parser {
+        ServerVersion parse(String rawVersion);
     }
 }

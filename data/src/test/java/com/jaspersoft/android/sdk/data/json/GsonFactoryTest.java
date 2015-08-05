@@ -22,10 +22,11 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data;
+package com.jaspersoft.android.sdk.data.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,14 @@ public class GsonFactoryTest {
         whenNew(GsonBuilder.class).withNoArguments().thenReturn(gsonBuilder);
         GsonFactory.create();
         verify(gsonBuilder, times(1)).excludeFieldsWithoutExposeAnnotation();
-        PowerMockito.verifyNew(GsonBuilder.class).withNoArguments();
+    }
+
+    @Test
+    public void shouldDisableHtmlEscaping() throws Exception {
+        GsonBuilder gsonBuilder = PowerMockito.mock(GsonBuilder.class);
+        whenNew(GsonBuilder.class).withNoArguments().thenReturn(gsonBuilder);
+        GsonFactory.create();
+        verify(gsonBuilder, times(1)).disableHtmlEscaping();
     }
 
     @Test

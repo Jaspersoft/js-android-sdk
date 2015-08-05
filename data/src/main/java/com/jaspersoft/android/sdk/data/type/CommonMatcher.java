@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.converter;
+package com.jaspersoft.android.sdk.data.type;
 
-import com.jaspersoft.android.sdk.data.DataType;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
+import org.simpleframework.xml.transform.Matcher;
+import org.simpleframework.xml.transform.Transform;
 
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ConverterFactory {
-    public static Converter create(DataType dataType) {
-        if (dataType == null) {
-            throw new IllegalArgumentException("DataType should not be null");
+final class CommonMatcher implements Matcher {
+
+    private final Collection<Matcher> mMatchers = new ArrayList<>();
+
+
+    public void registerMatcher(Matcher matcher) {
+        mMatchers.add(matcher);
+    }
+
+    @Override
+    public Transform match(Class type) throws Exception {
+        for (Matcher matcher : mMatchers) {
+            return matcher.match(type);
         }
-        if (dataType == DataType.JSON) {
-            return new GsonConverter(GsonFactory.create());
-        }
-        if (dataType == DataType.XML) {
-            return new SimpleXMLConverter(XmlSerializerFactory.create());
-        }
-        throw new UnsupportedOperationException("Supplied DataType[ " + dataType + " ] invalid");
+        return null;
     }
 }

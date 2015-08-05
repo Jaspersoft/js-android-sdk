@@ -22,11 +22,10 @@
 package com.jaspersoft.android.sdk.data.server;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-
-import java.math.BigDecimal;
 
 /**
  * @author Tom Koptel
@@ -35,27 +34,30 @@ import java.math.BigDecimal;
 @Root(strict=false)
 public final class ServerInfoResponse {
 
-    public static class VERSION_CODES {
-        public static final int UNKNOWN = 0;
-        public static final double EMERALD = 5.0;
-        public static final double EMERALD_MR1 = 5.2;
-        public static final double EMERALD_TWO = 5.5;
-        public static final double EMERALD_THREE = 5.6;
-        public static final double AMBER = 6.0;
-    }
-
-    public static class EDITIONS {
-        public static final String CE = "CE";
-        public static final String PRO = "PRO";
-    }
+    @Expose
+    @Element
+    private String dateFormatPattern;
 
     @Expose
-    @Element(required=false)
-    private String build;
+    @Element
+    private String datetimeFormatPattern;
+
+    @Expose
+    @Element
+    @JsonAdapter(ServerVersionAdapter.class)
+    private ServerVersion version;
 
     @Expose
     @Element
     private String edition;
+
+    @Expose
+    @Element(required=false)
+    private String licenseType;
+
+    @Expose
+    @Element(required=false)
+    private String build;
 
     @Expose
     @Element(required=false)
@@ -69,107 +71,43 @@ public final class ServerInfoResponse {
     @Element(required=false)
     private String features;
 
-    @Expose
-    @Element(required=false)
-    private String licenseType;
-
-    private String version;
-
-    private double versionCode;
-
-    public ServerInfoResponse() {
-        edition = EDITIONS.CE;
-        version = String.valueOf(VERSION_CODES.UNKNOWN);
-    }
-
-    @Element
-    public void setVersion(String version) {
-        this.version = version;
-        this.versionCode = 0;
-        // update version code
-        if (version != null) {
-            String[] subs = version.split("\\.");
-
-            BigDecimal decimalSubVersion, decimalFactor, decimalResult;
-            BigDecimal decimalVersion = new BigDecimal("0");
-            for (int i = 0; i < subs.length; i++) {
-                try {
-                    decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
-                } catch (NumberFormatException ex) {
-                    decimalSubVersion = new BigDecimal("0");
-                }
-
-                decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));
-                decimalResult = decimalSubVersion.multiply(decimalFactor);
-                decimalVersion = decimalVersion.add(decimalResult);
-            }
-            versionCode = decimalVersion.doubleValue();
-        }
-    }
-
-    @Element
-    public String getVersion() {
-        return version;
-    }
-
     //---------------------------------------------------------------------
-    // Getters & Setters
+    // Getters
     //---------------------------------------------------------------------
 
     public String getBuild() {
         return build;
     }
 
-    public void setBuild(String build) {
-        this.build = build;
+    public String getDateFormatPattern() {
+        return dateFormatPattern;
+    }
+
+    public String getDatetimeFormatPattern() {
+        return datetimeFormatPattern;
     }
 
     public String getEdition() {
         return edition;
     }
 
-    public void setEdition(String edition) {
-        this.edition = edition;
-    }
-
     public String getEditionName() {
         return editionName;
-    }
-
-    public void setEditionName(String editionName) {
-        this.editionName = editionName;
     }
 
     public String getExpiration() {
         return expiration;
     }
 
-    public void setExpiration(String expiration) {
-        this.expiration = expiration;
-    }
-
     public String getFeatures() {
         return features;
-    }
-
-    public void setFeatures(String features) {
-        this.features = features;
     }
 
     public String getLicenseType() {
         return licenseType;
     }
 
-    public void setLicenseType(String licenseType) {
-        this.licenseType = licenseType;
+    public ServerVersion getVersion() {
+        return version;
     }
-
-    public double getVersionCode() {
-        return versionCode;
-    }
-
-    public void setVersionCode(double versionCode) {
-        this.versionCode = versionCode;
-    }
-
 }

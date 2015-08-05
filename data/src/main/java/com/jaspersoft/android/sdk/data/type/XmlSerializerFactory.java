@@ -22,12 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data;
+package com.jaspersoft.android.sdk.data.type;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
+import org.simpleframework.xml.transform.Matcher;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Tom Koptel
@@ -36,6 +40,12 @@ import org.simpleframework.xml.strategy.Strategy;
 public final class XmlSerializerFactory {
     public static Serializer create() {
         Strategy annotationStrategy = new AnnotationStrategy();
-        return new Persister(annotationStrategy);
+        Collection<Matcher> matchers = new ArrayList<>();
+        matchers.add(new ServerVersionMatcher());
+
+        CommonMatcher commonMatcher = new CommonMatcher();
+        commonMatcher.registerMatcher(new ServerVersionMatcher());
+
+        return new Persister(annotationStrategy, commonMatcher);
     }
 }

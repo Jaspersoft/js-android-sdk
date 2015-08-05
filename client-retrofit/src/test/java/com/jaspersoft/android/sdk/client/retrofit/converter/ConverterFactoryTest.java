@@ -25,8 +25,8 @@
 package com.jaspersoft.android.sdk.client.retrofit.converter;
 
 import com.jaspersoft.android.sdk.data.DataType;
-import com.jaspersoft.android.sdk.data.GsonFactory;
-import com.jaspersoft.android.sdk.data.XmlSerializerFactory;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
+import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
 
 import org.junit.Rule;
 import org.junit.Test;

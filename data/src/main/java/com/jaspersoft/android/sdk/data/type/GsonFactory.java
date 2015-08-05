@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.converter;
+package com.jaspersoft.android.sdk.data.type;
 
-import com.jaspersoft.android.sdk.data.DataType;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
-
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ConverterFactory {
-    public static Converter create(DataType dataType) {
-        if (dataType == null) {
-            throw new IllegalArgumentException("DataType should not be null");
-        }
-        if (dataType == DataType.JSON) {
-            return new GsonConverter(GsonFactory.create());
-        }
-        if (dataType == DataType.XML) {
-            return new SimpleXMLConverter(XmlSerializerFactory.create());
-        }
-        throw new UnsupportedOperationException("Supplied DataType[ " + dataType + " ] invalid");
+public final class GsonFactory {
+    public static Gson create() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        gsonBuilder.disableHtmlEscaping();
+        return gsonBuilder.create();
     }
 }

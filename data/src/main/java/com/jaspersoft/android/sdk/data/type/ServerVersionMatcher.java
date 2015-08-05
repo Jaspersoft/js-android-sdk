@@ -22,19 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data;
+package com.jaspersoft.android.sdk.data.type;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.jaspersoft.android.sdk.data.server.ServerVersion;
+
+import org.simpleframework.xml.transform.Matcher;
+import org.simpleframework.xml.transform.Transform;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        return gsonBuilder.create();
+final class ServerVersionMatcher implements Matcher {
+    @Override
+    public Transform match(Class type) throws Exception {
+        if (type.equals(ServerVersion.class)) {
+            return new ServerVersionTransformer();
+        }
+        return null;
+    }
+
+    private static class ServerVersionTransformer implements Transform<ServerVersion> {
+        @Override
+        public ServerVersion read(String value) throws Exception {
+            return ServerVersion.defaultParser().parse(value);
+        }
+
+        @Override
+        public String write(ServerVersion value) throws Exception {
+            return value.getRawValue();
+        }
     }
 }

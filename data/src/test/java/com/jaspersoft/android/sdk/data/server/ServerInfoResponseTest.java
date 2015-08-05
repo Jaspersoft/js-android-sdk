@@ -23,12 +23,19 @@ package com.jaspersoft.android.sdk.data.server;
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
+import com.jaspersoft.android.sdk.data.type.XmlSerializerFactory;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.simpleframework.xml.Serializer;
+
+import java.io.ByteArrayOutputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -44,6 +51,9 @@ public class ServerInfoResponseTest {
     @ResourceFile("xml/default_server_info.xml")
     TestResource mXmlResource;
 
+    Gson mGson = GsonFactory.create();
+    Serializer mSerializer = XmlSerializerFactory.create();
+
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
@@ -51,11 +61,35 @@ public class ServerInfoResponseTest {
 
     @Test
     public void shouldParseDefaultJsonResponse() {
-        assertThat(mJsonResource.asString(), is(notNullValue()));
+        ServerInfoResponse response = mGson.fromJson(mJsonResource.asString(), ServerInfoResponse.class);
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getVersion(), is(ServerVersion.AMBER_MR2));
     }
 
     @Test
-    public void shouldParseDefaultXmlResponse() {
-        assertThat(mXmlResource.asString(), is(notNullValue()));
+    public void shouldSerializeServerVersionToJson() {
+        String initialJson = mJsonResource.asString();
+        ServerInfoResponse response = mGson.fromJson(initialJson, ServerInfoResponse.class);
+        JsonElement element = mGson.toJsonTree(response, ServerInfoResponse.class);
+        String serializedVersion = element.getAsJsonObject().get("version").getAsString();
+        assertThat(serializedVersion, is("6.1"));
+    }
+
+    @Test
+    public void shouldParseDefaultXmlResponse() throws Exception {
+        ServerInfoResponse response = mSerializer.read(ServerInfoResponse.class, mXmlResource.asString());
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldSerializeServerVersionToXml() throws Exception {
+        String initialXml = mXmlResource.asString();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ServerInfoResponse serverInfoResponse1 = mSerializer.read(ServerInfoResponse.class, initialXml);
+        mSerializer.write(serverInfoResponse1, outputStream);
+
+        String xml = new String(outputStream.toByteArray());
+        ServerInfoResponse serverInfoResponse2 = mSerializer.read(ServerInfoResponse.class, xml);
+        assertThat(serverInfoResponse1.getVersion(), is(serverInfoResponse2.getVersion()));
     }
 }
