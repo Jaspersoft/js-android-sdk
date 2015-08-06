@@ -50,12 +50,12 @@ public enum ResourceType {
         }
     };
 
-    static com.jaspersoft.android.sdk.data.resource.ResourceType parseRawValue(String rawValue) {
-        com.jaspersoft.android.sdk.data.resource.ResourceType type;
+    static ResourceType parseRawValue(String rawValue) {
+        ResourceType type;
         try {
-            type = com.jaspersoft.android.sdk.data.resource.ResourceType.valueOf(rawValue);
+            type = ResourceType.valueOf(rawValue);
         } catch (IllegalArgumentException ex) {
-            type = com.jaspersoft.android.sdk.data.resource.ResourceType.unknown;
+            type = ResourceType.unknown;
             type.setRawValue(rawValue);
         }
         return type;

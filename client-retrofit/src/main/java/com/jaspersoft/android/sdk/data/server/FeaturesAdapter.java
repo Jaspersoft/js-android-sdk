@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.data.server;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.jaspersoft.android.sdk.data.server.FeatureSet;
 
 import java.io.IOException;
 
@@ -35,15 +34,15 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-final class FeaturesAdapter extends TypeAdapter<com.jaspersoft.android.sdk.data.server.FeatureSet> {
+final class FeaturesAdapter extends TypeAdapter<FeatureSet> {
     @Override
-    public void write(JsonWriter out, com.jaspersoft.android.sdk.data.server.FeatureSet value) throws IOException {
+    public void write(JsonWriter out, FeatureSet value) throws IOException {
         out.value(value.asString());
     }
 
     @Override
-    public com.jaspersoft.android.sdk.data.server.FeatureSet read(JsonReader in) throws IOException {
+    public FeatureSet read(JsonReader in) throws IOException {
         String rawFeatures = in.nextString();
-        return com.jaspersoft.android.sdk.data.server.FeatureSet.create(rawFeatures);
+        return FeatureSet.create(rawFeatures);
     }
 }

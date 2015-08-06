@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.client.retrofit.rest.v2.server;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.data.json.GsonFactory;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
 import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
 import retrofit.Endpoint;

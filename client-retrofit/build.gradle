@@ -33,25 +33,44 @@ android {
 }
 
 dependencies {
-    compile project(':js-android-sdk-data')
+    compile 'com.android.support:support-annotations:22.2.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
-    compile 'com.squareup.retrofit:converter-simplexml:1.9.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
 
+    // Hamcrest Matchers for Junit
+    testCompile('org.hamcrest:hamcrest-integration:1.3')
+
+    testCompile('junit:junit:4.12') {
+        transitive = false
+    }
+    // JunitParams
+    testCompile('pl.pragmatists:JUnitParams:1.0.4') {
+        transitive = false
+    }
+
+    // Mockito
+    testCompile("org.mockito:mockito-core:1.10.19") {
+        exclude group: 'org.hamcrest'
+    }
+    // Robolectric + Support v4
     testCompile('org.robolectric:shadows-support-v4:3.0-rc3') {
+        exclude group: 'junit'
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-    testCompile 'org.robolectric:shadows-httpclient:3.0-rc3'
-    
-    testCompile ('org.powermock:powermock-api-mockito:1.6.2') {
+    testCompile('org.robolectric:shadows-httpclient:3.0-rc3') {
+        exclude group: 'org.robolectric'
+    }
+
+    testCompile('org.powermock:powermock-api-mockito:1.6.2') {
         exclude module: 'hamcrest-core'
         exclude module: 'objenesis'
     }
-    testCompile ('org.powermock:powermock-module-junit4:1.6.2') {
+    testCompile('org.powermock:powermock-module-junit4:1.6.2') {
+        exclude group: 'junit'
         exclude module: 'hamcrest-core'
         exclude module: 'objenesis'
+        exclude module: 'powermock-core'
     }
 }

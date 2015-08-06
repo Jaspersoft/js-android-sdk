@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.data.resource;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.jaspersoft.android.sdk.data.resource.ResourceType;
 
 import java.io.IOException;
 

@@ -26,8 +26,6 @@ package com.jaspersoft.android.sdk.data.resource;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
-import com.jaspersoft.android.sdk.data.resource.ResourceType;
-import com.jaspersoft.android.sdk.data.resource.ResourceTypeAdapter;
 
 /**
  * @author Tom Koptel
@@ -42,7 +40,7 @@ public final class ResourceLookup {
     @Expose
     private String uri;
     @Expose
-    @JsonAdapter(com.jaspersoft.android.sdk.data.resource.ResourceTypeAdapter.class)
+    @JsonAdapter(ResourceTypeAdapter.class)
     private ResourceType resourceType;
 
     @Expose

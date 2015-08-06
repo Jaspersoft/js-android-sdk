@@ -45,13 +45,8 @@ public final class TestResource {
             throw new IllegalArgumentException("Resource name should not be null");
         }
         ClassLoader classLoader = getClass().getClassLoader();
-        URL url = classLoader.getResource(".");
-        File classesFolder = new File(url.getFile());
-        File resourcesFolder = new File(
-                new File(classesFolder.getParent()).getParent() + "/resources/test"
-        );
-
-        File file = new File(resourcesFolder, fileName);
+        URL url = classLoader.getResource(fileName);
+        File file = new File(url.getFile());
         if (!file.exists()) {
             throw new RuntimeException(
                     new FileNotFoundException("Resource on path: " + file.getPath() + " not found")

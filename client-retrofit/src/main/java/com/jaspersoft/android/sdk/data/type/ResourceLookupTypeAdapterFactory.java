@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.data.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
 
 import java.util.Collection;
 
@@ -35,8 +36,8 @@ import java.util.Collection;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<com.jaspersoft.android.sdk.data.resource.ResourceLookup>> {
-    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<com.jaspersoft.android.sdk.data.resource.ResourceLookup>>(){};
+final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<ResourceLookup>> {
+    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<ResourceLookup>>(){};
 
     @SuppressWarnings("unchecked")
     public ResourceLookupTypeAdapterFactory() {

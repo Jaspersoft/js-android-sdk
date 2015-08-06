@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.data.server;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.jaspersoft.android.sdk.data.server.ServerVersion;
 
 import java.io.IOException;
 
@@ -35,14 +34,14 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ServerVersionAdapter extends TypeAdapter<com.jaspersoft.android.sdk.data.server.ServerVersion> {
+final class ServerVersionAdapter extends TypeAdapter<ServerVersion> {
     @Override
-    public void write(JsonWriter out, com.jaspersoft.android.sdk.data.server.ServerVersion value) throws IOException {
+    public void write(JsonWriter out, ServerVersion value) throws IOException {
         out.value(value.getRawValue());
     }
 
     @Override
-    public com.jaspersoft.android.sdk.data.server.ServerVersion read(JsonReader in) throws IOException {
+    public ServerVersion read(JsonReader in) throws IOException {
         String rawValue = in.nextString();
         return ServerVersion.defaultParser().parse(rawValue);
     }

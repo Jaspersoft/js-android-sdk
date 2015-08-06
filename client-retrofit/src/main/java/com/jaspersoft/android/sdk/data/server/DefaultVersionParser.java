@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.data.server;
 
-import com.jaspersoft.android.sdk.data.server.ServerVersion;
-
 import java.math.BigDecimal;
 
 /**

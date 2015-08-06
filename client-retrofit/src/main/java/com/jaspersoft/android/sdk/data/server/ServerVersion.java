@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.data.server;
 
-import com.jaspersoft.android.sdk.data.server.DefaultVersionParser;
 
 /**
  * @author Tom Koptel
@@ -65,10 +64,10 @@ public enum ServerVersion {
     }
 
     public static Parser defaultParser() {
-        return com.jaspersoft.android.sdk.data.server.DefaultVersionParser.INSTANCE;
+        return DefaultVersionParser.INSTANCE;
     }
 
     public interface Parser {
-        com.jaspersoft.android.sdk.data.server.ServerVersion parse(String rawVersion);
+        ServerVersion parse(String rawVersion);
     }
 }

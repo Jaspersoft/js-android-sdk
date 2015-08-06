@@ -1,9 +1,7 @@
 include ':js-android-sdk-client'
 include ':js-android-sdk-ui'
-include ':js-android-sdk-data'
 include ':js-android-sdk-client-retrofit'
 
 project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
 project(':js-android-sdk-ui').projectDir = "$rootDir/ui" as File
-project(':js-android-sdk-data').projectDir = "$rootDir/data" as File
 project(':js-android-sdk-client-retrofit').projectDir = "$rootDir/client-retrofit" as File

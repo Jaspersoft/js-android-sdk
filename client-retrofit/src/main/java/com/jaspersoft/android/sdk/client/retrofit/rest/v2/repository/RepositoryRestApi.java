@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.client.retrofit.rest.v2.repository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.data.json.GsonFactory;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
 import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
 
 import java.util.Collection;
