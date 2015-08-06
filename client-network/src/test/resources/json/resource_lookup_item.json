@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "permissionMask": 1,
+  "creationDate": "2015-06-05T07:21:11",
+  "updateDate": "2014-05-14T17:38:49",
+  "label": "01. Geographic Results by Segment",
+  "description": "Sample HTML5 multi-axis column chart",
+  "uri": "/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment",
+  "resourceType": "adhocDataView"
+}
