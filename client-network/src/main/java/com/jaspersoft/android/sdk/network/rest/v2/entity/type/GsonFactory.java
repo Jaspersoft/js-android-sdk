@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,32 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
+package com.jaspersoft.android.sdk.network.rest.v2.entity.type;
 
-import org.junit.Test;
-
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
-
-    @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
+public final class GsonFactory {
+    public static Gson create() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        gsonBuilder.disableHtmlEscaping();
+        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
+        return gsonBuilder.create();
     }
-
-    @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
-    }
-
 }

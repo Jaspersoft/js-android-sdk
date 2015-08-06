@@ -22,32 +22,52 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
+package com.jaspersoft.android.sdk.service.data.server;
 
-import org.junit.Test;
-
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
+public enum ServerVersion {
+    UNKNOWN(0d),
+    EMERALD(5.0d),
+    EMERALD_MR1(5.2d),
+    EMERALD_MR2(5.5d),
+    EMERALD_MR3(5.6d),
+    EMERALD_MR4(5.61d),
+    AMBER(6.0d),
+    AMBER_MR1(6.01d),
+    AMBER_MR2(6.1d);
 
-    @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
+    private double mVersionCode;
+    private String mRawValue;
+
+    ServerVersion(double versionCode) {
+        this.mVersionCode = versionCode;
     }
 
-    @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
+    public String getRawValue() {
+        return mRawValue;
     }
 
+    public double getVersionCode() {
+        return mVersionCode;
+    }
+
+    void setVersionCode(double versionCode) {
+        mVersionCode = versionCode;
+    }
+
+    void setRawValue(String rawValue) {
+        mRawValue = rawValue;
+    }
+
+    public static Parser defaultParser() {
+        return DefaultVersionParser.INSTANCE;
+    }
+
+    public interface Parser {
+        ServerVersion parse(String rawVersion);
+    }
 }

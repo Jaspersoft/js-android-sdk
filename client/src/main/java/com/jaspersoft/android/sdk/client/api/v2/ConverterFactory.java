@@ -40,7 +40,7 @@ import retrofit.converter.SimpleXMLConverter;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class ConverterFactory {
 

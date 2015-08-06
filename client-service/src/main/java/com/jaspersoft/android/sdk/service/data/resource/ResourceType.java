@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,32 +22,50 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
-
-import org.junit.Test;
-
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
+package com.jaspersoft.android.sdk.service.data.resource;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
+public enum ResourceType {
+    folder,
+    reportUnit,
+    dashboard,
+    legacyDashboard,
+    file,
+    semanticLayerDataSource,
+    jndiJdbcDataSource,
+    unknown {
+        private String rawValue;
 
-    @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
+        @Override
+        void setRawValue(String value) {
+            rawValue = value;
+        }
+
+        @Override
+        public String getRawValue() {
+            return rawValue;
+        }
+    };
+
+    static ResourceType parseRawValue(String rawValue) {
+        ResourceType type;
+        try {
+            type = ResourceType.valueOf(rawValue);
+        } catch (IllegalArgumentException ex) {
+            type = ResourceType.unknown;
+            type.setRawValue(rawValue);
+        }
+        return type;
     }
 
-    @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
+    void setRawValue(String value) {
+        throw new UnsupportedOperationException();
     }
 
+    public String getRawValue() {
+        return String.valueOf(this);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,32 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
+package com.jaspersoft.android.sdk.service.data.resource;
 
-import org.junit.Test;
-
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
+import java.net.URI;
+import java.util.Date;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
-
-    @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
-    }
-
-    @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
-    }
-
+public final class ResourceLookup {
+    private String label;
+    private String description;
+    private URI uri;
+    private ResourceType resourceType;
+    private int version;
+    private int permissionMask;
+    private Date creationDate;
+    private Date updateDate;
 }

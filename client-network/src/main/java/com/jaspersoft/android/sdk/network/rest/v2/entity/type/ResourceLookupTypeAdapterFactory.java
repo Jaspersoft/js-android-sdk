@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,32 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
+package com.jaspersoft.android.sdk.network.rest.v2.entity.type;
 
-import org.junit.Test;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
 
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+import java.util.Collection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
+final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<ResourceLookupResponse>> {
+    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<ResourceLookupResponse>>(){};
 
-    @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
+    @SuppressWarnings("unchecked")
+    public ResourceLookupTypeAdapterFactory() {
+        super(TOKEN_TYPE.getRawType());
     }
 
-    @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
+    @Override
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        return jsonObject.get("resourceLookup").getAsJsonArray();
     }
-
 }

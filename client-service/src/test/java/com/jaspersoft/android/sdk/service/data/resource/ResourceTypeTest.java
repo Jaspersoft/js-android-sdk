@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,32 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.api.v2;
+package com.jaspersoft.android.sdk.service.data.resource;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import retrofit.converter.GsonConverter;
-import retrofit.converter.SimpleXMLConverter;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ConverterFactoryTest {
-
+@RunWith(JUnitParamsRunner.class)
+public class ResourceTypeTest {
     @Test
-    public void shouldCreateJsonConverter() {
-        GsonConverter converter = (GsonConverter) ConverterFactory.create(DataType.JSON);
-        assertThat(converter, notNullValue());
+    @Parameters({"folder", "reportUnit", "dashboard", "legacyDashboard", "file", "semanticLayerDataSource", "jndiJdbcDataSource"})
+    public void shouldProvideTypeForKnownResourceTypes(String type) {
+        ResourceType resourceType = ResourceType.valueOf(type);
+        assertThat(ResourceType.parseRawValue(type), is(resourceType));
     }
 
     @Test
-    public void shouldCreateXmlConverter() {
-        SimpleXMLConverter converter = (SimpleXMLConverter) ConverterFactory.create(DataType.XML);
-        assertThat(converter, notNullValue());
+    public void shouldReturnUnkownTypeForMissingMapping() {
+        ResourceType resourceType = ResourceType.parseRawValue("someStrangeType");
+        assertThat(resourceType, is(notNullValue()));
+        assertThat(resourceType.getRawValue(), is("someStrangeType"));
     }
-
 }
