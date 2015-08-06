@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,34 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.server;
+package com.jaspersoft.android.sdk.client.retrofit.rest.v2.server;
 
-import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
-import retrofit.RestAdapter;
-import retrofit.http.GET;
-import retrofit.http.Headers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.FakeHttp;
+
+import java.io.IOException;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
-    @NonNull
-    @Headers("Accept: application/json")
-    @GET(value = "/rest_v2/serverInfo")
-    ServerInfoResponse getServerInfo();
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class ServerRestApiTest {
 
-    class Builder extends RestBuilder<ServerRestApi> {
-        public Builder(String baseUrl) {
-           super(baseUrl);
-        }
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
 
-        @Override
-        protected ServerRestApi createApiService(RestAdapter restAdapter) {
-            return restAdapter.create(ServerRestApi.class);
-        }
+    @Before
+    public void setup() {
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
     }
+
+    @Test
+    public void shouldRequestServerInfo() throws IOException {
+        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
+        ServerInfoResponse response = api.getServerInfo();
+        assertThat(response, is(notNullValue()));
+    }
+
 }

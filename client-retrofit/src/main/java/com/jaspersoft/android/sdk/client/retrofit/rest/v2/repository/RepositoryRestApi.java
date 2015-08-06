@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.server;
+package com.jaspersoft.android.sdk.client.retrofit.rest.v2.repository;
 
 /**
  * @author Tom Koptel

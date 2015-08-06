@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,36 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.retrofit.server;
+package com.jaspersoft.android.sdk.client.retrofit.rest.v2.server;
+
+import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.data.json.GsonFactory;
+import com.jaspersoft.android.sdk.data.server.ServerInfoResponse;
 
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import retrofit.http.GET;
+import retrofit.http.Headers;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class RestBuilder<Api> {
-    private final String mBaseUrl;
+public interface ServerRestApi {
+    @NonNull
+    @Headers("Accept: application/json")
+    @GET(value = "/rest_v2/serverInfo")
+    ServerInfoResponse getServerInfo();
 
-    public RestBuilder(String baseUrl) {
-        mBaseUrl = baseUrl;
-    }
+    class Builder {
+        private final String mBaseUrl;
 
-    protected abstract Api createApiService(RestAdapter restAdapter);
+        public Builder(String baseUrl) {
+            mBaseUrl = baseUrl;
+        }
 
-    public Api build() {
-        Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
+        public ServerRestApi build() {
+            Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
 
-        RestAdapter.Builder builder = new RestAdapter.Builder();
-        builder.setEndpoint(endpoint);
-        builder.setConverter(new GsonConverter(GsonFactory.create()));
-        RestAdapter restAdapter = builder.build();
+            RestAdapter.Builder builder = new RestAdapter.Builder();
+            builder.setEndpoint(endpoint);
+            builder.setConverter(new GsonConverter(GsonFactory.create()));
+            RestAdapter restAdapter = builder.build();
 
-        return createApiService(restAdapter);
+            return restAdapter.create(ServerRestApi.class);
+        }
     }
 }
