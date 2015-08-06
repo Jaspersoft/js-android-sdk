@@ -22,21 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+package com.jaspersoft.android.sdk.client.retrofit.server;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
-        return gsonBuilder.create();
-    }
+public interface RepositoryRestApi {
+
 }

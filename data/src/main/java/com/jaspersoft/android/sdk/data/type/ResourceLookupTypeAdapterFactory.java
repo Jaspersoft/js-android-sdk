@@ -24,19 +24,29 @@
 
 package com.jaspersoft.android.sdk.data.type;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
+
+import java.util.Collection;
+
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
-        return gsonBuilder.create();
+final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<ResourceLookup>> {
+    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<ResourceLookup>>(){};
+
+    @SuppressWarnings("unchecked")
+    public ResourceLookupTypeAdapterFactory() {
+        super(TOKEN_TYPE.getRawType());
+    }
+
+    @Override
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        return jsonObject.get("resourceLookup").getAsJsonArray();
     }
 }

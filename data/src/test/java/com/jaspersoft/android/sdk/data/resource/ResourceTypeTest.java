@@ -22,21 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
+package com.jaspersoft.android.sdk.data.resource;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
-        return gsonBuilder.create();
+@RunWith(JUnitParamsRunner.class)
+public class ResourceTypeTest {
+    @Test
+    @Parameters({"folder", "reportUnit", "dashboard", "legacyDashboard", "file", "semanticLayerDataSource", "jndiJdbcDataSource"})
+    public void shouldProvideTypeForKnownResourceTypes(String type) {
+        ResourceType resourceType = ResourceType.valueOf(type);
+        assertThat(ResourceType.parseRawValue(type), is(resourceType));
+    }
+
+    @Test
+    public void shouldReturnUnkownTypeForMissingMapping() {
+        ResourceType resourceType = ResourceType.parseRawValue("someStrangeType");
+        assertThat(resourceType, is(notNullValue()));
+        assertThat(resourceType.getRawValue(), is("someStrangeType"));
     }
 }

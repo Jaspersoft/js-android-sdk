@@ -22,21 +22,50 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+package com.jaspersoft.android.sdk.data.resource;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
-        return gsonBuilder.create();
+public enum ResourceType {
+    folder,
+    reportUnit,
+    dashboard,
+    legacyDashboard,
+    file,
+    semanticLayerDataSource,
+    jndiJdbcDataSource,
+    unknown {
+        private String rawValue;
+
+        @Override
+        void setRawValue(String value) {
+            rawValue = value;
+        }
+
+        @Override
+        public String getRawValue() {
+            return rawValue;
+        }
+    };
+
+    static ResourceType parseRawValue(String rawValue) {
+        ResourceType type;
+        try {
+            type = ResourceType.valueOf(rawValue);
+        } catch (IllegalArgumentException ex) {
+            type = ResourceType.unknown;
+            type.setRawValue(rawValue);
+        }
+        return type;
+    }
+
+    void setRawValue(String value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getRawValue() {
+        return String.valueOf(this);
     }
 }
