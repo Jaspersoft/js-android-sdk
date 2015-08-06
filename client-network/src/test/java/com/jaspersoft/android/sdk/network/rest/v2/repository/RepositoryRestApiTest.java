@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.FakeHttp;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 import java.util.Collection;
