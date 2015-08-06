@@ -22,49 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.server;
+package com.jaspersoft.android.sdk.data.type;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.Collection;
+
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class FeatureSet {
-    private final String mRawData;
+final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<com.jaspersoft.android.sdk.data.resource.ResourceLookup>> {
+    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<com.jaspersoft.android.sdk.data.resource.ResourceLookup>>(){};
 
-    FeatureSet(String rawData) {
-        mRawData = rawData;
-    }
-
-    public Set<String> asSet() {
-        String[] split = mRawData.split(" ");
-        return new HashSet<>(Arrays.asList(split));
-    }
-
-    public String asString() {
-        return mRawData;
-    }
-
-    public static FeatureSet create(String rawString) {
-        return new FeatureSet(rawString);
+    @SuppressWarnings("unchecked")
+    public ResourceLookupTypeAdapterFactory() {
+        super(TOKEN_TYPE.getRawType());
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeatureSet that = (FeatureSet) o;
-
-        return !(mRawData != null ? !mRawData.equals(that.mRawData) : that.mRawData != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return mRawData != null ? mRawData.hashCode() : 0;
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        return jsonObject.get("resourceLookup").getAsJsonArray();
     }
 }

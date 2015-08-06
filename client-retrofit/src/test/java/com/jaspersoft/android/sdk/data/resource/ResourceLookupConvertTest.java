@@ -22,31 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.type;
+package com.jaspersoft.android.sdk.data.resource;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.data.type.GsonFactory;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Type;
 import java.util.Collection;
 
+import sdk.test.resource.ResourceFile;
+import sdk.test.resource.TestResource;
+import sdk.test.resource.inject.TestResourceInjector;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ResourceLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<Collection<ResourceLookup>> {
-    static final TypeToken TOKEN_TYPE = new TypeToken<Collection<ResourceLookup>>(){};
+public class ResourceLookupConvertTest {
+    @ResourceFile("json/all_resources.json")
+    TestResource mJsonResources;
 
-    @SuppressWarnings("unchecked")
-    public ResourceLookupTypeAdapterFactory() {
-        super(TOKEN_TYPE.getRawType());
+    Gson mGson = GsonFactory.create();
+
+    @Before
+    public void setup() {
+        TestResourceInjector.inject(this);
     }
 
-    @Override
-    protected JsonElement afterRead(JsonElement deserialized) {
-        JsonObject jsonObject = deserialized.getAsJsonObject();
-        return jsonObject.get("resourceLookup").getAsJsonArray();
+    @Test
+    public void shouldDeserializeCollectionFromJson() {
+        Type type = new TypeToken<Collection<ResourceLookup>>(){}.getType();
+        Collection<ResourceLookup> resourceLookups = mGson.fromJson(mJsonResources.asString(), type);
+        assertThat(resourceLookups.size(), is(not(0)));
     }
+
 }

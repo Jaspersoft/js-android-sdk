@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,11 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.resource;
+package com.jaspersoft.android.sdk.data.server;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.jaspersoft.android.sdk.data.server.FeatureSet;
 
 import java.io.IOException;
 
@@ -34,15 +35,15 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ResourceTypeAdapter extends TypeAdapter<ResourceType> {
+final class FeaturesAdapter extends TypeAdapter<com.jaspersoft.android.sdk.data.server.FeatureSet> {
     @Override
-    public void write(JsonWriter out, ResourceType type) throws IOException {
-        out.value(type.getRawValue());
+    public void write(JsonWriter out, com.jaspersoft.android.sdk.data.server.FeatureSet value) throws IOException {
+        out.value(value.asString());
     }
 
     @Override
-    public ResourceType read(JsonReader in) throws IOException {
-        String rawValue = in.nextString();
-        return ResourceType.parseRawValue(rawValue);
+    public com.jaspersoft.android.sdk.data.server.FeatureSet read(JsonReader in) throws IOException {
+        String rawFeatures = in.nextString();
+        return com.jaspersoft.android.sdk.data.server.FeatureSet.create(rawFeatures);
     }
 }

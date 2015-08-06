@@ -23,6 +23,7 @@ package com.jaspersoft.android.sdk.data.server;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
+import com.jaspersoft.android.sdk.data.server.ServerEdition;
 
 /**
  * @author Tom Koptel
@@ -41,7 +42,7 @@ public final class ServerInfoResponse {
     private ServerVersion version;
 
     @Expose
-    private ServerEdition edition;
+    private com.jaspersoft.android.sdk.data.server.ServerEdition edition;
 
     @Expose
     private String licenseType;
@@ -72,7 +73,7 @@ public final class ServerInfoResponse {
         return datetimeFormatPattern;
     }
 
-    public ServerEdition getEdition() {
+    public com.jaspersoft.android.sdk.data.server.ServerEdition getEdition() {
         return edition;
     }
 

@@ -24,25 +24,47 @@
 
 package com.jaspersoft.android.sdk.data.server;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class FeaturesAdapter extends TypeAdapter<FeatureSet> {
-    @Override
-    public void write(JsonWriter out, FeatureSet value) throws IOException {
-        out.value(value.asString());
+public final class FeatureSet {
+    private final String mRawData;
+
+    FeatureSet(String rawData) {
+        mRawData = rawData;
+    }
+
+    public Set<String> asSet() {
+        String[] split = mRawData.split(" ");
+        return new HashSet<>(Arrays.asList(split));
+    }
+
+    public String asString() {
+        return mRawData;
+    }
+
+    public static com.jaspersoft.android.sdk.data.server.FeatureSet create(String rawString) {
+        return new com.jaspersoft.android.sdk.data.server.FeatureSet(rawString);
     }
 
     @Override
-    public FeatureSet read(JsonReader in) throws IOException {
-        String rawFeatures = in.nextString();
-        return FeatureSet.create(rawFeatures);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        com.jaspersoft.android.sdk.data.server.FeatureSet that = (com.jaspersoft.android.sdk.data.server.FeatureSet) o;
+
+        return !(mRawData != null ? !mRawData.equals(that.mRawData) : that.mRawData != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mRawData != null ? mRawData.hashCode() : 0;
     }
 }

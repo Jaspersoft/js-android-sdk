@@ -26,12 +26,13 @@ package com.jaspersoft.android.sdk.data.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.test.resource.ResourceFile;
-import com.jaspersoft.android.sdk.test.resource.TestResource;
-import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import sdk.test.resource.ResourceFile;
+import sdk.test.resource.TestResource;
+import sdk.test.resource.inject.TestResourceInjector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

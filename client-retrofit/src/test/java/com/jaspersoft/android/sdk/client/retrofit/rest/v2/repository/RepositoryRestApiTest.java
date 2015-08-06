@@ -22,44 +22,45 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.data.resource;
+package com.jaspersoft.android.sdk.client.retrofit.rest.v2.repository;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.jaspersoft.android.sdk.data.type.GsonFactory;
-import com.jaspersoft.android.sdk.test.resource.ResourceFile;
-import com.jaspersoft.android.sdk.test.resource.TestResource;
-import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
+import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.FakeHttp;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.Collection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public class ResourceLookupConvertTest {
-    @ResourceFile("json/all_resources.json")
-    TestResource mJsonResources;
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class RepositoryRestApiTest {
 
-    Gson mGson = GsonFactory.create();
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
 
     @Before
     public void setup() {
-        TestResourceInjector.inject(this);
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
     }
 
     @Test
-    public void shouldDeserializeCollectionFromJson() {
-        Type type = new TypeToken<Collection<ResourceLookup>>(){}.getType();
-        Collection<ResourceLookup> resourceLookups = mGson.fromJson(mJsonResources.asString(), type);
+    public void shouldRequestServerInfo() throws IOException {
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2).build();
+        Collection<ResourceLookup> resourceLookups = api.searchResources(null);
+        assertThat(resourceLookups, is(notNullValue()));
         assertThat(resourceLookups.size(), is(not(0)));
     }
 

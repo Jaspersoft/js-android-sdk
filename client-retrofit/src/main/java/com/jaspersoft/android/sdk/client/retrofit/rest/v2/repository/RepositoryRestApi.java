@@ -24,10 +24,49 @@
 
 package com.jaspersoft.android.sdk.client.retrofit.rest.v2.repository;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.jaspersoft.android.sdk.data.json.GsonFactory;
+import com.jaspersoft.android.sdk.data.resource.ResourceLookup;
+
+import java.util.Collection;
+import java.util.Map;
+
+import retrofit.Endpoint;
+import retrofit.Endpoints;
+import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+import retrofit.http.QueryMap;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface RepositoryRestApi {
+    @NonNull
+    @Headers("Accept: application/json")
+    @GET("/rest_v2/resources")
+    Collection<ResourceLookup> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
 
+    class Builder {
+        private final String mBaseUrl;
+
+        public Builder(String baseUrl) {
+            mBaseUrl = baseUrl;
+        }
+
+        public RepositoryRestApi build() {
+            Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
+
+            RestAdapter.Builder builder = new RestAdapter.Builder();
+            builder.setEndpoint(endpoint);
+            builder.setConverter(new GsonConverter(GsonFactory.create()));
+            RestAdapter restAdapter = builder.build();
+
+            return restAdapter.create(RepositoryRestApi.class);
+        }
+    }
 }
