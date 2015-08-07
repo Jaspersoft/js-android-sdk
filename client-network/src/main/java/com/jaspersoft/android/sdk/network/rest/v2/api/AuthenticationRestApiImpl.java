@@ -55,29 +55,8 @@ import retrofit.http.PartMap;
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     private final RestApi mRestApi;
 
-    AuthenticationRestApiImpl(String serverUrl) {
-        RestAdapter restAdapter = createRestAdapter(serverUrl);
+    AuthenticationRestApiImpl(RestAdapter restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
-    }
-
-    private RestAdapter createRestAdapter(String serverUrl) {
-        Endpoint endpoint = Endpoints.newFixedEndpoint(serverUrl);
-
-        OkHttpClient httpClient = new OkHttpClient();
-        httpClient.setFollowRedirects(false);
-
-        RestAdapter.Builder builder = new RestAdapter.Builder();
-        builder.setClient(new OkClient(httpClient));
-        builder.setEndpoint(endpoint);
-        builder.setErrorHandler(new retrofit.ErrorHandler() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Throwable handleError(RetrofitError cause) {
-                return ErrorHandler.DEFAULT.handleError(cause);
-            }
-        });
-
-        return builder.build();
     }
 
     @NonNull

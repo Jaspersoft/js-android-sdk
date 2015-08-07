@@ -28,8 +28,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
+
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
 
 /**
  * @author Tom Koptel
@@ -42,18 +46,19 @@ public interface AuthenticationRestApi {
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    class Builder {
-        private final String mBaseUrl;
-
+    class Builder extends BaseBuilder<AuthenticationRestApi> {
         public Builder(String baseUrl) {
-            if (baseUrl == null || baseUrl.length() == 0) {
-                throw new IllegalArgumentException("Base url should not be null or empty");
-            }
-            mBaseUrl = baseUrl;
+            super(baseUrl);
         }
 
         public AuthenticationRestApi build() {
-            return new AuthenticationRestApiImpl(mBaseUrl);
+            RestAdapter.Builder builder = getDefaultBuilder();
+
+            OkHttpClient httpClient = new OkHttpClient();
+            httpClient.setFollowRedirects(false);
+            builder.setClient(new OkClient(httpClient));
+
+            return new AuthenticationRestApiImpl(builder.build());
         }
     }
 }

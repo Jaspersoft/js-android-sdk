@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,37 +24,38 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import android.support.annotation.NonNull;
-
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.jaspersoft.android.sdk.network.rest.v2.exception.ErrorHandler;
 
 import retrofit.RestAdapter;
-import retrofit.converter.GsonConverter;
-import retrofit.http.GET;
-import retrofit.http.Headers;
+import retrofit.RetrofitError;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
-    @NonNull
-    @Headers("Accept: application/json")
-    @GET(value = "/rest_v2/serverInfo")
-    ServerInfoResponse getServerInfo();
+abstract class BaseBuilder<API> {
+    private final String mBaseUrl;
+    private final RestAdapter.Builder mRestAdapterBuilder;
 
-    class Builder extends BaseBuilder<ServerRestApi> {
-        public Builder(String baseUrl) {
-           super(baseUrl);
+    public BaseBuilder(String baseUrl){
+        if (baseUrl == null || baseUrl.length() == 0) {
+            throw new IllegalArgumentException("Base url should not be null or empty");
         }
-
-        public ServerRestApi build() {
-            RestAdapter.Builder builder = getDefaultBuilder();
-            builder.setConverter(new GsonConverter(GsonFactory.create()));
-            RestAdapter restAdapter = builder.build();
-
-            return restAdapter.create(ServerRestApi.class);
-        }
+        mBaseUrl = baseUrl;
+        mRestAdapterBuilder = new RestAdapter.Builder();
+        mRestAdapterBuilder.setEndpoint(mBaseUrl);
+        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Throwable handleError(RetrofitError cause) {
+                return ErrorHandler.DEFAULT.handleError(cause);
+            }
+        });
     }
+
+    protected RestAdapter.Builder getDefaultBuilder() {
+        return mRestAdapterBuilder;
+    }
+
+    public abstract API build();
 }

@@ -54,38 +54,24 @@ public interface RepositoryRestApi {
     @GET("/rest_v2/resources")
     Collection<ResourceLookupResponse> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
 
-    class Builder {
-        private final String mBaseUrl;
+    class Builder extends BaseBuilder<RepositoryRestApi> {
         private final String mCookie;
 
         public Builder(String baseUrl, String cookie) {
-            if (baseUrl == null || baseUrl.length() == 0) {
-                throw new IllegalArgumentException("Base url should not be null or empty");
-            }
+            super(baseUrl);
             if (cookie == null || cookie.length() == 0) {
                 throw new IllegalArgumentException("Cookie should not be null or empty");
             }
-            mBaseUrl = baseUrl;
             mCookie = cookie;
         }
 
         public RepositoryRestApi build() {
-            Endpoint endpoint = Endpoints.newFixedEndpoint(mBaseUrl);
-
-            RestAdapter.Builder builder = new RestAdapter.Builder();
-            builder.setEndpoint(endpoint);
+            RestAdapter.Builder builder = getDefaultBuilder();
             builder.setConverter(new GsonConverter(GsonFactory.create()));
             builder.setRequestInterceptor(new RequestInterceptor() {
                 @Override
                 public void intercept(RequestFacade request) {
                     request.addHeader("Cookie", mCookie);
-                }
-            });
-            builder.setErrorHandler(new retrofit.ErrorHandler() {
-                @Override
-                @SuppressWarnings("unchecked")
-                public Throwable handleError(RetrofitError cause) {
-                    return ErrorHandler.DEFAULT.handleError(cause);
                 }
             });
             RestAdapter restAdapter = builder.build();
