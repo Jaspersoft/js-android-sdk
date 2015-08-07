@@ -22,8 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.server;
+package com.jaspersoft.android.sdk.network.rest.v2.api;
 
+import com.jaspersoft.android.sdk.network.rest.v2.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;

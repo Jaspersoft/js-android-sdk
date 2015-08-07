@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,49 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.server;
+package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+
+import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.api.ServerRestApi;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
-import retrofit.client.Header;
-import retrofit.client.Response;
-
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Response.class})
-public class AuthResponseFactoryTest {
-    @Mock
-    Response mResponse;
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class ServerRestTest {
+
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
     }
 
     @Test
-    public void shouldExtractTokenFromNetworkResponse() {
-        when(mResponse.getHeaders()).thenReturn(new ArrayList<Header>() {{
-            add(new Header("Set-Cookie", "cookie1"));
-            add(new Header("Set-Cookie", "cookie2"));
-        }});
-        AuthResponse response = AuthResponseFactory.create(mResponse);
-        assertThat(response.getToken(), is("cookie1;cookie2"));
+    public void shouldRequestServerInfo() throws IOException {
+        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
+        ServerInfoResponse response = api.getServerInfo();
+        assertThat(response, is(notNullValue()));
     }
 }

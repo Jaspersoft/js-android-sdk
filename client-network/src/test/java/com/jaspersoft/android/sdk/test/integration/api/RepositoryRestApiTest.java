@@ -22,11 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.server;
+package com.jaspersoft.android.sdk.test.integration.api;
 
-
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.server.ServerRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +37,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -47,7 +50,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ServerRestTest {
+public class RepositoryRestApiTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
 
@@ -58,8 +61,12 @@ public class ServerRestTest {
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
-        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
-        ServerInfoResponse response = api.getServerInfo();
-        assertThat(response, is(notNullValue()));
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
+        AuthResponse response = restApi.authenticate("joeuser", "joeuser", null, null);
+
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, response.getToken()).build();
+        Collection<ResourceLookupResponse> resourceLookupResponses = api.searchResources(null);
+        assertThat(resourceLookupResponses, is(notNullValue()));
+        assertThat(resourceLookupResponses.size(), is(not(0)));
     }
 }

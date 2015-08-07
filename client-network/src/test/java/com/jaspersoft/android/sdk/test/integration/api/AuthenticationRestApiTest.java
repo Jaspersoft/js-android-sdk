@@ -22,10 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.server;
+package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.server.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 
 import org.junit.Before;
 import org.junit.Test;

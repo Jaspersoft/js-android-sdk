@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.repository;
+package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
