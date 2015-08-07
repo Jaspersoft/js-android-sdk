@@ -50,5 +50,6 @@ dependencies {
 
     testCompile('org.robolectric:shadows-support-v4:3.0')
     testCompile('org.robolectric:shadows-httpclient:3.0')
+    testCompile('com.squareup.okhttp:mockwebserver:2.4.0')
 
 }

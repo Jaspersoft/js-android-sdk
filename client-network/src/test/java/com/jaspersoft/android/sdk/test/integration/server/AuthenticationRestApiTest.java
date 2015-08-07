@@ -22,16 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.server;
+package com.jaspersoft.android.sdk.test.integration.server;
 
-
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.server.AuthenticationRestApi;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
@@ -44,10 +41,7 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class ServerRestApiTest {
-
+public class AuthenticationRestApiTest {
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
 
     @Before
@@ -56,9 +50,9 @@ public class ServerRestApiTest {
     }
 
     @Test
-    public void shouldRequestServerInfo() throws IOException {
-        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
-        ServerInfoResponse response = api.getServerInfo();
-        assertThat(response, is(notNullValue()));
+    public void shouldReturnResponseForSpringRequest() throws IOException {
+        AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
+        AuthResponse response = authApi.authenticate("joeuser", "joeuser", "null", null);
+        assertThat(response.getToken(), is(notNullValue()));
     }
 }
