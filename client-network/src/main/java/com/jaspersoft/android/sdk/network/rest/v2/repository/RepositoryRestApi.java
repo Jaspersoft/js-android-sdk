@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.exception.ErrorHandler;
 
 import java.util.Collection;
 import java.util.Map;
@@ -37,6 +38,7 @@ import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -57,6 +59,12 @@ public interface RepositoryRestApi {
         private final String mCookie;
 
         public Builder(String baseUrl, String cookie) {
+            if (baseUrl == null || baseUrl.length() == 0) {
+                throw new IllegalArgumentException("Base url should not be null or empty");
+            }
+            if (cookie == null || cookie.length() == 0) {
+                throw new IllegalArgumentException("Cookie should not be null or empty");
+            }
             mBaseUrl = baseUrl;
             mCookie = cookie;
         }
@@ -71,6 +79,13 @@ public interface RepositoryRestApi {
                 @Override
                 public void intercept(RequestFacade request) {
                     request.addHeader("Cookie", mCookie);
+                }
+            });
+            builder.setErrorHandler(new retrofit.ErrorHandler() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public Throwable handleError(RetrofitError cause) {
+                    return ErrorHandler.DEFAULT.handleError(cause);
                 }
             });
             RestAdapter restAdapter = builder.build();

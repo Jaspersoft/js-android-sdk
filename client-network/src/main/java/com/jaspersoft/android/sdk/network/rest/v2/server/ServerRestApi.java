@@ -28,10 +28,12 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.exception.ErrorHandler;
 
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -59,6 +61,13 @@ public interface ServerRestApi {
             RestAdapter.Builder builder = new RestAdapter.Builder();
             builder.setEndpoint(endpoint);
             builder.setConverter(new GsonConverter(GsonFactory.create()));
+            builder.setErrorHandler(new retrofit.ErrorHandler() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public Throwable handleError(RetrofitError cause) {
+                    return ErrorHandler.DEFAULT.handleError(cause);
+                }
+            });
             RestAdapter restAdapter = builder.build();
 
             return restAdapter.create(ServerRestApi.class);
