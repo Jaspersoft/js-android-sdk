@@ -46,6 +46,9 @@ public interface AuthenticationRestApi {
         private final String mBaseUrl;
 
         public Builder(String baseUrl) {
+            if (baseUrl == null || baseUrl.length() == 0) {
+                throw new IllegalArgumentException("Base url should not be null or empty");
+            }
             mBaseUrl = baseUrl;
         }
 

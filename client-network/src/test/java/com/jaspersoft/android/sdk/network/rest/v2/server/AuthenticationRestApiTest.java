@@ -59,6 +59,12 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
+    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
+        mExpectedException.expect(IllegalArgumentException.class);
+        new AuthenticationRestApi.Builder(null).build();
+    }
+
+    @Test
     public void shouldReturnResponseForSuccessRedirect() {
         MockResponse mockResponse = create302Response();
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
