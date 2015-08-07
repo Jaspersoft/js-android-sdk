@@ -38,4 +38,11 @@ public final class AuthResponse {
     public String getToken() {
         return mToken;
     }
+
+    @Override
+    public String toString() {
+        return "AuthResponse{" +
+                "mToken='" + mToken + '\'' +
+                '}';
+    }
 }

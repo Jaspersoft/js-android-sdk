@@ -25,7 +25,9 @@
 package com.jaspersoft.android.sdk.test.integration.repository;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.repository.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.server.AuthenticationRestApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +61,10 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
-        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2).build();
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
+        AuthResponse response = restApi.authenticate("joeuser", "joeuser", null, null);
+
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, response.getToken()).build();
         Collection<ResourceLookupResponse> resourceLookupResponses = api.searchResources(null);
         assertThat(resourceLookupResponses, is(notNullValue()));
         assertThat(resourceLookupResponses.size(), is(not(0)));

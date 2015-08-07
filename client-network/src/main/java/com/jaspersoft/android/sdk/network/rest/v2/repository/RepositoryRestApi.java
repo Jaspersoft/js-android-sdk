@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,6 +35,7 @@ import java.util.Map;
 
 import retrofit.Endpoint;
 import retrofit.Endpoints;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
@@ -53,9 +54,11 @@ public interface RepositoryRestApi {
 
     class Builder {
         private final String mBaseUrl;
+        private final String mCookie;
 
-        public Builder(String baseUrl) {
+        public Builder(String baseUrl, String cookie) {
             mBaseUrl = baseUrl;
+            mCookie = cookie;
         }
 
         public RepositoryRestApi build() {
@@ -64,6 +67,12 @@ public interface RepositoryRestApi {
             RestAdapter.Builder builder = new RestAdapter.Builder();
             builder.setEndpoint(endpoint);
             builder.setConverter(new GsonConverter(GsonFactory.create()));
+            builder.setRequestInterceptor(new RequestInterceptor() {
+                @Override
+                public void intercept(RequestFacade request) {
+                    request.addHeader("Cookie", mCookie);
+                }
+            });
             RestAdapter restAdapter = builder.build();
 
             return restAdapter.create(RepositoryRestApi.class);
