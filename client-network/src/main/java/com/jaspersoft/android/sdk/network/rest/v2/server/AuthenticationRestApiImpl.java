@@ -42,10 +42,11 @@ import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
-import retrofit.http.GET;
 import retrofit.http.Headers;
-import retrofit.http.Query;
-import retrofit.http.QueryMap;
+import retrofit.http.Multipart;
+import retrofit.http.POST;
+import retrofit.http.Part;
+import retrofit.http.PartMap;
 
 /**
  * @author Tom Koptel
@@ -140,12 +141,12 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     }
 
     interface RestApi {
-        @NonNull
+        @Multipart
         @Headers({"Accept:application/json"})
-        @GET(value = "/j_spring_security_check")
-        Response authenticate(@Query(value = "j_username", encodeValue = false) String username,
-                              @Query(value = "j_password", encodeValue = false) String password,
-                              @Query(value = "orgId ", encodeValue = false) String organization,
-                              @QueryMap Map<String, String> params);
+        @POST(value = "/j_spring_security_check")
+        Response authenticate(@Part(value = "j_username") String username,
+                              @Part(value = "j_password") String password,
+                              @Part(value = "orgId ") String organization,
+                              @PartMap Map<String, String> params);
     }
 }
