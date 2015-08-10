@@ -55,6 +55,12 @@ public class DashboardLookupResponseTest {
     }
 
     @Test
+    public void shouldAlwaysReturnReportUnitUriAsType() {
+        DashboardLookupResponse response = deserialize("{}");
+        assertThat(response.getResourceType(), is("dashboard"));
+    }
+
+    @Test
     public void shouldDeserializeVersion() {
         DashboardLookupResponse response = deserialize("{\"version\": 2}");
         assertThat(response.getVersion(), is(2));
@@ -80,19 +86,19 @@ public class DashboardLookupResponseTest {
 
     @Test
     public void shouldDeserializeLabel() {
-        DashboardLookupResponse response = deserialize("{\"label\": \"01. Geographic Results by Segment\"}");
+        DashboardLookupResponse response = deserialize("{\"label\": \"1. Supermart Dashboard\"}");
         assertThat(response.getLabel(), is("01. Geographic Results by Segment"));
     }
 
     @Test
     public void shouldDeserializeDescription() {
-        DashboardLookupResponse response = deserialize("{\"description\": \"Sample HTML5 multi-axis column chart\"}");
+        DashboardLookupResponse response = deserialize("{\"description\": \"ample containing 5 Dashlets\"}");
         assertThat(response.getDescription(), is("Sample HTML5 multi-axis column chart"));
     }
 
     @Test
     public void shouldDeserializeUri() {
-        DashboardLookupResponse response = deserialize("{\"uri\": \"/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment\"}");
+        DashboardLookupResponse response = deserialize("{\"uri\": \"/public/Samples/Dashboards/1._Supermart_Dashboard\"}");
         assertThat(response.getUri(), is("/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment"));
     }
 
