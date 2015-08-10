@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,16 +26,35 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.List;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceFileReference {
+public final class DashboardLookupResponse extends ResourceLookupResponse {
 
     @Expose
-    private String uri;
+    private List<DashboardFoundation> foundations;
+    @Expose
+    private List<DashboardResource> resources;
+    @Expose
+    private String defaultFoundation;
 
-    public String getUri() {
-        return uri;
+    @Override
+    public String getResourceType() {
+        return "dashboard";
+    }
+
+    public String getDefaultFoundation() {
+        return defaultFoundation;
+    }
+
+    public List<DashboardFoundation> getFoundations() {
+        return foundations;
+    }
+
+    public List<DashboardResource> getResources() {
+        return resources;
     }
 }

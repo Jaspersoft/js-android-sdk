@@ -30,12 +30,24 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceFile {
+public final class DashboardResource {
 
     @Expose
-    private ResourceReference fileReference;
+    private String name;
+    @Expose
+    private String type;
+    @Expose
+    private DashboardResourceInfo resource;
 
-    public ResourceReference getFileReference() {
-        return fileReference;
+    public DashboardResourceInfo getResource() {
+        return resource;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
     }
 }

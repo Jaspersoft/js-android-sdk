@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.entity.type;
+package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportResource;
-
-import java.util.List;
-
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportResourcesTypeAdapterFactory extends CustomizedTypeAdapterFactory<List<ReportResource>> {
-    static final TypeToken TOKEN_TYPE = new TypeToken<List<ReportResource>>(){};
+public final class DashboardFoundation {
 
-    @SuppressWarnings("unchecked")
-    public ReportResourcesTypeAdapterFactory() {
-        super(TOKEN_TYPE.getRawType());
+    @Expose
+    private String id;
+    @Expose
+    private String layout;
+    @Expose
+    private String wiring;
+    @Expose
+    private String components;
+
+    public String getComponents() {
+        return components;
     }
 
-    @Override
-    protected JsonElement afterRead(JsonElement deserialized) {
-        JsonObject jsonObject = deserialized.getAsJsonObject();
-        return jsonObject.getAsJsonArray("resource");
+    public String getId() {
+        return id;
+    }
+
+    public String getLayout() {
+        return layout;
+    }
+
+    public String getWiring() {
+        return wiring;
     }
 }

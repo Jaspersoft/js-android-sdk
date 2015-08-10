@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
@@ -56,6 +57,11 @@ public interface RepositoryRestApi {
     @Headers("Accept: application/repository.reportUnit+json")
     @GET("/rest_v2/resources{resourceUri}")
     ReportLookupResponse requestReportResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
+
+    @NonNull
+    @Headers("Accept: application/repository.dashboard+json")
+    @GET("/rest_v2/resources{resourceUri}")
+    DashboardLookupResponse requestDashboardResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
 
     class Builder extends BaseBuilder<RepositoryRestApi> {
         private final String mCookie;

@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
@@ -75,6 +76,14 @@ public class RepositoryRestApiTest {
         ReportLookupResponse report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
+    }
+
+    @Test
+    public void shouldRequestDashboard() throws IOException {
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        DashboardLookupResponse dashboard = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
+        assertThat(dashboard, is(notNullValue()));
+        assertThat(dashboard.getFoundations().size(), is(not(0)));
     }
 
     private AuthResponse getAuthResponse() {

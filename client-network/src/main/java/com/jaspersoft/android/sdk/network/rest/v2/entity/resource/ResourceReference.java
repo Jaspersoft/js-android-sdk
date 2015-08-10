@@ -30,12 +30,12 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceFile {
+public final class ResourceReference {
 
     @Expose
-    private ResourceReference fileReference;
+    private String uri;
 
-    public ResourceReference getFileReference() {
-        return fileReference;
+    public String getUri() {
+        return uri;
     }
 }
