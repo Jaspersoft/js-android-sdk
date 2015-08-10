@@ -56,4 +56,14 @@ public final class DashboardFoundation {
     public String getWiring() {
         return wiring;
     }
+
+    @Override
+    public String toString() {
+        return "DashboardFoundation{" +
+                "components='" + components + '\'' +
+                ", id='" + id + '\'' +
+                ", layout='" + layout + '\'' +
+                ", wiring='" + wiring + '\'' +
+                '}';
+    }
 }

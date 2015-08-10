@@ -38,4 +38,11 @@ public final class JRXmlFileReference {
     public String getUri() {
         return uri;
     }
+
+    @Override
+    public String toString() {
+        return "JRXmlFileReference{" +
+                "uri='" + uri + '\'' +
+                '}';
+    }
 }

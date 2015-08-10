@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -80,5 +81,18 @@ public final class ReportLookupResponse extends ResourceLookupResponse {
 
     public List<ReportResource> getResources() {
         return resources;
+    }
+
+    @Override
+    public String toString() {
+        return "ReportLookupResponse{" +
+                "alwaysPromptControls=" + alwaysPromptControls +
+                ", dataSource=" + dataSource +
+                ", jrxml=" + jrxml +
+                ", inputControlRenderingView='" + inputControlRenderingView + '\'' +
+                ", reportRenderingView='" + reportRenderingView + '\'' +
+                ", controlsLayout='" + controlsLayout + '\'' +
+                ", resources=" + Arrays.toString(resources.toArray()) +
+                '}';
     }
 }

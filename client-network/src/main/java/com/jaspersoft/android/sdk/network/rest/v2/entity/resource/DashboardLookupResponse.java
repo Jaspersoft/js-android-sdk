@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,5 +57,22 @@ public final class DashboardLookupResponse extends ResourceLookupResponse {
 
     public List<DashboardResource> getResources() {
         return resources;
+    }
+
+    @Override
+    public String toString() {
+        return "DashboardLookupResponse{" +
+                "creationDate='" + creationDate + '\'' +
+                ", label='" + label + '\'' +
+                ", description='" + description + '\'' +
+                ", uri='" + uri + '\'' +
+                ", resourceType='dashboard'" +
+                ", version=" + version +
+                ", permissionMask=" + permissionMask +
+                ", updateDate='" + updateDate + '\'' +
+                ", defaultFoundation='" + defaultFoundation + '\'' +
+                ", foundations=" + Arrays.toString(foundations.toArray()) +
+                ", resources=" + Arrays.toString(resources.toArray()) +
+                '}';
     }
 }

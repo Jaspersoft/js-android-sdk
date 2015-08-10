@@ -38,4 +38,11 @@ public final class DashboardResourceInfo {
     public ResourceReference getResourceReference() {
         return resourceReference;
     }
+
+    @Override
+    public String toString() {
+        return "DashboardResourceInfo{" +
+                "resourceReference=" + resourceReference +
+                '}';
+    }
 }

@@ -37,4 +37,11 @@ public final class DataSourceReference {
     public String getUri() {
         return uri;
     }
+
+    @Override
+    public String toString() {
+        return "DataSourceReference{" +
+                "uri='" + uri + '\'' +
+                '}';
+    }
 }

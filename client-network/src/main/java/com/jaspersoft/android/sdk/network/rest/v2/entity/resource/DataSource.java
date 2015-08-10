@@ -37,4 +37,11 @@ public final class DataSource {
     public DataSourceReference getDataSourceReference() {
         return dataSourceReference;
     }
+
+    @Override
+    public String toString() {
+        return "DataSource{" +
+                "dataSourceReference=" + dataSourceReference +
+                '}';
+    }
 }

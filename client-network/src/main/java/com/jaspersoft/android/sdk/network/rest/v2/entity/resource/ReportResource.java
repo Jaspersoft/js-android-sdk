@@ -44,4 +44,12 @@ public final class ReportResource {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "ReportResource{" +
+                "file=" + file +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

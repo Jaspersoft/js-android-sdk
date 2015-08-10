@@ -50,4 +50,13 @@ public final class DashboardResource {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "DashboardResource{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", resource=" + resource +
+                '}';
+    }
 }

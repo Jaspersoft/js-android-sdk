@@ -38,4 +38,11 @@ public final class ResourceReference {
     public String getUri() {
         return uri;
     }
+
+    @Override
+    public String toString() {
+        return "ResourceReference{" +
+                "uri='" + uri + '\'' +
+                '}';
+    }
 }

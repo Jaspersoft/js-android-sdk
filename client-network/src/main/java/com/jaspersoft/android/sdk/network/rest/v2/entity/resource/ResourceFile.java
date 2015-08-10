@@ -38,4 +38,11 @@ public final class ResourceFile {
     public ResourceReference getFileReference() {
         return fileReference;
     }
+
+    @Override
+    public String toString() {
+        return "ResourceFile{" +
+                "fileReference=" + fileReference +
+                '}';
+    }
 }
