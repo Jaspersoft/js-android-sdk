@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,20 +24,29 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.type;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportResource;
+
+import java.util.List;
+
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ResourceLookupTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new ReportResourcesTypeAdapterFactory());
-        return gsonBuilder.create();
+final class ReportResourcesTypeAdapterFactory extends CustomizedTypeAdapterFactory<List<ReportResource>> {
+    static final TypeToken TOKEN_TYPE = new TypeToken<List<ReportResource>>(){};
+
+    @SuppressWarnings("unchecked")
+    public ReportResourcesTypeAdapterFactory() {
+        super(TOKEN_TYPE.getRawType());
+    }
+
+    @Override
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        return jsonObject.getAsJsonArray("resource");
     }
 }

@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
@@ -53,6 +54,7 @@ import static org.junit.Assert.assertThat;
 public class RepositoryRestApiTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    AuthResponse mAuthResponse;
 
     @Before
     public void setup() {
@@ -60,13 +62,26 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldRequestServerInfo() throws IOException {
-        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
-        AuthResponse response = restApi.authenticate("joeuser", "joeuser", null, null);
-
-        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, response.getToken()).build();
+    public void shouldRequestListOfResources() throws IOException {
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
         Collection<ResourceLookupResponse> resourceLookupResponses = api.searchResources(null);
         assertThat(resourceLookupResponses, is(notNullValue()));
         assertThat(resourceLookupResponses.size(), is(not(0)));
+    }
+
+    @Test
+    public void shouldRequestReport() throws IOException {
+        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        ReportLookupResponse report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
+        assertThat(report, is(notNullValue()));
+        assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
+    }
+
+    private AuthResponse getAuthResponse() {
+        if (mAuthResponse == null) {
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
+            mAuthResponse = restApi.authenticate("joeuser", "joeuser", null, null);
+        }
+        return mAuthResponse;
     }
 }

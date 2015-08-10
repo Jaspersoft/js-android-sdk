@@ -30,25 +30,25 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceLookupResponse {
+public class ResourceLookupResponse {
 
     @Expose
-    private String label;
+    protected String label;
     @Expose
-    private String description;
+    protected String description;
     @Expose
-    private String uri;
+    protected String uri;
     @Expose
     private String resourceType;
 
     @Expose
-    private int version;
+    protected int version;
     @Expose
-    private int permissionMask;
+    protected int permissionMask;
     @Expose
-    private String creationDate;
+    protected String creationDate;
     @Expose
-    private String updateDate;
+    protected String updateDate;
 
     public String getCreationDate() {
         return creationDate;
