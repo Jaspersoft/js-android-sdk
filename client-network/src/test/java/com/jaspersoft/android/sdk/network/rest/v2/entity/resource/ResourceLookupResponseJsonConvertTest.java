@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
@@ -34,25 +33,12 @@ import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Type;
-import java.util.Collection;
-
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
 /**
- * {
- * "version": 2,
- * "permissionMask": 1,
- * "creationDate": "2015-06-05T07:21:11",
- * "updateDate": "2014-05-14T17:38:49",
- * "label": "01. Geographic Results by Segment",
- * "description": "Sample HTML5 multi-axis column chart from Domain showing Sales, Units, and $ Per Square Foot by Country and Store Type with various filters",
- * "uri": "/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment",
- * "resourceType": "adhocDataView"
- * }
- *
  * @author Tom Koptel
  * @since 2.0
  */
@@ -71,10 +57,8 @@ public class ResourceLookupResponseJsonConvertTest {
 
     @Test
     public void shouldDeserializeCollectionFromJson() {
-        Type type = new TypeToken<Collection<ResourceLookupResponse>>() {
-        }.getType();
-        Collection<ResourceLookupResponse> resourceLookupResponses = mGson.fromJson(mJsonResources.asString(), type);
-        assertThat(resourceLookupResponses.size(), is(not(0)));
+        ResourceSearchResponse resourceSearchResponse = mGson.fromJson(mJsonResources.asString(), ResourceSearchResponse.class);
+        assertThat(resourceSearchResponse.getResources(), is(not(empty())));
     }
 
     @Test

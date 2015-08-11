@@ -87,19 +87,19 @@ public class DashboardLookupResponseTest {
     @Test
     public void shouldDeserializeLabel() {
         DashboardLookupResponse response = deserialize("{\"label\": \"1. Supermart Dashboard\"}");
-        assertThat(response.getLabel(), is("01. Geographic Results by Segment"));
+        assertThat(response.getLabel(), is("1. Supermart Dashboard"));
     }
 
     @Test
     public void shouldDeserializeDescription() {
-        DashboardLookupResponse response = deserialize("{\"description\": \"ample containing 5 Dashlets\"}");
-        assertThat(response.getDescription(), is("Sample HTML5 multi-axis column chart"));
+        DashboardLookupResponse response = deserialize("{\"description\": \"Sample containing 5 Dashlets\"}");
+        assertThat(response.getDescription(), is("Sample containing 5 Dashlets"));
     }
 
     @Test
     public void shouldDeserializeUri() {
         DashboardLookupResponse response = deserialize("{\"uri\": \"/public/Samples/Dashboards/1._Supermart_Dashboard\"}");
-        assertThat(response.getUri(), is("/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment"));
+        assertThat(response.getUri(), is("/public/Samples/Dashboards/1._Supermart_Dashboard"));
     }
 
     @Test

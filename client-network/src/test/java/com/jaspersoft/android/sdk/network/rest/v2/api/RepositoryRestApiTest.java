@@ -24,14 +24,19 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
@@ -44,15 +49,29 @@ public class RepositoryRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
+    private RepositoryRestApi restApiUnderTest;
+
+    @Before
+    public void setup() {
+        restApiUnderTest = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
+    }
 
     @Test
-    public void shouldThroughRestErrorForHttpError() {
+    public void shouldThroughRestErrorOnSearchRequestIfHttpError() {
         mExpectedException.expect(RestError.class);
 
         mWebMockRule.enqueue(create500Response());
 
-        RepositoryRestApi restApi = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
-        restApi.searchResources(null);
+        restApiUnderTest.searchResources(null);
+    }
+
+    @Test
+    public void shouldReturnEmptyResponseForNoContentResponse() {
+        mWebMockRule.enqueue(create204Response());
+
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+
+        assertThat(response.getResources(), is(empty()));
     }
 
     @Test
@@ -65,6 +84,11 @@ public class RepositoryRestApiTest {
     public void shouldThrowIllegalArgumentExceptionForNullCookie() {
         mExpectedException.expect(IllegalArgumentException.class);
         RepositoryRestApi restApi = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
+    }
+
+    private MockResponse create204Response() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 204 No Content");
     }
 
     private MockResponse create500Response() {

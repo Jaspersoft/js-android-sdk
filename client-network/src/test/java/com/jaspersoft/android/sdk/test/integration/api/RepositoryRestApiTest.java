@@ -24,12 +24,12 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -65,9 +64,9 @@ public class RepositoryRestApiTest {
     @Test
     public void shouldRequestListOfResources() throws IOException {
         RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
-        Collection<ResourceLookupResponse> resourceLookupResponses = api.searchResources(null);
-        assertThat(resourceLookupResponses, is(notNullValue()));
-        assertThat(resourceLookupResponses.size(), is(not(0)));
+        ResourceSearchResponse resourceSearchResponse = api.searchResources(null);
+        assertThat(resourceSearchResponse, is(notNullValue()));
+        assertThat(resourceSearchResponse.getResources().isEmpty(), is(false));
     }
 
     @Test

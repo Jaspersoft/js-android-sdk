@@ -30,19 +30,14 @@ import android.support.annotation.Nullable;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.LegacyDashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
-import java.util.Collection;
 import java.util.Map;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
-import retrofit.http.GET;
-import retrofit.http.Headers;
-import retrofit.http.Path;
-import retrofit.http.QueryMap;
 
 /**
  * @author Tom Koptel
@@ -50,24 +45,16 @@ import retrofit.http.QueryMap;
  */
 public interface RepositoryRestApi {
     @NonNull
-    @Headers("Accept: application/json")
-    @GET("/rest_v2/resources")
-    Collection<ResourceLookupResponse> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
+    ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams);
 
     @NonNull
-    @Headers("Accept: application/repository.reportUnit+json")
-    @GET("/rest_v2/resources{resourceUri}")
-    ReportLookupResponse requestReportResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
+    ReportLookupResponse requestReportResource(@NonNull String resourceUri);
 
     @NonNull
-    @Headers("Accept: application/repository.dashboard+json")
-    @GET("/rest_v2/resources{resourceUri}")
-    DashboardLookupResponse requestDashboardResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
+    DashboardLookupResponse requestDashboardResource(@NonNull String resourceUri);
 
     @NonNull
-    @Headers("Accept: application/repository.legacyDashboard+json")
-    @GET("/rest_v2/resources{resourceUri}")
-    LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
+    LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull String resourceUri);
 
     class Builder extends BaseBuilder<RepositoryRestApi> {
         private final String mCookie;
@@ -91,7 +78,7 @@ public interface RepositoryRestApi {
             });
             RestAdapter restAdapter = builder.build();
 
-            return restAdapter.create(RepositoryRestApi.class);
+            return new RepositoryRestApiImpl(restAdapter);
         }
     }
 }

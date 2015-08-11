@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 public class AuthenticationRestApiTest {
     private final String LOCATION_SUCCESS = "/scripts/bower_components/js-sdk/src/common/auth/loginSuccess.json;jsessionid=7D86AE28407432B728694DF649DB5E8F";
