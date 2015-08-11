@@ -50,18 +50,6 @@ public final class ReportExecutionResponse {
     @Expose
     private ErrorDescriptor errorDescriptor;
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public ErrorDescriptor getErrorDescriptor() {
-        return errorDescriptor;
-    }
-
-    public Set<ExportExecution> getExports() {
-        return exports;
-    }
-
     public String getReportURI() {
         return reportURI;
     }
@@ -74,8 +62,20 @@ public final class ReportExecutionResponse {
         return status;
     }
 
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
     public int getTotalPages() {
         return totalPages;
+    }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
+    }
+
+    public Set<ExportExecution> getExports() {
+        return exports;
     }
 
     @Override
