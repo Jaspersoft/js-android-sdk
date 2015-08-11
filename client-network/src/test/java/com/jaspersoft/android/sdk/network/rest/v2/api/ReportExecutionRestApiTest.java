@@ -84,11 +84,19 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void bodyParameterShouldNotBeNull() {
+    public void bodyParameterShouldNotBeNullForRunReportExecution() {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Body parameter value must not be null.");
 
         restApiUnderTest.runReportExecution(null);
+    }
+
+    @Test
+    public void pathParameterShouldNotBeNullForRequestExecutionStatus() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+
+        restApiUnderTest.requestReportExecutionStatus(null);
     }
 
     private MockResponse create500Response() {

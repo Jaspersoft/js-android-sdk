@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,8 @@ import java.util.Set;
  */
 public final class ReportExecutionResponse {
     @Expose
-    private String requestId;
+    @SerializedName("requestId")
+    private String executionId;
     @Expose
     private String reportURI;
     @Expose
@@ -54,8 +56,8 @@ public final class ReportExecutionResponse {
         return reportURI;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getExecutionId() {
+        return executionId;
     }
 
     public String getStatus() {
@@ -82,7 +84,7 @@ public final class ReportExecutionResponse {
     public String toString() {
         return "ReportExecutionResponse{" +
                 "currentPage=" + currentPage +
-                ", requestId='" + requestId + '\'' +
+                ", executionId='" + executionId + '\'' +
                 ", reportURI='" + reportURI + '\'' +
                 ", status='" + status + '\'' +
                 ", exports=" + Arrays.toString(exports.toArray()) +
