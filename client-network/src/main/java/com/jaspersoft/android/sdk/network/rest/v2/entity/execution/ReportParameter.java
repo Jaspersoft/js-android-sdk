@@ -28,6 +28,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -42,9 +43,24 @@ public final class ReportParameter {
     @SerializedName("value")
     private final Set<String> values;
 
-    public ReportParameter(String name, Set<String> values) {
+    private ReportParameter(String name, Set<String> values) {
         this.name = name;
         this.values = values;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static ReportParameter createWithEmptyValue(String name) {
+        return create(name, Collections.EMPTY_SET);
+    }
+
+    public static ReportParameter create(String name, Set<String> values) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Name should not be null");
+        }
+        if (values == null) {
+            throw new IllegalArgumentException("Values should not be null. Otherwise use ReportParameter.createWithEmptyValue()");
+        }
+        return new ReportParameter(name, values);
     }
 
     public String getName() {
