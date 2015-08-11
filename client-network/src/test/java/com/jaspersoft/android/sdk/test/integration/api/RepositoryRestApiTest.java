@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
@@ -40,6 +41,7 @@ import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -63,15 +65,15 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestListOfResources() throws IOException {
-        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        RepositoryRestApi api = createApi();
         ResourceSearchResponse resourceSearchResponse = api.searchResources(null);
         assertThat(resourceSearchResponse, is(notNullValue()));
-        assertThat(resourceSearchResponse.getResources().isEmpty(), is(false));
+        assertThat(resourceSearchResponse.getResources(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestReport() throws IOException {
-        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        RepositoryRestApi api = createApi();
         ReportLookupResponse report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
@@ -79,10 +81,21 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestDashboard() throws IOException {
-        RepositoryRestApi api = new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        RepositoryRestApi api = createApi();
         DashboardLookupResponse dashboard = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
         assertThat(dashboard, is(notNullValue()));
-        assertThat(dashboard.getFoundations().size(), is(not(0)));
+        assertThat(dashboard.getFoundations(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldRequestRootFolder() throws IOException {
+        RepositoryRestApi api = createApi();
+        FolderLookupResponse folder = api.requestFolderResource("/");
+        assertThat(folder, is(notNullValue()));
+    }
+
+    private RepositoryRestApi createApi() {
+        return new RepositoryRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
     }
 
     private AuthResponse getAuthResponse() {

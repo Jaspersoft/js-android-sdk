@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.LegacyDashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
@@ -55,6 +56,9 @@ public interface RepositoryRestApi {
 
     @NonNull
     LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull String resourceUri);
+
+    @NonNull
+    FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
     class Builder extends BaseBuilder<RepositoryRestApi> {
         private final String mCookie;

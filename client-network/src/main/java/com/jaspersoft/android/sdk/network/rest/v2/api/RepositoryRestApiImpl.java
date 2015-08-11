@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.DashboardLookupResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.LegacyDashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
@@ -82,6 +83,12 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         return mRestApi.requestLegacyDashboardResource(resourceUri);
     }
 
+    @NonNull
+    @Override
+    public FolderLookupResponse requestFolderResource(@NonNull String resourceUri) {
+        return mRestApi.requestFolderResource(resourceUri);
+    }
+
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
@@ -102,5 +109,10 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @Headers("Accept: application/repository.legacyDashboard+json")
         @GET("/rest_v2/resources{resourceUri}")
         LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
+
+        @NonNull
+        @Headers("Accept: application/repository.folder+json")
+        @GET("/rest_v2/resources{resourceUri}")
+        FolderLookupResponse requestFolderResource(@NonNull @Path(value = "resourceUri", encode = false) String resourceUri);
     }
 }
