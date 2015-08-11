@@ -40,7 +40,7 @@ public class ReportExecutionStatusResponseTest {
     @Test
     public void shouldDeserializeValue() {
         Gson gson = GsonFactory.create();
-        ReportExecutionStatusResponse response = gson.fromJson("{\"status\": \"ready\"}", ReportExecutionStatusResponse.class);
-        assertThat(response.getValue(), is("ready"));
+        ReportExecutionStatusResponse response = gson.fromJson("{\"value\": \"ready\"}", ReportExecutionStatusResponse.class);
+        assertThat(response.getStatus(), is("ready"));
     }
 }

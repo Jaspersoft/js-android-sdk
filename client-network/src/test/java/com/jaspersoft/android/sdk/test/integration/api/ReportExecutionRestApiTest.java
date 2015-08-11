@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestData;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 
@@ -64,7 +64,7 @@ public class ReportExecutionRestApiTest {
     public void shouldStartReportExecution() throws IOException {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestData executionRequestData = ExecutionRequestData.newRequest("/public/Samples/Reports/AllAccounts");
-        ReportExecutionResponse response = api.runReportExecution(executionRequestData);
+        ReportExecutionDetailsResponse response = api.runReportExecution(executionRequestData);
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatus(), is(notNullValue()));
     }
@@ -73,10 +73,10 @@ public class ReportExecutionRestApiTest {
     public void shouldReturnReportExecutionDetails() throws IOException {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestData executionRequestData = ExecutionRequestData.newRequest("/public/Samples/Reports/AllAccounts");
-        ReportExecutionResponse executionResponse = api.runReportExecution(executionRequestData);
+        ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestData);
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDetailsResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
@@ -84,10 +84,10 @@ public class ReportExecutionRestApiTest {
     public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestData executionRequestData = ExecutionRequestData.newRequest("/public/Samples/Reports/AllAccounts");
-        ReportExecutionResponse executionResponse = api.runReportExecution(executionRequestData);
+        ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestData);
 
         ReportExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
-        assertThat(response.getValue(), is(notNullValue()));
+        assertThat(response.getStatus(), is(notNullValue()));
     }
 
     private ReportExecutionRestApi createApi() {

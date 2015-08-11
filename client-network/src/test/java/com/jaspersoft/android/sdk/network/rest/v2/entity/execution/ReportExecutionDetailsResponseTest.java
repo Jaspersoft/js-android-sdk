@@ -49,7 +49,7 @@ import static org.hamcrest.core.Is.is;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportExecutionResponseTest {
+public class ReportExecutionDetailsResponseTest {
 
     private final Gson mGson = GsonFactory.create();
 
@@ -63,7 +63,7 @@ public class ReportExecutionResponseTest {
 
     @Test
     public void shouldDeserializeCompoundJsonResponse() {
-        ReportExecutionResponse response = deserialize(compoundDetailsResponse.asString());
+        ReportExecutionDetailsResponse response = deserialize(compoundDetailsResponse.asString());
         assertThat(response, is(notNullValue()));
     }
 
@@ -74,7 +74,7 @@ public class ReportExecutionResponseTest {
             "getStatus, status, execute",
     })
     public void shouldDeserializeStringField(String methodName, String key, String value) throws Exception {
-        ReportExecutionResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
+        ReportExecutionDetailsResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
         Method method = response.getClass().getMethod(methodName);
         String result = (String) method.invoke(response);
         assertThat(result, is(value));
@@ -86,7 +86,7 @@ public class ReportExecutionResponseTest {
             "getTotalPages, totalPages, 100",
     })
     public void shouldDeserializeIntField(String methodName, String key, String value) throws Exception {
-        ReportExecutionResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
+        ReportExecutionDetailsResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
         Method method = response.getClass().getMethod(methodName);
         Integer result = (Integer) method.invoke(response);
         assertThat(result, is(Integer.parseInt(value)));
@@ -94,18 +94,18 @@ public class ReportExecutionResponseTest {
 
     @Test
     public void shouldDeserializeExports() {
-        ReportExecutionResponse response = deserialize("{\"exports\": []}");
+        ReportExecutionDetailsResponse response = deserialize("{\"exports\": []}");
         assertThat(response.getExports(), is(notNullValue()));
         assertThat(response.getExports(), is(empty()));
     }
 
     @Test
     public void shouldDeserializeErrorDescriptor() {
-        ReportExecutionResponse response = deserialize("{\"errorDescriptor\": {}}");
+        ReportExecutionDetailsResponse response = deserialize("{\"errorDescriptor\": {}}");
         assertThat(response.getErrorDescriptor(), is(notNullValue()));
     }
 
-    private ReportExecutionResponse deserialize(String json) {
-        return mGson.fromJson(json, ReportExecutionResponse.class);
+    private ReportExecutionDetailsResponse deserialize(String json) {
+        return mGson.fromJson(json, ReportExecutionDetailsResponse.class);
     }
 }

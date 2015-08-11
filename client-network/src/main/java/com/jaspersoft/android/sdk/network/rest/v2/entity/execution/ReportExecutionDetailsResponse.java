@@ -35,7 +35,7 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExecutionResponse {
+public final class ReportExecutionDetailsResponse {
     @Expose
     @SerializedName("requestId")
     private String executionId;

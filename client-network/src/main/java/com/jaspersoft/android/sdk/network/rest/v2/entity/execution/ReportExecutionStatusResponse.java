@@ -30,12 +30,12 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionStatusResponse {
+public final class ReportExecutionStatusResponse {
 
     @Expose
     private String value;
 
-    public String getValue() {
+    public String getStatus() {
         return value;
     }
 
