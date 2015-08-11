@@ -49,6 +49,11 @@ public interface ReportExecutionRestApi {
 
     @NonNull
     @Headers("Accept: application/json")
+    @GET("/rest_v2/reportExecutions/{executionId}")
+    ReportExecutionResponse requestReportExecutionDetails(@NonNull @Path(value = "executionId", encode = false) String executionId);
+
+    @NonNull
+    @Headers("Accept: application/json")
     @GET("/rest_v2/reportExecutions/{executionId}/status")
     ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
 

@@ -26,7 +26,11 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,10 +53,24 @@ public class ReportExecutionResponseTest {
 
     private final Gson mGson = GsonFactory.create();
 
+    @ResourceFile("json/report_execution_details.json")
+    TestResource compoundDetailsResponse;
+
+    @Before
+    public void setup() {
+        TestResourceInjector.inject(this);
+    }
+
+    @Test
+    public void shouldDeserializeCompoundJsonResponse() {
+        ReportExecutionResponse response = deserialize(compoundDetailsResponse.asString());
+        assertThat(response, is(notNullValue()));
+    }
+
     @Test
     @Parameters({
             "getReportURI, reportURI, /some/uri",
-            "getRequestId, requestId, 1234-5678-9101",
+            "getExecutionId, requestId, 1234-5678-9101",
             "getStatus, status, execute",
     })
     public void shouldDeserializeStringField(String methodName, String key, String value) throws Exception {

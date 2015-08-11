@@ -40,6 +40,8 @@ public final class ExportExecution {
     @Expose
     private String status;
     @Expose
+    private ExecutionRequestData options;
+    @Expose
     private ReportOutputResource outputResource;
     @Expose
     private Set<ReportOutputResource> attachments = Collections.emptySet();
@@ -58,6 +60,10 @@ public final class ExportExecution {
         return id;
     }
 
+    public ExecutionRequestData getOptions() {
+        return options;
+    }
+
     public ReportOutputResource getOutputResource() {
         return outputResource;
     }
@@ -73,8 +79,9 @@ public final class ExportExecution {
 
         ExportExecution that = (ExportExecution) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (!id.equals(that.id)) return false;
+        if (!status.equals(that.status)) return false;
+        if (options != null ? !options.equals(that.options) : that.options != null) return false;
         if (outputResource != null ? !outputResource.equals(that.outputResource) : that.outputResource != null)
             return false;
         if (attachments != null ? !attachments.equals(that.attachments) : that.attachments != null)
@@ -84,8 +91,9 @@ public final class ExportExecution {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        int result = id.hashCode();
+        result = 31 * result + status.hashCode();
+        result = 31 * result + (options != null ? options.hashCode() : 0);
         result = 31 * result + (outputResource != null ? outputResource.hashCode() : 0);
         result = 31 * result + (attachments != null ? attachments.hashCode() : 0);
         result = 31 * result + (errorDescriptor != null ? errorDescriptor.hashCode() : 0);
@@ -98,6 +106,7 @@ public final class ExportExecution {
                 "attachments=" + Arrays.toString(attachments.toArray()) +
                 ", id='" + id + '\'' +
                 ", status='" + status + '\'' +
+                ", options=" + options +
                 ", outputResource=" + outputResource +
                 ", errorDescriptor=" + errorDescriptor +
                 '}';

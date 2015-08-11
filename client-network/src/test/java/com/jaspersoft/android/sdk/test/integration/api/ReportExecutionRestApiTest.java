@@ -70,7 +70,18 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldCheckReportExecution() throws IOException {
+    public void shouldReturnReportExecutionDetails() throws IOException {
+        ReportExecutionRestApi api = createApi();
+        ExecutionRequestData executionRequestData = ExecutionRequestData.newRequest("/public/Samples/Reports/AllAccounts");
+        ReportExecutionResponse executionResponse = api.runReportExecution(executionRequestData);
+
+        String executionId = executionResponse.getExecutionId();
+        ReportExecutionResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
+        assertThat(response.getExecutionId(), is(executionId));
+    }
+
+    @Test
+    public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestData executionRequestData = ExecutionRequestData.newRequest("/public/Samples/Reports/AllAccounts");
         ReportExecutionResponse executionResponse = api.runReportExecution(executionRequestData);
