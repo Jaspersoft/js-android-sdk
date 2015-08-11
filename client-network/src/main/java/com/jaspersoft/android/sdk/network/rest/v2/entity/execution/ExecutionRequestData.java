@@ -34,7 +34,7 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionRequest {
+public final class ExecutionRequestData {
 
     @Expose
     protected Boolean async;
@@ -65,48 +65,48 @@ public final class ExecutionRequest {
     @Expose
     protected ReportParameters parameters;
 
-    private ExecutionRequest(String reportUnitUri) {
+    private ExecutionRequestData(String reportUnitUri) {
         this.reportUnitUri = reportUnitUri;
     }
 
-    public static ExecutionRequest newRequest(String uri) {
+    public static ExecutionRequestData newRequest(String uri) {
         if (uri == null || uri.length() == 0) {
             throw new IllegalArgumentException("Uri should not be null");
         }
-        return new ExecutionRequest(uri);
+        return new ExecutionRequestData(uri);
     }
 
-    public ExecutionRequest withAsync(boolean async) {
+    public ExecutionRequestData withAsync(boolean async) {
         this.async = async;
         return this;
     }
 
-    public ExecutionRequest withFreshData(boolean freshData) {
+    public ExecutionRequestData withFreshData(boolean freshData) {
         this.freshData = freshData;
         return this;
     }
 
-    public ExecutionRequest withIgnorePagination(boolean ignorePagination) {
+    public ExecutionRequestData withIgnorePagination(boolean ignorePagination) {
         this.ignorePagination = ignorePagination;
         return this;
     }
 
-    public ExecutionRequest withInteractive(boolean interactive) {
+    public ExecutionRequestData withInteractive(boolean interactive) {
         this.interactive = interactive;
         return this;
     }
 
-    public ExecutionRequest withSaveDataSnapshot(boolean saveDataSnapshot) {
+    public ExecutionRequestData withSaveDataSnapshot(boolean saveDataSnapshot) {
         this.saveDataSnapshot = saveDataSnapshot;
         return this;
     }
 
-    public ExecutionRequest withParameters(Set<ReportParameter> parameters) {
+    public ExecutionRequestData withParameters(Set<ReportParameter> parameters) {
         this.parameters = ReportParameters.wrap(parameters);
         return this;
     }
 
-    public ExecutionRequest withAttachmentsPrefix(String attachmentsPrefix) {
+    public ExecutionRequestData withAttachmentsPrefix(String attachmentsPrefix) {
         if (attachmentsPrefix == null || attachmentsPrefix.length() == 0) {
             throw new IllegalArgumentException("Attachment prefix should not be null or empty");
         }
@@ -118,7 +118,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withOutputFormat(String outputFormat) {
+    public ExecutionRequestData withOutputFormat(String outputFormat) {
         if (outputFormat == null || outputFormat.length() == 0) {
             throw new IllegalArgumentException("Output format should not be null or empty");
         }
@@ -126,7 +126,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withPages(String pages) {
+    public ExecutionRequestData withPages(String pages) {
         if (pages == null || pages.length() == 0) {
             throw new IllegalArgumentException("Pages should not be null or empty");
         }
@@ -134,7 +134,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withTransformerKey(String transformerKey) {
+    public ExecutionRequestData withTransformerKey(String transformerKey) {
         if (transformerKey == null || transformerKey.length() == 0) {
             throw new IllegalArgumentException("Transform key should not be null or empty");
         }
@@ -142,7 +142,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withAnchor(String anchor) {
+    public ExecutionRequestData withAnchor(String anchor) {
         if (anchor == null || anchor.length() == 0) {
             throw new IllegalArgumentException("Anchor should not be null or empty");
         }
@@ -150,7 +150,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withBaseUrl(String baseUrl) {
+    public ExecutionRequestData withBaseUrl(String baseUrl) {
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
         }
@@ -158,7 +158,7 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withAllowInlineScripts(Boolean allowInlineScripts) {
+    public ExecutionRequestData withAllowInlineScripts(Boolean allowInlineScripts) {
         this.allowInlineScripts = allowInlineScripts;
         return this;
     }
