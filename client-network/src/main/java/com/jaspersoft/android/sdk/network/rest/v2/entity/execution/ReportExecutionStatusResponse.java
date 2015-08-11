@@ -34,9 +34,15 @@ public final class ReportExecutionStatusResponse {
 
     @Expose
     private String value;
+    @Expose
+    private ErrorDescriptor errorDescriptor;
 
     public String getStatus() {
         return value;
+    }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
     }
 
     @Override

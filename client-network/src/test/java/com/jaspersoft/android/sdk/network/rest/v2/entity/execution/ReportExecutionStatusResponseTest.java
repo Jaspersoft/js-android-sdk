@@ -24,12 +24,12 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -39,8 +39,17 @@ import static org.junit.Assert.assertThat;
 public class ReportExecutionStatusResponseTest {
     @Test
     public void shouldDeserializeValue() {
-        Gson gson = GsonFactory.create();
-        ReportExecutionStatusResponse response = gson.fromJson("{\"value\": \"ready\"}", ReportExecutionStatusResponse.class);
+        ReportExecutionStatusResponse response = deserialize("{\"value\": \"ready\"}");
         assertThat(response.getStatus(), is("ready"));
+    }
+
+    @Test
+    public void shouldDeserializeErrorDescriptor() {
+        ReportExecutionStatusResponse response = deserialize("{\"errorDescriptor\": {}}");
+        assertThat(response.getErrorDescriptor(), is(notNullValue()));
+    }
+
+    private ReportExecutionStatusResponse deserialize(String json) {
+        return GsonFactory.create().fromJson(json, ReportExecutionStatusResponse.class);
     }
 }
