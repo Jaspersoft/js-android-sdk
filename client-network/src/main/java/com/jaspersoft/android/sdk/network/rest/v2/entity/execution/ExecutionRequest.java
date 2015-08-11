@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -35,21 +37,21 @@ import java.util.List;
 public final class ExecutionRequest {
 
     @Expose
-    protected final String reportUnitUri;
-    @Expose
     protected Boolean async;
     @Expose
     protected Boolean freshData;
     @Expose
     protected Boolean saveDataSnapshot;
     @Expose
-    protected String outputFormat;
-    @Expose
     protected Boolean interactive;
     @Expose
     protected Boolean ignorePagination;
     @Expose
     protected Boolean allowInlineScripts;
+    @Expose
+    protected final String reportUnitUri;
+    @Expose
+    protected String outputFormat;
     @Expose
     protected String pages;
     @Expose
@@ -68,41 +70,34 @@ public final class ExecutionRequest {
     }
 
     public static ExecutionRequest newRequest(String uri) {
+        if (uri == null || uri.length() == 0) {
+            throw new IllegalArgumentException("Uri should not be null");
+        }
         return new ExecutionRequest(uri);
     }
 
-    public ExecutionRequest withAsync(Boolean async) {
+    public ExecutionRequest withAsync(boolean async) {
         this.async = async;
         return this;
     }
 
-    public ExecutionRequest withAttachmentsPrefix(String attachmentsPrefix) {
-        this.attachmentsPrefix = attachmentsPrefix;
-        return this;
-    }
-
-    public ExecutionRequest withFreshData(Boolean freshData) {
+    public ExecutionRequest withFreshData(boolean freshData) {
         this.freshData = freshData;
         return this;
     }
 
-    public ExecutionRequest withIgnorePagination(Boolean ignorePagination) {
+    public ExecutionRequest withIgnorePagination(boolean ignorePagination) {
         this.ignorePagination = ignorePagination;
         return this;
     }
 
-    public ExecutionRequest withInteractive(Boolean interactive) {
+    public ExecutionRequest withInteractive(boolean interactive) {
         this.interactive = interactive;
         return this;
     }
 
-    public ExecutionRequest withOutputFormat(String outputFormat) {
-        this.outputFormat = outputFormat;
-        return this;
-    }
-
-    public ExecutionRequest withPages(String pages) {
-        this.pages = pages;
+    public ExecutionRequest withSaveDataSnapshot(boolean saveDataSnapshot) {
+        this.saveDataSnapshot = saveDataSnapshot;
         return this;
     }
 
@@ -111,22 +106,54 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withSaveDataSnapshot(Boolean saveDataSnapshot) {
-        this.saveDataSnapshot = saveDataSnapshot;
+    public ExecutionRequest withAttachmentsPrefix(String attachmentsPrefix) {
+        if (attachmentsPrefix == null || attachmentsPrefix.length() == 0) {
+            throw new IllegalArgumentException("Attachment prefix should not be null or empty");
+        }
+        try {
+            this.attachmentsPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("This should not be possible", e);
+        }
+        return this;
+    }
+
+    public ExecutionRequest withOutputFormat(String outputFormat) {
+        if (outputFormat == null || outputFormat.length() == 0) {
+            throw new IllegalArgumentException("Output format should not be null or empty");
+        }
+        this.outputFormat = outputFormat;
+        return this;
+    }
+
+    public ExecutionRequest withPages(String pages) {
+        if (pages == null || pages.length() == 0) {
+            throw new IllegalArgumentException("Pages should not be null or empty");
+        }
+        this.pages = pages;
         return this;
     }
 
     public ExecutionRequest withTransformerKey(String transformerKey) {
+        if (transformerKey == null || transformerKey.length() == 0) {
+            throw new IllegalArgumentException("Transform key should not be null or empty");
+        }
         this.transformerKey = transformerKey;
         return this;
     }
 
     public ExecutionRequest withAnchor(String anchor) {
+        if (anchor == null || anchor.length() == 0) {
+            throw new IllegalArgumentException("Anchor should not be null or empty");
+        }
         this.anchor = anchor;
         return this;
     }
 
     public ExecutionRequest withBaseUrl(String baseUrl) {
+        if (baseUrl == null || baseUrl.length() == 0) {
+            throw new IllegalArgumentException("Base url should not be null or empty");
+        }
         this.baseUrl = baseUrl;
         return this;
     }
