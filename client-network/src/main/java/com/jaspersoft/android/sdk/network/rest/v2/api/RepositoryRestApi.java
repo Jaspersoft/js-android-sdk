@@ -60,28 +60,13 @@ public interface RepositoryRestApi {
     @NonNull
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
-    class Builder extends BaseBuilder<RepositoryRestApi> {
-        private final String mCookie;
-
+    class Builder extends AuthBaseBuilder<RepositoryRestApi> {
         public Builder(String baseUrl, String cookie) {
-            super(baseUrl);
-            if (cookie == null || cookie.length() == 0) {
-                throw new IllegalArgumentException("Cookie should not be null or empty");
-            }
-            mCookie = cookie;
+            super(baseUrl, cookie);
         }
 
         public RepositoryRestApi build() {
-            RestAdapter.Builder builder = getDefaultBuilder();
-            builder.setConverter(new GsonConverter(GsonFactory.create()));
-            builder.setRequestInterceptor(new RequestInterceptor() {
-                @Override
-                public void intercept(RequestFacade request) {
-                    request.addHeader("Cookie", mCookie);
-                }
-            });
-            RestAdapter restAdapter = builder.build();
-
+            RestAdapter restAdapter = getDefaultBuilder().build();
             return new RepositoryRestApiImpl(restAdapter);
         }
     }

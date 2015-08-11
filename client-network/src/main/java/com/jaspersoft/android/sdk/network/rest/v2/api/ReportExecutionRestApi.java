@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestData;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionResponse;
 
+import retrofit.http.Body;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 
@@ -41,6 +42,16 @@ public interface ReportExecutionRestApi {
     @NonNull
     @Headers("Accept: application/json")
     @POST("/rest_v2/reportExecutions")
-    ReportExecutionResponse runReportExecution(@NonNull ExecutionRequestData reportExecutionRequestData);
+    ReportExecutionResponse runReportExecution(@NonNull @Body ExecutionRequestData reportExecutionRequestData);
 
+    class Builder extends AuthBaseBuilder<ReportExecutionRestApi> {
+        public Builder(String baseUrl, String cookie) {
+            super(baseUrl, cookie);
+        }
+
+        @Override
+        public ReportExecutionRestApi build() {
+            return getDefaultBuilder().build().create(ReportExecutionRestApi.class);
+        }
+    }
 }

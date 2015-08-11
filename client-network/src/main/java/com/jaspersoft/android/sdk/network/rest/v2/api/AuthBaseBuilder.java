@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,38 +24,43 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.exception.ErrorHandler;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import retrofit.converter.GsonConverter;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class BaseBuilder<API> {
-    private final String mBaseUrl;
-    private final RestAdapter.Builder mRestAdapterBuilder;
+abstract class AuthBaseBuilder<Api> extends BaseBuilder<Api> {
+    private final String mCookie;
 
-    public BaseBuilder(String baseUrl){
-        if (baseUrl == null || baseUrl.length() == 0) {
-            throw new IllegalArgumentException("Base url should not be null or empty");
+    public AuthBaseBuilder(String baseUrl, String cookie) {
+        super(baseUrl);
+        if (cookie == null || cookie.length() == 0) {
+            throw new IllegalArgumentException("Cookie should not be null or empty");
         }
-        mBaseUrl = baseUrl;
-        mRestAdapterBuilder = new RestAdapter.Builder();
-        mRestAdapterBuilder.setEndpoint(mBaseUrl);
-        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
+        mCookie = cookie;
+    }
+
+    @Override
+    public RestAdapter.Builder getDefaultBuilder() {
+        RestAdapter.Builder builder = super.getDefaultBuilder();
+
+        builder.setConverter(new GsonConverter(GsonFactory.create()));
+        builder.setRequestInterceptor(new RequestInterceptor() {
             @Override
-            @SuppressWarnings("unchecked")
-            public Throwable handleError(RetrofitError cause) {
-                return ErrorHandler.DEFAULT.handleError(cause);
+            public void intercept(RequestFacade request) {
+                request.addHeader("Cookie", getCookie());
             }
         });
+
+        return builder;
     }
 
-    public RestAdapter.Builder getDefaultBuilder() {
-        return mRestAdapterBuilder;
+    public String getCookie() {
+        return mCookie;
     }
-
-    public abstract API build();
 }
