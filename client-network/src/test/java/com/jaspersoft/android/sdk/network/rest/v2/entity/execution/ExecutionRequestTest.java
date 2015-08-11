@@ -34,6 +34,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -134,5 +136,15 @@ public class ExecutionRequestTest {
         method.invoke(requestUnderTest, true);
         String json = mGson.toJson(requestUnderTest);
         assertThat(json, is("{\"" + key + "\":true,\"reportUnitUri\":\"/some/uri\"}"));
+    }
+
+    @Test
+    public void shouldSerializeParametersList() {
+        ReportParameter reportParameter = ReportParameter.createWithEmptyValue("some_param");
+        Set<ReportParameter> parameters = new HashSet<>();
+        parameters.add(reportParameter);
+        requestUnderTest.withParameters(parameters);
+        String json = mGson.toJson(requestUnderTest);
+        assertThat(json, is("{\"reportUnitUri\":\"/some/uri\",\"parameters\":{\"reportParameter\":[{\"name\":\"some_param\",\"value\":[]}]}}"));
     }
 }

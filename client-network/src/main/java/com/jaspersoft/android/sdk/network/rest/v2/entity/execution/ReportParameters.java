@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,20 +24,39 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import org.junit.Test;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportParametersListTest {
-    @Test
-    public void factoryMethodAcceptsNull() {
-        ReportParametersList reportParametersList = ReportParametersList.wrap(null);
-        assertThat(reportParametersList.getReportParameters(), is(empty()));
+final class ReportParameters {
+    @Expose
+    @SerializedName("reportParameter")
+    private final Set<ReportParameter> reportParameters;
+
+    private ReportParameters(Set<ReportParameter> reportParameters) {
+        this.reportParameters = reportParameters;
+    }
+
+    public Set<ReportParameter> getReportParameters() {
+        return reportParameters;
+    }
+
+    public static ReportParameters wrap(Set<ReportParameter> params) {
+        if (params == null) {
+            params = Collections.emptySet();
+        }
+        return new ReportParameters(params);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(reportParameters.toArray());
     }
 }

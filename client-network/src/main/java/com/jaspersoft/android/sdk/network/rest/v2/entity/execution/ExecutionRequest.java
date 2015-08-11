@@ -28,7 +28,7 @@ import com.google.gson.annotations.Expose;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -63,7 +63,7 @@ public final class ExecutionRequest {
     @Expose
     protected String attachmentsPrefix;
     @Expose
-    protected ReportParametersList parameters;
+    protected ReportParameters parameters;
 
     private ExecutionRequest(String reportUnitUri) {
         this.reportUnitUri = reportUnitUri;
@@ -101,8 +101,8 @@ public final class ExecutionRequest {
         return this;
     }
 
-    public ExecutionRequest withParameters(List<ReportParameter> parameters) {
-        this.parameters = ReportParametersList.wrap(parameters);
+    public ExecutionRequest withParameters(Set<ReportParameter> parameters) {
+        this.parameters = ReportParameters.wrap(parameters);
         return this;
     }
 
@@ -191,7 +191,7 @@ public final class ExecutionRequest {
         return pages;
     }
 
-    public List<ReportParameter> getParameters() {
+    public Set<ReportParameter> getParameters() {
         return parameters.getReportParameters();
     }
 
