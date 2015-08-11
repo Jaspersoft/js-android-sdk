@@ -37,6 +37,16 @@ public final class ReportExecutionStatusResponse {
     @Expose
     private ErrorDescriptor errorDescriptor;
 
+    public ReportExecutionStatusResponse() {}
+
+    private ReportExecutionStatusResponse(String value) {
+        this.value = value;
+    }
+
+    public static ReportExecutionStatusResponse cancelledStatus() {
+        return new ReportExecutionStatusResponse("cancelled");
+    }
+
     public String getStatus() {
         return value;
     }

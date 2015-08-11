@@ -30,12 +30,6 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequ
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Path;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -43,19 +37,15 @@ import retrofit.http.Path;
 public interface ReportExecutionRestApi {
 
     @NonNull
-    @Headers("Accept: application/json")
-    @POST("/rest_v2/reportExecutions")
-    ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ExecutionRequestOptions executionOptions);
+    ReportExecutionDetailsResponse runReportExecution(@NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
-    @Headers("Accept: application/json")
-    @GET("/rest_v2/reportExecutions/{executionId}")
-    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull @Path(value = "executionId", encode = false) String executionId);
+    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
 
     @NonNull
-    @Headers("Accept: application/json")
-    @GET("/rest_v2/reportExecutions/{executionId}/status")
-    ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
+    ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+
+    boolean cancelReportExecution(@NonNull String executionId);
 
     class Builder extends AuthBaseBuilder<ReportExecutionRestApi> {
         public Builder(String baseUrl, String cookie) {
@@ -64,7 +54,7 @@ public interface ReportExecutionRestApi {
 
         @Override
         public ReportExecutionRestApi build() {
-            return getDefaultBuilder().build().create(ReportExecutionRestApi.class);
+            return new ReportExecutionRestApiImpl(getDefaultBuilder().build());
         }
     }
 }

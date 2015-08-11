@@ -64,7 +64,7 @@ public final class ExecutionRequestOptions {
     @Expose
     protected String attachmentsPrefix;
     @Expose
-    protected ReportParameters parameters = ReportParameters.empty();
+    protected ReportParameters parameters;
 
     private ExecutionRequestOptions(String reportUnitUri) {
         this.reportUnitUri = reportUnitUri;

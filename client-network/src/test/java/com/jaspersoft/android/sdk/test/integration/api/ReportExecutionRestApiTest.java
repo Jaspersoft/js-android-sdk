@@ -53,6 +53,7 @@ import static org.junit.Assert.assertThat;
 public class ReportExecutionRestApiTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    String reportUri = "/public/Samples/Reports/AllAccounts";
     AuthResponse mAuthResponse;
 
     @Before
@@ -63,16 +64,25 @@ public class ReportExecutionRestApiTest {
     @Test
     public void shouldStartReportExecution() throws IOException {
         ReportExecutionRestApi api = createApi();
-        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest("/public/Samples/Reports/AllAccounts");
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse response = api.runReportExecution(executionRequestOptions);
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
     @Test
+    public void shouldCancelReportExecution() throws IOException {
+        ReportExecutionRestApi api = createApi();
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
+        ReportExecutionDetailsResponse response = api.runReportExecution(executionRequestOptions);
+        boolean cancelled = api.cancelReportExecution(response.getExecutionId());
+        assertThat(cancelled, is(true));
+    }
+
+    @Test
     public void shouldReturnReportExecutionDetails() throws IOException {
         ReportExecutionRestApi api = createApi();
-        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest("/public/Samples/Reports/AllAccounts");
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
 
         String executionId = executionResponse.getExecutionId();
@@ -83,7 +93,7 @@ public class ReportExecutionRestApiTest {
     @Test
     public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionRestApi api = createApi();
-        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest("/public/Samples/Reports/AllAccounts");
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
 
         ReportExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());

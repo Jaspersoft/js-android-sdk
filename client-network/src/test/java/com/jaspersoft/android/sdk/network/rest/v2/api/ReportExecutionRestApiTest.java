@@ -27,25 +27,28 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionRequestOptions.class})
 public class ReportExecutionRestApiTest {
+
+    @ResourceFile("json/cancelled_report_response.json")
+    TestResource cancelledResponse;
 
     @Rule
     public final WebMockRule mWebMockRule = new WebMockRule();
@@ -53,12 +56,9 @@ public class ReportExecutionRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
     private ReportExecutionRestApi restApiUnderTest;
 
-    @Mock
-    ExecutionRequestOptions mExecutionRequestOptions;
-
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        TestResourceInjector.inject(this);
         restApiUnderTest = new ReportExecutionRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
     }
 
@@ -80,7 +80,7 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExecution(mExecutionRequestOptions);
+        restApiUnderTest.runReportExecution(ExecutionRequestOptions.newRequest("/any/uri"));
     }
 
     @Test
@@ -105,6 +105,44 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
 
         restApiUnderTest.requestReportExecutionStatus(null);
+    }
+
+    @Test
+    public void pathParameterShouldNotBeNullForCancelRequestExecution() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+
+        restApiUnderTest.cancelReportExecution(null);
+    }
+
+    @Test
+    public void responseShouldNotBeCancelledIfResponseIs204() {
+        mWebMockRule.enqueue(create204Response());
+
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
+
+        assertThat(cancelled, is(false));
+    }
+
+    @Test
+    public void responseShouldBeCancelledIfResponseIs200() {
+        MockResponse response = create200Response();
+        response.setBody(cancelledResponse.asString());
+        mWebMockRule.enqueue(response);
+
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
+
+        assertThat(cancelled, is(true));
+    }
+
+    private MockResponse create200Response() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 200 Ok");
+    }
+
+    private MockResponse create204Response() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 204 No Content");
     }
 
     private MockResponse create500Response() {
