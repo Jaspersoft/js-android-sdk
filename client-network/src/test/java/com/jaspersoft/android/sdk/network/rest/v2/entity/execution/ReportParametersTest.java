@@ -26,18 +26,13 @@ package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
 import org.junit.Test;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class ReportParametersTest {
-    @Test
-    public void factoryMethodAcceptsNull() {
-        ReportParameters reportParameters = ReportParameters.wrap(null);
-        assertThat(reportParameters.getReportParameters(), is(empty()));
+    @Test(expected = IllegalArgumentException.class)
+    public void factoryMethodShouldNotAcceptNull() {
+        ReportParameters.wrap(null);
     }
 }

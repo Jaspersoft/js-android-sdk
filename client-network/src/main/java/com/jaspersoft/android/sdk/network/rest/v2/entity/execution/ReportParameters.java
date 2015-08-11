@@ -28,7 +28,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -48,13 +47,9 @@ final class ReportParameters {
         return reportParameters;
     }
 
-    public static ReportParameters empty() {
-        return wrap(null);
-    }
-
     public static ReportParameters wrap(Set<ReportParameter> params) {
         if (params == null) {
-            params = Collections.emptySet();
+            throw new IllegalArgumentException("Parameters should not be null");
         }
         return new ReportParameters(params);
     }
