@@ -70,19 +70,19 @@ public class ReportParameterTest {
     @Test
     public void factoryMethodShouldNotAllowNullValueSet() {
         mExpectedException.expect(IllegalArgumentException.class);
-        mExpectedException.expectMessage("Values should not be null. Otherwise use ReportParameter.createWithEmptyValue()");
+        mExpectedException.expectMessage("Values should not be null. Otherwise use ReportParameter.emptyParameter()");
         ReportParameter.create("key", null);
     }
 
     @Test
     public void factoryMethodCanCreateParameterWithEmptyValueSet() {
-        ReportParameter reportParameter = ReportParameter.createWithEmptyValue("key");
+        ReportParameter reportParameter = ReportParameter.emptyParameter("key");
         assertThat(reportParameter.getValues(), is(empty()));
     }
 
     @Test
     public void factoryMethod1ShouldAssignName() {
-        ReportParameter reportParameter = ReportParameter.createWithEmptyValue("key");
+        ReportParameter reportParameter = ReportParameter.emptyParameter("key");
         assertThat(reportParameter.getName(), is("key"));
     }
 

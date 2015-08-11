@@ -140,7 +140,7 @@ public class ExecutionRequestOptionsTest {
 
     @Test
     public void shouldSerializeParametersList() {
-        ReportParameter reportParameter = ReportParameter.createWithEmptyValue("some_param");
+        ReportParameter reportParameter = ReportParameter.emptyParameter("some_param");
         Set<ReportParameter> parameters = new HashSet<>();
         parameters.add(reportParameter);
         requestUnderTest.withParameters(parameters);

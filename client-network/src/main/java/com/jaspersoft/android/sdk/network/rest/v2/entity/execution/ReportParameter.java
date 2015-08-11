@@ -49,7 +49,7 @@ public final class ReportParameter {
     }
 
     @SuppressWarnings("unchecked")
-    public static ReportParameter createWithEmptyValue(String name) {
+    public static ReportParameter emptyParameter(String name) {
         return create(name, Collections.EMPTY_SET);
     }
 
@@ -58,7 +58,7 @@ public final class ReportParameter {
             throw new IllegalArgumentException("Name should not be null");
         }
         if (values == null) {
-            throw new IllegalArgumentException("Values should not be null. Otherwise use ReportParameter.createWithEmptyValue()");
+            throw new IllegalArgumentException("Values should not be null. Otherwise use ReportParameter.emptyParameter()");
         }
         return new ReportParameter(name, values);
     }
