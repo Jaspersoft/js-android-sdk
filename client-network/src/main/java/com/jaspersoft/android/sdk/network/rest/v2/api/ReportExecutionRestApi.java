@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestData;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 
@@ -45,7 +45,7 @@ public interface ReportExecutionRestApi {
     @NonNull
     @Headers("Accept: application/json")
     @POST("/rest_v2/reportExecutions")
-    ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ExecutionRequestData reportExecutionRequestData);
+    ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ExecutionRequestOptions executionOptions);
 
     @NonNull
     @Headers("Accept: application/json")

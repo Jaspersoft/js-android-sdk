@@ -28,13 +28,14 @@ import com.google.gson.annotations.Expose;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionRequestData {
+public final class ExecutionRequestOptions {
 
     @Expose
     protected Boolean async;
@@ -63,50 +64,50 @@ public final class ExecutionRequestData {
     @Expose
     protected String attachmentsPrefix;
     @Expose
-    protected ReportParameters parameters;
+    protected ReportParameters parameters = ReportParameters.empty();
 
-    private ExecutionRequestData(String reportUnitUri) {
+    private ExecutionRequestOptions(String reportUnitUri) {
         this.reportUnitUri = reportUnitUri;
     }
 
-    public static ExecutionRequestData newRequest(String uri) {
+    public static ExecutionRequestOptions newRequest(String uri) {
         if (uri == null || uri.length() == 0) {
             throw new IllegalArgumentException("Uri should not be null");
         }
-        return new ExecutionRequestData(uri);
+        return new ExecutionRequestOptions(uri);
     }
 
-    public ExecutionRequestData withAsync(boolean async) {
+    public ExecutionRequestOptions withAsync(boolean async) {
         this.async = async;
         return this;
     }
 
-    public ExecutionRequestData withFreshData(boolean freshData) {
+    public ExecutionRequestOptions withFreshData(boolean freshData) {
         this.freshData = freshData;
         return this;
     }
 
-    public ExecutionRequestData withIgnorePagination(boolean ignorePagination) {
+    public ExecutionRequestOptions withIgnorePagination(boolean ignorePagination) {
         this.ignorePagination = ignorePagination;
         return this;
     }
 
-    public ExecutionRequestData withInteractive(boolean interactive) {
+    public ExecutionRequestOptions withInteractive(boolean interactive) {
         this.interactive = interactive;
         return this;
     }
 
-    public ExecutionRequestData withSaveDataSnapshot(boolean saveDataSnapshot) {
+    public ExecutionRequestOptions withSaveDataSnapshot(boolean saveDataSnapshot) {
         this.saveDataSnapshot = saveDataSnapshot;
         return this;
     }
 
-    public ExecutionRequestData withParameters(Set<ReportParameter> parameters) {
+    public ExecutionRequestOptions withParameters(Set<ReportParameter> parameters) {
         this.parameters = ReportParameters.wrap(parameters);
         return this;
     }
 
-    public ExecutionRequestData withAttachmentsPrefix(String attachmentsPrefix) {
+    public ExecutionRequestOptions withAttachmentsPrefix(String attachmentsPrefix) {
         if (attachmentsPrefix == null || attachmentsPrefix.length() == 0) {
             throw new IllegalArgumentException("Attachment prefix should not be null or empty");
         }
@@ -118,7 +119,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withOutputFormat(String outputFormat) {
+    public ExecutionRequestOptions withOutputFormat(String outputFormat) {
         if (outputFormat == null || outputFormat.length() == 0) {
             throw new IllegalArgumentException("Output format should not be null or empty");
         }
@@ -126,7 +127,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withPages(String pages) {
+    public ExecutionRequestOptions withPages(String pages) {
         if (pages == null || pages.length() == 0) {
             throw new IllegalArgumentException("Pages should not be null or empty");
         }
@@ -134,7 +135,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withTransformerKey(String transformerKey) {
+    public ExecutionRequestOptions withTransformerKey(String transformerKey) {
         if (transformerKey == null || transformerKey.length() == 0) {
             throw new IllegalArgumentException("Transform key should not be null or empty");
         }
@@ -142,7 +143,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withAnchor(String anchor) {
+    public ExecutionRequestOptions withAnchor(String anchor) {
         if (anchor == null || anchor.length() == 0) {
             throw new IllegalArgumentException("Anchor should not be null or empty");
         }
@@ -150,7 +151,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withBaseUrl(String baseUrl) {
+    public ExecutionRequestOptions withBaseUrl(String baseUrl) {
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
         }
@@ -158,7 +159,7 @@ public final class ExecutionRequestData {
         return this;
     }
 
-    public ExecutionRequestData withAllowInlineScripts(Boolean allowInlineScripts) {
+    public ExecutionRequestOptions withAllowInlineScripts(Boolean allowInlineScripts) {
         this.allowInlineScripts = allowInlineScripts;
         return this;
     }
@@ -221,17 +222,21 @@ public final class ExecutionRequestData {
 
     @Override
     public String toString() {
-        return "ExecutionRequest{" +
-                "async=" + async +
-                ", reportUnitUri='" + reportUnitUri + '\'' +
+        return "ExecutionRequestOptions{" +
+                "allowInlineScripts=" + allowInlineScripts +
+                ", async=" + async +
                 ", freshData=" + freshData +
                 ", saveDataSnapshot=" + saveDataSnapshot +
-                ", outputFormat='" + outputFormat + '\'' +
                 ", interactive=" + interactive +
                 ", ignorePagination=" + ignorePagination +
+                ", reportUnitUri='" + reportUnitUri + '\'' +
+                ", outputFormat='" + outputFormat + '\'' +
                 ", pages='" + pages + '\'' +
+                ", baseUrl='" + baseUrl + '\'' +
+                ", anchor='" + anchor + '\'' +
+                ", transformerKey='" + transformerKey + '\'' +
                 ", attachmentsPrefix='" + attachmentsPrefix + '\'' +
-                ", parameters=" + parameters +
+                ", parameters=" + Arrays.toString(parameters.getReportParameters().toArray()) +
                 '}';
     }
 }

@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestData;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -44,7 +44,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionRequestData.class})
+@PrepareForTest({ExecutionRequestOptions.class})
 public class ReportExecutionRestApiTest {
 
     @Rule
@@ -54,7 +54,7 @@ public class ReportExecutionRestApiTest {
     private ReportExecutionRestApi restApiUnderTest;
 
     @Mock
-    ExecutionRequestData mExecutionRequestData;
+    ExecutionRequestOptions mExecutionRequestOptions;
 
     @Before
     public void setup() {
@@ -80,7 +80,7 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExecution(mExecutionRequestData);
+        restApiUnderTest.runReportExecution(mExecutionRequestOptions);
     }
 
     @Test

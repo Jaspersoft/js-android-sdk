@@ -48,6 +48,10 @@ final class ReportParameters {
         return reportParameters;
     }
 
+    public static ReportParameters empty() {
+        return wrap(null);
+    }
+
     public static ReportParameters wrap(Set<ReportParameter> params) {
         if (params == null) {
             params = Collections.emptySet();

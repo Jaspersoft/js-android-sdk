@@ -48,9 +48,9 @@ import static org.hamcrest.core.Is.is;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ExecutionRequestDataTest {
+public class ExecutionRequestOptionsTest {
 
-    private ExecutionRequestData requestUnderTest;
+    private ExecutionRequestOptions requestUnderTest;
 
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
@@ -58,7 +58,7 @@ public class ExecutionRequestDataTest {
 
     @Before
     public void setup() {
-        requestUnderTest = ExecutionRequestData.newRequest("/some/uri");
+        requestUnderTest = ExecutionRequestOptions.newRequest("/some/uri");
         mGson = GsonFactory.create();
     }
 
@@ -99,13 +99,13 @@ public class ExecutionRequestDataTest {
     @Test
     public void factoryMethodShouldNotAllowNull() {
         mExpectedException.expect(IllegalArgumentException.class);
-        ExecutionRequestData.newRequest(null);
+        ExecutionRequestOptions.newRequest(null);
     }
 
     @Test
     public void factoryMethodShouldNotAllowEmptyString() {
         mExpectedException.expect(IllegalArgumentException.class);
-        ExecutionRequestData.newRequest("");
+        ExecutionRequestOptions.newRequest("");
     }
 
     @Test

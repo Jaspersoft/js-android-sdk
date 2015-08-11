@@ -40,7 +40,7 @@ public final class ExportExecution {
     @Expose
     private String status;
     @Expose
-    private ExecutionRequestData options;
+    private ExecutionRequestOptions options;
     @Expose
     private ReportOutputResource outputResource;
     @Expose
@@ -60,7 +60,7 @@ public final class ExportExecution {
         return id;
     }
 
-    public ExecutionRequestData getOptions() {
+    public ExecutionRequestOptions getOptions() {
         return options;
     }
 
