@@ -1,0 +1,57 @@
+/*
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * http://community.jaspersoft.com/project/jaspermobile-android
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of Jaspersoft Mobile for Android.
+ *
+ * Jaspersoft Mobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Jaspersoft Mobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Jaspersoft Mobile for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
+package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
+
+import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class ReportOutputResourceTest {
+
+    @Test
+    public void shouldDeserializeContentType() {
+        ReportOutputResource reportOutputResource = deserialize("{\"contentType\": \"text/html\"}");
+        String result = reportOutputResource.getContentType();
+        assertThat(result, is("text/html"));
+    }
+
+    @Test
+    public void shouldDeserializeFileName() {
+        ReportOutputResource reportOutputResource = deserialize("{\"fileName\": \"img_0_46_0\"}");
+        String result = reportOutputResource.getFileName();
+        assertThat(result, is("img_0_46_0"));
+    }
+
+    private ReportOutputResource deserialize(String json) {
+        return GsonFactory.create().fromJson(json, ReportOutputResource.class);
+    }
+}
