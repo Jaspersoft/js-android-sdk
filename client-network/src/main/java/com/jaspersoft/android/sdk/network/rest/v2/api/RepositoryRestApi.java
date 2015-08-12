@@ -32,13 +32,10 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.FolderLookupRe
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.LegacyDashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
 import java.util.Map;
 
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.converter.GsonConverter;
 
 /**
  * @author Tom Koptel
@@ -60,12 +57,13 @@ public interface RepositoryRestApi {
     @NonNull
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
-    class Builder extends AuthBaseBuilder<RepositoryRestApi> {
+    class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
             super(baseUrl, cookie);
         }
 
-        public RepositoryRestApi build() {
+        @Override
+        RepositoryRestApi createApi() {
             RestAdapter restAdapter = getDefaultBuilder().build();
             return new RepositoryRestApiImpl(restAdapter);
         }

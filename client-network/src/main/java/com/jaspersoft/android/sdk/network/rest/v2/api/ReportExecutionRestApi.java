@@ -47,13 +47,13 @@ public interface ReportExecutionRestApi {
 
     boolean cancelReportExecution(@NonNull String executionId);
 
-    class Builder extends AuthBaseBuilder<ReportExecutionRestApi> {
+    class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
             super(baseUrl, cookie);
         }
 
         @Override
-        public ReportExecutionRestApi build() {
+        ReportExecutionRestApi createApi() {
             return new ReportExecutionRestApiImpl(getDefaultBuilder().build());
         }
     }

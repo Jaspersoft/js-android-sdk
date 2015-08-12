@@ -33,9 +33,11 @@ import retrofit.RetrofitError;
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class BaseBuilder<API> {
+abstract class BaseBuilder<API, SubBuilder> {
     private final String mBaseUrl;
     private final RestAdapter.Builder mRestAdapterBuilder;
+    private RestApiLog mLog = RestApiLog.NONE;
+    private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
 
     public BaseBuilder(String baseUrl){
         if (baseUrl == null || baseUrl.length() == 0) {
@@ -43,6 +45,7 @@ abstract class BaseBuilder<API> {
         }
         mBaseUrl = baseUrl;
         mRestAdapterBuilder = new RestAdapter.Builder();
+
         mRestAdapterBuilder.setEndpoint(mBaseUrl);
         mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
             @Override
@@ -53,9 +56,27 @@ abstract class BaseBuilder<API> {
         });
     }
 
-    public RestAdapter.Builder getDefaultBuilder() {
+    @SuppressWarnings("unchecked")
+    public SubBuilder setLog(RestApiLog log) {
+        mLog = log;
+        return (SubBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public SubBuilder setLogLevel(RestApiLogLevel logLevel) {
+        mLogLevel = logLevel;
+        return (SubBuilder) this;
+    }
+
+    RestAdapter.Builder getDefaultBuilder() {
         return mRestAdapterBuilder;
     }
 
-    public abstract API build();
+    abstract API createApi();
+
+    public API build() {
+        mRestAdapterBuilder.setLog(new RetrofitLog(mLog));
+        mRestAdapterBuilder.setLogLevel(RestApiLogLevel.toRetrofitLog(mLogLevel));
+        return createApi();
+    }
 }

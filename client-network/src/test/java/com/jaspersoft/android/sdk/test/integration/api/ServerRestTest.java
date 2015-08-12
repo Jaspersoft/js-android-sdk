@@ -25,8 +25,10 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
+import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.api.ServerRestApi;
+import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +60,10 @@ public class ServerRestTest {
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
-        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2).build();
+        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2)
+                .setLog(TestLogger.get(this))
+                .setLogLevel(RestApiLogLevel.FULL)
+                .build();
         ServerInfoResponse response = api.getServerInfo();
         assertThat(response, is(notNullValue()));
     }

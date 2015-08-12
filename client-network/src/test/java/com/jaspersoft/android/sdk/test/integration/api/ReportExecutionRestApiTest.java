@@ -26,10 +26,12 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +103,10 @@ public class ReportExecutionRestApiTest {
     }
 
     private ReportExecutionRestApi createApi() {
-        return new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken()).build();
+        return new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
+                .setLog(TestLogger.get(this))
+                .setLogLevel(RestApiLogLevel.FULL)
+                .build();
     }
 
     private AuthResponse getAuthResponse() {

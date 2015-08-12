@@ -24,8 +24,10 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +53,10 @@ public class AuthenticationRestApiTest {
 
     @Test
     public void shouldReturnResponseForSpringRequest() throws IOException {
-        AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
+        AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2)
+                .setLog(TestLogger.get(this))
+                .setLogLevel(RestApiLogLevel.FULL)
+                .build();
         AuthResponse response = authApi.authenticate("joeuser", "joeuser", "null", null);
         assertThat(response.getToken(), is(notNullValue()));
     }

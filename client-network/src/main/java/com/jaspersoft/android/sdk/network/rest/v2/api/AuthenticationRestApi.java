@@ -46,12 +46,13 @@ public interface AuthenticationRestApi {
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    class Builder extends BaseBuilder<AuthenticationRestApi> {
+    class Builder extends BaseBuilder<AuthenticationRestApi, Builder> {
         public Builder(String baseUrl) {
             super(baseUrl);
         }
 
-        public AuthenticationRestApi build() {
+        @Override
+        AuthenticationRestApi createApi() {
             RestAdapter.Builder builder = getDefaultBuilder();
 
             OkHttpClient httpClient = new OkHttpClient();

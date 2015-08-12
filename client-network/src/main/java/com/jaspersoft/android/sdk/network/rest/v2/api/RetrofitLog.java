@@ -24,43 +24,21 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
-
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.converter.GsonConverter;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class AuthBaseBuilder<API, SubBuilder> extends BaseBuilder<API, SubBuilder> {
-    private final String mCookie;
+final class RetrofitLog implements RestAdapter.Log {
+    private final RestApiLog delegate;
 
-    public AuthBaseBuilder(String baseUrl, String cookie) {
-        super(baseUrl);
-        if (cookie == null || cookie.length() == 0) {
-            throw new IllegalArgumentException("Cookie should not be null or empty");
-        }
-        mCookie = cookie;
+    RetrofitLog(RestApiLog log) {
+        delegate = log;
     }
 
     @Override
-    public RestAdapter.Builder getDefaultBuilder() {
-        RestAdapter.Builder builder = super.getDefaultBuilder();
-
-        builder.setConverter(new GsonConverter(GsonFactory.create()));
-        builder.setRequestInterceptor(new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                request.addHeader("Cookie", getCookie());
-            }
-        });
-
-        return builder;
-    }
-
-    public String getCookie() {
-        return mCookie;
+    public void log(String message) {
+        delegate.log(message);
     }
 }
