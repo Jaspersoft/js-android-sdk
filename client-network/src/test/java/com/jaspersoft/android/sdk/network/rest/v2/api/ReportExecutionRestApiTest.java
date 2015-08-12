@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -86,7 +86,7 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExecution(ExecutionRequestOptions.newRequest("/any/uri"));
+        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri"));
     }
 
     @Test

@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
@@ -64,7 +64,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionDetailsResponse runReportExecution(@NonNull ExecutionRequestOptions executionOptions) {
+    public ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions) {
         return mRestApi.runReportExecution(executionOptions);
     }
 
@@ -112,7 +112,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions")
-        ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ExecutionRequestOptions executionOptions);
+        ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")

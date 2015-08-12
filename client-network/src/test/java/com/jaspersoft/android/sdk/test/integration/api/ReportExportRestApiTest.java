@@ -28,11 +28,12 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
@@ -43,13 +44,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -59,12 +54,12 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ReportExecutionRestApiTest {
-
+public class ReportExportRestApiTest {
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
     String reportUri = "/public/Samples/Reports/AllAccounts";
     AuthResponse mAuthResponse;
-    ReportExecutionRestApi mApi;
+    ReportExecutionRestApi mExecApi;
+    ReportExportRestApi mExportApi;
 
     @Before
     public void setup() {
@@ -72,74 +67,39 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldStartReportExecution() {
-        ReportExecutionDetailsResponse response = startExecution();
-        assertThat(response, is(notNullValue()));
-        assertThat(response.getStatus(), is(notNullValue()));
-    }
-
-    @Test
-    public void shouldCancelReportExecution() {
-        ReportExecutionRestApi api = getApi();
-        ReportExecutionDetailsResponse response = startExecution();
-        boolean cancelled = api.cancelReportExecution(response.getExecutionId());
-        assertThat(cancelled, is(true));
-    }
-
-    @Test
-    public void shouldReturnReportExecutionDetails() {
-        ReportExecutionRestApi api = getApi();
-        ReportExecutionDetailsResponse executionResponse = startExecution();
-
-        String executionId = executionResponse.getExecutionId();
-        ReportExecutionDetailsResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
-        assertThat(response.getExecutionId(), is(executionId));
-    }
-
-    @Test
-    public void shouldCheckReportExecutionStatus() {
-        ReportExecutionRestApi api = getApi();
-        ReportExecutionDetailsResponse executionResponse = startExecution();
-
-        ReportExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
-        assertThat(response.getStatus(), is(notNullValue()));
-    }
-
-    @Test
-    public void searchForExecutionShouldReturnResult() {
-        ReportExecutionRestApi api = getApi();
-        ReportExecutionDetailsResponse executionResponse = startExecution();
-
-        Map<String, String> params = new HashMap<>();
-        params.put("reportURI", executionResponse.getReportURI());
-
-        ReportExecutionSearchResponse searchResponse = api.searchReportExecution(params);
-        assertThat(searchResponse.getItems(), is(not(empty())));
-    }
-
-    @Test
-    public void updateOfParametersForExecutionShouldReturnResult() {
-        ReportExecutionRestApi api = getApi();
-        ReportExecutionDetailsResponse executionResponse = startExecution();
-
-        boolean success = api.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
-        assertThat(success, is(true));
+    public void runExportRequestShouldReturnResult() {
+        ReportExecutionDetailsResponse exec = startExecution();
+        ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
+                .withPages("1-10")
+                .withOutputFormat("PDF");
+        ReportExportExecutionResponse execDetails = getApi().runReportExportExecution(exec.getExecutionId(), options);
+        assertThat(execDetails.getExportId(), is(notNullValue()));
     }
 
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(reportUri);
-        return getApi().runReportExecution(executionRequestOptions);
+        return getReportExecApi().runReportExecution(executionRequestOptions);
     }
 
-    private ReportExecutionRestApi getApi() {
-        if (mApi == null) {
-            mApi = new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
+    private ReportExportRestApi getApi() {
+        if (mExportApi == null) {
+            mExportApi = new ReportExportRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
                     .setLog(TestLogger.get(this))
                     .setLogLevel(RestApiLogLevel.FULL)
                     .build();
         }
-        return mApi;
+        return mExportApi;
+    }
+
+    private ReportExecutionRestApi getReportExecApi() {
+        if (mExecApi == null) {
+            mExecApi = new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
+                    .setLog(TestLogger.get(this))
+                    .setLogLevel(RestApiLogLevel.FULL)
+                    .build();
+        }
+        return mExecApi;
     }
 
     private AuthResponse getAuthResponse() {

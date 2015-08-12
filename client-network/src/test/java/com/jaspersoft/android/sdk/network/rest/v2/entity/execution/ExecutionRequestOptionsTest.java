@@ -24,9 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,8 +34,6 @@ import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -53,16 +49,13 @@ import static org.hamcrest.core.Is.is;
 @RunWith(JUnitParamsRunner.class)
 public class ExecutionRequestOptionsTest {
 
-    private ExecutionRequestOptions requestUnderTest;
-
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
-    private Gson mGson;
+    ExecutionRequestOptions requestUnderTest;
 
     @Before
     public void setup() {
-        requestUnderTest = ExecutionRequestOptions.newRequest("/some/uri");
-        mGson = GsonFactory.create();
+        requestUnderTest = ExecutionRequestOptions.newInstance();
     }
 
     @Test
@@ -115,26 +108,5 @@ public class ExecutionRequestOptionsTest {
     public void shouldWithAttachmentsPrefixShouldEncodePrefix() {
         String prefix = requestUnderTest.withAttachmentsPrefix("./").getAttachmentsPrefix();
         assertThat(prefix, is(".%2F"));
-    }
-
-    @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ExecutionRequestOptions.newRequest(null);
-    }
-
-    @Test
-    public void factoryMethodShouldNotAllowEmptyString() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ExecutionRequestOptions.newRequest("");
-    }
-    @Test
-    public void shouldSerializeParametersList() {
-        ReportParameter reportParameter = ReportParameter.emptyParameter("some_param");
-        Set<ReportParameter> parameters = new HashSet<>();
-        parameters.add(reportParameter);
-        requestUnderTest.withParameters(parameters);
-        String json = mGson.toJson(requestUnderTest);
-        assertThat(json, is("{\"reportUnitUri\":\"/some/uri\",\"parameters\":{\"reportParameter\":[{\"name\":\"some_param\",\"value\":[]}]}}"));
     }
 }

@@ -26,8 +26,8 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
@@ -42,7 +42,7 @@ import java.util.Map;
 public interface ReportExecutionRestApi {
 
     @NonNull
-    ReportExecutionDetailsResponse runReportExecution(@NonNull ExecutionRequestOptions executionOptions);
+    ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
     ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);

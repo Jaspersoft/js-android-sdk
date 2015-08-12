@@ -35,7 +35,7 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionRequestOptions {
+public class ExecutionRequestOptions {
 
     @Expose
     protected Boolean async;
@@ -49,8 +49,6 @@ public final class ExecutionRequestOptions {
     protected Boolean ignorePagination;
     @Expose
     protected Boolean allowInlineScripts;
-    @Expose
-    protected final String reportUnitUri;
     @Expose
     protected String outputFormat;
     @Expose
@@ -66,15 +64,10 @@ public final class ExecutionRequestOptions {
     @Expose
     protected ReportParameters parameters;
 
-    private ExecutionRequestOptions(String reportUnitUri) {
-        this.reportUnitUri = reportUnitUri;
-    }
+    protected ExecutionRequestOptions() {}
 
-    public static ExecutionRequestOptions newRequest(String uri) {
-        if (uri == null || uri.length() == 0) {
-            throw new IllegalArgumentException("Uri should not be null");
-        }
-        return new ExecutionRequestOptions(uri);
+    public static ExecutionRequestOptions newInstance() {
+        return new ExecutionRequestOptions();
     }
 
     public ExecutionRequestOptions withAsync(boolean async) {
@@ -196,10 +189,6 @@ public final class ExecutionRequestOptions {
         return parameters.getReportParameters();
     }
 
-    public String getReportUnitUri() {
-        return reportUnitUri;
-    }
-
     public Boolean getSaveDataSnapshot() {
         return saveDataSnapshot;
     }
@@ -229,7 +218,6 @@ public final class ExecutionRequestOptions {
                 ", saveDataSnapshot=" + saveDataSnapshot +
                 ", interactive=" + interactive +
                 ", ignorePagination=" + ignorePagination +
-                ", reportUnitUri='" + reportUnitUri + '\'' +
                 ", outputFormat='" + outputFormat + '\'' +
                 ", pages='" + pages + '\'' +
                 ", baseUrl='" + baseUrl + '\'' +
