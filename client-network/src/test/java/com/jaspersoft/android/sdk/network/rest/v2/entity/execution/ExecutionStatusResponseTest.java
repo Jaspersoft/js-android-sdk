@@ -42,14 +42,14 @@ import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotatio
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportExecutionStatusResponseTest {
+public class ExecutionStatusResponseTest {
     @Test
     @Parameters({
             "value",
             "errorDescriptor",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportExecutionStatusResponse.class.getDeclaredField(fieldName);
+        Field field = ExecutionStatusResponse.class.getDeclaredField(fieldName);
         MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
     }
 }

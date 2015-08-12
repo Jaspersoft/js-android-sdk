@@ -30,21 +30,21 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExecutionStatusResponse {
+public final class ExecutionStatusResponse {
 
     @Expose
     private String value;
     @Expose
     private ErrorDescriptor errorDescriptor;
 
-    public ReportExecutionStatusResponse() {}
+    public ExecutionStatusResponse() {}
 
-    private ReportExecutionStatusResponse(String value) {
+    private ExecutionStatusResponse(String value) {
         this.value = value;
     }
 
-    public static ReportExecutionStatusResponse cancelledStatus() {
-        return new ReportExecutionStatusResponse("cancelled");
+    public static ExecutionStatusResponse cancelledStatus() {
+        return new ExecutionStatusResponse("cancelled");
     }
 
     public String getStatus() {

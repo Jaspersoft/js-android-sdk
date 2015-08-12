@@ -29,7 +29,7 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
 
 import java.util.Collection;
@@ -48,7 +48,7 @@ public interface ReportExecutionRestApi {
     ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
 
     @NonNull
-    ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+    ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
 
     boolean cancelReportExecution(@NonNull String executionId);
 

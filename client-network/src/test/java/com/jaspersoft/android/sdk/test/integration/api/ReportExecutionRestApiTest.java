@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
@@ -101,7 +101,7 @@ public class ReportExecutionRestApiTest {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        ReportExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 

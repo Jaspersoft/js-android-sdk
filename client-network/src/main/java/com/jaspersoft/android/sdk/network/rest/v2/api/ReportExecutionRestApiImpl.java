@@ -30,7 +30,7 @@ import android.support.annotation.Nullable;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
 
 import java.util.Collection;
@@ -76,13 +76,13 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId) {
+    public ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId) {
         return mRestApi.requestReportExecutionStatus(executionId);
     }
 
     @Override
     public boolean cancelReportExecution(@NonNull String executionId) {
-        Response response = mRestApi.cancelReportExecution(executionId, ReportExecutionStatusResponse.cancelledStatus());
+        Response response = mRestApi.cancelReportExecution(executionId, ExecutionStatusResponse.cancelledStatus());
         int status = response.getStatus();
         return status != 204;
     }
@@ -122,7 +122,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}/status")
-        ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
+        ExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
 
         @NonNull
         @Headers("Accept: application/json")
@@ -134,7 +134,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @Headers("Accept: application/json")
         @PUT("/rest_v2/reportExecutions/{executionId}/status")
         Response cancelReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
-                                       @NonNull @Body ReportExecutionStatusResponse statusResponse);
+                                       @NonNull @Body ExecutionStatusResponse statusResponse);
 
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions")
