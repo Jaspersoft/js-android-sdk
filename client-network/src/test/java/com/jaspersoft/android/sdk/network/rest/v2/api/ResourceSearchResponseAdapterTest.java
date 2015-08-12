@@ -37,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import retrofit.client.Header;
@@ -44,6 +45,7 @@ import retrofit.client.Response;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedString;
 
+import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -56,7 +58,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Response.class})
-public class ResourceResourceSearchResponseAdapterTest {
+public class ResourceSearchResponseAdapterTest {
 
     @ResourceFile("json/all_resources.json")
     TestResource searchResponse;
@@ -139,5 +141,11 @@ public class ResourceResourceSearchResponseAdapterTest {
 
         ResourceSearchResponse response = ResourceSearchResponseAdapter.adapt(mockResponse);
         assertThat(response.getResources(), is(not(empty())));
+    }
+
+    @Test
+    public void mResourcesFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
+        Field field = ResourceSearchResponse.class.getDeclaredField("mResources");
+        assertThat(field, hasSerializedName("resourceLookup"));
     }
 }

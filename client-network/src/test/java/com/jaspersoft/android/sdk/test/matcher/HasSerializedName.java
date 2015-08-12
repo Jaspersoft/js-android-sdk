@@ -22,28 +22,41 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
+package com.jaspersoft.android.sdk.test.matcher;
 
-import org.junit.Test;
+import com.google.gson.annotations.SerializedName;
+
+import org.hamcrest.Description;
+import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Field;
-
-import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportParametersTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void factoryMethodShouldNotAcceptNull() {
-        ReportParameters.wrap(null);
+public final class HasSerializedName extends TypeSafeMatcher<Field> {
+    private final String mValue;
+
+    private HasSerializedName(String value) {
+        mValue = value;
     }
 
-    @Test
-    public void reportParameterFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
-        Field field = ReportParameters.class.getDeclaredField("reportParameters");
-        assertThat(field, hasSerializedName("reportParameter"));
+    @Override
+    protected boolean matchesSafely(Field item) {
+        SerializedName annotation = item.getAnnotation(SerializedName.class);
+        return annotation.value().equals(mValue);
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("annotation <" + SerializedName.class + "> has value: " + mValue);
+    }
+
+    @Factory
+    public static <T> Matcher<Field> hasSerializedName(String value) {
+        return new HasSerializedName(value);
     }
 }
