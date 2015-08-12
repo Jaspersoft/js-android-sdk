@@ -31,7 +31,9 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequ
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
 
+import java.util.Collection;
 import java.util.Map;
 
 import retrofit.ResponseEntity;
@@ -85,6 +87,13 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         return status != 204;
     }
 
+    @Override
+    public boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params) {
+        Response response = mRestApi.updateReportExecution(executionId, params);
+        int status = response.getStatus();
+        return status == 204;
+    }
+
     @NonNull
     @Override
     public ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) {
@@ -114,6 +123,12 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}/status")
         ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
+
+        @NonNull
+        @Headers("Accept: application/json")
+        @POST("/rest_v2/reportExecutions/{executionId}/parameters")
+        Response updateReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
+                                       @NonNull @Body Collection<ReportParameter> params);
 
         @NonNull
         @Headers("Accept: application/json")

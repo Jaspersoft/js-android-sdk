@@ -41,7 +41,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldStartReportExecution() throws IOException {
+    public void shouldStartReportExecution() {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse response = api.runReportExecution(executionRequestOptions);
@@ -78,7 +78,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldCancelReportExecution() throws IOException {
+    public void shouldCancelReportExecution() {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse response = api.runReportExecution(executionRequestOptions);
@@ -87,7 +87,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldReturnReportExecutionDetails() throws IOException {
+    public void shouldReturnReportExecutionDetails() {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
@@ -98,7 +98,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldCheckReportExecutionStatus() throws IOException {
+    public void shouldCheckReportExecutionStatus() {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
@@ -108,7 +108,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void searchForExecutionShouldReturnResult() throws IOException {
+    public void searchForExecutionShouldReturnResult() {
         ReportExecutionRestApi api = createApi();
         ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
         ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
@@ -118,6 +118,16 @@ public class ReportExecutionRestApiTest {
 
         ReportExecutionSearchResponse searchResponse = api.searchReportExecution(params);
         assertThat(searchResponse.getItems(), is(not(empty())));
+    }
+
+    @Test
+    public void updateOfParametersForExecutionShouldReturnResult() {
+        ReportExecutionRestApi api = createApi();
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
+        ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
+
+        boolean success = api.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        assertThat(success, is(true));
     }
 
     private ReportExecutionRestApi createApi() {

@@ -38,6 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -157,6 +159,24 @@ public class ReportExecutionRestApiTest {
         ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(null);
 
         assertThat(response.getItems(), is(not(empty())));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
+        mWebMockRule.enqueue(create204Response());
+
+        boolean response = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
+
+        assertThat(response, is(true));
+    }
+
+    @Test
+    public void bodyParameterShouldNotBeNullForExecutionUpdate() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Body parameter value must not be null.");
+
+        restApiUnderTest.updateReportExecution("any_id", null);
     }
 
     private MockResponse create200Response() {

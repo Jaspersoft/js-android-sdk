@@ -30,7 +30,9 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequ
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportParameter;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -50,8 +52,11 @@ public interface ReportExecutionRestApi {
 
     boolean cancelReportExecution(@NonNull String executionId);
 
+    boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
+
     @NonNull
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
+
 
     class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
