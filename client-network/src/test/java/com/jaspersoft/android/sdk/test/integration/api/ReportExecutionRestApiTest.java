@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -41,8 +42,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -100,6 +105,19 @@ public class ReportExecutionRestApiTest {
 
         ReportExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
+    }
+
+    @Test
+    public void searchForExecutionShouldReturnResult() throws IOException {
+        ReportExecutionRestApi api = createApi();
+        ExecutionRequestOptions executionRequestOptions = ExecutionRequestOptions.newRequest(reportUri);
+        ReportExecutionDetailsResponse executionResponse = api.runReportExecution(executionRequestOptions);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("reportURI", executionResponse.getReportURI());
+
+        ReportExecutionSearchResponse searchResponse = api.searchReportExecution(params);
+        assertThat(searchResponse.getItems(), is(not(empty())));
     }
 
     private ReportExecutionRestApi createApi() {

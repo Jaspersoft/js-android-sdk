@@ -25,12 +25,18 @@
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
 
+import java.util.Map;
+
+import retrofit.ResponseEntity;
 import retrofit.RestAdapter;
+import retrofit.RestAdapterWrapper;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -38,6 +44,7 @@ import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
+import retrofit.http.QueryMap;
 
 /**
  * @author Tom Koptel
@@ -46,9 +53,11 @@ import retrofit.http.Path;
 final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     private final RestApi mRestApi;
+    private final RestAdapterWrapper mRestAdapterWrapper;
 
     ReportExecutionRestApiImpl(RestAdapter restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
+        mRestAdapterWrapper = RestAdapterWrapper.wrap(restAdapter);
     }
 
     @NonNull
@@ -76,7 +85,21 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         return status != 204;
     }
 
-    private interface RestApi {
+    @NonNull
+    @Override
+    public ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) {
+        Response response = mRestApi.searchReportExecution(params);
+        int status = response.getStatus();
+        if (status == 204) {
+            return ReportExecutionSearchResponse.empty();
+        } else {
+            ResponseEntity<ReportExecutionSearchResponse> responseEntity =
+                    mRestAdapterWrapper.produce(response, ReportExecutionSearchResponse.class);
+            return responseEntity.getEntity();
+        }
+    }
+
+    interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions")
@@ -97,5 +120,9 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @PUT("/rest_v2/reportExecutions/{executionId}/status")
         Response cancelReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
                                        @NonNull @Body ReportExecutionStatusResponse statusResponse);
+
+        @Headers("Accept: application/json")
+        @GET("/rest_v2/reportExecutions")
+        Response searchReportExecution(@Nullable @QueryMap(encodeValues = false) Map<String, String> params);
     }
 }

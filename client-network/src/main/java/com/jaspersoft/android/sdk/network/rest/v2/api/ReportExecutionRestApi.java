@@ -28,7 +28,10 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionStatusResponse;
+
+import java.util.Map;
 
 /**
  * @author Tom Koptel
@@ -46,6 +49,9 @@ public interface ReportExecutionRestApi {
     ReportExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
 
     boolean cancelReportExecution(@NonNull String executionId);
+
+    @NonNull
+    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
 
     class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

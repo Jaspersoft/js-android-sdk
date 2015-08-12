@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -36,9 +37,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -49,6 +51,8 @@ public class ReportExecutionRestApiTest {
 
     @ResourceFile("json/cancelled_report_response.json")
     TestResource cancelledResponse;
+    @ResourceFile("json/search_execution_response.json")
+    TestResource searchExecutionResponse;
 
     @Rule
     public final WebMockRule mWebMockRule = new WebMockRule();
@@ -133,6 +137,26 @@ public class ReportExecutionRestApiTest {
         boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
 
         assertThat(cancelled, is(true));
+    }
+
+    @Test
+    public void executionSearchResponseShouldBeEmptyIfResponseIs204() {
+        mWebMockRule.enqueue(create204Response());
+
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(null);
+
+        assertThat(response.getItems(), is(empty()));
+    }
+
+    @Test
+    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() {
+        MockResponse mockResponse = create200Response();
+        mockResponse.setBody(searchExecutionResponse.asString());
+        mWebMockRule.enqueue(mockResponse);
+
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(null);
+
+        assertThat(response.getItems(), is(not(empty())));
     }
 
     private MockResponse create200Response() {
