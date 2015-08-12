@@ -46,7 +46,7 @@ public interface AuthenticationRestApi {
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    class Builder extends BaseBuilder<AuthenticationRestApi, Builder> {
+    final class Builder extends BaseBuilder<AuthenticationRestApi, Builder> {
         public Builder(String baseUrl) {
             super(baseUrl);
         }

@@ -57,8 +57,7 @@ public interface ReportExecutionRestApi {
     @NonNull
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
 
-
-    class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
+    final class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
             super(baseUrl, cookie);
         }

@@ -44,7 +44,7 @@ public interface ServerRestApi {
     @GET(value = "/rest_v2/serverInfo")
     ServerInfoResponse getServerInfo();
 
-    class Builder extends BaseBuilder<ServerRestApi, Builder> {
+    final class Builder extends BaseBuilder<ServerRestApi, Builder> {
         public Builder(String baseUrl) {
            super(baseUrl);
         }

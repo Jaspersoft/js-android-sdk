@@ -57,7 +57,7 @@ public interface RepositoryRestApi {
     @NonNull
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
-    class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
+    final class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
             super(baseUrl, cookie);
         }
