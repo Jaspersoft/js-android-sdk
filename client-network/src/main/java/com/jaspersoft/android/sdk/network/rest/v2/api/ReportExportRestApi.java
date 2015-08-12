@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 
 /**
@@ -36,7 +37,9 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExec
 public interface ReportExportRestApi {
 
     @NonNull
-    ReportExportExecutionResponse runReportExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    ReportExportExecutionResponse runExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    @NonNull
+    ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

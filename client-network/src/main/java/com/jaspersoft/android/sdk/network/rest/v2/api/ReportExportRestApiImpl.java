@@ -27,10 +27,12 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 
 import retrofit.RestAdapter;
 import retrofit.http.Body;
+import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -48,9 +50,15 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ReportExportExecutionResponse runReportExportExecution(@NonNull String executionId,
-                                                                   @NonNull ExecutionRequestOptions executionOptions) {
+    public ReportExportExecutionResponse runExecution(@NonNull String executionId,
+                                                      @NonNull ExecutionRequestOptions executionOptions) {
         return mRestApi.runReportExportExecution(executionId, executionOptions);
+    }
+
+    @NonNull
+    @Override
+    public ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId) {
+        return mRestApi.checkReportExportStatus(executionId, exportId);
     }
 
     private interface RestApi {
@@ -59,5 +67,10 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         @POST("/rest_v2/reportExecutions/{executionId}/exports")
         ReportExportExecutionResponse runReportExportExecution(@NonNull @Path("executionId") String executionId,
                                                                 @NonNull @Body ExecutionRequestOptions executionOptions);
+        @NonNull
+        @Headers("Accept: application/json")
+        @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
+        ExecutionStatusResponse checkReportExportStatus(@NonNull @Path("executionId") String executionId,
+                                                              @NonNull @Path("exportId") String exportId);
     }
 }

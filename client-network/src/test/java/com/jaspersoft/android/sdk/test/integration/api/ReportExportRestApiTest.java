@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
@@ -69,11 +70,23 @@ public class ReportExportRestApiTest {
     @Test
     public void runExportRequestShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
+        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        assertThat(execDetails.getExportId(), is(notNullValue()));
+    }
+    @Test
+    public void checkExportRequestStatusShouldReturnResult() {
+        ReportExecutionDetailsResponse exec = startExecution();
+        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        ExecutionStatusResponse response = getApi().checkExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        assertThat(response, is(notNullValue()));
+    }
+
+    @NonNull
+    private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
                 .withPages("1-10")
                 .withOutputFormat("PDF");
-        ReportExportExecutionResponse execDetails = getApi().runReportExportExecution(exec.getExecutionId(), options);
-        assertThat(execDetails.getExportId(), is(notNullValue()));
+        return getApi().runExecution(exec.getExecutionId(), options);
     }
 
     @NonNull

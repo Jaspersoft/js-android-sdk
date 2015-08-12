@@ -70,7 +70,39 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        restApiUnderTest.runExecution("any_id", ExecutionRequestOptions.newInstance());
+    }
+
+    @Test
+    public void pathParameterShouldNotBeNullForRunRequestExecution() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+
+        restApiUnderTest.runExecution(null, ExecutionRequestOptions.newInstance());
+    }
+
+    @Test
+    public void bodyShouldNotBeNullForRunRequestExecution() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Body parameter value must not be null.");
+
+        restApiUnderTest.runExecution("any_id", null);
+    }
+
+    @Test
+    public void pathParameter1ShouldNotBeNullForCheckRequestExecutionStatus() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+
+        restApiUnderTest.checkExecutionStatus(null, "any_id");
+    }
+
+    @Test
+    public void pathParameter2ShouldNotBeNullForCheckRequestExecutionStatus() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
+
+        restApiUnderTest.checkExecutionStatus("any_id", null);
     }
 
     private MockResponse create500Response() {
