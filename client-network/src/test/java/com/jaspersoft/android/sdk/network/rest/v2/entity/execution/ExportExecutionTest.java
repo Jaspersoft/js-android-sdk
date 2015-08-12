@@ -24,60 +24,35 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.google.gson.annotations.Expose;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.Set;
+import java.lang.reflect.Field;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class ExportExecutionTest {
-
     @Test
-    public void shouldDeserializeId() {
-        ExportExecution exportExecution = deserialize("{\"id\": \"1234-1234\"}");
-        String result = exportExecution.getId();
-        assertThat(result, is("1234-1234"));
-    }
-
-    @Test
-    public void shouldDeserializeStatus() {
-        ExportExecution exportExecution = deserialize("{\"status\": \"executed\"}");
-        String result = exportExecution.getStatus();
-        assertThat(result, is("executed"));
-    }
-
-    @Test
-    public void shouldDeserializeOutputResource() {
-        ExportExecution exportExecution = deserialize("{\"outputResource\": {}}");
-        ReportOutputResource result = exportExecution.getOutputResource();
-        assertThat(result, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldDeserializeAttachments() {
-        ExportExecution exportExecution = deserialize("{\"attachments\": []}");
-        Set<ReportOutputResource> result = exportExecution.getAttachments();
-        assertThat(result, is(notNullValue()));
-        assertThat(result, is(empty()));
-    }
-
-    @Test
-    public void shouldDeserializeErrorDescriptor() {
-        ExportExecution exportExecution = deserialize("{\"errorDescriptor\": {}}");
-        ErrorDescriptor result = exportExecution.getErrorDescriptor();
-        assertThat(result, is(notNullValue()));
-    }
-
-    private ExportExecution deserialize(String json) {
-        return GsonFactory.create().fromJson(json, ExportExecution.class);
+    @Parameters({
+            "id",
+            "status",
+            "outputResource",
+            "attachments",
+            "errorDescriptor",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ExportExecution.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }

@@ -24,34 +24,32 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.google.gson.annotations.Expose;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import java.lang.reflect.Field;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class ReportOutputResourceTest {
-
     @Test
-    public void shouldDeserializeContentType() {
-        ReportOutputResource reportOutputResource = deserialize("{\"contentType\": \"text/html\"}");
-        String result = reportOutputResource.getContentType();
-        assertThat(result, is("text/html"));
-    }
-
-    @Test
-    public void shouldDeserializeFileName() {
-        ReportOutputResource reportOutputResource = deserialize("{\"fileName\": \"img_0_46_0\"}");
-        String result = reportOutputResource.getFileName();
-        assertThat(result, is("img_0_46_0"));
-    }
-
-    private ReportOutputResource deserialize(String json) {
-        return GsonFactory.create().fromJson(json, ReportOutputResource.class);
+    @Parameters({
+            "contentType",
+            "fileName",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ReportOutputResource.class.getDeclaredField(fieldName);
+        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
     }
 }

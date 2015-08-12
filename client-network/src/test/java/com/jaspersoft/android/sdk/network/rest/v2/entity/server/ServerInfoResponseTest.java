@@ -1,5 +1,6 @@
+package com.jaspersoft.android.sdk.network.rest.v2.entity.server;
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,11 +23,8 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
-
 import com.google.gson.annotations.Expose;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,20 +34,27 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportExecutionStatusResponseTest {
+public class ServerInfoResponseTest {
     @Test
     @Parameters({
-            "value",
-            "errorDescriptor",
+            "dateFormatPattern",
+            "datetimeFormatPattern",
+            "version",
+            "edition",
+            "licenseType",
+            "build",
+            "editionName",
+            "features",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportExecutionStatusResponse.class.getDeclaredField(fieldName);
-        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
+        Field field = ServerInfoResponse.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }

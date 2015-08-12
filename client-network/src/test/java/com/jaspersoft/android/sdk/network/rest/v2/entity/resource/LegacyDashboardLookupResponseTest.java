@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
-
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,14 +34,9 @@ import static org.hamcrest.core.Is.is;
  * @since 2.0
  */
 public class LegacyDashboardLookupResponseTest {
-
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        LegacyDashboardLookupResponse response = deserialize("{}");
+        LegacyDashboardLookupResponse response = new LegacyDashboardLookupResponse();
         assertThat(response.getResourceType(), is("legacyDashboard"));
-    }
-
-    private LegacyDashboardLookupResponse deserialize(String json) {
-        return GsonFactory.create().fromJson(json, LegacyDashboardLookupResponse.class);
     }
 }

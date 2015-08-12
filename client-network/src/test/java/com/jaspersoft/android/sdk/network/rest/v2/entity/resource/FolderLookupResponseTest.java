@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,17 +24,10 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
-import com.jaspersoft.android.sdk.test.resource.ResourceFile;
-import com.jaspersoft.android.sdk.test.resource.TestResource;
-import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * 
@@ -42,71 +35,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
  * @since 2.0
  */
 public class FolderLookupResponseTest {
-
-    @ResourceFile("json/root_folder.json")
-    TestResource rootFolderResponse;
-
-    @Before
-    public void setup() {
-        TestResourceInjector.inject(this);
-    }
-
-    @Test
-    public void shouldDeserializeResponse1FromWholeJson() {
-        FolderLookupResponse response1 = deserialize(rootFolderResponse.asString());
-        assertThat(response1, is(notNullValue()));
-    }
-
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        FolderLookupResponse response = deserialize("{}");
+        FolderLookupResponse response = new FolderLookupResponse();
         assertThat(response.getResourceType(), is("folder"));
     }
-
-    @Test
-    public void shouldDeserializeVersion() {
-        FolderLookupResponse response = deserialize("{\"version\": 0}");
-        assertThat(response.getVersion(), is(0));
-    }
-
-    @Test
-    public void shouldDeserializePermissionMask() {
-        FolderLookupResponse response = deserialize("{\"permissionMask\": 2}");
-        assertThat(response.getPermissionMask(), is(2));
-    }
-
-    @Test
-    public void shouldDeserializeCreationDate() {
-        FolderLookupResponse response = deserialize("{\"creationDate\": \"2015-06-05T07:21:11\"}");
-        assertThat(response.getCreationDate(), is("2015-06-05T07:21:11"));
-    }
-
-    @Test
-    public void shouldDeserializeUpdateDate() {
-        FolderLookupResponse response = deserialize("{\"updateDate\": \"2014-05-14T17:38:49\"}");
-        assertThat(response.getUpdateDate(), is("2014-05-14T17:38:49"));
-    }
-
-    @Test
-    public void shouldDeserializeLabel() {
-        FolderLookupResponse response = deserialize("{\"label\": \"Organization\"}");
-        assertThat(response.getLabel(), is("Organization"));
-    }
-
-    @Test
-    public void shouldDeserializeDescription() {
-        FolderLookupResponse response = deserialize("{\"description\": \"Organization\"}");
-        assertThat(response.getDescription(), is("Organization"));
-    }
-
-    @Test
-    public void shouldDeserializeUri() {
-        FolderLookupResponse response = deserialize("{\"uri\": \"/\"}");
-        assertThat(response.getUri(), is("/"));
-    }
-
-    private FolderLookupResponse deserialize(String json) {
-        return GsonFactory.create().fromJson(json, FolderLookupResponse.class);
-    }
-
 }

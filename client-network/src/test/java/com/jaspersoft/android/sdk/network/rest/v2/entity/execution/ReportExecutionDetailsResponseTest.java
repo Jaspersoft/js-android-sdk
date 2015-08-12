@@ -24,25 +24,18 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.google.gson.Gson;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
-import com.jaspersoft.android.sdk.test.resource.ResourceFile;
-import com.jaspersoft.android.sdk.test.resource.TestResource;
-import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
+import com.google.gson.annotations.Expose;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
 
 /**
  * @author Tom Koptel
@@ -50,62 +43,18 @@ import static org.hamcrest.core.Is.is;
  */
 @RunWith(JUnitParamsRunner.class)
 public class ReportExecutionDetailsResponseTest {
-
-    private final Gson mGson = GsonFactory.create();
-
-    @ResourceFile("json/report_execution_details.json")
-    TestResource compoundDetailsResponse;
-
-    @Before
-    public void setup() {
-        TestResourceInjector.inject(this);
-    }
-
-    @Test
-    public void shouldDeserializeCompoundJsonResponse() {
-        ReportExecutionDetailsResponse response = deserialize(compoundDetailsResponse.asString());
-        assertThat(response, is(notNullValue()));
-    }
-
     @Test
     @Parameters({
-            "getReportURI, reportURI, /some/uri",
-            "getExecutionId, requestId, 1234-5678-9101",
-            "getStatus, status, execute",
+            "reportURI",
+            "executionId",
+            "status",
+            "currentPage",
+            "totalPages",
+            "exports",
+            "errorDescriptor",
     })
-    public void shouldDeserializeStringField(String methodName, String key, String value) throws Exception {
-        ReportExecutionDetailsResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
-        Method method = response.getClass().getMethod(methodName);
-        String result = (String) method.invoke(response);
-        assertThat(result, is(value));
-    }
-
-    @Test
-    @Parameters({
-            "getCurrentPage, currentPage, 1",
-            "getTotalPages, totalPages, 100",
-    })
-    public void shouldDeserializeIntField(String methodName, String key, String value) throws Exception {
-        ReportExecutionDetailsResponse response = deserialize("{\"" + key + "\": \"" + value + "\"}");
-        Method method = response.getClass().getMethod(methodName);
-        Integer result = (Integer) method.invoke(response);
-        assertThat(result, is(Integer.parseInt(value)));
-    }
-
-    @Test
-    public void shouldDeserializeExports() {
-        ReportExecutionDetailsResponse response = deserialize("{\"exports\": []}");
-        assertThat(response.getExports(), is(notNullValue()));
-        assertThat(response.getExports(), is(empty()));
-    }
-
-    @Test
-    public void shouldDeserializeErrorDescriptor() {
-        ReportExecutionDetailsResponse response = deserialize("{\"errorDescriptor\": {}}");
-        assertThat(response.getErrorDescriptor(), is(notNullValue()));
-    }
-
-    private ReportExecutionDetailsResponse deserialize(String json) {
-        return mGson.fromJson(json, ReportExecutionDetailsResponse.class);
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ReportExecutionDetailsResponse.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }

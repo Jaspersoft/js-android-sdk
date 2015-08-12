@@ -24,46 +24,33 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.google.gson.annotations.Expose;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.lang.reflect.Field;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class ErrorDescriptorTest {
-
     @Test
-    public void shouldDeserializeErrorCode() {
-        ErrorDescriptor errorDescriptor = deserialize("{\"errorCode\": \"Input controls validation failure\"}");
-        String result = errorDescriptor.getErrorCode();
-        assertThat(result, is("Input controls validation failure"));
-    }
-
-    @Test
-    public void shouldDeserializeMessage() {
-        ErrorDescriptor errorDescriptor = deserialize("{\"message\": \"input.controls.validation.error\"}");
-        String result = errorDescriptor.getMessage();
-        assertThat(result, is("input.controls.validation.error"));
-    }
-
-    @Test
-    public void shouldDeserializeParameters() {
-        ErrorDescriptor errorDescriptor = deserialize("{\"parameters\": [\"Specify a valid value for type Integer.\"]}");
-        Set<String> result = errorDescriptor.getParameters();
-        assertThat(result, is(notNullValue()));
-        assertThat(new ArrayList<String>(result).get(0), is("Specify a valid value for type Integer."));
-    }
-
-    private ErrorDescriptor deserialize(String json) {
-        return GsonFactory.create().fromJson(json, ErrorDescriptor.class);
+    @Parameters({
+            "errorCode",
+            "message",
+            "parameters",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ErrorDescriptor.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }

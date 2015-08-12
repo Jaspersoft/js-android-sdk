@@ -22,34 +22,40 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
+package com.jaspersoft.android.sdk.test.matcher;
 
-import com.google.gson.annotations.Expose;
+import org.hamcrest.Description;
+import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
-import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(JUnitParamsRunner.class)
-public class ReportExecutionStatusResponseTest {
-    @Test
-    @Parameters({
-            "value",
-            "errorDescriptor",
-    })
-    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportExecutionStatusResponse.class.getDeclaredField(fieldName);
-        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
+public final class HasAnnotation extends TypeSafeMatcher<Field> {
+    private final Class<? extends Annotation> mAnnotationClass;
+
+    private HasAnnotation(Class<? extends Annotation> annotationClass) {
+        mAnnotationClass = annotationClass;
+    }
+
+    @Override
+    protected boolean matchesSafely(Field item) {
+        Annotation annotation = item.getAnnotation(mAnnotationClass);
+        return annotation != null;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("is not annotated with " + mAnnotationClass);
+    }
+
+    @Factory
+    public static <T> Matcher<Field> hasAnnotation(Class<? extends Annotation> annotationClass) {
+        return new HasAnnotation(annotationClass);
     }
 }

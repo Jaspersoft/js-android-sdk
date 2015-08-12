@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
 
 import org.junit.Before;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +42,7 @@ import java.util.Set;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -60,6 +63,24 @@ public class ExecutionRequestOptionsTest {
     public void setup() {
         requestUnderTest = ExecutionRequestOptions.newRequest("/some/uri");
         mGson = GsonFactory.create();
+    }
+
+    @Test
+    @Parameters({
+            "async",
+            "freshData",
+            "ignorePagination",
+            "interactive",
+            "saveDataSnapshot",
+            "outputFormat",
+            "pages",
+            "transformerKey",
+            "anchor",
+            "baseUrl",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ExecutionRequestOptions.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 
     @Test
@@ -107,37 +128,6 @@ public class ExecutionRequestOptionsTest {
         mExpectedException.expect(IllegalArgumentException.class);
         ExecutionRequestOptions.newRequest("");
     }
-
-    @Test
-    @Parameters({
-            "withOutputFormat, outputFormat",
-            "withPages, pages",
-            "withTransformerKey, transformerKey",
-            "withAnchor, anchor",
-            "withBaseUrl, baseUrl",
-    })
-    public void shouldSerializeStringField(String methodName, String key) throws Exception {
-        Method method = requestUnderTest.getClass().getMethod(methodName, String.class);
-        method.invoke(requestUnderTest, "some value");
-        String json = mGson.toJson(requestUnderTest);
-        assertThat(json, is("{\"reportUnitUri\":\"/some/uri\",\"" + key + "\":\"some value\"}"));
-    }
-
-    @Test
-    @Parameters({
-            "withAsync, async",
-            "withFreshData, freshData",
-            "withIgnorePagination, ignorePagination",
-            "withInteractive, interactive",
-            "withSaveDataSnapshot, saveDataSnapshot",
-    })
-    public void shouldSerializeBooleanField(String methodName, String key) throws Exception {
-        Method method = requestUnderTest.getClass().getMethod(methodName, boolean.class);
-        method.invoke(requestUnderTest, true);
-        String json = mGson.toJson(requestUnderTest);
-        assertThat(json, is("{\"" + key + "\":true,\"reportUnitUri\":\"/some/uri\"}"));
-    }
-
     @Test
     public void shouldSerializeParametersList() {
         ReportParameter reportParameter = ReportParameter.emptyParameter("some_param");

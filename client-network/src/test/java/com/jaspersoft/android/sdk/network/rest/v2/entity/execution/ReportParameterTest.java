@@ -24,17 +24,21 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.execution;
 
-import com.google.gson.Gson;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
+import com.google.gson.annotations.Expose;
 
-import org.junit.Before;
+import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.HashSet;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -44,16 +48,11 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
  * @since 2.0
  */
 @SuppressWarnings("unchecked")
+@RunWith(JUnitParamsRunner.class)
 public class ReportParameterTest {
 
     @Rule
     public ExpectedException mExpectedException = ExpectedException.none();
-    private Gson mGson;
-
-    @Before
-    public void setup() {
-        mGson = GsonFactory.create();
-    }
 
     @Test
     public void factoryMethodShouldNotAllowEmptyName() {
@@ -93,11 +92,12 @@ public class ReportParameterTest {
     }
 
     @Test
-    public void shouldBeSerializableToJson() {
-        ReportParameter reportParameter = ReportParameter.create("key", new HashSet<String>(){{
-            add("value");
-        }});
-        String json = mGson.toJson(reportParameter);
-        assertThat(json, is("{\"name\":\"key\",\"value\":[\"value\"]}"));
+    @Parameters({
+            "name",
+            "values",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ReportParameter.class.getDeclaredField(fieldName);
+        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
     }
 }

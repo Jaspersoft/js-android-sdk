@@ -24,111 +24,40 @@
 
 package com.jaspersoft.android.sdk.network.rest.v2.entity.resource;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.type.GsonFactory;
-import com.jaspersoft.android.sdk.test.resource.TestResource;
-import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
+import com.google.gson.annotations.Expose;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class DashboardLookupResponseTest {
-    @com.jaspersoft.android.sdk.test.resource.ResourceFile("json/dashboard_unit_resource.json")
-    TestResource dashboardResponse1;
-
-    @Before
-    public void setup() {
-        TestResourceInjector.inject(this);
-    }
-
     @Test
-    public void shouldDeserializeResponse1FromWholeJson() {
-        DashboardLookupResponse response1 = deserialize(dashboardResponse1.asString());
-        assertThat(response1, is(notNullValue()));
+    @Parameters({
+            "foundations",
+            "resources",
+            "defaultFoundation",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = DashboardLookupResponse.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        DashboardLookupResponse response = deserialize("{}");
+        DashboardLookupResponse response = new DashboardLookupResponse();
         assertThat(response.getResourceType(), is("dashboard"));
-    }
-
-    @Test
-    public void shouldDeserializeVersion() {
-        DashboardLookupResponse response = deserialize("{\"version\": 2}");
-        assertThat(response.getVersion(), is(2));
-    }
-
-    @Test
-    public void shouldDeserializePermissionMask() {
-        DashboardLookupResponse response = deserialize("{\"permissionMask\": 1}");
-        assertThat(response.getPermissionMask(), is(1));
-    }
-
-    @Test
-    public void shouldDeserializeCreationDate() {
-        DashboardLookupResponse response = deserialize("{\"creationDate\": \"2015-06-05T07:21:11\"}");
-        assertThat(response.getCreationDate(), is("2015-06-05T07:21:11"));
-    }
-
-    @Test
-    public void shouldDeserializeUpdateDate() {
-        DashboardLookupResponse response = deserialize("{\"updateDate\": \"2014-05-14T17:38:49\"}");
-        assertThat(response.getUpdateDate(), is("2014-05-14T17:38:49"));
-    }
-
-    @Test
-    public void shouldDeserializeLabel() {
-        DashboardLookupResponse response = deserialize("{\"label\": \"1. Supermart Dashboard\"}");
-        assertThat(response.getLabel(), is("1. Supermart Dashboard"));
-    }
-
-    @Test
-    public void shouldDeserializeDescription() {
-        DashboardLookupResponse response = deserialize("{\"description\": \"Sample containing 5 Dashlets\"}");
-        assertThat(response.getDescription(), is("Sample containing 5 Dashlets"));
-    }
-
-    @Test
-    public void shouldDeserializeUri() {
-        DashboardLookupResponse response = deserialize("{\"uri\": \"/public/Samples/Dashboards/1._Supermart_Dashboard\"}");
-        assertThat(response.getUri(), is("/public/Samples/Dashboards/1._Supermart_Dashboard"));
-    }
-
-    @Test
-    public void shouldDeserializeFoundations() {
-        DashboardLookupResponse response = deserialize("{\"foundations\": [{\"id\": \"default\",\"layout\": \"layout\",\"wiring\": \"wiring\",\"components\": \"components\"}]}");
-        DashboardFoundation foundation = response.getFoundations().get(0);
-        assertThat(foundation.getId(), is("default"));
-        assertThat(foundation.getLayout(), is("layout"));
-        assertThat(foundation.getWiring(), is("wiring"));
-        assertThat(foundation.getComponents(), is("components"));
-    }
-
-    @Test
-    public void shouldDeserializeDefaultFoundation() {
-        DashboardLookupResponse response = deserialize("{\"defaultFoundation\": \"default\"}");
-        assertThat(response.getDefaultFoundation(), is("default"));
-    }
-
-    @Test
-    public void shouldDeserializeResources() {
-        DashboardLookupResponse response = deserialize("{\"resources\": [{\"name\": \"wiring\",\"type\": \"wiring\",\"resource\": {\"resourceReference\": {\"uri\": \"/public/Samples/Dashboards/1._Supermart_Dashboard_files/wiring\"}}}]}");
-        DashboardResource resource = response.getResources().get(0);
-        DashboardResourceInfo info = resource.getResource();
-        assertThat(resource.getName(), is("wiring"));
-        assertThat(resource.getType(), is("wiring"));
-        assertThat(info.getResourceReference().getUri(), is("/public/Samples/Dashboards/1._Supermart_Dashboard_files/wiring"));
-    }
-
-    private DashboardLookupResponse deserialize(String json) {
-        return GsonFactory.create().fromJson(json, DashboardLookupResponse.class);
     }
 }
