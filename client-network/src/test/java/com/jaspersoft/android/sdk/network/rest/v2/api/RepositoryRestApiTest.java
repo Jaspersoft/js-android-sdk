@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,6 +27,9 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Before;
@@ -44,6 +47,9 @@ import static org.junit.Assert.assertThat;
  */
 public class RepositoryRestApiTest {
 
+    @ResourceFile("json/all_resources.json")
+    TestResource searchResponse;
+
     @Rule
     public final WebMockRule mWebMockRule = new WebMockRule();
     @Rule
@@ -53,6 +59,7 @@ public class RepositoryRestApiTest {
 
     @Before
     public void setup() {
+        TestResourceInjector.inject(this);
         restApiUnderTest = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
     }
 
@@ -84,6 +91,54 @@ public class RepositoryRestApiTest {
     public void shouldThrowIllegalArgumentExceptionForNullCookie() {
         mExpectedException.expect(IllegalArgumentException.class);
         RepositoryRestApi restApi = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
+    }
+
+    @Test
+    public void requestForSearchShouldParseHeaderResultCount() {
+        MockResponse mockResponse = create200Response()
+                .setBody(searchResponse.asString())
+                .addHeader("Result-Count", "100");
+        mWebMockRule.enqueue(mockResponse);
+
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        assertThat(response.getResultCount(), is(100));
+    }
+
+    @Test
+    public void requestForSearchShouldParseHeaderTotalCount() {
+        MockResponse mockResponse = create200Response()
+                .setBody(searchResponse.asString())
+                .addHeader("Total-Count", "1000");
+        mWebMockRule.enqueue(mockResponse);
+
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        assertThat(response.getTotalCount(), is(1000));
+    }
+    @Test
+    public void requestForSearchShouldParseHeaderStartIndex() {
+        MockResponse mockResponse = create200Response()
+                .setBody(searchResponse.asString())
+                .addHeader("Start-Index", "5");
+        mWebMockRule.enqueue(mockResponse);
+
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        assertThat(response.getStartIndex(), is(5));
+    }
+
+    @Test
+    public void requestForSearchShouldParseHeaderNextOffset() {
+        MockResponse mockResponse = create200Response()
+                .setBody(searchResponse.asString())
+                .addHeader("Next-Offset", "10");
+        mWebMockRule.enqueue(mockResponse);
+
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        assertThat(response.getNextOffset(), is(10));
+    }
+
+    private MockResponse create200Response() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 200 Ok");
     }
 
     private MockResponse create204Response() {

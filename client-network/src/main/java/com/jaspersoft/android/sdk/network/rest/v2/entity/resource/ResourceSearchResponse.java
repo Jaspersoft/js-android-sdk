@@ -38,11 +38,19 @@ public final class ResourceSearchResponse {
 
     @Expose
     @SerializedName("resourceLookup")
-    private List<ResourceLookupResponse> mResources = Collections.emptyList();
+    private List<ResourceLookupResponse> mResources;
     private int mResultCount;
     private int mTotalCount;
     private int mStartIndex;
     private int mNextOffset;
+
+    private ResourceSearchResponse(List<ResourceLookupResponse> resources) {
+        mResources = resources;
+    }
+
+    public static ResourceSearchResponse empty() {
+        return new ResourceSearchResponse(Collections.<ResourceLookupResponse>emptyList());
+    }
 
     public int getNextOffset() {
         return mNextOffset;

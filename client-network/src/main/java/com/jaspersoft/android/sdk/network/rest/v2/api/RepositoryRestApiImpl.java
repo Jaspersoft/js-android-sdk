@@ -35,7 +35,9 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.resource.ResourceSearch
 
 import java.util.Map;
 
+import retrofit.ResponseEntity;
 import retrofit.RestAdapter;
+import retrofit.RestAdapterWrapper;
 import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -48,9 +50,11 @@ import retrofit.http.QueryMap;
  */
 final class RepositoryRestApiImpl implements RepositoryRestApi {
     private final RestApi mRestApi;
+    private final RestAdapterWrapper mRestAdapterWrapper;
 
     RepositoryRestApiImpl(RestAdapter restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
+        mRestAdapterWrapper = RestAdapterWrapper.wrap(restAdapter);
     }
 
     @NonNull
@@ -59,9 +63,24 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         Response response = mRestApi.searchResources(searchParams);
         int status = response.getStatus();
         if (status == 204) {
-            return ResourceSearchResponseAdapter.emptyResponse();
+            return ResourceSearchResponse.empty();
         } else {
-            return ResourceSearchResponseAdapter.adapt(response);
+            ResponseEntity<ResourceSearchResponse> responseEntity =
+                    mRestAdapterWrapper.produce(response, ResourceSearchResponse.class);
+            ResourceSearchResponse entity = responseEntity.getEntity();
+
+            HeaderUtil headerUtil = HeaderUtil.wrap(response);
+            int resultCount = headerUtil.getFirstHeader("Result-Count").asInt();
+            int totalCount = headerUtil.getFirstHeader("Total-Count").asInt();
+            int startIndex = headerUtil.getFirstHeader("Start-Index").asInt();
+            int nextOffset = headerUtil.getFirstHeader("Next-Offset").asInt();
+
+            entity.setResultCount(resultCount);
+            entity.setTotalCount(totalCount);
+            entity.setStartIndex(startIndex);
+            entity.setNextOffset(nextOffset);
+
+            return entity;
         }
     }
 
