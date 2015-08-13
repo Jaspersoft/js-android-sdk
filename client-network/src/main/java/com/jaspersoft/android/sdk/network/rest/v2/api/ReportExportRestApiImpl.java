@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 
@@ -74,6 +75,14 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         return ExportResourceResponse.create(exportInput, pages, isFinal);
     }
 
+    @NonNull
+    @Override
+    public ExportInput requestAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId) {
+        Response response = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
+        ExportInput input = new RetrofitExportInput(response.getBody());
+        return input;
+    }
+
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
@@ -94,5 +103,11 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
         Response requestReportExportOutput(@NonNull @Path("executionId") String executionId,
                                            @NonNull @Path("exportId") String exportId);
+
+        @NonNull
+        @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
+        Response requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
+                                           @NonNull @Path("exportId") String exportId,
+                                           @NonNull @Path("attachmentId") String attachmentId);
     }
 }

@@ -25,9 +25,13 @@
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Before;
@@ -35,7 +39,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -51,8 +59,12 @@ public class ReportExportRestApiTest {
 
     private ReportExportRestApi restApiUnderTest;
 
+    @ResourceFile("json/root_folder.json")
+    TestResource mResource;
+
     @Before
     public void setup() {
+        TestResourceInjector.inject(this);
         restApiUnderTest = new ReportExportRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
     }
 
@@ -94,7 +106,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void pathParameter1ShouldNotBeNullForCheckRequestExecutionStatus() {
+    public void executionIdShouldNotBeNullForCheckRequestExecutionStatus() {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
 
@@ -102,11 +114,35 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void pathParameter2ShouldNotBeNullForCheckRequestExecutionStatus() {
+    public void exportIdShouldNotBeNullForCheckRequestExecutionStatus() {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
 
         restApiUnderTest.checkExecutionStatus("any_id", null);
+    }
+
+    @Test
+    public void executionIdParameterShouldNotBeNullForAttachmentRequest() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+
+        restApiUnderTest.requestAttachment(null, "any_id", "any_id");
+    }
+
+    @Test
+    public void exportIdParameterShouldNotBeNullForAttachmentRequest() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
+
+        restApiUnderTest.requestAttachment("any_id", null, "any_id");
+    }
+
+    @Test
+    public void attachmentIdParameterShouldNotBeNullForAttachmentRequest() {
+        mExpectedException.expect(RestError.class);
+        mExpectedException.expectMessage("Path parameter \"attachmentId\" value must not be null.");
+
+        restApiUnderTest.requestAttachment("any_id", "any_id", null);
     }
 
     @Test
@@ -129,6 +165,18 @@ public class ReportExportRestApiTest {
 
         ExportResourceResponse resource = restApiUnderTest.requestOutput("any_id", "any_id");
         assertThat(resource.isFinal(), is(true));
+    }
+
+    @Test
+    public void requestForAttachmentShouldBeWrappedInsideInput() throws IOException {
+        MockResponse mockResponse = create200Response()
+                .setBody(mResource.asString());
+        mWebMockRule.enqueue(mockResponse);
+
+        ExportInput resource = restApiUnderTest.requestAttachment("any_id", "any_id", "any_id");
+        InputStream stream = resource.getStream();
+        assertThat(stream, is(notNullValue()));
+        stream.close();
     }
 
     private MockResponse create200Response() {

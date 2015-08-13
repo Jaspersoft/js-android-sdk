@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 
@@ -45,6 +46,9 @@ public interface ReportExportRestApi {
 
     @NonNull
     ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId);
+
+    @NonNull
+    ExportInput requestAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
     final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
