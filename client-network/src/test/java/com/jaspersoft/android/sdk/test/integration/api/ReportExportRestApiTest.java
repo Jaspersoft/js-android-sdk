@@ -34,6 +34,7 @@ import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequ
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -73,6 +74,7 @@ public class ReportExportRestApiTest {
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
         assertThat(execDetails.getExportId(), is(notNullValue()));
     }
+
     @Test
     public void checkExportRequestStatusShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
@@ -81,10 +83,20 @@ public class ReportExportRestApiTest {
         assertThat(response, is(notNullValue()));
     }
 
+    @Test
+    public void requestExportOutputShouldReturnResult() {
+        ReportExecutionDetailsResponse exec = startExecution();
+        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        ExportResourceResponse output = getApi().requestOutput(exec.getExecutionId(), execDetails.getExportId());
+        assertThat(output.getExportInput(), is(notNullValue()));
+        assertThat(output.getPages(), is("1-2"));
+        assertThat(output.isFinal(), is(false));
+    }
+
     @NonNull
     private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
-                .withPages("1-10")
+                .withPages("1-2")
                 .withOutputFormat("PDF");
         return getApi().runExecution(exec.getExecutionId(), options);
     }

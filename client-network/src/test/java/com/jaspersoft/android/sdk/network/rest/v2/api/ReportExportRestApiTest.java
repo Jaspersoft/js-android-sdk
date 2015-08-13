@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -33,6 +34,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
@@ -103,6 +107,33 @@ public class ReportExportRestApiTest {
         mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
 
         restApiUnderTest.checkExecutionStatus("any_id", null);
+    }
+
+    @Test
+    public void requestForOutputShouldParsePagesFromHeader() {
+        MockResponse mockResponse = create200Response()
+                .setBody("")
+                .addHeader("report-pages", "1-10");
+        mWebMockRule.enqueue(mockResponse);
+
+        ExportResourceResponse resource = restApiUnderTest.requestOutput("any_id", "any_id");
+        assertThat(resource.getPages(), is("1-10"));
+    }
+
+    @Test
+    public void requestForOutputShouldParseIsFinalHeader() {
+        MockResponse mockResponse = create200Response()
+                .setBody("")
+                .addHeader("output-final", "true");
+        mWebMockRule.enqueue(mockResponse);
+
+        ExportResourceResponse resource = restApiUnderTest.requestOutput("any_id", "any_id");
+        assertThat(resource.isFinal(), is(true));
+    }
+
+    private MockResponse create200Response() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 200 Ok");
     }
 
     private MockResponse create500Response() {

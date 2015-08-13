@@ -28,9 +28,11 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
 
 import retrofit.RestAdapter;
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -61,16 +63,36 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         return mRestApi.checkReportExportStatus(executionId, exportId);
     }
 
+    @NonNull
+    @Override
+    public ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId) {
+        Response response = mRestApi.requestReportExportOutput(executionId, exportId);
+        RetrofitExportInput exportInput = new RetrofitExportInput(response.getBody());
+        HeaderUtil headerUtil = HeaderUtil.wrap(response);
+        String pages = headerUtil.getFirstHeader("report-pages").asString();
+        boolean isFinal = headerUtil.getFirstHeader("output-final").asBoolean();
+        return ExportResourceResponse.create(exportInput, pages, isFinal);
+    }
+
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions/{executionId}/exports")
         ReportExportExecutionResponse runReportExportExecution(@NonNull @Path("executionId") String executionId,
-                                                                @NonNull @Body ExecutionRequestOptions executionOptions);
+                                                               @NonNull @Body ExecutionRequestOptions executionOptions);
+
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
         ExecutionStatusResponse checkReportExportStatus(@NonNull @Path("executionId") String executionId,
-                                                              @NonNull @Path("exportId") String exportId);
+                                                        @NonNull @Path("exportId") String exportId);
+
+        /**
+         * 'suppressContentDisposition' used due to security implications this header has
+         */
+        @NonNull
+        @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
+        Response requestReportExportOutput(@NonNull @Path("executionId") String executionId,
+                                           @NonNull @Path("exportId") String exportId);
     }
 }

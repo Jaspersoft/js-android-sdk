@@ -25,35 +25,45 @@
 package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
+import retrofit.client.Header;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ReportExportRestApi {
+final class SafeHeader {
+    private final Header mHeader;
 
-    @NonNull
-    ReportExportExecutionResponse runExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    SafeHeader(@Nullable Header header) {
+        mHeader = header;
+    }
 
-    @NonNull
-    ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId);
-
-    @NonNull
-    ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId);
-
-    final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
+    public int asInt() {
+        if (mHeader == null) {
+            return 0;
         }
-
-        @Override
-        ReportExportRestApi createApi() {
-            return new ReportExportRestApiImpl(getDefaultBuilder().build());
+        try {
+            return Integer.parseInt(mHeader.getValue());
+        } catch (NumberFormatException ex) {
+            return 0;
         }
+    }
+
+    public boolean asBoolean() {
+        return mHeader != null && Boolean.parseBoolean(mHeader.getValue());
+    }
+
+    @NonNull
+    public String asString() {
+        if (mHeader == null) {
+            return "";
+        }
+        String value = mHeader.getValue();
+        if (value == null) {
+            return "";
+        }
+        return value;
     }
 }

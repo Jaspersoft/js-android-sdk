@@ -26,34 +26,44 @@ package com.jaspersoft.android.sdk.network.rest.v2.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.client.Header;
+import retrofit.client.Response;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public interface ReportExportRestApi {
+final class HeaderUtil {
+    private final List<Header> mHeaders;
+
+    HeaderUtil(@NonNull List<Header> headers) {
+        mHeaders = headers;
+    }
+
+    public static HeaderUtil wrap(@NonNull Response response) {
+        return new HeaderUtil(response.getHeaders());
+    }
 
     @NonNull
-    ReportExportExecutionResponse runExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
-
-    @NonNull
-    ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId);
-
-    @NonNull
-    ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId);
-
-    final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
+    public SafeHeader getFirstHeader(String name) {
+        List<Header> headers = findHeaders(name);
+        if (headers.isEmpty()) {
+            return new SafeHeader(null);
+        } else {
+            return new SafeHeader(headers.get(0));
         }
+    }
 
-        @Override
-        ReportExportRestApi createApi() {
-            return new ReportExportRestApiImpl(getDefaultBuilder().build());
+    private List<Header> findHeaders(String name) {
+        List<Header> result = new ArrayList<>();
+        for (Header header : mHeaders) {
+            if (header.getName().equals(name)) {
+                result.add(header);
+            }
         }
+        return result;
     }
 }
