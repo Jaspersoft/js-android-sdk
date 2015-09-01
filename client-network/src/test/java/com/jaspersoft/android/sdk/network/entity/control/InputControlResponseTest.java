@@ -7,6 +7,9 @@ import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
@@ -79,5 +82,17 @@ public class InputControlResponseTest {
 
         assertThat(rule.getErrorMessage(), is("This field is mandatory so you must enter data."));
         assertThat(rule.getType(), is("mandatoryValidationRule"));
+    }
+
+    @Test
+    public void test() {
+        Map<String, Set<String>> map = new HashMap<String, Set<String>>(){{
+            put("key", new HashSet<String>(){{
+                add("1");
+            }});
+        }};
+
+        String a = mGson.toJson(map);
+        assertThat(a, is("{\"key\": [\"1\"]}"));
     }
 }

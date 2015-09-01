@@ -28,7 +28,11 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -55,7 +59,28 @@ public interface InputControlRestApi {
     InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri);
 
     @NonNull
-    InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData);
+    InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri,
+                                                                boolean freshData);
+    @NonNull
+    InputControlValueResponse requestInputControlsValues(@NonNull String reportUri,
+                                                         @NonNull Set<String> controlsId,
+                                                         @NonNull Map<String, Set<String>> controlsValues);
+
+    /**
+     * Provides values for specified controls. This API helpful to
+     * delegate cascading resolving for the server, also should handle non-cascading cases
+     *
+     * @param reportUri uri of report
+     * @param controlsId collection of controls ids
+     * @param controlsValues collection of associated parameters client has provided
+     * @param freshData whether data should be retrieved from cache or not
+     * @return response object which wraps {@link InputControlState} collection
+     */
+    @NonNull
+    InputControlValueResponse requestInputControlsValues(@NonNull String reportUri,
+                                                         @NonNull Set<String> controlsId,
+                                                         @NonNull Map<String, Set<String>> controlsValues,
+                                                         boolean freshData);
 
     final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
