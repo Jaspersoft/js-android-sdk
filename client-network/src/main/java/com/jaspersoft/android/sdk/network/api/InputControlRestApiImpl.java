@@ -29,26 +29,44 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
+import retrofit.RestAdapter;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+import retrofit.http.Path;
+
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public interface InputControlRestApi {
+final class InputControlRestApiImpl implements InputControlRestApi {
+    private final RestApi mRestApi;
+
+
+    InputControlRestApiImpl(RestAdapter restAdapter) {
+        mRestApi = restAdapter.create(RestApi.class);
+    }
 
     @NonNull
-    InputControlResponse requestInputControls(@NonNull String reportUri);
+    @Override
+    public InputControlResponse requestInputControls(@NonNull String reportUri) {
+        return mRestApi.requestInputControls(reportUri);
+    }
 
     @NonNull
-    InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri);
+    @Override
+    public InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri) {
+        return mRestApi.requestInputControlsInitialValues(reportUri);
+    }
 
-    final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
-        }
+    private interface RestApi {
+        @NonNull
+        @Headers("Accept: application/json")
+        @GET("/rest_v2/reports{reportUnitURI}/inputControls")
+        InputControlResponse requestInputControls(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
 
-        @Override
-        InputControlRestApi createApi() {
-            return new InputControlRestApiImpl(getDefaultBuilder().build());
-        }
+        @NonNull
+        @Headers("Accept: application/json")
+        @GET("/rest_v2/reports{reportUnitURI}/inputControls/values")
+        InputControlValueResponse requestInputControlsInitialValues(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
     }
 }
