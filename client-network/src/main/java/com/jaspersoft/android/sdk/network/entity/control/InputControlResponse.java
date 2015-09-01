@@ -38,9 +38,9 @@ public final class InputControlResponse {
 
     @Expose
     @SerializedName(value = "inputControl")
-    private List<InputControl> mControls = Collections.emptyList();
+    private List<InputControl> mValues = Collections.emptyList();
 
-    public List<InputControl> getControls() {
-        return mControls;
+    public List<InputControl> getValues() {
+        return mValues;
     }
 }

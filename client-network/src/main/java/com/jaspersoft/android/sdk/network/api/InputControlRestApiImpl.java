@@ -27,9 +27,13 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,31 +58,35 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public InputControlResponse requestInputControls(@NonNull String reportUri) {
-        return mRestApi.requestInputControls(reportUri, null);
+    public List<InputControl> requestInputControls(@NonNull String reportUri) {
+        return requestInputControls(reportUri, false);
     }
 
     @NonNull
     @Override
-    public InputControlResponse requestInputControls(@NonNull String reportUri, boolean excludeState) {
-        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+    public List<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState) {
+        InputControlResponse response =  mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+        List<InputControl> controls = response.getValues();
+        return Collections.unmodifiableList(controls);
     }
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri) {
-        return mRestApi.requestInputControlsInitialValues(reportUri, false);
+    public List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri) {
+        return requestInputControlsInitialValues(reportUri, false);
     }
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData) {
-        return mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+    public List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData) {
+        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+        List<InputControlState> states = response.getValues();
+        return Collections.unmodifiableList(states);
     }
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsValues(@NonNull String reportUri,
+    public List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
                                                                 @NonNull Set<String> controlsId,
                                                                 @NonNull Map<String, Set<String>> controlsValues) {
         return requestInputControlsValues(reportUri, controlsId, controlsValues, false);
@@ -86,12 +94,14 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsValues(@NonNull String reportUri,
+    public List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
                                                                 @NonNull Set<String> controlsId,
                                                                 @NonNull Map<String, Set<String>> controlsValues,
                                                                 boolean freshData) {
         String ids = TextUtils.join(";", controlsId);
-        return mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        InputControlValueResponse response = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        List<InputControlState> states = response.getValues();
+        return Collections.unmodifiableList(states);
     }
 
     private interface RestApi {

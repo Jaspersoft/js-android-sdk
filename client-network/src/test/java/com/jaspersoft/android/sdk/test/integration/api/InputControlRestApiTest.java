@@ -27,14 +27,15 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -65,9 +66,10 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI);
-        assertThat(response.getControls(), is(not(empty())));
-        InputControl control = response.getControls().get(0);
+        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI);
+        assertThat(response, is(not(empty())));
+
+        InputControl control = response.get(0);
         assertThat(control.getState(), is(notNullValue()));
     }
 
@@ -76,21 +78,22 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI, true);
-        assertThat(response.getControls(), is(not(empty())));
-        InputControl control = response.getControls().get(0);
+        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI, true);
+        assertThat(response, is(not(empty())));
+
+        InputControl control = response.get(0);
         assertThat(control.getState(), is(nullValue()));
     }
 
     @Test
     public void shouldProvideInitialInputControlsValues() {
-        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(REPORT_URI);
-        assertThat(response.getValues(), is(not(empty())));
+        List<InputControlState> response = mRestApi.requestInputControlsInitialValues(REPORT_URI);
+        assertThat(response, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(REPORT_URI, true);
-        assertThat(response.getValues(), is(not(empty())));
+        List<InputControlState> response = mRestApi.requestInputControlsInitialValues(REPORT_URI, true);
+        assertThat(response, is(not(empty())));
     }
 }

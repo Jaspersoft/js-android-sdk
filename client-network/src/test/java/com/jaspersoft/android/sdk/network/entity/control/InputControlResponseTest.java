@@ -43,7 +43,7 @@ public class InputControlResponseTest {
         String json = "{\"inputControl\" : [ {\"masterDependencies\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
-        InputControl inputControl = response.getControls().get(0);
+        InputControl inputControl = response.getValues().get(0);
         Set<String> deps = inputControl.getMasterDependencies();
 
         assertThat(deps, hasItem("Cascading_state_multi_select"));
@@ -54,7 +54,7 @@ public class InputControlResponseTest {
         String json = "{\"inputControl\" : [ {\"slaveDependencies\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
-        InputControl inputControl = response.getControls().get(0);
+        InputControl inputControl = response.getValues().get(0);
         Set<String> deps = inputControl.getSlaveDependencies();
 
         assertThat(deps, hasItem("Cascading_state_multi_select"));
@@ -65,7 +65,7 @@ public class InputControlResponseTest {
         String json = "{\"inputControl\" : [ {\"validationRules\" : [ { \"dateTimeFormatValidationRule\" : { \"errorMessage\" : \"This field is mandatory so you must enter data.\", \"format\": \"YYYY-mm-dd\" } }]} ]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
-        InputControl inputControl = response.getControls().get(0);
+        InputControl inputControl = response.getValues().get(0);
         ValidationRule rule = (ValidationRule) inputControl.getValidationRules().toArray()[0];
 
         assertThat(rule.getErrorMessage(), is("This field is mandatory so you must enter data."));
@@ -77,7 +77,7 @@ public class InputControlResponseTest {
         String json = "{\"inputControl\" : [ {\"validationRules\" : [ { \"mandatoryValidationRule\" : { \"errorMessage\" : \"This field is mandatory so you must enter data.\" } }]} ]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
-        InputControl inputControl = response.getControls().get(0);
+        InputControl inputControl = response.getValues().get(0);
         ValidationRule rule = (ValidationRule) inputControl.getValidationRules().toArray()[0];
 
         assertThat(rule.getErrorMessage(), is("This field is mandatory so you must enter data."));
