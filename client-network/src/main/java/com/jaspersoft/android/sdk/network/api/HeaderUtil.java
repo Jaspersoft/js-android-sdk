@@ -34,7 +34,7 @@ import retrofit.client.Response;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class HeaderUtil {
     private final List<Header> mHeaders;

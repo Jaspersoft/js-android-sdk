@@ -22,22 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.type;
+package com.jaspersoft.android.sdk.network.entity.control;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class GsonFactory {
-    public static Gson create() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.disableHtmlEscaping();
-        gsonBuilder.registerTypeAdapterFactory(new ReportLookupResponseTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new InputControlResponseTypeAdapterFactory());
-        return gsonBuilder.create();
+public final class InputControlResponse {
+
+    @Expose
+    @SerializedName(value = "inputControl")
+    private List<InputControl> mControls = Collections.emptyList();
+
+    public List<InputControl> getControls() {
+        return mControls;
     }
 }

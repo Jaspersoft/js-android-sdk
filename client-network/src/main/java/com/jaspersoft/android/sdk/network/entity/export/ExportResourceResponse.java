@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network.entity.export;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 public final class ExportResourceResponse {
     private final ExportInput mExportInput;
