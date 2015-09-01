@@ -87,13 +87,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialValues(REPORT_URI);
+        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI);
         assertThat(response, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialValues(REPORT_URI, true);
+        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
         assertThat(response, is(not(empty())));
     }
 }

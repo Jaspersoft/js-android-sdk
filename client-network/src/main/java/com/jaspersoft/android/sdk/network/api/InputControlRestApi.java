@@ -55,15 +55,15 @@ public interface InputControlRestApi {
     List<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri);
+    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri);
 
     @NonNull
-    List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri,
-                                                                boolean freshData);
+    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
+                                                              boolean freshData);
     @NonNull
-    List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
-                                                         @NonNull Set<String> controlsId,
-                                                         @NonNull Map<String, Set<String>> controlsValues);
+    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+                                                       @NonNull Set<String> controlsId,
+                                                       @NonNull Map<String, Set<String>> controlsValues);
 
     /**
      * Provides values for specified controls. This API helpful to
@@ -76,10 +76,10 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
-    List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
-                                                         @NonNull Set<String> controlsId,
-                                                         @NonNull Map<String, Set<String>> controlsValues,
-                                                         boolean freshData);
+    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+                                                       @NonNull Set<String> controlsId,
+                                                       @NonNull Map<String, Set<String>> controlsValues,
+                                                       boolean freshData);
 
     final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

@@ -72,13 +72,13 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri) {
-        return requestInputControlsInitialValues(reportUri, false);
+    public List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri) {
+        return requestInputControlsInitialStates(reportUri, false);
     }
 
     @NonNull
     @Override
-    public List<InputControlState> requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData) {
+    public List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
         InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
         List<InputControlState> states = response.getValues();
         return Collections.unmodifiableList(states);
@@ -86,18 +86,18 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
-                                                                @NonNull Set<String> controlsId,
-                                                                @NonNull Map<String, Set<String>> controlsValues) {
-        return requestInputControlsValues(reportUri, controlsId, controlsValues, false);
+    public List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+                                                              @NonNull Set<String> controlsId,
+                                                              @NonNull Map<String, Set<String>> controlsValues) {
+        return requestInputControlsStates(reportUri, controlsId, controlsValues, false);
     }
 
     @NonNull
     @Override
-    public List<InputControlState> requestInputControlsValues(@NonNull String reportUri,
-                                                                @NonNull Set<String> controlsId,
-                                                                @NonNull Map<String, Set<String>> controlsValues,
-                                                                boolean freshData) {
+    public List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+                                                              @NonNull Set<String> controlsId,
+                                                              @NonNull Map<String, Set<String>> controlsValues,
+                                                              boolean freshData) {
         String ids = TextUtils.join(";", controlsId);
         InputControlValueResponse response = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
         List<InputControlState> states = response.getValues();
