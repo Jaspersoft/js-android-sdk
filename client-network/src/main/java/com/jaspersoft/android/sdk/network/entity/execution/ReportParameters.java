@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,40 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.execution;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+final class ReportParameters {
+    @Expose
+    @SerializedName("reportParameter")
+    private final Set<ReportParameter> reportParameters;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    private ReportParameters(Set<ReportParameter> reportParameters) {
+        this.reportParameters = reportParameters;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public Set<ReportParameter> getReportParameters() {
+        return reportParameters;
+    }
+
+    public static ReportParameters wrap(Set<ReportParameter> params) {
+        if (params == null) {
+            throw new IllegalArgumentException("Parameters should not be null");
+        }
+        return new ReportParameters(params);
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String toString() {
+        return Arrays.toString(reportParameters.toArray());
     }
 }

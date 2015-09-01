@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.type;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
-
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+final class ReportLookupResponseTypeAdapterFactory extends CustomizedTypeAdapterFactory<ReportLookupResponse> {
+    public ReportLookupResponseTypeAdapterFactory() {
+        super(ReportLookupResponse.class);
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        JsonObject resources = jsonObject.getAsJsonObject("resources");
+        if (resources != null) {
+            JsonArray resourceArray = resources.getAsJsonArray("resource");
+            jsonObject.remove("resources");
+            jsonObject.add("resources", resourceArray);
+        }
+        return jsonObject;
     }
 }

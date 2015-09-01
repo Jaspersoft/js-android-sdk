@@ -22,31 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import retrofit.RestAdapter;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public enum RestApiLogLevel {
+    /** No logging. */
+    NONE,
+    /** Log only the request method and URL and the response status code and execution time. */
+    BASIC,
+    /** Log the basic information along with request and response headers. */
+    HEADERS,
+    /** Log the basic information along with request and response objects via toString(). */
+    HEADERS_AND_ARGS,
+    /**
+     * Log the headers, body, and metadata for both requests and responses.
+     * <p>
+     * Note: This requires that the entire request and response body be buffered in memory!
+     */
+    FULL;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
-    }
-
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    static RestAdapter.LogLevel toRetrofitLog(RestApiLogLevel logLevel) {
+        return RestAdapter.LogLevel.valueOf(logLevel.name());
     }
 }

@@ -22,31 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.execution;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.google.gson.annotations.Expose;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.lang.reflect.Field;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
-
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
-    }
-
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+@RunWith(JUnitParamsRunner.class)
+public class ErrorDescriptorTest {
+    @Test
+    @Parameters({
+            "errorCode",
+            "message",
+            "parameters",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ErrorDescriptor.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }

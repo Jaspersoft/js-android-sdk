@@ -22,31 +22,48 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import android.support.annotation.NonNull;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.client.Header;
+import retrofit.client.Response;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public final class TestLogger implements RestApiLog {
+final class HeaderUtil {
+    private final List<Header> mHeaders;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    HeaderUtil(@NonNull List<Header> headers) {
+        mHeaders = headers;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public static HeaderUtil wrap(@NonNull Response response) {
+        return new HeaderUtil(response.getHeaders());
     }
 
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    @NonNull
+    public SafeHeader getFirstHeader(String name) {
+        List<Header> headers = findHeaders(name);
+        if (headers.isEmpty()) {
+            return new SafeHeader(null);
+        } else {
+            return new SafeHeader(headers.get(0));
+        }
+    }
+
+    private List<Header> findHeaders(String name) {
+        List<Header> result = new ArrayList<>();
+        for (Header header : mHeaders) {
+            if (header.getName().equals(name)) {
+                result.add(header);
+            }
+        }
+        return result;
     }
 }

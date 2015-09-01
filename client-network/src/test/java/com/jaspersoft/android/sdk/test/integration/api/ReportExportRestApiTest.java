@@ -26,17 +26,17 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.rest.v2.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.rest.v2.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionDetailsResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
@@ -130,7 +130,7 @@ public class ReportExportRestApiTest {
     private AuthResponse getAuthResponse() {
         if (mAuthResponse == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", null, null);
+            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null);
         }
         return mAuthResponse;
     }

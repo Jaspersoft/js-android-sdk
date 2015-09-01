@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,31 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
-
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+package com.jaspersoft.android.sdk.network.entity.server;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public final class AuthResponse {
+    private final String mToken;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    public AuthResponse(String token) {
+        mToken = token;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public String getToken() {
+        return mToken;
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String toString() {
+        return "AuthResponse{" +
+                "mToken='" + mToken + '\'' +
+                '}';
     }
 }

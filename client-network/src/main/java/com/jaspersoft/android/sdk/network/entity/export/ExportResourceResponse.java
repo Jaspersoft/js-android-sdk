@@ -22,31 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
-
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+package com.jaspersoft.android.sdk.network.entity.export;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public final class TestLogger implements RestApiLog {
+public final class ExportResourceResponse {
+    private final ExportInput mExportInput;
+    private final boolean mFinal;
+    private final String mPages;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    private ExportResourceResponse(ExportInput exportInput, String pages, boolean finalOutput) {
+        mExportInput = exportInput;
+        mFinal = finalOutput;
+        mPages = pages;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public static ExportResourceResponse create(ExportInput exportInput, String pages, boolean finalOutput) {
+        return new ExportResourceResponse(exportInput, pages, finalOutput);
+    }
+
+    public ExportInput getExportInput() {
+        return mExportInput;
+    }
+
+    public boolean isFinal() {
+        return mFinal;
+    }
+
+    public String getPages() {
+        return mPages;
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String toString() {
+        return "ExportOutputResourceResponse{" +
+                ", mFinal=" + mFinal +
+                ", mPages='" + mPages + '\'' +
+                '}';
     }
 }

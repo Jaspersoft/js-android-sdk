@@ -22,31 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.resource;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public final class JRXml {
 
-    private final Logger logger;
+    @Expose
+    private JRXmlFileReference jrxmlFileReference;
 
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public JRXmlFileReference getJrxmlFileReference() {
+        return jrxmlFileReference;
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String toString() {
+        return "JRXml{" +
+                "jrxmlFileReference=" + jrxmlFileReference +
+                '}';
     }
 }

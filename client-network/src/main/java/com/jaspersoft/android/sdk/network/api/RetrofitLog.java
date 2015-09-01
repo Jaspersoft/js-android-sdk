@@ -22,31 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import retrofit.RestAdapter;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+final class RetrofitLog implements RestAdapter.Log {
+    private final RestApiLog delegate;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    RetrofitLog(RestApiLog log) {
+        delegate = log;
     }
 
     @Override
     public void log(String message) {
-        logger.log(Level.INFO, message);
+        delegate.log(message);
     }
 }

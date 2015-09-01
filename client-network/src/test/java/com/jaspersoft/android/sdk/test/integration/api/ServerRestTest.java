@@ -25,9 +25,9 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
-import com.jaspersoft.android.sdk.network.rest.v2.api.RestApiLogLevel;
-import com.jaspersoft.android.sdk.network.rest.v2.entity.server.ServerInfoResponse;
-import com.jaspersoft.android.sdk.network.rest.v2.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;

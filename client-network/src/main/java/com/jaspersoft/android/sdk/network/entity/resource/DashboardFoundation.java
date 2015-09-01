@@ -22,31 +22,48 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.resource;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public final class DashboardFoundation {
 
-    private final Logger logger;
+    @Expose
+    private String id;
+    @Expose
+    private String layout;
+    @Expose
+    private String wiring;
+    @Expose
+    private String components;
 
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    public String getComponents() {
+        return components;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public String getId() {
+        return id;
+    }
+
+    public String getLayout() {
+        return layout;
+    }
+
+    public String getWiring() {
+        return wiring;
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String toString() {
+        return "DashboardFoundation{" +
+                "components='" + components + '\'' +
+                ", id='" + id + '\'' +
+                ", layout='" + layout + '\'' +
+                ", wiring='" + wiring + '\'' +
+                '}';
     }
 }

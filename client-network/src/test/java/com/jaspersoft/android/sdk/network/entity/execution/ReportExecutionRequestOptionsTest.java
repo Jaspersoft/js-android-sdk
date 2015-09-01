@@ -22,31 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.execution;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public class ReportExecutionRequestOptionsTest {
+    @Rule
+    public final ExpectedException mExpectedException = ExpectedException.none();
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    @Test
+    public void factoryMethodShouldNotAllowNull() {
+        mExpectedException.expect(IllegalArgumentException.class);
+        ReportExecutionRequestOptions.newRequest(null);
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
-    }
-
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    @Test
+    public void factoryMethodShouldNotAllowEmptyString() {
+        mExpectedException.expect(IllegalArgumentException.class);
+        ReportExecutionRequestOptions.newRequest("");
     }
 }

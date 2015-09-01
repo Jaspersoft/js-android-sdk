@@ -22,42 +22,49 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.robolectric.shadows.httpclient.FakeHttp;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import retrofit.client.Header;
+import retrofit.client.Response;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AuthenticationRestApiTest {
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Response.class})
+public class AuthResponseFactoryTest {
+    @Mock
+    Response mResponse;
 
     @Before
     public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void shouldReturnResponseForSpringRequest() throws IOException {
-        AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2)
-                .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
-                .build();
-        AuthResponse response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
-        assertThat(response.getToken(), is(notNullValue()));
+    public void shouldExtractTokenFromNetworkResponse() {
+        when(mResponse.getHeaders()).thenReturn(new ArrayList<Header>() {{
+            add(new Header("Set-Cookie", "cookie1"));
+            add(new Header("Set-Cookie", "cookie2"));
+        }});
+        AuthResponse response = AuthResponseFactory.create(mResponse);
+        assertThat(response.getToken(), is("cookie1;cookie2"));
     }
 }

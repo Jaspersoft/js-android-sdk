@@ -22,31 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.execution;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public final class ReportExecutionSearchItem {
+    @Expose
+    private String requestId;
+    @Expose
+    private String reportURI;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    public String getReportURI() {
+        return reportURI;
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
-    }
-
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String getRequestId() {
+        return requestId;
     }
 }

@@ -22,31 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+
+import retrofit.mime.TypedInput;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+final class RetrofitExportInput implements ExportInput {
+    private final TypedInput mDelegate;
 
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
-    }
-
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    public RetrofitExportInput(TypedInput input) {
+        mDelegate = input;
     }
 
     @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    public String getMimeType() {
+        return mDelegate.mimeType();
+    }
+
+    @Override
+    public long getLength() {
+        return mDelegate.length();
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return mDelegate.in();
     }
 }

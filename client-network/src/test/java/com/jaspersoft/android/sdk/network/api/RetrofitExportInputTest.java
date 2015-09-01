@@ -22,31 +22,53 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.jaspersoft.android.sdk.network.api.RetrofitExportInput;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+
+import retrofit.mime.TypedInput;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
+public class RetrofitExportInputTest {
+    @Mock
+    TypedInput mTypedInput;
 
-    private final Logger logger;
+    private RetrofitExportInput objectUnderTest;
 
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        objectUnderTest = new RetrofitExportInput(mTypedInput);
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
+    @Test
+    public void shouldDelegateMimeType() {
+        objectUnderTest.getMimeType();
+        verify(mTypedInput, times(1)).mimeType();
     }
 
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    @Test
+    public void shouldDelegateLengrh() {
+        objectUnderTest.getLength();
+        verify(mTypedInput, times(1)).length();
+    }
+
+    @Test
+    public void shouldDelegateInputStream() throws IOException {
+        objectUnderTest.getStream();
+        verify(mTypedInput, times(1)).in();
     }
 }

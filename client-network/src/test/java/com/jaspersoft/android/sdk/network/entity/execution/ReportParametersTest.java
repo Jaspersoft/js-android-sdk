@@ -22,31 +22,28 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network.entity.execution;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import org.junit.Test;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.lang.reflect.Field;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestLogger implements RestApiLog {
-
-    private final Logger logger;
-
-    private TestLogger(String logTarget) {
-        logger = Logger.getLogger(logTarget);
+public class ReportParametersTest {
+    @Test(expected = IllegalArgumentException.class)
+    public void factoryMethodShouldNotAcceptNull() {
+        ReportParameters.wrap(null);
     }
 
-    public static TestLogger get(Object target) {
-        return new TestLogger(target.getClass().getSimpleName());
-    }
-
-    @Override
-    public void log(String message) {
-        logger.log(Level.INFO, message);
+    @Test
+    public void reportParameterFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
+        Field field = ReportParameters.class.getDeclaredField("reportParameters");
+        assertThat(field, hasSerializedName("reportParameter"));
     }
 }
