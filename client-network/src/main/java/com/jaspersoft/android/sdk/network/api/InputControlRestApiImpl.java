@@ -33,6 +33,7 @@ import retrofit.RestAdapter;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * @author Tom Koptel
@@ -41,7 +42,6 @@ import retrofit.http.Path;
 final class InputControlRestApiImpl implements InputControlRestApi {
     private final RestApi mRestApi;
 
-
     InputControlRestApiImpl(RestAdapter restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
     }
@@ -49,24 +49,40 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @NonNull
     @Override
     public InputControlResponse requestInputControls(@NonNull String reportUri) {
-        return mRestApi.requestInputControls(reportUri);
+        return mRestApi.requestInputControls(reportUri, null);
+    }
+
+    @NonNull
+    @Override
+    public InputControlResponse requestInputControls(@NonNull String reportUri, boolean excludeState) {
+        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
     }
 
     @NonNull
     @Override
     public InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri) {
-        return mRestApi.requestInputControlsInitialValues(reportUri);
+        return mRestApi.requestInputControlsInitialValues(reportUri, false);
+    }
+
+    @NonNull
+    @Override
+    public InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData) {
+        return mRestApi.requestInputControlsInitialValues(reportUri, freshData);
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reports{reportUnitURI}/inputControls")
-        InputControlResponse requestInputControls(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
+        InputControlResponse requestInputControls(
+                @NonNull @Path(value = "reportUnitURI", encode = false) String reportUri,
+                @Query("exclude") String state);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reports{reportUnitURI}/inputControls/values")
-        InputControlValueResponse requestInputControlsInitialValues(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
+        InputControlValueResponse requestInputControlsInitialValues(
+                @NonNull @Path(value = "reportUnitURI", encode = false) String reportUri,
+                @Query("freshData") boolean freshData);
     }
 }

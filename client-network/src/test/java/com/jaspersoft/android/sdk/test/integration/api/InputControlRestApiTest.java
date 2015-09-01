@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -38,6 +39,8 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNot.not;
 
 /**
@@ -45,8 +48,8 @@ import static org.hamcrest.core.IsNot.not;
  * @since 2.0
  */
 public class InputControlRestApiTest {
-
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo();
+    private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
+    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
     private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
     private InputControlRestApi mRestApi;
 
@@ -62,13 +65,32 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        InputControlResponse response = mRestApi.requestInputControls("/Reports/1._Geographic_Results_by_Segment_Report");
+        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI);
         assertThat(response.getControls(), is(not(empty())));
+        InputControl control = response.getControls().get(0);
+        assertThat(control.getState(), is(notNullValue()));
+    }
+
+    /**
+     * TODO: Implement annotation to mark specific API tests.
+     */
+    @Test
+    public void shouldProvideInputControlsListIfStateExcluded() {
+        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI, true);
+        assertThat(response.getControls(), is(not(empty())));
+        InputControl control = response.getControls().get(0);
+        assertThat(control.getState(), is(nullValue()));
     }
 
     @Test
     public void shouldProvideInitialInputControlsValues() {
-        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues("/Reports/1._Geographic_Results_by_Segment_Report");
+        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(REPORT_URI);
+        assertThat(response.getValues(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldProvideFreshInitialInputControlsValues() {
+        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(REPORT_URI, true);
         assertThat(response.getValues(), is(not(empty())));
     }
 }

@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
@@ -38,8 +39,23 @@ public interface InputControlRestApi {
     @NonNull
     InputControlResponse requestInputControls(@NonNull String reportUri);
 
+    /**
+     * Returns input controls for associated response. Options can be excluded by additional argument.
+     *
+     * <b>ATTENTION:<b/> Exclude flag works only on JRS instances 6.0+
+     *
+     * @param reportUri uri of report
+     * @param excludeState exclude field state which incorporates options values for control
+     * @return response object which wraps {@link InputControl} collection
+     */
+    @NonNull
+    InputControlResponse requestInputControls(@NonNull String reportUri, boolean excludeState);
+
     @NonNull
     InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri);
+
+    @NonNull
+    InputControlValueResponse requestInputControlsInitialValues(@NonNull String reportUri, boolean freshData);
 
     final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

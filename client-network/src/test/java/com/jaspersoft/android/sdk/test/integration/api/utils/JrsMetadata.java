@@ -54,6 +54,15 @@ public final class JrsMetadata {
                 .build();
     }
 
+    public static JrsMetadata createMobileDemo2() {
+        return builder()
+                .setOrganization("organization_1")
+                .setServerUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro")
+                .setUsername("phoneuser")
+                .setPassword("phoneuser")
+                .build();
+    }
+
     public static Builder builder() {
         return new Builder();
     }
