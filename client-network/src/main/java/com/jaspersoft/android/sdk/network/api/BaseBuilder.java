@@ -34,7 +34,6 @@ import retrofit.RetrofitError;
  * @since 2.0
  */
 abstract class BaseBuilder<API, SubBuilder> {
-    private final String mBaseUrl;
     private final RestAdapter.Builder mRestAdapterBuilder;
     private RestApiLog mLog = RestApiLog.NONE;
     private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
@@ -43,10 +42,9 @@ abstract class BaseBuilder<API, SubBuilder> {
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
         }
-        mBaseUrl = baseUrl;
         mRestAdapterBuilder = new RestAdapter.Builder();
 
-        mRestAdapterBuilder.setEndpoint(mBaseUrl);
+        mRestAdapterBuilder.setEndpoint(baseUrl);
         mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
             @Override
             @SuppressWarnings("unchecked")

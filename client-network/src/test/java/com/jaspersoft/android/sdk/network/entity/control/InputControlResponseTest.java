@@ -37,7 +37,7 @@ public class InputControlResponseTest {
 
     @Test
     public void shouldProperlyAdaptMasterDependencies() {
-        String json = "{\"inputControl\" : [ {\"masterDependencies\":{\"controlId\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}}]}";
+        String json = "{\"inputControl\" : [ {\"masterDependencies\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
         InputControl inputControl = response.getControls().get(0);
@@ -48,7 +48,7 @@ public class InputControlResponseTest {
 
     @Test
     public void shouldProperlyAdaptSlaveDependencies() {
-        String json = "{\"inputControl\" : [ {\"slaveDependencies\":{\"controlId\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}}]}";
+        String json = "{\"inputControl\" : [ {\"slaveDependencies\":[\"Country_multi_select\",\"Cascading_state_multi_select\"]}]}";
         InputControlResponse response = mGson.fromJson(json, InputControlResponse.class);
 
         InputControl inputControl = response.getControls().get(0);

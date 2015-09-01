@@ -50,8 +50,6 @@ final class InputControlResponseTypeAdapterFactory extends CustomizedTypeAdapter
 
             for (int i = 0; i < count; i++) {
                 jsonControl = controls.get(i).getAsJsonObject();
-                unwrapDependencies(jsonControl, "masterDependencies");
-                unwrapDependencies(jsonControl, "slaveDependencies");
                 unwrapValidationRule(jsonControl);
             }
         }
@@ -106,14 +104,5 @@ final class InputControlResponseTypeAdapterFactory extends CustomizedTypeAdapter
         }
     }
 
-    private void unwrapDependencies(JsonObject jsonControl, String key) {
-        JsonObject jsonMasterDep;
-        JsonArray tempArray;
-        jsonMasterDep = jsonControl.getAsJsonObject(key);
-        if (jsonMasterDep != null) {
-            tempArray = jsonMasterDep.getAsJsonArray("controlId");
-            jsonControl.remove(key);
-            jsonControl.add(key, tempArray);
-        }
-    }
+
 }
