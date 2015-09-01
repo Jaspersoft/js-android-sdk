@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
@@ -63,5 +64,11 @@ public class InputControlRestApiTest {
     public void shouldProvideInputControlsList() {
         InputControlResponse response = mRestApi.requestInputControls("/Reports/1._Geographic_Results_by_Segment_Report");
         assertThat(response.getControls(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldProvideInitialInputControlsValues() {
+        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues("/Reports/1._Geographic_Results_by_Segment_Report");
+        assertThat(response.getValues(), is(not(empty())));
     }
 }

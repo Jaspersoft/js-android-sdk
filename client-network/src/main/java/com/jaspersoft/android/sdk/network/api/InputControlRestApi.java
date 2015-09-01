@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -42,6 +43,11 @@ public interface InputControlRestApi {
     @Headers("Accept: application/json")
     @GET("/rest_v2/reports{reportUnitURI}/inputControls")
     InputControlResponse requestInputControls(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
+
+    @NonNull
+    @Headers("Accept: application/json")
+    @GET("/rest_v2/reports{reportUnitURI}/inputControls/values")
+    InputControlValueResponse requestInputControlsInitialValues(@NonNull @Path(value = "reportUnitURI", encode = false) String reportUri);
 
     final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {
