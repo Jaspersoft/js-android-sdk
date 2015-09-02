@@ -1,0 +1,29 @@
+{
+  "reportUnitUri":"/reports/samples/AllAccounts",
+  "async":"true",
+  "outputFormat":"html",
+  "interactive":"true",
+  "freshData":"false",
+  "saveDataSnapshot":"false",
+  "ignorePagination":"false",
+  "allowInlineScripts": "true",
+  "transformerKey":null,
+  "pages":"1-5",
+  "anchor": "someAnchor",
+  "attachmentsPrefix":"{contextPath}/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/",
+  "baseUrl":"http://localhost:8080/jasperserver-pro",
+  "parameters":
+  {
+    "reportParameter":
+    [
+      {
+        "name":"someParameterName",
+        "value":["value 1", "value 2"]
+      },
+      {
+        "name":"someAnotherParameterName",
+        "value":["another value"]
+      }
+    ]
+  }
+}

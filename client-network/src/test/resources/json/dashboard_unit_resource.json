@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "permissionMask": 2,
+  "creationDate": "2015-06-05T07:21:37",
+  "updateDate": "2015-05-04T21:05:55",
+  "label": "1. Supermart Dashboard",
+  "description": "Sample containing 5 Dashlets and Filter wiring. One Dashlet is a report with hyperlinks, the other Dashlets are defined as part of the Dashboard.",
+  "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard",
+  "foundations": [
+    {
+      "id": "default",
+      "layout": "layout",
+      "wiring": "wiring",
+      "components": "components"
+    }
+  ],
+  "resources": [
+    {
+      "name": "wiring",
+      "type": "wiring",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/wiring"
+        }
+      }
+    },
+    {
+      "name": "layout",
+      "type": "layout",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/layout"
+        }
+      }
+    },
+    {
+      "name": "components",
+      "type": "components",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/components"
+        }
+      }
+    },
+    {
+      "name": "/public/Samples/Reports/TopFivesReport",
+      "type": "reportUnit",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Reports/TopFivesReport"
+        }
+      }
+    },
+    {
+      "name": "/temp/tmpAdv_1414686450998_tqqd",
+      "type": "adhocDataView",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414686450998_tqqd"
+        }
+      }
+    },
+    {
+      "name": "/temp/tmpAdv_1414686673912_uhun",
+      "type": "adhocDataView",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414686673912_uhun"
+        }
+      }
+    },
+    {
+      "name": "/temp/tmpAdv_1414687065368_jiwe",
+      "type": "adhocDataView",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414687065368_jiwe"
+        }
+      }
+    },
+    {
+      "name": "/temp/tmpAdv_1414696815261_ulel",
+      "type": "adhocDataView",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414696815261_ulel"
+        }
+      }
+    },
+    {
+      "name": "/public/AAT1_files/tmpAdv_1414686450998_tqqd_files/store_country_1",
+      "type": "inputControl",
+      "resource": {
+        "resourceReference": {
+          "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/store_country_1"
+        }
+      }
+    }
+  ],
+  "defaultFoundation": "default"
+}

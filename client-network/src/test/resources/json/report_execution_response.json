@@ -1,0 +1,17 @@
+{
+  "status": "queued",
+  "requestId": "f3a9805a-4089-4b53-b9e9-b54752f91586",
+  "reportURI": "/reports/samples/AllAccounts",
+  "exports": [
+    {
+      "id": "4bac4889-0e63-4f09-bbe8-9593674f0700",
+      "options": {
+        "outputFormat": "html",
+        "attachmentsPrefix": "{contextPath}/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/",
+        "baseUrl": "http://localhost:8080/jasperserver-pro",
+        "allowInlineScripts": true
+      },
+      "status": "queued"
+    }
+  ]
+}
