@@ -39,12 +39,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionRes
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -54,19 +49,12 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReportExportRestApiTest {
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
     String reportUri = "/public/Samples/Reports/AllAccounts";
     AuthResponse mAuthResponse;
     ReportExecutionRestApi mExecApi;
     ReportExportRestApi mExportApi;
-
-    @Before
-    public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-    }
 
     @Test
     public void runExportRequestShouldReturnResult() {
@@ -79,7 +67,7 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExecutionStatusResponse response = getApi().checkExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        ExecutionStatusResponse response = getApi().checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
@@ -87,7 +75,7 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExportResourceResponse output = getApi().requestOutput(exec.getExecutionId(), execDetails.getExportId());
+        ExportResourceResponse output = getApi().requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
         assertThat(output.getExportInput(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
         assertThat(output.isFinal(), is(false));
@@ -98,7 +86,7 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return getApi().runExecution(exec.getExecutionId(), options);
+        return getApi().runExportExecution(exec.getExecutionId(), options);
     }
 
     @NonNull

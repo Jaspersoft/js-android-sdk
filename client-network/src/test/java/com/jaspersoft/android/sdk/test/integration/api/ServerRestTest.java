@@ -26,16 +26,11 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 
 import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
@@ -47,16 +42,9 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ServerRestTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
-
-    @Before
-    public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-    }
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
@@ -64,7 +52,7 @@ public class ServerRestTest {
                 .setLog(TestLogger.get(this))
                 .setLogLevel(RestApiLogLevel.FULL)
                 .build();
-        ServerInfoResponse response = api.getServerInfo();
+        ServerInfoResponse response = api.requestServerInfo();
         assertThat(response, is(notNullValue()));
     }
 }

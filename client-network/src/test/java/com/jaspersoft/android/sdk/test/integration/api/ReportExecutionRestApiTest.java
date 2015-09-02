@@ -57,19 +57,12 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReportExecutionRestApiTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
     String reportUri = "/public/Samples/Reports/AllAccounts";
     AuthResponse mAuthResponse;
     ReportExecutionRestApi mApi;
-
-    @Before
-    public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-    }
 
     @Test
     public void shouldStartReportExecution() {

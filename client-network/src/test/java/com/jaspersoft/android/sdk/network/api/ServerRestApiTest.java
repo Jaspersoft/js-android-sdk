@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -50,7 +50,7 @@ public class ServerRestApiTest {
         mWebMockRule.enqueue(create500Response());
 
         ServerRestApi restApi = new ServerRestApi.Builder(mWebMockRule.getRootUrl()).build();
-        restApi.getServerInfo();
+        restApi.requestServerInfo();
     }
 
     @Test

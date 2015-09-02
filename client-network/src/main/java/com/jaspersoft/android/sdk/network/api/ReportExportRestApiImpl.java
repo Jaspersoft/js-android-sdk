@@ -53,20 +53,20 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ReportExportExecutionResponse runExecution(@NonNull String executionId,
-                                                      @NonNull ExecutionRequestOptions executionOptions) {
+    public ReportExportExecutionResponse runExportExecution(@NonNull String executionId,
+                                                            @NonNull ExecutionRequestOptions executionOptions) {
         return mRestApi.runReportExportExecution(executionId, executionOptions);
     }
 
     @NonNull
     @Override
-    public ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId) {
+    public ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId) {
         return mRestApi.checkReportExportStatus(executionId, exportId);
     }
 
     @NonNull
     @Override
-    public ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId) {
+    public ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId) {
         Response response = mRestApi.requestReportExportOutput(executionId, exportId);
         RetrofitExportInput exportInput = new RetrofitExportInput(response.getBody());
         HeaderUtil headerUtil = HeaderUtil.wrap(response);
@@ -77,7 +77,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ExportInput requestAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId) {
+    public ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId) {
         Response response = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
         ExportInput input = new RetrofitExportInput(response.getBody());
         return input;

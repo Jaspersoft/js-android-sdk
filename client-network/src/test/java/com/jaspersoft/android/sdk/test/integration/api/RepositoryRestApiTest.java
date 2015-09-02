@@ -34,12 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
@@ -53,17 +48,10 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RepositoryRestApiTest {
 
     String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
     AuthResponse mAuthResponse;
-
-    @Before
-    public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-    }
 
     @Test
     public void shouldRequestListOfResources() throws IOException {

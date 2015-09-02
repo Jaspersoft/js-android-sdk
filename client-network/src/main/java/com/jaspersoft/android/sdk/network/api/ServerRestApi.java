@@ -39,13 +39,11 @@ import retrofit.http.Headers;
  * @since 2.0
  */
 public interface ServerRestApi {
-    /**
-     * TODO: refactor to 'getServerInfo' -> 'requestServerInfo'
-     */
+
     @NonNull
     @Headers("Accept: application/json")
     @GET(value = "/rest_v2/serverInfo")
-    ServerInfoResponse getServerInfo();
+    ServerInfoResponse requestServerInfo();
 
     final class Builder extends BaseBuilder<ServerRestApi, Builder> {
         public Builder(String baseUrl) {

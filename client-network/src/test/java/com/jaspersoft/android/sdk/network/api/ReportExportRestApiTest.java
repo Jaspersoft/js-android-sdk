@@ -86,7 +86,7 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runExecution("any_id", ExecutionRequestOptions.newInstance());
+        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.newInstance());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
 
-        restApiUnderTest.runExecution(null, ExecutionRequestOptions.newInstance());
+        restApiUnderTest.runExportExecution(null, ExecutionRequestOptions.newInstance());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Body parameter value must not be null.");
 
-        restApiUnderTest.runExecution("any_id", null);
+        restApiUnderTest.runExportExecution("any_id", null);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
 
-        restApiUnderTest.checkExecutionStatus(null, "any_id");
+        restApiUnderTest.checkExportExecutionStatus(null, "any_id");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
 
-        restApiUnderTest.checkExecutionStatus("any_id", null);
+        restApiUnderTest.checkExportExecutionStatus("any_id", null);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
 
-        restApiUnderTest.requestAttachment(null, "any_id", "any_id");
+        restApiUnderTest.requestExportAttachment(null, "any_id", "any_id");
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
 
-        restApiUnderTest.requestAttachment("any_id", null, "any_id");
+        restApiUnderTest.requestExportAttachment("any_id", null, "any_id");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(RestError.class);
         mExpectedException.expectMessage("Path parameter \"attachmentId\" value must not be null.");
 
-        restApiUnderTest.requestAttachment("any_id", "any_id", null);
+        restApiUnderTest.requestExportAttachment("any_id", "any_id", null);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ReportExportRestApiTest {
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestOutput("any_id", "any_id");
+        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.getPages(), is("1-10"));
     }
 
@@ -163,7 +163,7 @@ public class ReportExportRestApiTest {
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestOutput("any_id", "any_id");
+        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.isFinal(), is(true));
     }
 
@@ -173,7 +173,7 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ExportInput resource = restApiUnderTest.requestAttachment("any_id", "any_id", "any_id");
+        ExportInput resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
         InputStream stream = resource.getStream();
         assertThat(stream, is(notNullValue()));
         stream.close();
