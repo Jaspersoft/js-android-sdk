@@ -37,16 +37,27 @@ import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionRes
  * @since 2.0
  */
 public interface ReportExportRestApi {
-
+    /**
+     * TODO: refactor name 'runExecution' -> 'runExportExecution'
+     */
     @NonNull
     ReportExportExecutionResponse runExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
 
+    /**
+     * TODO: refactor name 'checkExecutionStatus' -> 'checkExportExecutionStatus'
+     */
     @NonNull
     ExecutionStatusResponse checkExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
+    /**
+     * TODO: refactor name 'requestOutput' -> 'requestExportOutput'
+     */
     @NonNull
     ExportResourceResponse requestOutput(@NonNull String executionId, @NonNull String exportId);
 
+    /**
+     * TODO: refactor name 'requestAttachment' -> 'requestExportAttachment'
+     */
     @NonNull
     ExportInput requestAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 

@@ -60,6 +60,10 @@ public interface InputControlRestApi {
     @NonNull
     List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
+
+    /**
+     * TODO: 1. consider to flatten controls id parameter.
+     */
     @NonNull
     List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Set<String> controlsId,
