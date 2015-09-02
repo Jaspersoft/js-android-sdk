@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -54,6 +54,9 @@ public interface ReportExecutionRestApi {
 
     boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
 
+    /**
+     * TODO: API is broken requires investigation before release
+     */
     @NonNull
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
 
