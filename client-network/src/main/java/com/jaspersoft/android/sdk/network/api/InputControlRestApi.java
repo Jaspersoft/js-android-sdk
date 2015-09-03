@@ -27,11 +27,14 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import retrofit.Call;
 
 /**
  * @author Tom Koptel
@@ -40,7 +43,7 @@ import java.util.Set;
 public interface InputControlRestApi {
 
     @NonNull
-    List<InputControl> requestInputControls(@NonNull String reportUri);
+    Call<InputControlResponse> requestInputControls(@NonNull String reportUri);
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
@@ -52,20 +55,20 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NonNull
-    List<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState);
+    Call<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri);
+    Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri);
 
     @NonNull
-    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
+    Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
 
     /**
      * TODO: 1. consider to flatten controls id parameter.
      */
     @NonNull
-    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+    Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues);
 
@@ -80,7 +83,7 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
-    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
+    Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues,
                                                        boolean freshData);

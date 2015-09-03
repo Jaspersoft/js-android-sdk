@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,46 +24,17 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import retrofit.client.Header;
-
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-final class SafeHeader {
-    private final Header mHeader;
-
-    SafeHeader(@Nullable Header header) {
-        mHeader = header;
+final class Utils {
+    static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
     }
 
-    public int asInt() {
-        if (mHeader == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(mHeader.getValue());
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    public boolean asBoolean() {
-        return mHeader != null && Boolean.parseBoolean(mHeader.getValue());
-    }
-
-    @NonNull
-    public String asString() {
-        if (mHeader == null) {
-            return "";
-        }
-        String value = mHeader.getValue();
-        if (value == null) {
-            return "";
-        }
-        return value;
-    }
+    private Utils() {}
 }

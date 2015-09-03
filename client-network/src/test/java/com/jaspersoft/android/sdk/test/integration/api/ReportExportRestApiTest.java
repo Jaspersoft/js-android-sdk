@@ -41,6 +41,11 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
+import retrofit.Call;
+import retrofit.Response;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -64,10 +69,11 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void checkExportRequestStatusShouldReturnResult() {
+    public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExecutionStatusResponse response = getApi().checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        Call<ExecutionStatusResponse> call = getApi().checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        Response<ExecutionStatusResponse> response = call.execute();
         assertThat(response, is(notNullValue()));
     }
 
@@ -86,13 +92,26 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return getApi().runExportExecution(exec.getExecutionId(), options);
+        Call<ReportExportExecutionResponse> call = getApi().runExportExecution(exec.getExecutionId(), options);
+        try {
+            Response<ReportExportExecutionResponse> response = call.execute();
+            return response.body();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(reportUri);
-        return getReportExecApi().runReportExecution(executionRequestOptions);
+        Call<ReportExecutionDetailsResponse> call = getReportExecApi().runReportExecution(executionRequestOptions);
+
+        try {
+            Response<ReportExecutionDetailsResponse> response = call.execute();
+            return response.body();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private ReportExportRestApi getApi() {

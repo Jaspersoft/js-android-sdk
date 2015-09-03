@@ -24,34 +24,46 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.exception.ErrorHandler;
+import com.google.gson.Gson;
+import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+import com.squareup.okhttp.OkHttpClient;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 abstract class BaseBuilder<API, SubBuilder> {
-    private final RestAdapter.Builder mRestAdapterBuilder;
+    private final Retrofit.Builder mRestAdapterBuilder;
+    private final OkHttpClient mOkHttpClient;
+
     private RestApiLog mLog = RestApiLog.NONE;
     private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
-
     public BaseBuilder(String baseUrl){
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
         }
-        mRestAdapterBuilder = new RestAdapter.Builder();
+        mOkHttpClient = new OkHttpClient();
+        mRestAdapterBuilder = new Retrofit.Builder();
 
-        mRestAdapterBuilder.setEndpoint(baseUrl);
-        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Throwable handleError(RetrofitError cause) {
-                return ErrorHandler.DEFAULT.handleError(cause);
-            }
-        });
+        mRestAdapterBuilder.client(mOkHttpClient);
+        mRestAdapterBuilder.baseUrl(baseUrl);
+
+        Gson configuredGson = GsonFactory.create();
+        mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
+
+        /*
+        TODO: Resolve error handling. It is still not clear what API will look like
+         */
+//        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
+//            @Override
+//            @SuppressWarnings("unchecked")
+//            public Throwable handleError(RetrofitError cause) {
+//                return ErrorHandler.DEFAULT.handleError(cause);
+//            }
+//        });
     }
 
     @SuppressWarnings("unchecked")
@@ -66,15 +78,22 @@ abstract class BaseBuilder<API, SubBuilder> {
         return (SubBuilder) this;
     }
 
-    RestAdapter.Builder getDefaultBuilder() {
+    Retrofit.Builder getDefaultBuilder() {
         return mRestAdapterBuilder;
+    }
+
+    OkHttpClient getClient() {
+        return mOkHttpClient;
     }
 
     abstract API createApi();
 
     public API build() {
-        mRestAdapterBuilder.setLog(new RetrofitLog(mLog));
-        mRestAdapterBuilder.setLogLevel(RestApiLogLevel.toRetrofitLog(mLogLevel));
+        /*
+        TODO: Resolve log handling. Fallback to OkHttp interceptor https://github.com/square/okhttp/wiki/Interceptors
+        */
+//        mRestAdapterBuilder.setLog(new RetrofitLog(mLog));
+//        mRestAdapterBuilder.setLogLevel(RestApiLogLevel.toRetrofitLog(mLogLevel));
         return createApi();
     }
 }

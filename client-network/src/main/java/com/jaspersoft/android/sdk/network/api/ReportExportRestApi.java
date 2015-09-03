@@ -32,6 +32,8 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 
+import retrofit.Call;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -39,10 +41,10 @@ import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionRes
 public interface ReportExportRestApi {
 
     @NonNull
-    ReportExportExecutionResponse runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    Call<ReportExportExecutionResponse> runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
-    ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    Call<ExecutionStatusResponse> checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
     ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId);

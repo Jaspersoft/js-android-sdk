@@ -25,39 +25,41 @@
 package com.jaspersoft.android.sdk.network.exception;
 
 
-import retrofit.RetrofitError;
+//import retrofit.RetrofitError;
 
 /**
+ * TODO we need resolve error issues
+ *
  * @author Tom Koptel
  * @since 2.0
  */
 public final class RestError extends RuntimeException {
-    private final Kind mKind;
+//    private final Kind mKind;
 
-    RestError(String message, RetrofitError error, Kind kind) {
-        super(message, error);
-        mKind = kind;
-    }
+//    RestError(String message, RetrofitError error, Kind kind) {
+//        super(message, error);
+//        mKind = kind;
+//    }
+//
+//    static RestError createNetworkError(RetrofitError error) {
+//        return new RestError(error.getMessage(), error, Kind.NETWORK);
+//    }
+//
+//    static RestError createHttpError(RetrofitError error) {
+//        return new RestError(error.getMessage(), error, Kind.HTTP);
+//    }
+//
+//    static RestError createUnexpectedError(RetrofitError error) {
+//        return new RestError(error.getMessage(), error,  Kind.UNEXPECTED);
+//    }
 
-    static RestError createNetworkError(RetrofitError error) {
-        return new RestError(error.getMessage(), error, Kind.NETWORK);
-    }
-
-    static RestError createHttpError(RetrofitError error) {
-        return new RestError(error.getMessage(), error, Kind.HTTP);
-    }
-
-    static RestError createUnexpectedError(RetrofitError error) {
-        return new RestError(error.getMessage(), error,  Kind.UNEXPECTED);
-    }
-
-    public Kind getKind() {
-        return mKind;
-    }
-
-    public enum Kind {
-        NETWORK,
-        HTTP,
-        UNEXPECTED
-    }
+//    public Kind getKind() {
+//        return mKind;
+//    }
+//
+//    public enum Kind {
+//        NETWORK,
+//        HTTP,
+//        UNEXPECTED
+//    }
 }

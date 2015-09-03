@@ -38,7 +38,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.util.Collections;
+
+import retrofit.Call;
+import retrofit.Response;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
@@ -142,23 +146,23 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionSearchResponseShouldBeEmptyIfResponseIs204() {
+    public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws IOException {
         mWebMockRule.enqueue(create204Response());
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(null);
-
-        assertThat(response.getItems(), is(empty()));
+        Call<ReportExecutionSearchResponse> call = restApiUnderTest.searchReportExecution(null);
+        Response<ReportExecutionSearchResponse> response = call.execute();
+        assertThat(response.body().getItems(), is(empty()));
     }
 
     @Test
-    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() {
+    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() throws IOException {
         MockResponse mockResponse = create200Response();
         mockResponse.setBody(searchExecutionResponse.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(null);
-
-        assertThat(response.getItems(), is(not(empty())));
+        Call<ReportExecutionSearchResponse> call = restApiUnderTest.searchReportExecution(null);
+        Response<ReportExecutionSearchResponse> response = call.execute();
+        assertThat(response.body().getItems(), is(not(empty())));
     }
 
     @Test

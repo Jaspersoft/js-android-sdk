@@ -34,6 +34,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import retrofit.Call;
+import retrofit.Response;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -52,7 +55,8 @@ public class ServerRestTest {
                 .setLog(TestLogger.get(this))
                 .setLogLevel(RestApiLogLevel.FULL)
                 .build();
-        ServerInfoResponse response = api.requestServerInfo();
+        Call<ServerInfoResponse> call = api.requestServerInfo();
+        Response<ServerInfoResponse> response = call.execute();
         assertThat(response, is(notNullValue()));
     }
 }

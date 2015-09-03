@@ -32,9 +32,6 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
 
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -53,13 +50,11 @@ public interface AuthenticationRestApi {
 
         @Override
         AuthenticationRestApi createApi() {
-            RestAdapter.Builder builder = getDefaultBuilder();
 
-            OkHttpClient httpClient = new OkHttpClient();
+            OkHttpClient httpClient = getClient();
             httpClient.setFollowRedirects(false);
-            builder.setClient(new OkClient(httpClient));
 
-            return new AuthenticationRestApiImpl(builder.build());
+            return new AuthenticationRestApiImpl(getDefaultBuilder().build());
         }
     }
 }

@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.Headers;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,10 +35,10 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import retrofit.client.Header;
-import retrofit.client.Response;
+import retrofit.Response;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,10 +61,13 @@ public class AuthResponseFactoryTest {
 
     @Test
     public void shouldExtractTokenFromNetworkResponse() {
-        when(mResponse.getHeaders()).thenReturn(new ArrayList<Header>() {{
-            add(new Header("Set-Cookie", "cookie1"));
-            add(new Header("Set-Cookie", "cookie2"));
-        }});
+        Map<String, String> headersRaw = new HashMap<>();
+        headersRaw.put("Set-Cookie", "cookie1");
+        headersRaw.put("Set-Cookie", "cookie2");
+
+        Headers headers = Headers.of(headersRaw);
+        when(mResponse.headers()).thenReturn(headers);
+
         AuthResponse response = AuthResponseFactory.create(mResponse);
         assertThat(response.getToken(), is("cookie1;cookie2"));
     }

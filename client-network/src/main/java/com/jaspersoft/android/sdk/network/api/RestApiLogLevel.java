@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import retrofit.RestAdapter;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -46,7 +44,7 @@ public enum RestApiLogLevel {
      */
     FULL;
 
-    static RestAdapter.LogLevel toRetrofitLog(RestApiLogLevel logLevel) {
-        return RestAdapter.LogLevel.valueOf(logLevel.name());
-    }
+//    static RestAdapter.LogLevel toRetrofitLog(RestApiLogLevel logLevel) {
+//        return RestAdapter.LogLevel.valueOf(logLevel.name());
+//    }
 }

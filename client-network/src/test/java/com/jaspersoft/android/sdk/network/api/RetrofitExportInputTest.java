@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RetrofitExportInput;
+import com.squareup.okhttp.ResponseBody;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-
-import retrofit.mime.TypedInput;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,7 +42,7 @@ import static org.mockito.Mockito.verify;
  */
 public class RetrofitExportInputTest {
     @Mock
-    TypedInput mTypedInput;
+    ResponseBody mTypedInput;
 
     private RetrofitExportInput objectUnderTest;
 
@@ -57,18 +55,18 @@ public class RetrofitExportInputTest {
     @Test
     public void shouldDelegateMimeType() {
         objectUnderTest.getMimeType();
-        verify(mTypedInput, times(1)).mimeType();
+        verify(mTypedInput, times(1)).contentType();
     }
 
     @Test
-    public void shouldDelegateLengrh() {
+    public void shouldDelegateLengrh()  throws IOException {
         objectUnderTest.getLength();
-        verify(mTypedInput, times(1)).length();
+        verify(mTypedInput, times(1)).contentLength();
     }
 
     @Test
     public void shouldDelegateInputStream() throws IOException {
         objectUnderTest.getStream();
-        verify(mTypedInput, times(1)).in();
+        verify(mTypedInput, times(1)).byteStream();
     }
 }

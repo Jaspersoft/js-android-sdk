@@ -26,14 +26,16 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
 import java.util.Collection;
 import java.util.Map;
+
+import retrofit.Call;
 
 /**
  * @author Tom Koptel
@@ -42,13 +44,13 @@ import java.util.Map;
 public interface ReportExecutionRestApi {
 
     @NonNull
-    ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
+    Call<ReportExecutionDetailsResponse> runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
-    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
+    Call<ReportExecutionDetailsResponse> requestReportExecutionDetails(@NonNull String executionId);
 
     @NonNull
-    ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+    Call<ExecutionStatusResponse> requestReportExecutionStatus(@NonNull String executionId);
 
     boolean cancelReportExecution(@NonNull String executionId);
 
@@ -58,7 +60,7 @@ public interface ReportExecutionRestApi {
      * TODO: API is broken requires investigation before release
      */
     @NonNull
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
+    Call<ReportExecutionSearchResponse> searchReportExecution(Map<String, String> params);
 
     final class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

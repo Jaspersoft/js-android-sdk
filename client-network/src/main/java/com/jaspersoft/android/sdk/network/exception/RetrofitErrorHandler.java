@@ -24,24 +24,25 @@
 
 package com.jaspersoft.android.sdk.network.exception;
 
-import retrofit.*;
-
 /**
+ * TODO we need resolve error issues
+ *
  * @author Tom Koptel
  * @since 2.0
  */
-final class RetrofitErrorHandler implements ErrorHandler<RetrofitError> {
-    @Override
-    public Throwable handleError(RetrofitError error) {
-        switch (error.getKind()) {
-            case HTTP:
-                return RestError.createHttpError(error);
-            case NETWORK:
-                return RestError.createNetworkError(error);
-            case UNEXPECTED:
-                return RestError.createUnexpectedError(error);
-            default:
-                throw error;
-        }
-    }
+final class RetrofitErrorHandler {
+//        implements ErrorHandler<RetrofitError> {
+//    @Override
+//    public Throwable handleError(RetrofitError error) {
+//        switch (error.getKind()) {
+//            case HTTP:
+//                return RestError.createHttpError(error);
+//            case NETWORK:
+//                return RestError.createNetworkError(error);
+//            case UNEXPECTED:
+//                return RestError.createUnexpectedError(error);
+//            default:
+//                throw error;
+//        }
+//    }
 }

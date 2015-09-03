@@ -26,12 +26,10 @@ package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import retrofit.client.Header;
-import retrofit.client.Response;
+import retrofit.Response;
 
 /**
  * @author Tom Koptel
@@ -45,13 +43,7 @@ final class AuthResponseFactory {
     }
 
     public static AuthResponse create(Response response) {
-        List<Header> headers = response.getHeaders();
-        List<String> parts = new ArrayList<>();
-        for (Header header : headers) {
-            if (header.getName().equals("Set-Cookie")) {
-                parts.add(header.getValue());
-            }
-        }
+        List<String> parts = response.headers().values("Set-Cookie");
         AuthResponseFactory responseFactory = new AuthResponseFactory(parts);
         return responseFactory.create();
     }

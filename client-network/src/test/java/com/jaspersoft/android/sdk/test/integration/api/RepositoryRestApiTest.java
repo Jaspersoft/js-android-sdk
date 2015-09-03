@@ -38,6 +38,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import retrofit.Call;
+import retrofit.Response;
+
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -64,7 +67,9 @@ public class RepositoryRestApiTest {
     @Test
     public void shouldRequestReport() throws IOException {
         RepositoryRestApi api = createApi();
-        ReportLookupResponse report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
+        Call<ReportLookupResponse> call = api.requestReportResource("/public/Samples/Reports/AllAccounts");
+        Response<ReportLookupResponse> response = call.execute();
+        ReportLookupResponse report = response.body();
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
@@ -72,7 +77,9 @@ public class RepositoryRestApiTest {
     @Test
     public void shouldRequestDashboard() throws IOException {
         RepositoryRestApi api = createApi();
-        DashboardLookupResponse dashboard = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
+        Call<DashboardLookupResponse> call = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
+        Response<DashboardLookupResponse> response = call.execute();
+        DashboardLookupResponse dashboard = response.body();
         assertThat(dashboard, is(notNullValue()));
         assertThat(dashboard.getFoundations(), is(not(empty())));
     }
@@ -80,7 +87,9 @@ public class RepositoryRestApiTest {
     @Test
     public void shouldRequestRootFolder() throws IOException {
         RepositoryRestApi api = createApi();
-        FolderLookupResponse folder = api.requestFolderResource("/");
+        Call<FolderLookupResponse> call = api.requestFolderResource("/");
+        Response<FolderLookupResponse> response = call.execute();
+        FolderLookupResponse folder = response.body();
         assertThat(folder, is(notNullValue()));
     }
 

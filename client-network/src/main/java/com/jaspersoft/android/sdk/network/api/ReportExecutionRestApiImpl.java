@@ -33,13 +33,13 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearch
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import retrofit.ResponseEntity;
-import retrofit.RestAdapter;
-import retrofit.RestAdapterWrapper;
-import retrofit.client.Response;
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -55,89 +55,104 @@ import retrofit.http.QueryMap;
 final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     private final RestApi mRestApi;
-    private final RestAdapterWrapper mRestAdapterWrapper;
 
-    ReportExecutionRestApiImpl(RestAdapter restAdapter) {
+    ReportExecutionRestApiImpl(Retrofit restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
-        mRestAdapterWrapper = RestAdapterWrapper.wrap(restAdapter);
     }
 
     @NonNull
     @Override
-    public ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions) {
+    public Call<ReportExecutionDetailsResponse> runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions) {
         return mRestApi.runReportExecution(executionOptions);
     }
 
     @NonNull
     @Override
-    public ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId) {
+    public Call<ReportExecutionDetailsResponse> requestReportExecutionDetails(@NonNull String executionId) {
         return mRestApi.requestReportExecutionDetails(executionId);
     }
 
     @NonNull
     @Override
-    public ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId) {
+    public Call<ExecutionStatusResponse> requestReportExecutionStatus(@NonNull String executionId) {
         return mRestApi.requestReportExecutionStatus(executionId);
     }
 
     @Override
     public boolean cancelReportExecution(@NonNull String executionId) {
-        Response response = mRestApi.cancelReportExecution(executionId, ExecutionStatusResponse.cancelledStatus());
-        int status = response.getStatus();
-        return status != 204;
+        Call<?> call = mRestApi.cancelReportExecution(executionId, ExecutionStatusResponse.cancelledStatus());
+        // TODO in order to wrap response we need use CallAdapter approach
+        try {
+            Response<?> response = call.execute();
+            int status = response.code();
+            return status != 204;
+        } catch (IOException e) {
+            // We need to wrap response in call. For now we will rethrow error
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params) {
-        Response response = mRestApi.updateReportExecution(executionId, params);
-        int status = response.getStatus();
-        return status == 204;
+        Call<?> call = mRestApi.updateReportExecution(executionId, params);
+        Response<?> response = null;
+        // TODO in order to wrap response we need use CallAdapter approach
+        try {
+            response = call.execute();
+            int status = response.code();
+            return status == 204;
+        } catch (IOException e) {
+            // We need to wrap response in call. For now we will rethrow error
+            throw new RuntimeException(e);
+        }
     }
 
     @NonNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) {
-        Response response = mRestApi.searchReportExecution(params);
-        int status = response.getStatus();
-        if (status == 204) {
-            return ReportExecutionSearchResponse.empty();
-        } else {
-            ResponseEntity<ReportExecutionSearchResponse> responseEntity =
-                    mRestAdapterWrapper.produce(response, ReportExecutionSearchResponse.class);
-            return responseEntity.getEntity();
-        }
+    public Call<ReportExecutionSearchResponse> searchReportExecution(Map<String, String> params) {
+        return mRestApi.searchReportExecution(params);
+
+// TODO we need to use CallAdapater in order to wrap our response in call object
+//        int status = response.getStatus();
+//        if (status == 204) {
+//            return ReportExecutionSearchResponse.empty();
+//        } else {
+//            ResponseEntity<ReportExecutionSearchResponse> responseEntity =
+//                    mRestAdapterWrapper.produce(response, ReportExecutionSearchResponse.class);
+//            return responseEntity.getEntity();
+//        }
     }
 
     interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions")
-        ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
+        Call<ReportExecutionDetailsResponse> runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}")
-        ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull @Path(value = "executionId", encode = false) String executionId);
+        Call<ReportExecutionDetailsResponse> requestReportExecutionDetails(@NonNull @Path(value = "executionId", encoded = false) String executionId);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}/status")
-        ExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
+        Call<ExecutionStatusResponse> requestReportExecutionStatus(@NonNull @Path(value = "executionId", encoded = false) String executionId);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions/{executionId}/parameters")
-        Response updateReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
+        Call<?> updateReportExecution(@NonNull @Path(value = "executionId", encoded = false) String executionId,
                                        @NonNull @Body Collection<ReportParameter> params);
 
         @NonNull
         @Headers("Accept: application/json")
         @PUT("/rest_v2/reportExecutions/{executionId}/status")
-        Response cancelReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
+        Call<?> cancelReportExecution(@NonNull @Path(value = "executionId", encoded = false) String executionId,
                                        @NonNull @Body ExecutionStatusResponse statusResponse);
 
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions")
-        Response searchReportExecution(@Nullable @QueryMap(encodeValues = false) Map<String, String> params);
+        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = false) Map<String, String> params);
     }
 }

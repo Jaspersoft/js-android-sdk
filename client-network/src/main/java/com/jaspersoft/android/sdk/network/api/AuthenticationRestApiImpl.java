@@ -27,16 +27,14 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.squareup.okhttp.HttpUrl;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Header;
-import retrofit.client.Response;
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
 import retrofit.http.Headers;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
@@ -50,7 +48,7 @@ import retrofit.http.PartMap;
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     private final RestApi mRestApi;
 
-    AuthenticationRestApiImpl(RestAdapter restAdapter) {
+    AuthenticationRestApiImpl(Retrofit restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
     }
 
@@ -61,32 +59,37 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                                      String organization,
                                      Map<String, String> params) {
         try {
-            Response response = mRestApi.authenticate(username, password, organization, params);
+            Call call = mRestApi.authenticate(username, password, organization, params);
+            Response<?> response = call.execute();
             return createAuthResponse(response);
-        } catch (RestError error) {
-            RetrofitError retrofitError = extractRetrofitError(error);
-            if (retrofitError.getKind() == RetrofitError.Kind.HTTP) {
-                Response response = retrofitError.getResponse();
-                if (containsRedirect(response)) {
-                    String location = retrieveLocation(response);
-
-                    if (locationPointsToSuccess(location)) {
-                        return createAuthResponse(response);
-                    } else {
-                        throw error;
-                    }
-                } else {
-                    throw error;
-                }
-            } else {
-                throw error;
-            }
+            // TODO handle CA case here
+//        } catch (RestError error) {
+//            RetrofitError retrofitError = extractRetrofitError(error);
+//            if (retrofitError.getKind() == RetrofitError.Kind.HTTP) {
+//                Response response = retrofitError.getResponse();
+//                if (containsRedirect(response)) {
+//                    String location = retrieveLocation(response);
+//
+//                    if (locationPointsToSuccess(location)) {
+//                        return createAuthResponse(response);
+//                    } else {
+//                        throw error;
+//                    }
+//                } else {
+//                    throw error;
+//                }
+//            } else {
+//                throw error;
+//            }
+        } catch (IOException e) {
+            // Due to Undefined error handling mechanism we forced to rethrow IO
+            throw new RuntimeException(e);
         }
     }
-
-    private RetrofitError extractRetrofitError(RestError error) {
-        return (RetrofitError) error.getCause();
-    }
+//
+//    private RetrofitError extractRetrofitError(RestError error) {
+//        return (RetrofitError) error.getCause();
+//    }
 
     private boolean locationPointsToSuccess(String location) {
         HttpUrl url = HttpUrl.parse(location);
@@ -96,17 +99,13 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     private String retrieveLocation(Response response) {
-        List<Header> headers = response.getHeaders();
-        for (Header header : headers) {
-            if (header.getName().equals("Location")) {
-                return header.getValue();
-            }
-        }
-        throw new IllegalStateException("Missing 'Location' header");
+        String location = response.headers().get("Location");
+        Utils.checkNotNull(location, "Missing 'Location' header");
+        return location;
     }
 
     private boolean containsRedirect(Response response) {
-        int status = response.getStatus();
+        int status = response.code();
         return status >= 300 && status < 400;
     }
 
@@ -118,7 +117,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         @Multipart
         @Headers({"Accept:application/json"})
         @POST(value = "/j_spring_security_check")
-        Response authenticate(@Part(value = "j_username") String username,
+        Call authenticate(@Part(value = "j_username") String username,
                               @Part(value = "j_password") String password,
                               @Part(value = "orgId ") String organization,
                               @PartMap Map<String, String> params);

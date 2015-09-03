@@ -31,9 +31,13 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.squareup.okhttp.ResponseBody;
 
-import retrofit.RestAdapter;
-import retrofit.client.Response;
+import java.io.IOException;
+
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -47,53 +51,68 @@ import retrofit.http.Path;
 final class ReportExportRestApiImpl implements ReportExportRestApi {
     private final RestApi mRestApi;
 
-    public ReportExportRestApiImpl(RestAdapter restAdapter) {
+    public ReportExportRestApiImpl(Retrofit restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
     }
 
     @NonNull
     @Override
-    public ReportExportExecutionResponse runExportExecution(@NonNull String executionId,
-                                                            @NonNull ExecutionRequestOptions executionOptions) {
+    public Call<ReportExportExecutionResponse> runExportExecution(@NonNull String executionId,
+                                                                  @NonNull ExecutionRequestOptions executionOptions) {
         return mRestApi.runReportExportExecution(executionId, executionOptions);
     }
 
     @NonNull
     @Override
-    public ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId) {
+    public Call<ExecutionStatusResponse> checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId) {
         return mRestApi.checkReportExportStatus(executionId, exportId);
     }
 
     @NonNull
     @Override
     public ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId) {
-        Response response = mRestApi.requestReportExportOutput(executionId, exportId);
-        RetrofitExportInput exportInput = new RetrofitExportInput(response.getBody());
-        HeaderUtil headerUtil = HeaderUtil.wrap(response);
-        String pages = headerUtil.getFirstHeader("report-pages").asString();
-        boolean isFinal = headerUtil.getFirstHeader("output-final").asBoolean();
-        return ExportResourceResponse.create(exportInput, pages, isFinal);
+        Call<ResponseBody> call = mRestApi.requestReportExportOutput(executionId, exportId);
+        // TODO in order to wrap response we need use CallAdapter approach
+        try {
+            Response<ResponseBody> response = call.execute();
+            com.squareup.okhttp.Headers headers = response.headers();
+
+            RetrofitExportInput exportInput = new RetrofitExportInput(response.body());
+            String pages = headers.get("report-pages");
+            boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
+
+            return ExportResourceResponse.create(exportInput, pages, isFinal);
+        } catch (IOException e) {
+            // We need to wrap response in call. For now we will rethrow error
+            throw new RuntimeException(e);
+        }
     }
 
     @NonNull
     @Override
     public ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId) {
-        Response response = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
-        ExportInput input = new RetrofitExportInput(response.getBody());
-        return input;
+        Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
+        // TODO in order to wrap response we need use CallAdapter approach
+        try {
+            Response<ResponseBody> response = call.execute();
+            return new RetrofitExportInput(response.body());
+        } catch (IOException e) {
+            // We need to wrap response in call. For now we will rethrow error
+            throw new RuntimeException(e);
+        }
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("/rest_v2/reportExecutions/{executionId}/exports")
-        ReportExportExecutionResponse runReportExportExecution(@NonNull @Path("executionId") String executionId,
+        Call<ReportExportExecutionResponse> runReportExportExecution(@NonNull @Path("executionId") String executionId,
                                                                @NonNull @Body ExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
-        ExecutionStatusResponse checkReportExportStatus(@NonNull @Path("executionId") String executionId,
+        Call<ExecutionStatusResponse> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
                                                         @NonNull @Path("exportId") String exportId);
 
         /**
@@ -101,12 +120,12 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
          */
         @NonNull
         @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
-        Response requestReportExportOutput(@NonNull @Path("executionId") String executionId,
+        Call<ResponseBody> requestReportExportOutput(@NonNull @Path("executionId") String executionId,
                                            @NonNull @Path("exportId") String exportId);
 
         @NonNull
         @GET("/rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
-        Response requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
+        Call<ResponseBody> requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
                                            @NonNull @Path("exportId") String exportId,
                                            @NonNull @Path("attachmentId") String attachmentId);
     }

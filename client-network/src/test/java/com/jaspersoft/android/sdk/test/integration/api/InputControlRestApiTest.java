@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,7 +27,8 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
@@ -35,7 +36,11 @@ import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
+
+import retrofit.Call;
+import retrofit.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -65,11 +70,14 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideInputControlsList() {
-        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideInputControlsList() throws IOException {
+        Call<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI);
+        Response<InputControlResponse> response = call.execute();
 
-        InputControl control = response.get(0);
+        List<InputControl> controls = response.body().getValues();
+        assertThat(response.body().getValues(), is(not(empty())));
+
+        InputControl control = controls.get(0);
         assertThat(control.getState(), is(notNullValue()));
     }
 
@@ -77,23 +85,28 @@ public class InputControlRestApiTest {
      * TODO: Implement annotation to mark specific API tests.
      */
     @Test
-    public void shouldProvideInputControlsListIfStateExcluded() {
-        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI, true);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideInputControlsListIfStateExcluded() throws IOException {
+        Call<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
+        Response<InputControlResponse> response = call.execute();
 
-        InputControl control = response.get(0);
+        List<InputControl> controls = response.body().getValues();
+        assertThat(response.body().getValues(), is(not(empty())));
+
+        InputControl control = controls.get(0);
         assertThat(control.getState(), is(nullValue()));
     }
 
     @Test
-    public void shouldProvideInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideInitialInputControlsValues() throws IOException {
+        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI);
+        Response<InputControlValueResponse> response = call.execute();
+        assertThat(response.body().getValues(), is(not(empty())));
     }
 
     @Test
-    public void shouldProvideFreshInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideFreshInitialInputControlsValues() throws IOException {
+        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        Response<InputControlValueResponse> response = call.execute();
+        assertThat(response.body().getValues(), is(not(empty())));
     }
 }

@@ -24,46 +24,36 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import retrofit.client.Header;
-import retrofit.client.Response;
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class HeaderUtil {
-    private final List<Header> mHeaders;
+final class AuthInterceptor implements Interceptor {
+    private final String mToken;
 
-    HeaderUtil(@NonNull List<Header> headers) {
-        mHeaders = headers;
+    AuthInterceptor(String token) {
+        mToken = token;
     }
 
-    public static HeaderUtil wrap(@NonNull Response response) {
-        return new HeaderUtil(response.getHeaders());
+    public static AuthInterceptor newInstance(String token) {
+        checkNotNull(token, "Token should not be null");
+        return new AuthInterceptor(token);
     }
 
-    @NonNull
-    public SafeHeader getFirstHeader(String name) {
-        List<Header> headers = findHeaders(name);
-        if (headers.isEmpty()) {
-            return new SafeHeader(null);
-        } else {
-            return new SafeHeader(headers.get(0));
-        }
-    }
-
-    private List<Header> findHeaders(String name) {
-        List<Header> result = new ArrayList<>();
-        for (Header header : mHeaders) {
-            if (header.getName().equals(name)) {
-                result.add(header);
-            }
-        }
-        return result;
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        Request compressedRequest = originalRequest.newBuilder()
+                .header("Cookie", "mToken")
+                .build();
+        return chain.proceed(compressedRequest);
     }
 }

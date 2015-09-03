@@ -39,9 +39,13 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import retrofit.Call;
+import retrofit.Response;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -80,37 +84,40 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldReturnReportExecutionDetails() {
+    public void shouldReturnReportExecutionDetails() throws IOException {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDetailsResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
-        assertThat(response.getExecutionId(), is(executionId));
+        Call<ReportExecutionDetailsResponse> call = api.requestReportExecutionDetails(executionResponse.getExecutionId());
+        Response<ReportExecutionDetailsResponse> response = call.execute();
+        assertThat(response.body().getExecutionId(), is(executionId));
     }
 
     @Test
-    public void shouldCheckReportExecutionStatus() {
+    public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        ExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
-        assertThat(response.getStatus(), is(notNullValue()));
+        Call<ExecutionStatusResponse> call = api.requestReportExecutionStatus(executionResponse.getExecutionId());
+        Response<ExecutionStatusResponse> response = call.execute();
+        assertThat(response.body().getStatus(), is(notNullValue()));
     }
 
     /**
      * TODO: API is broken requires investigation before release
      */
     @Ignore
-    public void searchForExecutionShouldReturnResult() {
+    public void searchForExecutionShouldReturnResult() throws IOException {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse searchResponse = api.searchReportExecution(params);
-        assertThat(searchResponse.getItems(), is(not(empty())));
+        Call<ReportExecutionSearchResponse> call = api.searchReportExecution(params);
+        Response<ReportExecutionSearchResponse> response = call.execute();
+        assertThat(response.body().getItems(), is(not(empty())));
     }
 
     @Test
@@ -130,7 +137,13 @@ public class ReportExecutionRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        return getApi().runReportExecution(executionRequestOptions);
+        Call<ReportExecutionDetailsResponse> call = getApi().runReportExecution(executionRequestOptions);
+        try {
+            Response<ReportExecutionDetailsResponse> response = call.execute();
+            return response.body();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private ReportExecutionRestApi getApi() {
