@@ -50,7 +50,7 @@ final class AuthResponseFactory {
 
     private AuthResponse create() {
         String cookie = joinCookieParts().toString();
-        return new AuthResponse(cookie);
+        return AuthResponse.createSuccessResponse(cookie);
     }
 
     private StringBuilder joinCookieParts() {

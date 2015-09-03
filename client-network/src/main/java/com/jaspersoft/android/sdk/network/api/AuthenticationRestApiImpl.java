@@ -27,12 +27,15 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.operation.PendingOperation;
+import com.jaspersoft.android.sdk.network.operation.ResultCallback;
 import com.squareup.okhttp.HttpUrl;
 
 import java.io.IOException;
 import java.util.Map;
 
 import retrofit.Call;
+import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Headers;
@@ -54,38 +57,42 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     @Override
-    public AuthResponse authenticate(@NonNull String username,
-                                     @NonNull String password,
-                                     String organization,
-                                     Map<String, String> params) {
-        try {
-            Call call = mRestApi.authenticate(username, password, organization, params);
-            Response<?> response = call.execute();
-            return createAuthResponse(response);
-            // TODO handle CA case here
-//        } catch (RestError error) {
-//            RetrofitError retrofitError = extractRetrofitError(error);
-//            if (retrofitError.getKind() == RetrofitError.Kind.HTTP) {
-//                Response response = retrofitError.getResponse();
-//                if (containsRedirect(response)) {
-//                    String location = retrieveLocation(response);
-//
-//                    if (locationPointsToSuccess(location)) {
-//                        return createAuthResponse(response);
-//                    } else {
-//                        throw error;
-//                    }
-//                } else {
-//                    throw error;
-//                }
-//            } else {
-//                throw error;
-//            }
-        } catch (IOException e) {
-            // Due to Undefined error handling mechanism we forced to rethrow IO
-            throw new RuntimeException(e);
-        }
+    public PendingOperation<AuthResponse> authenticate(@NonNull final String username,
+                                                       @NonNull final String password,
+                                                       final String organization,
+                                                       final Map<String, String> params) {
+
+        final Call call = mRestApi.authenticate(username, password, organization, params);
+        PendingOperation<AuthResponse> responsePendingOperation = new PendingOperation<AuthResponse>() {
+            @Override
+            public AuthResponse execute() {
+                try {
+                    Response response = call.execute();
+                    return AuthResponseFactory.create(response);
+                } catch (IOException e) {
+                    return AuthResponse.createFailResponse(e);
+                }
+            }
+
+            @Override
+            public void enqueue(final ResultCallback<AuthResponse> callback) {
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Response response) {
+                        callback.onResult(AuthResponseFactory.create(response));
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        callback.onResult(AuthResponse.createFailResponse(t));
+                    }
+                });
+            }
+        };
+
+        return responsePendingOperation;
     }
+
 //
 //    private RetrofitError extractRetrofitError(RestError error) {
 //        return (RetrofitError) error.getCause();
@@ -118,8 +125,8 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         @Headers({"Accept:application/json"})
         @POST(value = "/j_spring_security_check")
         Call authenticate(@Part(value = "j_username") String username,
-                              @Part(value = "j_password") String password,
-                              @Part(value = "orgId ") String organization,
-                              @PartMap Map<String, String> params);
+                          @Part(value = "j_password") String password,
+                          @Part(value = "orgId ") String organization,
+                          @PartMap Map<String, String> params);
     }
 }

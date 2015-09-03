@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.operation.PendingOperation;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ import java.util.Map;
  */
 public interface AuthenticationRestApi {
     @NonNull
-    AuthResponse authenticate(@NonNull String username,
+    PendingOperation<AuthResponse> authenticate(@NonNull String username,
                               @NonNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
