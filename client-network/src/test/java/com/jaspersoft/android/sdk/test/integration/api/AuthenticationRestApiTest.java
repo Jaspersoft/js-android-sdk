@@ -24,16 +24,16 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
+
+import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -54,10 +54,10 @@ public class AuthenticationRestApiTest {
     @Test
     public void shouldReturnResponseForSpringRequest() throws IOException {
         AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2)
-                .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
+//                .setLog(TestLogger.get(this))
+//                .setLogLevel(RestApiLogLevel.FULL)
                 .build();
-        AuthResponse response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
-        assertThat(response.getToken(), is(notNullValue()));
+        Observable<AuthResponse> response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
+        assertThat(response.toBlocking().first().getToken(), is(notNullValue()));
     }
 }

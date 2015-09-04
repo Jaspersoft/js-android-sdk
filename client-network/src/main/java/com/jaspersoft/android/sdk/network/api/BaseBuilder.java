@@ -30,6 +30,7 @@ import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 
 /**
  * @author Tom Koptel
@@ -41,6 +42,7 @@ abstract class BaseBuilder<API, SubBuilder> {
 
     private RestApiLog mLog = RestApiLog.NONE;
     private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
+
     public BaseBuilder(String baseUrl){
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
@@ -53,6 +55,7 @@ abstract class BaseBuilder<API, SubBuilder> {
 
         Gson configuredGson = GsonFactory.create();
         mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
+        mRestAdapterBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
 
         /*
         TODO: Resolve error handling. It is still not clear what API will look like

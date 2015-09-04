@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -47,7 +47,9 @@ public final class TestAuthenticator {
     public void authorize() {
         if (mAuthResponse == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mJrsMetadata.getServerUrl()).build();
-            mAuthResponse = restApi.authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
+            mAuthResponse = restApi
+                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null)
+                    .toBlocking().first();
         }
     }
 

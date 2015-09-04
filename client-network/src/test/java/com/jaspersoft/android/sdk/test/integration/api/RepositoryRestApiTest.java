@@ -26,13 +26,11 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Test;
 
@@ -100,10 +98,11 @@ public class RepositoryRestApiTest {
     private AuthResponse getAuthResponse() {
         if (mAuthResponse == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2)
-                    .setLog(TestLogger.get(this))
-                    .setLogLevel(RestApiLogLevel.FULL)
+//                    .setLog(TestLogger.get(this))
+//                    .setLogLevel(RestApiLogLevel.FULL)
                     .build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null);
+            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null)
+                    .toBlocking().first();
         }
         return mAuthResponse;
     }

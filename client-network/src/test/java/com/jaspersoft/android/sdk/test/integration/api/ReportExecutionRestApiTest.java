@@ -159,7 +159,8 @@ public class ReportExecutionRestApiTest {
     private AuthResponse getAuthResponse() {
         if (mAuthResponse == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(MOBILE_DEMO2).build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null);
+            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null)
+                    .toBlocking().first();
         }
         return mAuthResponse;
     }
