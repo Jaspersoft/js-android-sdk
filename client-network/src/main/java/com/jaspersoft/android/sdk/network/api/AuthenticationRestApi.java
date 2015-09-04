@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.operation.PendingOperation;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -39,23 +39,21 @@ import java.util.Map;
  */
 public interface AuthenticationRestApi {
     @NonNull
-    PendingOperation<AuthResponse> authenticate(@NonNull String username,
+    Observable<AuthResponse> authenticate(@NonNull String username,
                               @NonNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    final class Builder extends BaseBuilder<AuthenticationRestApi, Builder> {
+    final class Builder {
+        private final String mBaseUrl;
+
         public Builder(String baseUrl) {
-            super(baseUrl);
+            Utils.checkNotNull(baseUrl, "Base url should not be null");
+            mBaseUrl = baseUrl;
         }
 
-        @Override
-        AuthenticationRestApi createApi() {
-
-            OkHttpClient httpClient = getClient();
-            httpClient.setFollowRedirects(false);
-
-            return new AuthenticationRestApiImpl(getDefaultBuilder().build());
+        public AuthenticationRestApi build() {
+            return new AuthenticationRestApiImpl(mBaseUrl);
         }
     }
 }

@@ -25,11 +25,11 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.Response;
 
 import java.util.Iterator;
 import java.util.List;
 
-import retrofit.Response;
 
 /**
  * @author Tom Koptel

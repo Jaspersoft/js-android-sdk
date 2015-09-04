@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.network.exception;
 
 //import retrofit.RetrofitError;
 
+import java.io.IOException;
+
 /**
  * TODO we need resolve error issues
  *
@@ -34,32 +36,59 @@ package com.jaspersoft.android.sdk.network.exception;
  * @since 2.0
  */
 public final class RestError extends RuntimeException {
-//    private final Kind mKind;
+    public static RestError networkError(String url, IOException exception) {
+        return new RestError(exception.getMessage(), url, null, Kind.NETWORK,
+                exception);
+    }
 
-//    RestError(String message, RetrofitError error, Kind kind) {
-//        super(message, error);
-//        mKind = kind;
-//    }
-//
-//    static RestError createNetworkError(RetrofitError error) {
-//        return new RestError(error.getMessage(), error, Kind.NETWORK);
-//    }
-//
-//    static RestError createHttpError(RetrofitError error) {
-//        return new RestError(error.getMessage(), error, Kind.HTTP);
-//    }
-//
-//    static RestError createUnexpectedError(RetrofitError error) {
-//        return new RestError(error.getMessage(), error,  Kind.UNEXPECTED);
-//    }
+    public static RestError httpError(String url, com.squareup.okhttp.Response response) {
+        String message = response.code() + " " + response.message();
+        return new RestError(message, url, response, Kind.HTTP, null);
+    }
 
-//    public Kind getKind() {
-//        return mKind;
-//    }
-//
-//    public enum Kind {
-//        NETWORK,
-//        HTTP,
-//        UNEXPECTED
-//    }
+    public static RestError unexpectedError(String url, Throwable exception) {
+        return new RestError(exception.getMessage(), url, null, Kind.UNEXPECTED,
+                exception);
+    }
+
+    private final String url;
+    private final com.squareup.okhttp.Response response;
+    private final Kind kind;
+
+    RestError(String message, String url, com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+        super(message, exception);
+        this.url = url;
+        this.response = response;
+        this.kind = kind;
+    }
+
+    /** HTTP status code. */
+    public int code() {
+        return response.code();
+    }
+
+    /** HTTP status message. */
+    public String message() {
+        return response.message();
+    }
+
+    public com.squareup.okhttp.Response response() {
+        return response;
+    }
+
+    public String urlString() {
+        return url;
+    }
+
+    public Kind kind() {
+        return kind;
+    }
+
+    public enum Kind {
+        NETWORK,
+        HTTP,
+        UNEXPECTED;
+
+    }
+
 }

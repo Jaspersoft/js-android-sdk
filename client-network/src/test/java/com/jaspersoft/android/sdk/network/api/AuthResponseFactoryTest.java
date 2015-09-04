@@ -38,8 +38,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.HashMap;
 import java.util.Map;
 
-import retrofit.Response;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -49,10 +47,10 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Response.class})
+@PrepareForTest({com.squareup.okhttp.Response.class})
 public class AuthResponseFactoryTest {
     @Mock
-    Response mResponse;
+    com.squareup.okhttp.Response mResponse;
 
     @Before
     public void setup() {

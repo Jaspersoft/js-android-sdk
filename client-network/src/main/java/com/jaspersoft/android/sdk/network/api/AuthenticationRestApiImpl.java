@@ -27,106 +27,116 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.operation.PendingOperation;
-import com.jaspersoft.android.sdk.network.operation.ResultCallback;
+import com.jaspersoft.android.sdk.network.exception.RestError;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.Headers;
-import retrofit.http.Multipart;
-import retrofit.http.POST;
-import retrofit.http.Part;
-import retrofit.http.PartMap;
+import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
-    private final RestApi mRestApi;
+    private final String mBaseUrl;
 
-    AuthenticationRestApiImpl(Retrofit restAdapter) {
-        mRestApi = restAdapter.create(RestApi.class);
+    AuthenticationRestApiImpl(String baseUrl) {
+        mBaseUrl = baseUrl;
     }
 
     @NonNull
     @Override
-    public PendingOperation<AuthResponse> authenticate(@NonNull final String username,
-                                                       @NonNull final String password,
-                                                       final String organization,
-                                                       final Map<String, String> params) {
-
-        final Call call = mRestApi.authenticate(username, password, organization, params);
-        PendingOperation<AuthResponse> responsePendingOperation = new PendingOperation<AuthResponse>() {
+    public Observable<AuthResponse> authenticate(@NonNull final String username,
+                                                 @NonNull final String password,
+                                                 final String organization,
+                                                 final Map<String, String> params) {
+        return Observable.defer(new Func0<Observable<AuthResponse>>() {
             @Override
-            public AuthResponse execute() {
+            public Observable<AuthResponse> call() {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                okHttpClient.setFollowRedirects(false);
+                Request request = createAuthRequest(username, password, organization, params);
+                Call call = okHttpClient.newCall(request);
                 try {
-                    Response response = call.execute();
-                    return AuthResponseFactory.create(response);
+                    com.squareup.okhttp.Response response = call.execute();
+                    int statusCode = response.code();
+                    if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
+                        AuthResponse authResponse = AuthResponseFactory.create(response);
+                        return Observable.just(authResponse);
+                    } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+                        String location = response.headers().get("Location");
+                        if (location == null) {
+                            return Observable.error(new IllegalStateException("Location HEADER is missing please contact JRS admin"));
+                        }
+                        HttpUrl url = HttpUrl.parse(location);
+                        String errorQueryParameter = url.queryParameter("error");
+                        if (errorQueryParameter == null) {
+                            AuthResponse authResponse = AuthResponseFactory.create(response);
+                            return Observable.just(authResponse);
+                        } else {
+                            com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                                    .protocol(response.protocol())
+                                    .request(response.request())
+                                    .headers(response.headers())
+                                    .body(response.body())
+                                    .code(401)
+                                    .build();
+                            Throwable error = RestError.httpError(request.urlString(), response401);
+                            return Observable.error(error);
+                        }
+                    } else if (statusCode == 401) {
+                        com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                                .protocol(response.protocol())
+                                .request(response.request())
+                                .headers(response.headers())
+                                .body(response.body())
+                                .code(401)
+                                .build();
+                        Throwable error = RestError.httpError(request.urlString(), response401);
+                        return Observable.error(error);
+                    } else {
+                        Throwable error = RestError.httpError(request.urlString(), response);
+                        return Observable.error(error);
+                    }
                 } catch (IOException e) {
-                    return AuthResponse.createFailResponse(e);
+                    return Observable.error(RestError.networkError(request.urlString(), e));
                 }
             }
+        });
+    }
 
-            @Override
-            public void enqueue(final ResultCallback<AuthResponse> callback) {
-                call.enqueue(new Callback() {
-                    @Override
-                    public void onResponse(Response response) {
-                        callback.onResult(AuthResponseFactory.create(response));
-                    }
+    private Request createAuthRequest(
+            @NonNull final String username,
+            @NonNull final String password,
+            final String organization,
+            final Map<String, String> params) {
 
-                    @Override
-                    public void onFailure(Throwable t) {
-                        callback.onResult(AuthResponse.createFailResponse(t));
-                    }
-                });
+        OkHttpClient client = new OkHttpClient();
+        client.setFollowRedirects(false);
+
+        FormEncodingBuilder formBody = new FormEncodingBuilder()
+                .add("j_username", username)
+                .add("j_password", password)
+                .add("orgId", organization);
+
+        if (params != null) {
+            Set<Map.Entry<String, String>> entrySet = params.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                formBody.add(entry.getKey(), entry.getValue());
             }
-        };
+        }
 
-        return responsePendingOperation;
-    }
-
-//
-//    private RetrofitError extractRetrofitError(RestError error) {
-//        return (RetrofitError) error.getCause();
-//    }
-
-    private boolean locationPointsToSuccess(String location) {
-        HttpUrl url = HttpUrl.parse(location);
-        String errorQueryParameter = url.queryParameter("error");
-        return errorQueryParameter == null;
-    }
-
-    @NonNull
-    private String retrieveLocation(Response response) {
-        String location = response.headers().get("Location");
-        Utils.checkNotNull(location, "Missing 'Location' header");
-        return location;
-    }
-
-    private boolean containsRedirect(Response response) {
-        int status = response.code();
-        return status >= 300 && status < 400;
-    }
-
-    private AuthResponse createAuthResponse(Response response) {
-        return AuthResponseFactory.create(response);
-    }
-
-    interface RestApi {
-        @Multipart
-        @Headers({"Accept:application/json"})
-        @POST(value = "/j_spring_security_check")
-        Call authenticate(@Part(value = "j_username") String username,
-                          @Part(value = "j_password") String password,
-                          @Part(value = "orgId ") String organization,
-                          @PartMap Map<String, String> params);
+        return new Request.Builder()
+                .url(mBaseUrl + "/j_spring_security_check")
+                .post(formBody.build())
+                .build();
     }
 }

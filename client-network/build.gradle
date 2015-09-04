@@ -37,6 +37,7 @@ dependencies {
 
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta1'
 
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
 
