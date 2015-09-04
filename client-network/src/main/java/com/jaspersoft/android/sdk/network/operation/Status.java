@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,38 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-
-import java.util.Map;
-
-import rx.Observable;
+package com.jaspersoft.android.sdk.network.operation;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public interface AuthenticationRestApi {
-    @NonNull
-    Observable<AuthResponse> authenticate(@NonNull String username,
-                              @NonNull String password,
-                              @Nullable String organization,
-                              @Nullable Map<String, String> params);
+public final class Status {
+    public static Status SUCCESS = new Status(null);
 
-    final class Builder {
-        private final String mBaseUrl;
+    private final Throwable mThrowable;
 
-        public Builder(String baseUrl) {
-            Utils.checkNotNull(baseUrl, "Base url should not be null");
-            mBaseUrl = baseUrl;
-        }
+    private Status(Throwable throwable) {
+        mThrowable = throwable;
+    }
 
-        public AuthenticationRestApi build() {
-            return new AuthenticationRestApiImpl(mBaseUrl);
-        }
+    public static Status error(Throwable throwable) {
+        return new Status(throwable);
+    }
+
+    public static Status success() {
+        return SUCCESS;
+    }
+
+    public boolean isSuccess() {
+        return mThrowable == null;
     }
 }

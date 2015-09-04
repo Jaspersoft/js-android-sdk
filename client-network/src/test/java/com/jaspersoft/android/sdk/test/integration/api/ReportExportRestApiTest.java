@@ -137,7 +137,8 @@ public class ReportExportRestApiTest {
     private AuthResponse getAuthResponse() {
         if (mAuthResponse == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null);
+            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null)
+                    .toBlocking().first();
         }
         return mAuthResponse;
     }

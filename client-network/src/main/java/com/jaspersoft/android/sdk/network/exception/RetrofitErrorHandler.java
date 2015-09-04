@@ -34,7 +34,7 @@ final class RetrofitErrorHandler {
 //        implements ErrorHandler<RetrofitError> {
 //    @Override
 //    public Throwable handleError(RetrofitError error) {
-//        switch (error.getKind()) {
+//        switch (error.kind()) {
 //            case HTTP:
 //                return RestError.createHttpError(error);
 //            case NETWORK:

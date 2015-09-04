@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,15 +24,33 @@
 
 package com.jaspersoft.android.sdk.network.entity.server;
 
+import com.jaspersoft.android.sdk.network.operation.Result;
+import com.jaspersoft.android.sdk.network.operation.Status;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class AuthResponse {
+public final class AuthResponse implements Result {
     private final String mToken;
+    private final Status mStatus;
 
-    public AuthResponse(String token) {
+    private AuthResponse(Status status) {
+        mToken = null;
+        mStatus = status;
+    }
+
+    private AuthResponse(String token) {
         mToken = token;
+        mStatus = Status.success();
+    }
+
+    public static AuthResponse createSuccessResponse(String token) {
+        return new AuthResponse(token);
+    }
+
+    public static AuthResponse createFailResponse(Throwable throwable) {
+        return new AuthResponse(Status.error(throwable));
     }
 
     public String getToken() {
@@ -44,5 +62,10 @@ public final class AuthResponse {
         return "AuthResponse{" +
                 "mToken='" + mToken + '\'' +
                 '}';
+    }
+
+    @Override
+    public Status getStatus() {
+        return null;
     }
 }
