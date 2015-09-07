@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
@@ -40,6 +41,9 @@ import okio.Buffer;
 import retrofit.Converter;
 
 /**
+ * Temporary workaround around {@link TypeAdapter} issue which causes null fields to be parsed.
+ * The issue submitted on following <a href="https://github.com/square/retrofit/issues/1062">link</a>
+ *
  * @author Tom Koptel
  * @since 2.0
  */
