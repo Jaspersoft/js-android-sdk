@@ -33,16 +33,19 @@ import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookupR
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
-import java.io.IOException;
 import java.util.Map;
 
-import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;
 import retrofit.http.QueryMap;
+import rx.Observable;
+import rx.functions.Func1;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+import static com.jaspersoft.android.sdk.network.api.Utils.headerToInt;
 
 /**
  * @author Tom Koptel
@@ -57,86 +60,85 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams) {
-        Call<ResourceSearchResponse> call = mRestApi.searchResources(searchParams);
-        // TODO in order to wrap response we need use CallAdapter approach
-        try {
-            Response<ResourceSearchResponse> response = call.execute();
-            int status = response.code();
+    public Observable<ResourceSearchResponse> searchResources(@Nullable Map<String, String> searchParams) {
+        return mRestApi.searchResources(searchParams).flatMap(new Func1<Response<ResourceSearchResponse>, Observable<ResourceSearchResponse>>() {
+            @Override
+            public Observable<ResourceSearchResponse> call(Response<ResourceSearchResponse> rawResponse) {
+                int status = rawResponse.code();
+                ResourceSearchResponse entity;
+                if (status == 204) {
+                    entity = ResourceSearchResponse.empty();
+                } else {
+                    entity = rawResponse.body();
+                    com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-            if (status == 204) {
-                return ResourceSearchResponse.empty();
-            } else {
-                ResourceSearchResponse entity = response.body();
-                com.squareup.okhttp.Headers headers = response.headers();
+                    int resultCount = headerToInt(headers, "Result-Count");
+                    int totalCount = headerToInt(headers, "Total-Count");
+                    int startIndex = headerToInt(headers, "Start-Index");
+                    int nextOffset = headerToInt(headers, "Next-Offset");
 
-                int resultCount = Integer.valueOf(headers.get("Result-Count"));
-                int totalCount = Integer.valueOf(headers.get("Total-Count"));
-                int startIndex = Integer.valueOf(headers.get("Start-Index"));
-                int nextOffset = Integer.valueOf(headers.get("Next-Offset"));
-
-                entity.setResultCount(resultCount);
-                entity.setTotalCount(totalCount);
-                entity.setStartIndex(startIndex);
-                entity.setNextOffset(nextOffset);
-
-                return entity;
+                    entity.setResultCount(resultCount);
+                    entity.setTotalCount(totalCount);
+                    entity.setStartIndex(startIndex);
+                    entity.setNextOffset(nextOffset);
+                }
+                return Observable.just(entity);
             }
-
-        } catch (IOException e) {
-            // We need to wrap response in call. For now we will rethrow error
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     @NonNull
     @Override
-    public Call<ReportLookupResponse> requestReportResource(@NonNull String resourceUri) {
+    public Observable<ReportLookupResponse> requestReportResource(@Nullable String resourceUri) {
+        checkNotNull(resourceUri, "Report uri should not be null");
         return mRestApi.requestReportResource(resourceUri);
     }
 
     @NonNull
     @Override
-    public Call<DashboardLookupResponse> requestDashboardResource(@NonNull String resourceUri) {
+    public Observable<DashboardLookupResponse> requestDashboardResource(@Nullable String resourceUri) {
+        checkNotNull(resourceUri, "Dashboard uri should not be null");
         return mRestApi.requestDashboardResource(resourceUri);
     }
 
     @NonNull
     @Override
-    public Call<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull String resourceUri) {
+    public Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@Nullable String resourceUri) {
+        checkNotNull(resourceUri, "Legacy dashboard uri should not be null");
         return mRestApi.requestLegacyDashboardResource(resourceUri);
     }
 
     @NonNull
     @Override
-    public Call<FolderLookupResponse> requestFolderResource(@NonNull String resourceUri) {
+    public Observable<FolderLookupResponse> requestFolderResource(@Nullable String resourceUri) {
+        checkNotNull(resourceUri, "Folder uri should not be null");
         return mRestApi.requestFolderResource(resourceUri);
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/resources")
-        Call<ResourceSearchResponse> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
+        @GET("rest_v2/resources")
+        Observable<Response<ResourceSearchResponse>> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
 
         @NonNull
         @Headers("Accept: application/repository.reportUnit+json")
-        @GET("/rest_v2/resources{resourceUri}")
-        Call<ReportLookupResponse> requestReportResource(@NonNull @Path(value = "resourceUri", encoded = false) String resourceUri);
+        @GET("rest_v2/resources{resourceUri}")
+        Observable<ReportLookupResponse> requestReportResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.dashboard+json")
-        @GET("/rest_v2/resources{resourceUri}")
-        Call<DashboardLookupResponse> requestDashboardResource(@NonNull @Path(value = "resourceUri", encoded = false) String resourceUri);
+        @GET("rest_v2/resources{resourceUri}")
+        Observable<DashboardLookupResponse> requestDashboardResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.legacyDashboard+json")
-        @GET("/rest_v2/resources{resourceUri}")
-        Call<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull @Path(value = "resourceUri", encoded = false) String resourceUri);
+        @GET("rest_v2/resources{resourceUri}")
+        Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.folder+json")
-        @GET("/rest_v2/resources{resourceUri}")
-        Call<FolderLookupResponse> requestFolderResource(@NonNull @Path(value = "resourceUri", encoded = false) String resourceUri);
+        @GET("rest_v2/resources{resourceUri}")
+        Observable<FolderLookupResponse> requestFolderResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
     }
 }

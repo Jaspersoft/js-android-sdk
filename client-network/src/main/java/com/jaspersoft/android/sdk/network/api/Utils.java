@@ -42,5 +42,14 @@ final class Utils {
         }
     }
 
+    static int headerToInt(com.squareup.okhttp.Headers headers, String key) {
+        String header = headers.get(key);
+        if (header == null) {
+            return 0;
+        } else {
+            return Integer.valueOf(header);
+        }
+    }
+
     private Utils() {}
 }

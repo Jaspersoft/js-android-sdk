@@ -35,7 +35,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 
 import java.util.Map;
 
-import retrofit.Call;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -43,19 +43,19 @@ import retrofit.Call;
  */
 public interface RepositoryRestApi {
     @NonNull
-    ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams);
+    Observable<ResourceSearchResponse> searchResources(@Nullable Map<String, String> searchParams);
 
     @NonNull
-    Call<ReportLookupResponse> requestReportResource(@NonNull String resourceUri);
+    Observable<ReportLookupResponse> requestReportResource(@NonNull String resourceUri);
 
     @NonNull
-    Call<DashboardLookupResponse> requestDashboardResource(@NonNull String resourceUri);
+    Observable<DashboardLookupResponse> requestDashboardResource(@NonNull String resourceUri);
 
     @NonNull
-    Call<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull String resourceUri);
+    Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull String resourceUri);
 
     @NonNull
-    Call<FolderLookupResponse> requestFolderResource(@NonNull String resourceUri);
+    Observable<FolderLookupResponse> requestFolderResource(@NonNull String resourceUri);
 
     final class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

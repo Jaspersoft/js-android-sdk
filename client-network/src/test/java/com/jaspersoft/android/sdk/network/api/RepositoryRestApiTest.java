@@ -37,6 +37,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import rx.Observable;
+
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -76,7 +78,8 @@ public class RepositoryRestApiTest {
     public void shouldReturnEmptyResponseForNoContentResponse() {
         mWebMockRule.enqueue(create204Response());
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        ResourceSearchResponse response = call.toBlocking().first();
 
         assertThat(response.getResources(), is(empty()));
     }
@@ -100,7 +103,8 @@ public class RepositoryRestApiTest {
                 .addHeader("Result-Count", "100");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        ResourceSearchResponse response = call.toBlocking().first();
         assertThat(response.getResultCount(), is(100));
     }
 
@@ -111,7 +115,8 @@ public class RepositoryRestApiTest {
                 .addHeader("Total-Count", "1000");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        ResourceSearchResponse response = call.toBlocking().first();
         assertThat(response.getTotalCount(), is(1000));
     }
     @Test
@@ -121,7 +126,8 @@ public class RepositoryRestApiTest {
                 .addHeader("Start-Index", "5");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        ResourceSearchResponse response = call.toBlocking().first();
         assertThat(response.getStartIndex(), is(5));
     }
 
@@ -132,8 +138,41 @@ public class RepositoryRestApiTest {
                 .addHeader("Next-Offset", "10");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        ResourceSearchResponse response = call.toBlocking().first();
         assertThat(response.getNextOffset(), is(10));
+    }
+
+    @Test
+    public void requestForReportResourceShouldNotAcceptNullUri() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Report uri should not be null");
+
+        restApiUnderTest.requestReportResource(null);
+    }
+
+    @Test
+    public void requestForDashboardResourceShouldNotAcceptNullUri() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Dashboard uri should not be null");
+
+        restApiUnderTest.requestDashboardResource(null);
+    }
+
+    @Test
+    public void requestForLegacyDashboardResourceShouldNotAcceptNullUri() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Legacy dashboard uri should not be null");
+
+        restApiUnderTest.requestLegacyDashboardResource(null);
+    }
+
+    @Test
+    public void requestForFolderResourceShouldNotAcceptNullUri() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Folder uri should not be null");
+
+        restApiUnderTest.requestFolderResource(null);
     }
 
     private MockResponse create200Response() {

@@ -48,14 +48,14 @@ final class LoggingInterceptor implements Interceptor {
         Request request = chain.request();
 
         long t1 = System.nanoTime();
-        logger.log(String.format("Sending request %s on %s%n%s \nWith body: \n%s",
+        logger.log(String.format("Sending request %s on %s%n%sWith body: \n%s",
                 request.url(), chain.connection(), request.headers(), bodyToString(request)));
 
         Response response = chain.proceed(request);
 
         long t2 = System.nanoTime();
-        logger.log(String.format("Received response for %s in %.1fms%n%sBody: \n%s",
-                response.request().url(), (t2 - t1) / 1e6d, response.headers(), bodyToString(request)));
+        logger.log(String.format("Received response for %s in %.1fms%n%s",
+                response.request().url(), (t2 - t1) / 1e6d, response.headers()));
 
         return response;
     }
@@ -71,7 +71,7 @@ final class LoggingInterceptor implements Interceptor {
                 return "No Body";
             }
         } catch (final IOException e) {
-            return String.format("<Can not decode response body. Reason: %s>", e.getMessage());
+            return String.format("<Can not decode request body. Reason: %s>", e.getMessage());
         }
     }
 }
