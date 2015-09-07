@@ -52,7 +52,7 @@ final class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request compressedRequest = originalRequest.newBuilder()
-                .header("Cookie", "mToken")
+                .header("Cookie", mToken)
                 .build();
         return chain.proceed(compressedRequest);
     }

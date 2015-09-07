@@ -34,7 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlValueRespon
 import java.util.Map;
 import java.util.Set;
 
-import retrofit.Call;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -43,7 +43,7 @@ import retrofit.Call;
 public interface InputControlRestApi {
 
     @NonNull
-    Call<InputControlResponse> requestInputControls(@NonNull String reportUri);
+    Observable<InputControlResponse> requestInputControls(@NonNull String reportUri);
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
@@ -55,20 +55,20 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NonNull
-    Call<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
+    Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri);
+    Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri);
 
     @NonNull
-    Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
+    Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
 
     /**
      * TODO: 1. consider to flatten controls id parameter.
      */
     @NonNull
-    Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
+    Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues);
 
@@ -83,7 +83,7 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
-    Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
+    Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues,
                                                        boolean freshData);

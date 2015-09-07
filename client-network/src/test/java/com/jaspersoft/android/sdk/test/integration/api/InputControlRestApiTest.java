@@ -38,8 +38,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
-import retrofit.Call;
-import retrofit.Response;
+import rx.Observable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -69,11 +68,10 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() throws IOException {
-        Call<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI);
-        Response<InputControlResponse> response = call.execute();
+        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI);
 
-        List<InputControl> controls = response.body().getValues();
-        assertThat(response.body().getValues(), is(not(empty())));
+        List<InputControl> controls = call.toBlocking().first().getValues();
+        assertThat(controls, is(not(empty())));
 
         InputControl control = controls.get(0);
         assertThat(control.getState(), is(notNullValue()));
@@ -84,11 +82,10 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() throws IOException {
-        Call<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
-        Response<InputControlResponse> response = call.execute();
+        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
 
-        List<InputControl> controls = response.body().getValues();
-        assertThat(response.body().getValues(), is(not(empty())));
+        List<InputControl> controls = call.toBlocking().first().getValues();
+        assertThat(controls, is(not(empty())));
 
         InputControl control = controls.get(0);
         assertThat(control.getState(), is(nullValue()));
@@ -96,15 +93,15 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInitialInputControlsValues() throws IOException {
-        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI);
-        Response<InputControlValueResponse> response = call.execute();
-        assertThat(response.body().getValues(), is(not(empty())));
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() throws IOException {
-        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
-        Response<InputControlValueResponse> response = call.execute();
-        assertThat(response.body().getValues(), is(not(empty())));
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
     }
 }

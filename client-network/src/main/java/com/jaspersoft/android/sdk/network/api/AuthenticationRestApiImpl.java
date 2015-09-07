@@ -126,9 +126,11 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                 formBody.add(entry.getKey(), entry.getValue());
             }
         }
-
+        /**
+         * Constructs url http[s]://some.jrs/j_spring_security_check
+         */
         return new Request.Builder()
-                .url(mBaseUrl + "/j_spring_security_check")
+                .url(mBaseUrl + "j_spring_security_check")
                 .post(formBody.build())
                 .build();
     }

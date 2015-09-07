@@ -33,7 +33,6 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlValueRespon
 import java.util.Map;
 import java.util.Set;
 
-import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -41,6 +40,7 @@ import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -55,31 +55,31 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Call<InputControlResponse> requestInputControls(@NonNull String reportUri) {
+    public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri) {
         return requestInputControls(reportUri, false);
     }
 
     @NonNull
     @Override
-    public Call<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState) {
+    public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState) {
         return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
     }
 
     @NonNull
     @Override
-    public Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri) {
+    public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri) {
         return requestInputControlsInitialStates(reportUri, false);
     }
 
     @NonNull
     @Override
-    public Call<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
+    public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
         return mRestApi.requestInputControlsInitialValues(reportUri, freshData);
     }
 
     @NonNull
     @Override
-    public Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
+    public Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                               @NonNull Set<String> controlsId,
                                                               @NonNull Map<String, Set<String>> controlsValues) {
         return requestInputControlsStates(reportUri, controlsId, controlsValues, false);
@@ -87,7 +87,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Call<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
+    public Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                               @NonNull Set<String> controlsId,
                                                               @NonNull Map<String, Set<String>> controlsValues,
                                                               boolean freshData) {
@@ -98,24 +98,24 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reports{reportUnitURI}/inputControls")
-        Call<InputControlResponse> requestInputControls(
-                @NonNull @Path(value = "reportUnitURI", encoded = false) String reportUri,
+        @GET("rest_v2/reports{reportUnitURI}/inputControls")
+        Observable<InputControlResponse> requestInputControls(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("exclude") String state);
 
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reports{reportUnitURI}/inputControls/values")
-        Call<InputControlValueResponse> requestInputControlsInitialValues(
-                @NonNull @Path(value = "reportUnitURI", encoded = false) String reportUri,
+        @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
+        Observable<InputControlValueResponse> requestInputControlsInitialValues(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("freshData") boolean freshData);
 
         @NonNull
         @Headers("Accept: application/json")
-        @POST("/rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
-        Call<InputControlValueResponse> requestInputControlsValues(
-                @NonNull @Path(value = "reportUnitURI", encoded = false) String reportUri,
-                @NonNull @Path(value = "controlsId", encoded = false) String ids,
+        @POST("rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
+        Observable<InputControlValueResponse> requestInputControlsValues(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
+                @NonNull @Path(value = "controlsId", encoded = true) String ids,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
                 @Query("freshData") boolean freshData);
     }

@@ -30,6 +30,8 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
+import okio.Buffer;
+
 /**
  * @author Tom Koptel
  * @since 2.2
@@ -44,7 +46,6 @@ final class LoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Interceptor.Chain chain) throws IOException {
         Request request = chain.request();
-        logger.log(String.format("Request info. %s", request.toString()));
 
         long t1 = System.nanoTime();
         logger.log(String.format("Sending request %s on %s%n%s",
@@ -53,9 +54,24 @@ final class LoggingInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         long t2 = System.nanoTime();
-        logger.log(String.format("Received response for %s in %.1fms%n%s",
-                response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+        logger.log(String.format("Received response for %s in %.1fms%n%sBody: \n%s",
+                response.request().url(), (t2 - t1) / 1e6d, response.headers(), bodyToString(request)));
 
         return response;
+    }
+
+    private static String bodyToString(final Request request){
+        try {
+            final Request copy = request.newBuilder().build();
+            final Buffer buffer = new Buffer();
+            if (copy.body() != null) {
+                copy.body().writeTo(buffer);
+                return buffer.readUtf8();
+            } else {
+                return "No Body";
+            }
+        } catch (final IOException e) {
+            return String.format("<Can not decode response body. Reason: %s>", e.getMessage());
+        }
     }
 }
