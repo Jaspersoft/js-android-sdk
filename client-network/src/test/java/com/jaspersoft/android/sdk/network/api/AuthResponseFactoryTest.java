@@ -25,48 +25,42 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.Protocol;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({com.squareup.okhttp.Response.class})
 public class AuthResponseFactoryTest {
-    @Mock
-    com.squareup.okhttp.Response mResponse;
+
+    private Request mRequest;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        mRequest = new Request.Builder()
+                .url("http://localhost")
+                .build();
     }
 
     @Test
     public void shouldExtractTokenFromNetworkResponse() {
-        Map<String, String> headersRaw = new HashMap<>();
-        headersRaw.put("Set-Cookie", "cookie1");
-        headersRaw.put("Set-Cookie", "cookie2");
+        Response mockResponse = new Response.Builder()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie2")
+                .code(200)
+                .protocol(Protocol.HTTP_1_1)
+                .request(mRequest)
+                .build();
 
-        Headers headers = Headers.of(headersRaw);
-        when(mResponse.headers()).thenReturn(headers);
-
-        AuthResponse response = AuthResponseFactory.create(mResponse);
+        AuthResponse response = AuthResponseFactory.create(mockResponse);
         assertThat(response.getToken(), is("cookie1;cookie2"));
     }
 }
