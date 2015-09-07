@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -53,7 +52,6 @@ public class ServerRestTest {
     public void shouldRequestServerInfo() throws IOException {
         ServerRestApi api = new ServerRestApi.Builder(mobileDemo2)
                 .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
                 .build();
         Call<ServerInfoResponse> call = api.requestServerInfo();
         Response<ServerInfoResponse> response = call.execute();

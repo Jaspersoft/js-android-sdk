@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
@@ -65,7 +64,6 @@ public class InputControlRestApiTest {
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder(mMetadata.getServerUrl(), cookie)
                 .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
                 .build();
     }
 

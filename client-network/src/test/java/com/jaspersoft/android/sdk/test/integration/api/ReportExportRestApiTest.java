@@ -29,7 +29,6 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
@@ -118,7 +117,6 @@ public class ReportExportRestApiTest {
         if (mExportApi == null) {
             mExportApi = new ReportExportRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
                     .setLog(TestLogger.get(this))
-                    .setLogLevel(RestApiLogLevel.FULL)
                     .build();
         }
         return mExportApi;
@@ -128,7 +126,6 @@ public class ReportExportRestApiTest {
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
                     .setLog(TestLogger.get(this))
-                    .setLogLevel(RestApiLogLevel.FULL)
                     .build();
         }
         return mExecApi;

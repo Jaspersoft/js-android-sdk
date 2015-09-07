@@ -41,7 +41,6 @@ abstract class BaseBuilder<API, SubBuilder> {
     private final OkHttpClient mOkHttpClient;
 
     private RestApiLog mLog = RestApiLog.NONE;
-    private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
 
     public BaseBuilder(String baseUrl){
         if (baseUrl == null || baseUrl.length() == 0) {
@@ -75,12 +74,6 @@ abstract class BaseBuilder<API, SubBuilder> {
         return (SubBuilder) this;
     }
 
-    @SuppressWarnings("unchecked")
-    public SubBuilder setLogLevel(RestApiLogLevel logLevel) {
-        mLogLevel = logLevel;
-        return (SubBuilder) this;
-    }
-
     Retrofit.Builder getDefaultBuilder() {
         return mRestAdapterBuilder;
     }
@@ -92,11 +85,7 @@ abstract class BaseBuilder<API, SubBuilder> {
     abstract API createApi();
 
     public API build() {
-        /*
-        TODO: Resolve log handling. Fallback to OkHttp interceptor https://github.com/square/okhttp/wiki/Interceptors
-        */
-//        mRestAdapterBuilder.setLog(new RetrofitLog(mLog));
-//        mRestAdapterBuilder.setLogLevel(RestApiLogLevel.toRetrofitLog(mLogLevel));
+        mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
         return createApi();
     }
 }

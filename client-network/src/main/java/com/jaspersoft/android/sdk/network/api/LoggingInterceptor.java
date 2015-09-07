@@ -24,27 +24,38 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.2
  */
-public enum RestApiLogLevel {
-    /** No logging. */
-    NONE,
-    /** Log only the request method and URL and the response status code and execution time. */
-    BASIC,
-    /** Log the basic information along with request and response headers. */
-    HEADERS,
-    /** Log the basic information along with request and response objects via toString(). */
-    HEADERS_AND_ARGS,
-    /**
-     * Log the headers, body, and metadata for both requests and responses.
-     * <p>
-     * Note: This requires that the entire request and response body be buffered in memory!
-     */
-    FULL;
+final class LoggingInterceptor implements Interceptor {
+    private final RestApiLog logger;
 
-//    static RestAdapter.LogLevel toRetrofitLog(RestApiLogLevel logLevel) {
-//        return RestAdapter.LogLevel.valueOf(logLevel.name());
-//    }
+    public LoggingInterceptor(RestApiLog logger) {
+        this.logger = logger;
+    }
+
+    @Override
+    public Response intercept(Interceptor.Chain chain) throws IOException {
+        Request request = chain.request();
+        logger.log(String.format("Request info. %s", request.toString()));
+
+        long t1 = System.nanoTime();
+        logger.log(String.format("Sending request %s on %s%n%s",
+                request.url(), chain.connection(), request.headers()));
+
+        Response response = chain.proceed(request);
+
+        long t2 = System.nanoTime();
+        logger.log(String.format("Received response for %s in %.1fms%n%s",
+                response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+
+        return response;
+    }
 }

@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
@@ -150,7 +149,6 @@ public class ReportExecutionRestApiTest {
         if (mApi == null) {
             mApi = new ReportExecutionRestApi.Builder(MOBILE_DEMO2, getAuthResponse().getToken())
                     .setLog(TestLogger.get(this))
-                    .setLogLevel(RestApiLogLevel.FULL)
                     .build();
         }
         return mApi;
