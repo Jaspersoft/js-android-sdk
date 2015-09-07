@@ -56,43 +56,49 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @NonNull
     @Override
     public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri) {
-        return requestInputControls(reportUri, false);
+        return requestInputControls(reportUri, false)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState) {
-        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri) {
-        return requestInputControlsInitialStates(reportUri, false);
+        return requestInputControlsInitialStates(reportUri, false)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
-        return mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+        return mRestApi.requestInputControlsInitialValues(reportUri, freshData)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
-                                                              @NonNull Set<String> controlsId,
-                                                              @NonNull Map<String, Set<String>> controlsValues) {
-        return requestInputControlsStates(reportUri, controlsId, controlsValues, false);
+                                                                            @NonNull Set<String> controlsId,
+                                                                            @NonNull Map<String, Set<String>> controlsValues) {
+        return requestInputControlsStates(reportUri, controlsId, controlsValues, false)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
-                                                              @NonNull Set<String> controlsId,
-                                                              @NonNull Map<String, Set<String>> controlsValues,
-                                                              boolean freshData) {
+                                                                            @NonNull Set<String> controlsId,
+                                                                            @NonNull Map<String, Set<String>> controlsValues,
+                                                                            boolean freshData) {
         String ids = TextUtils.join(";", controlsId);
-        return mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        return mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     private interface RestApi {

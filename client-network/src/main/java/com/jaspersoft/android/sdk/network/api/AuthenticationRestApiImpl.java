@@ -89,18 +89,18 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                                     .body(response.body())
                                     .code(401)
                                     .build();
-                            Throwable error = RestError.httpError(request.urlString(), response401);
+                            Throwable error = RestError.httpError(response401);
                             return Observable.error(error);
                         }
                     } else if (statusCode == 401) {
-                        Throwable error = RestError.httpError(request.urlString(), response);
+                        Throwable error = RestError.httpError(response);
                         return Observable.error(error);
                     } else {
-                        Throwable error = RestError.httpError(request.urlString(), response);
+                        Throwable error = RestError.httpError(response);
                         return Observable.error(error);
                     }
                 } catch (IOException e) {
-                    return Observable.error(RestError.networkError(request.urlString(), e));
+                    return Observable.error(RestError.networkError(e));
                 }
             }
         });

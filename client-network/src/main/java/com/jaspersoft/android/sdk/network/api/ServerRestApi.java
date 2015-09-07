@@ -50,7 +50,7 @@ public interface ServerRestApi {
 
         @Override
         ServerRestApi createApi() {
-            return getDefaultBuilder().build().create(ServerRestApi.class);
+            return new ServerRestApiImpl(getDefaultBuilder().build());
         }
     }
 }

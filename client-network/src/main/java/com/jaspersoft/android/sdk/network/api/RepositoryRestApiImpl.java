@@ -35,6 +35,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 
 import java.util.Map;
 
+import retrofit.HttpException;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
@@ -61,58 +62,74 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
     @NonNull
     @Override
     public Observable<ResourceSearchResponse> searchResources(@Nullable Map<String, String> searchParams) {
-        return mRestApi.searchResources(searchParams).flatMap(new Func1<Response<ResourceSearchResponse>, Observable<ResourceSearchResponse>>() {
-            @Override
-            public Observable<ResourceSearchResponse> call(Response<ResourceSearchResponse> rawResponse) {
-                int status = rawResponse.code();
-                ResourceSearchResponse entity;
-                if (status == 204) {
-                    entity = ResourceSearchResponse.empty();
-                } else {
-                    entity = rawResponse.body();
-                    com.squareup.okhttp.Headers headers = rawResponse.headers();
+        return mRestApi.searchResources(searchParams)
+                .flatMap(new Func1<Response<ResourceSearchResponse>, Observable<Response<ResourceSearchResponse>>>() {
+                    @Override
+                    public Observable<Response<ResourceSearchResponse>> call(Response<ResourceSearchResponse> response) {
+                        // If we user Response<?> return type we need manually handle 500 errors
+                        if (response.isSuccess()) {
+                            return Observable.just(response);
+                        }
+                        return Observable.error(new HttpException(response));
+                    }
+                })
+                .flatMap(new Func1<Response<ResourceSearchResponse>, Observable<ResourceSearchResponse>>() {
+                    @Override
+                    public Observable<ResourceSearchResponse> call(Response<ResourceSearchResponse> rawResponse) {
+                        int status = rawResponse.code();
+                        ResourceSearchResponse entity;
+                        if (status == 204) {
+                            entity = ResourceSearchResponse.empty();
+                        } else {
+                            entity = rawResponse.body();
+                            com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-                    int resultCount = headerToInt(headers, "Result-Count");
-                    int totalCount = headerToInt(headers, "Total-Count");
-                    int startIndex = headerToInt(headers, "Start-Index");
-                    int nextOffset = headerToInt(headers, "Next-Offset");
+                            int resultCount = headerToInt(headers, "Result-Count");
+                            int totalCount = headerToInt(headers, "Total-Count");
+                            int startIndex = headerToInt(headers, "Start-Index");
+                            int nextOffset = headerToInt(headers, "Next-Offset");
 
-                    entity.setResultCount(resultCount);
-                    entity.setTotalCount(totalCount);
-                    entity.setStartIndex(startIndex);
-                    entity.setNextOffset(nextOffset);
-                }
-                return Observable.just(entity);
-            }
-        });
+                            entity.setResultCount(resultCount);
+                            entity.setTotalCount(totalCount);
+                            entity.setStartIndex(startIndex);
+                            entity.setNextOffset(nextOffset);
+                        }
+                        return Observable.just(entity);
+                    }
+                })
+                .onErrorResumeNext(RestErrorAdapter.<ResourceSearchResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<ReportLookupResponse> requestReportResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Report uri should not be null");
-        return mRestApi.requestReportResource(resourceUri);
+        return mRestApi.requestReportResource(resourceUri)
+                .onErrorResumeNext(RestErrorAdapter.<ReportLookupResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<DashboardLookupResponse> requestDashboardResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Dashboard uri should not be null");
-        return mRestApi.requestDashboardResource(resourceUri);
+        return mRestApi.requestDashboardResource(resourceUri)
+                .onErrorResumeNext(RestErrorAdapter.<DashboardLookupResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Legacy dashboard uri should not be null");
-        return mRestApi.requestLegacyDashboardResource(resourceUri);
+        return mRestApi.requestLegacyDashboardResource(resourceUri)
+                .onErrorResumeNext(RestErrorAdapter.<LegacyDashboardLookupResponse>get());
     }
 
     @NonNull
     @Override
     public Observable<FolderLookupResponse> requestFolderResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
-        return mRestApi.requestFolderResource(resourceUri);
+        return mRestApi.requestFolderResource(resourceUri)
+                .onErrorResumeNext(RestErrorAdapter.<FolderLookupResponse>get());
     }
 
     private interface RestApi {

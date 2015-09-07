@@ -24,33 +24,20 @@
 
 package com.jaspersoft.android.sdk.network.entity.server;
 
-import com.jaspersoft.android.sdk.network.operation.Result;
-import com.jaspersoft.android.sdk.network.operation.Status;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class AuthResponse implements Result {
+public final class AuthResponse {
     private final String mToken;
-    private final Status mStatus;
 
-    private AuthResponse(Status status) {
-        mToken = null;
-        mStatus = status;
-    }
 
     private AuthResponse(String token) {
         mToken = token;
-        mStatus = Status.success();
     }
 
     public static AuthResponse createSuccessResponse(String token) {
         return new AuthResponse(token);
-    }
-
-    public static AuthResponse createFailResponse(Throwable throwable) {
-        return new AuthResponse(Status.error(throwable));
     }
 
     public String getToken() {
@@ -62,10 +49,5 @@ public final class AuthResponse implements Result {
         return "AuthResponse{" +
                 "mToken='" + mToken + '\'' +
                 '}';
-    }
-
-    @Override
-    public Status getStatus() {
-        return null;
     }
 }

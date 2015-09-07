@@ -30,34 +30,33 @@ package com.jaspersoft.android.sdk.network.exception;
 import java.io.IOException;
 
 /**
- * TODO we need resolve error issues
+ * Wrapper around exceptions which could pop up during request processing.
+ * Motivation behind class was to incapsulate 3-d party errors in generic interface.
  *
  * @author Tom Koptel
  * @since 2.0
  */
 public final class RestError extends RuntimeException {
-    public static RestError networkError(String url, IOException exception) {
-        return new RestError(exception.getMessage(), url, null, Kind.NETWORK,
+    public static RestError networkError(IOException exception) {
+        return new RestError(exception.getMessage(), null, Kind.NETWORK,
                 exception);
     }
 
-    public static RestError httpError(String url, com.squareup.okhttp.Response response) {
+    public static RestError httpError(com.squareup.okhttp.Response response) {
         String message = response.code() + " " + response.message();
-        return new RestError(message, url, response, Kind.HTTP, null);
+        return new RestError(message, response, Kind.HTTP, null);
     }
 
-    public static RestError unexpectedError(String url, Throwable exception) {
-        return new RestError(exception.getMessage(), url, null, Kind.UNEXPECTED,
+    public static RestError unexpectedError(Throwable exception) {
+        return new RestError(exception.getMessage(), null, Kind.UNEXPECTED,
                 exception);
     }
 
-    private final String url;
     private final com.squareup.okhttp.Response response;
     private final Kind kind;
 
-    RestError(String message, String url, com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+    RestError(String message, com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
         super(message, exception);
-        this.url = url;
         this.response = response;
         this.kind = kind;
     }
@@ -77,18 +76,23 @@ public final class RestError extends RuntimeException {
     }
 
     public String urlString() {
-        return url;
+        return response.request().urlString();
     }
 
     public Kind kind() {
         return kind;
     }
 
+    /** Identifies the event kind which triggered a {@link RestError}. */
     public enum Kind {
+        /** An {@link IOException} occurred while communicating to the server. */
         NETWORK,
+        /** A non-200 HTTP status code was received from the server. */
         HTTP,
-        UNEXPECTED;
-
+        /**
+         * An internal error occurred while attempting to execute a request. It is best practice to
+         * re-throw this exception so your application crashes.
+         */
+        UNEXPECTED
     }
-
 }

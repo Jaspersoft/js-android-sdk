@@ -22,12 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.operation;
+package com.jaspersoft.android.sdk.network.api;
+
+import com.jaspersoft.android.sdk.network.exception.RestError;
+
+import retrofit.HttpException;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
-public interface Result {
-    Status getStatus();
+final class RestErrorAdapter {
+    private RestErrorAdapter() {}
+
+    public static <T> Func1<Throwable, ? extends Observable<? extends T>> get() {
+        return new Func1<Throwable, Observable<? extends T>>() {
+            @Override
+            public Observable<? extends T> call(Throwable throwable) {
+                Class<?> exceptionClass = throwable.getClass();
+                if (HttpException.class.isAssignableFrom(exceptionClass)) {
+                    HttpException httpException = (HttpException) throwable;
+                    return Observable.error(RestError.httpError(httpException.response().raw()));
+                }
+                return Observable.error(RestError.unexpectedError(throwable));
+            }
+        };
+    }
 }

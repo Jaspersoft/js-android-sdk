@@ -64,7 +64,8 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(executionOptions, "Execution options should not be null");
 
-        return mRestApi.runReportExportExecution(executionId, executionOptions);
+        return mRestApi.runReportExportExecution(executionId, executionOptions)
+                .onErrorResumeNext(RestErrorAdapter.<ReportExportExecutionResponse>get());
     }
 
     @NonNull
@@ -73,7 +74,8 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
-        return mRestApi.checkReportExportStatus(executionId, exportId);
+        return mRestApi.checkReportExportStatus(executionId, exportId)
+                .onErrorResumeNext(RestErrorAdapter.<ExecutionStatusResponse>get());
     }
 
     @NonNull
@@ -82,19 +84,21 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
-        return mRestApi.requestReportExportOutput(executionId, exportId).flatMap(new Func1<Response<ResponseBody>, Observable<ExportResourceResponse>>() {
-            @Override
-            public Observable<ExportResourceResponse> call(Response<ResponseBody> rawResponse) {
-                com.squareup.okhttp.Headers headers = rawResponse.headers();
+        return mRestApi.requestReportExportOutput(executionId, exportId)
+                .flatMap(new Func1<Response<ResponseBody>, Observable<ExportResourceResponse>>() {
+                    @Override
+                    public Observable<ExportResourceResponse> call(Response<ResponseBody> rawResponse) {
+                        com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-                RetrofitExportInput exportInput = new RetrofitExportInput(rawResponse.body());
-                String pages = headers.get("report-pages");
-                boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
+                        RetrofitExportInput exportInput = new RetrofitExportInput(rawResponse.body());
+                        String pages = headers.get("report-pages");
+                        boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
 
-                ExportResourceResponse response = ExportResourceResponse.create(exportInput, pages, isFinal);
-                return Observable.just(response);
-            }
-        });
+                        ExportResourceResponse response = ExportResourceResponse.create(exportInput, pages, isFinal);
+                        return Observable.just(response);
+                    }
+                })
+                .onErrorResumeNext(RestErrorAdapter.<ExportResourceResponse>get());
     }
 
     @NonNull
@@ -109,10 +113,11 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
                     @Override
                     public Observable<ExportInput> call(Response<ResponseBody> rawResponse) {
                         ResponseBody body = rawResponse.body();
-                        ExportInput response =  new RetrofitExportInput(body);
+                        ExportInput response = new RetrofitExportInput(body);
                         return Observable.just(response);
                     }
-                });
+                })
+                .onErrorResumeNext(RestErrorAdapter.<ExportInput>get());
     }
 
     private interface RestApi {

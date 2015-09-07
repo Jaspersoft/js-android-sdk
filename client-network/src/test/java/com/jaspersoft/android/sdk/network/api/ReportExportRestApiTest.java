@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -88,7 +89,9 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        Observable<ReportExportExecutionResponse> call = restApiUnderTest
+                .runExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        call.toBlocking().first();
     }
 
     @Test

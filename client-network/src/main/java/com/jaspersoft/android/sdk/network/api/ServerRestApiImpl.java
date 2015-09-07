@@ -22,12 +22,40 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.operation;
+package com.jaspersoft.android.sdk.network.api;
+
+import android.support.annotation.NonNull;
+
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
-public interface ResultCallback<RESULT extends Result> {
-    void onResult(RESULT result);
+final class ServerRestApiImpl implements ServerRestApi {
+
+    private final RestApi mApi;
+
+    public ServerRestApiImpl(Retrofit retrofit) {
+        mApi = retrofit.create(RestApi.class);
+    }
+
+    @NonNull
+    @Override
+    public Observable<ServerInfoResponse> requestServerInfo() {
+        return mApi.requestServerInfo()
+                .onErrorResumeNext(RestErrorAdapter.<ServerInfoResponse>get());
+    }
+
+    private interface RestApi {
+        @NonNull
+        @Headers("Accept: application/json")
+        @GET(value = "rest_v2/serverInfo")
+        Observable<ServerInfoResponse> requestServerInfo();
+    }
 }

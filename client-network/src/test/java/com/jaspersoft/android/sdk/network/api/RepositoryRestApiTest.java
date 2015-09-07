@@ -71,7 +71,8 @@ public class RepositoryRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.searchResources(null);
+        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
+        call.toBlocking().first();
     }
 
     @Test
