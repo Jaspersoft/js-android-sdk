@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 
-import retrofit.Call;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -41,16 +41,16 @@ import retrofit.Call;
 public interface ReportExportRestApi {
 
     @NonNull
-    Call<ReportExportExecutionResponse> runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    Observable<ReportExportExecutionResponse> runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
-    Call<ExecutionStatusResponse> checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    Observable<ExecutionStatusResponse> checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
-    ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId);
+    Observable<ExportResourceResponse> requestExportOutput(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
-    ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
+    Observable<ExportInput> requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
     final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

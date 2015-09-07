@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -35,15 +34,15 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetail
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
+import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import retrofit.Call;
-import retrofit.Response;
 import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
@@ -55,11 +54,31 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ReportExportRestApiTest {
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
-    String reportUri = "/public/Samples/Reports/AllAccounts";
-    AuthResponse mAuthResponse;
+    private static final String REPORT_URI = "/public/Samples/Reports/AllAccounts";
+
     ReportExecutionRestApi mExecApi;
-    ReportExportRestApi mExportApi;
+    ReportExportRestApi apiUnderTest;
+
+    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+
+    @Before
+    public void setup() {
+        mAuthenticator.authorize();
+        String cookie = mAuthenticator.getCookie();
+
+        if (mExecApi == null) {
+            mExecApi = new ReportExecutionRestApi.Builder(mMetadata.getServerUrl(), cookie)
+                    .setLog(TestLogger.get(this))
+                    .build();
+        }
+
+        if (apiUnderTest == null) {
+            apiUnderTest = new ReportExportRestApi.Builder(mMetadata.getServerUrl(), cookie)
+                    .setLog(TestLogger.get(this))
+                    .build();
+        }
+    }
 
     @Test
     public void runExportRequestShouldReturnResult() {
@@ -72,8 +91,8 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        Call<ExecutionStatusResponse> call = getApi().checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
-        Response<ExecutionStatusResponse> response = call.execute();
+        Observable<ExecutionStatusResponse> call = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        ExecutionStatusResponse response = call.toBlocking().first();
         assertThat(response, is(notNullValue()));
     }
 
@@ -81,57 +100,30 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExportResourceResponse output = getApi().requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
+        Observable<ExportResourceResponse> call = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
+        ExportResourceResponse output = call.toBlocking().first();
+
         assertThat(output.getExportInput(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
         assertThat(output.isFinal(), is(false));
     }
 
+    /**
+     * Helper methods
+     */
     @NonNull
     private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        Call<ReportExportExecutionResponse> call = getApi().runExportExecution(exec.getExecutionId(), options);
-        try {
-            Response<ReportExportExecutionResponse> response = call.execute();
-            return response.body();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        Observable<ReportExportExecutionResponse> call = apiUnderTest.runExportExecution(exec.getExecutionId(), options);
+        return call.toBlocking().first();
     }
 
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
-        ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(reportUri);
-        Observable<ReportExecutionDetailsResponse> call = getReportExecApi().runReportExecution(executionRequestOptions);
+        ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
+        Observable<ReportExecutionDetailsResponse> call = mExecApi.runReportExecution(executionRequestOptions);
         return call.toBlocking().first();
-    }
-
-    private ReportExportRestApi getApi() {
-        if (mExportApi == null) {
-            mExportApi = new ReportExportRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
-                    .setLog(TestLogger.get(this))
-                    .build();
-        }
-        return mExportApi;
-    }
-
-    private ReportExecutionRestApi getReportExecApi() {
-        if (mExecApi == null) {
-            mExecApi = new ReportExecutionRestApi.Builder(mobileDemo2, getAuthResponse().getToken())
-                    .setLog(TestLogger.get(this))
-                    .build();
-        }
-        return mExecApi;
-    }
-
-    private AuthResponse getAuthResponse() {
-        if (mAuthResponse == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mobileDemo2).build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null)
-                    .toBlocking().first();
-        }
-        return mAuthResponse;
     }
 }

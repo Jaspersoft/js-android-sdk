@@ -28,7 +28,6 @@ import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.OkHttpClient;
 
-import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 

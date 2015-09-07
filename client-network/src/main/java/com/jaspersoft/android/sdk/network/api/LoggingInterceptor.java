@@ -48,8 +48,8 @@ final class LoggingInterceptor implements Interceptor {
         Request request = chain.request();
 
         long t1 = System.nanoTime();
-        logger.log(String.format("Sending request %s on %s%n%s",
-                request.url(), chain.connection(), request.headers()));
+        logger.log(String.format("Sending request %s on %s%n%s \nWith body: \n%s",
+                request.url(), chain.connection(), request.headers(), bodyToString(request)));
 
         Response response = chain.proceed(request);
 
