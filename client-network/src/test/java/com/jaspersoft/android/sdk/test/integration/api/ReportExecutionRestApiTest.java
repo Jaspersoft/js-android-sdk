@@ -43,8 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import retrofit.Call;
-import retrofit.Response;
+import rx.Observable;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -78,7 +77,8 @@ public class ReportExecutionRestApiTest {
     public void shouldCancelReportExecution() throws InterruptedException {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse response = startExecution();
-        boolean cancelled = api.cancelReportExecution(response.getExecutionId());
+        Observable<Boolean> call = api.cancelReportExecution(response.getExecutionId());
+        boolean cancelled = call.toBlocking().first();
         assertThat(cancelled, is(true));
     }
 
@@ -88,9 +88,9 @@ public class ReportExecutionRestApiTest {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        Call<ReportExecutionDetailsResponse> call = api.requestReportExecutionDetails(executionResponse.getExecutionId());
-        Response<ReportExecutionDetailsResponse> response = call.execute();
-        assertThat(response.body().getExecutionId(), is(executionId));
+        Observable<ReportExecutionDetailsResponse> call = api.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDetailsResponse response = call.toBlocking().first();
+        assertThat(response.getExecutionId(), is(executionId));
     }
 
     @Test
@@ -98,9 +98,9 @@ public class ReportExecutionRestApiTest {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        Call<ExecutionStatusResponse> call = api.requestReportExecutionStatus(executionResponse.getExecutionId());
-        Response<ExecutionStatusResponse> response = call.execute();
-        assertThat(response.body().getStatus(), is(notNullValue()));
+        Observable<ExecutionStatusResponse> call = api.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatusResponse response = call.toBlocking().first();
+        assertThat(response.getStatus(), is(notNullValue()));
     }
 
     /**
@@ -114,9 +114,9 @@ public class ReportExecutionRestApiTest {
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        Call<ReportExecutionSearchResponse> call = api.searchReportExecution(params);
-        Response<ReportExecutionSearchResponse> response = call.execute();
-        assertThat(response.body().getItems(), is(not(empty())));
+        Observable<ReportExecutionSearchResponse> call = api.searchReportExecution(params);
+        ReportExecutionSearchResponse response = call.toBlocking().first();
+        assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
@@ -124,7 +124,8 @@ public class ReportExecutionRestApiTest {
         ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        boolean success = api.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        Observable<Boolean> call = api.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        boolean success = call.toBlocking().first();
         assertThat(success, is(true));
     }
 
@@ -136,13 +137,8 @@ public class ReportExecutionRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        Call<ReportExecutionDetailsResponse> call = getApi().runReportExecution(executionRequestOptions);
-        try {
-            Response<ReportExecutionDetailsResponse> response = call.execute();
-            return response.body();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Observable<ReportExecutionDetailsResponse> call = getApi().runReportExecution(executionRequestOptions);
+        return call.toBlocking().first();
     }
 
     private ReportExecutionRestApi getApi() {

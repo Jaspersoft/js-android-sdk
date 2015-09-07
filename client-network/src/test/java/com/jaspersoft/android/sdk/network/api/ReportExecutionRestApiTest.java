@@ -40,9 +40,10 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import retrofit.Call;
-import retrofit.Response;
+import rx.Observable;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
@@ -54,6 +55,11 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ReportExecutionRestApiTest {
+
+    private static final Map<String, String> SEARCH_PARAMS = new HashMap<String, String>();
+    static {
+        SEARCH_PARAMS.put("key", "value");
+    }
 
     @ResourceFile("json/cancelled_report_response.json")
     TestResource cancelledResponse;
@@ -90,46 +96,46 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri"));
+        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri")).toBlocking().first();
     }
 
     @Test
     public void bodyParameterShouldNotBeNullForRunReportExecution() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Body parameter value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution options should not be null");
 
-        restApiUnderTest.runReportExecution(null);
+        restApiUnderTest.runReportExecution(null).toBlocking().first();
     }
 
     @Test
     public void pathParameterShouldNotBeNullForRequestExecutionDetails() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionDetails(null);
+        restApiUnderTest.requestReportExecutionDetails(null).toBlocking().first();
     }
 
     @Test
     public void pathParameterShouldNotBeNullForRequestExecutionStatus() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionStatus(null);
+        restApiUnderTest.requestReportExecutionStatus(null).toBlocking().first();
     }
 
     @Test
     public void pathParameterShouldNotBeNullForCancelRequestExecution() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.cancelReportExecution(null);
+        restApiUnderTest.cancelReportExecution(null).toBlocking().first();
     }
 
     @Test
     public void responseShouldNotBeCancelledIfResponseIs204() {
         mWebMockRule.enqueue(create204Response());
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id").toBlocking().first();
 
         assertThat(cancelled, is(false));
     }
@@ -140,7 +146,7 @@ public class ReportExecutionRestApiTest {
         response.setBody(cancelledResponse.asString());
         mWebMockRule.enqueue(response);
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id").toBlocking().first();
 
         assertThat(cancelled, is(true));
     }
@@ -149,9 +155,8 @@ public class ReportExecutionRestApiTest {
     public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws IOException {
         mWebMockRule.enqueue(create204Response());
 
-        Call<ReportExecutionSearchResponse> call = restApiUnderTest.searchReportExecution(null);
-        Response<ReportExecutionSearchResponse> response = call.execute();
-        assertThat(response.body().getItems(), is(empty()));
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS).toBlocking().first();
+        assertThat(response.getItems(), is(empty()));
     }
 
     @Test
@@ -160,9 +165,8 @@ public class ReportExecutionRestApiTest {
         mockResponse.setBody(searchExecutionResponse.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Call<ReportExecutionSearchResponse> call = restApiUnderTest.searchReportExecution(null);
-        Response<ReportExecutionSearchResponse> response = call.execute();
-        assertThat(response.body().getItems(), is(not(empty())));
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS).toBlocking().first();
+        assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
@@ -170,17 +174,18 @@ public class ReportExecutionRestApiTest {
     public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
         mWebMockRule.enqueue(create204Response());
 
-        boolean response = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
+        Observable<Boolean> call = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
+        boolean response = call.toBlocking().first();
 
         assertThat(response, is(true));
     }
 
     @Test
     public void bodyParameterShouldNotBeNullForExecutionUpdate() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Body parameter value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution params id should not be null");
 
-        restApiUnderTest.updateReportExecution("any_id", null);
+        restApiUnderTest.updateReportExecution("any_id", null).toBlocking().first();
     }
 
     private MockResponse create200Response() {

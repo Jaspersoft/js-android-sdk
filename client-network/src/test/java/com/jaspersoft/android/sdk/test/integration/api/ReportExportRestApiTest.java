@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import retrofit.Call;
 import retrofit.Response;
+import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -103,14 +104,8 @@ public class ReportExportRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(reportUri);
-        Call<ReportExecutionDetailsResponse> call = getReportExecApi().runReportExecution(executionRequestOptions);
-
-        try {
-            Response<ReportExecutionDetailsResponse> response = call.execute();
-            return response.body();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        Observable<ReportExecutionDetailsResponse> call = getReportExecApi().runReportExecution(executionRequestOptions);
+        return call.toBlocking().first();
     }
 
     private ReportExportRestApi getApi() {

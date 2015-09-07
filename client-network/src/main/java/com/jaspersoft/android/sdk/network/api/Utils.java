@@ -36,5 +36,11 @@ final class Utils {
         return object;
     }
 
+    static void checkArgument(boolean condition, String message) {
+        if (condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     private Utils() {}
 }
