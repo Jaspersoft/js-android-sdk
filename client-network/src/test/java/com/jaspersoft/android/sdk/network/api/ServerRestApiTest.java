@@ -50,7 +50,7 @@ public class ServerRestApiTest {
         mWebMockRule.enqueue(create500Response());
 
         ServerRestApi restApi = new ServerRestApi.Builder(mWebMockRule.getRootUrl()).build();
-        restApi.requestServerInfo();
+        restApi.requestServerInfo().toBlocking().first();
     }
 
     @Test

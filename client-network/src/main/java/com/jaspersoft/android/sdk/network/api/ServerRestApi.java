@@ -28,9 +28,9 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 
-import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -40,8 +40,8 @@ public interface ServerRestApi {
 
     @NonNull
     @Headers("Accept: application/json")
-    @GET(value = "/rest_v2/serverInfo")
-    Call<ServerInfoResponse> requestServerInfo();
+    @GET(value = "rest_v2/serverInfo")
+    Observable<ServerInfoResponse> requestServerInfo();
 
     final class Builder extends BaseBuilder<ServerRestApi, Builder> {
         public Builder(String baseUrl) {

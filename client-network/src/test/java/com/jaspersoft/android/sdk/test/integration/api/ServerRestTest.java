@@ -33,8 +33,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import retrofit.Call;
-import retrofit.Response;
+import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -53,8 +52,8 @@ public class ServerRestTest {
         ServerRestApi api = new ServerRestApi.Builder(mobileDemo2)
                 .setLog(TestLogger.get(this))
                 .build();
-        Call<ServerInfoResponse> call = api.requestServerInfo();
-        Response<ServerInfoResponse> response = call.execute();
+        Observable<ServerInfoResponse> call = api.requestServerInfo();
+        ServerInfoResponse response = call.toBlocking().first();
         assertThat(response, is(notNullValue()));
     }
 }
