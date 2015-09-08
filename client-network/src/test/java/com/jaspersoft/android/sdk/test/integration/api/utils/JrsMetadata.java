@@ -47,10 +47,10 @@ public final class JrsMetadata {
 
     public static JrsMetadata createMobileDemo() {
         return builder()
-                .setOrganization("organization_1")
+                .setOrganization("")
                 .setServerUrl("http://mobiledemo.jaspersoft.com/jasperserver-pro")
-                .setUsername("joeuser")
-                .setPassword("joeuser")
+                .setUsername("superuser")
+                .setPassword("superuser")
                 .build();
     }
 
@@ -130,7 +130,6 @@ public final class JrsMetadata {
             assertPropertyNotEmpty(serverUrl, "serverUrl");
             assertPropertyNotEmpty(username, "username");
             assertPropertyNotEmpty(password, "password");
-            serverUrl = resolveUrl(serverUrl);
             try {
                 new URL(serverUrl);
             } catch (MalformedURLException e) {
@@ -150,13 +149,6 @@ public final class JrsMetadata {
                 throw new IllegalStateException(
                         propertyName + " invalid should not be: " + String.valueOf(property));
             }
-        }
-
-        private static String resolveUrl(String url) {
-            if (!isEmpty(url) && !url.endsWith("/")) {
-                url = url + "/";
-            }
-            return url;
         }
 
         private static boolean isEmpty(String str) {
