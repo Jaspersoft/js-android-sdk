@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ServerRestTest {
 
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
 
     @Test
     public void shouldRequestServerInfo() throws IOException {

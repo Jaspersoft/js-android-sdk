@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class AuthenticationRestApiTest {
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
 
     @Before
     public void setup() {
@@ -54,8 +55,7 @@ public class AuthenticationRestApiTest {
     @Test
     public void shouldReturnResponseForSpringRequest() throws IOException {
         AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2)
-//                .setLog(TestLogger.get(this))
-//                .setLogLevel(RestApiLogLevel.FULL)
+                .setLog(TestLogger.get(this))
                 .build();
         Observable<AuthResponse> response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
         assertThat(response.toBlocking().first().getToken(), is(notNullValue()));

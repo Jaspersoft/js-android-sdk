@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
 
@@ -46,14 +47,23 @@ public interface AuthenticationRestApi {
 
     final class Builder {
         private final String mBaseUrl;
+        private RestApiLog mLog = RestApiLog.NONE;
 
         public Builder(String baseUrl) {
             Utils.checkNotNull(baseUrl, "Base url should not be null");
             mBaseUrl = baseUrl;
         }
 
+        public Builder setLog(RestApiLog log) {
+            mLog = log;
+            return this;
+        }
+
         public AuthenticationRestApi build() {
-            return new AuthenticationRestApiImpl(mBaseUrl);
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okHttpClient.setFollowRedirects(false);
+            okHttpClient.interceptors().add(new LoggingInterceptor(mLog));
+            return new AuthenticationRestApiImpl(mBaseUrl, okHttpClient);
         }
     }
 }

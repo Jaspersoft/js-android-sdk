@@ -47,9 +47,11 @@ import rx.functions.Func0;
  */
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     private final String mBaseUrl;
+    private final OkHttpClient mClient;
 
-    AuthenticationRestApiImpl(String baseUrl) {
+    AuthenticationRestApiImpl(String baseUrl, OkHttpClient okHttpClient) {
         mBaseUrl = baseUrl;
+        mClient = okHttpClient;
     }
 
     @NonNull
@@ -61,10 +63,9 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         return Observable.defer(new Func0<Observable<AuthResponse>>() {
             @Override
             public Observable<AuthResponse> call() {
-                OkHttpClient okHttpClient = new OkHttpClient();
-                okHttpClient.setFollowRedirects(false);
+
                 Request request = createAuthRequest(username, password, organization, params);
-                Call call = okHttpClient.newCall(request);
+                Call call = mClient.newCall(request);
                 try {
                     com.squareup.okhttp.Response response = call.execute();
                     int statusCode = response.code();
