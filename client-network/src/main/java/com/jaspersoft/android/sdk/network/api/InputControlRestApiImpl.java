@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
@@ -42,6 +43,8 @@ import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
 
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.2
@@ -55,14 +58,15 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri) {
-        return requestInputControls(reportUri, false)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
+    public Observable<InputControlResponse> requestInputControls(@Nullable String reportUri) {
+        checkNotNull(reportUri, "Report URI should not be null");
+        return requestInputControls(reportUri, false);
     }
 
     @NonNull
     @Override
     public Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState) {
+        checkNotNull(reportUri, "Report URI should not be null");
         return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null)
                 .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
     }
@@ -70,13 +74,14 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri) {
-        return requestInputControlsInitialStates(reportUri, false)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
+        checkNotNull(reportUri, "Report URI should not be null");
+        return requestInputControlsInitialStates(reportUri, false);
     }
 
     @NonNull
     @Override
     public Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
+        checkNotNull(reportUri, "Report URI should not be null");
         return mRestApi.requestInputControlsInitialValues(reportUri, freshData)
                 .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
