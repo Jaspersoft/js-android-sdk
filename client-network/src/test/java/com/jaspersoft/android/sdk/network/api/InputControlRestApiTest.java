@@ -10,11 +10,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collections;
+
 import rx.Observable;
 
 /**
- * TODO implement tests
- *
  * @author Tom Koptel
  * @since 2.2
  */
@@ -70,6 +70,20 @@ public class InputControlRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
         restApiUnderTest.requestInputControlsInitialStates(null, false);
+    }
+
+    @Test
+    public void requestInputControlsStatesShouldNotAllowNullReportUri() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Report URI should not be null");
+        restApiUnderTest.requestInputControlsStates(null, Collections.EMPTY_MAP);
+    }
+
+    @Test
+    public void requestInputControlsStatesShouldNotAllowNullControlParams() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Controls values should not be null");
+        restApiUnderTest.requestInputControlsStates("any_id", null);
     }
 
     @Test

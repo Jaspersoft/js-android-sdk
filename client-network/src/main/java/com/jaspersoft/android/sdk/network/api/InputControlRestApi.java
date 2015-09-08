@@ -69,7 +69,6 @@ public interface InputControlRestApi {
      */
     @NonNull
     Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
-                                                       @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues);
 
     /**
@@ -77,14 +76,12 @@ public interface InputControlRestApi {
      * delegate cascading resolving for the server, also should handle non-cascading cases
      *
      * @param reportUri uri of report
-     * @param controlsId collection of controls ids
-     * @param controlsValues collection of associated parameters client has provided
+     * @param controlsValues map of {control_id: [value, value]} associated input controls metadata
      * @param freshData whether data should be retrieved from cache or not
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
     Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
-                                                       @NonNull Set<String> controlsId,
                                                        @NonNull Map<String, Set<String>> controlsValues,
                                                        boolean freshData);
 

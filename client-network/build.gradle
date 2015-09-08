@@ -56,6 +56,5 @@ dependencies {
     testCompile 'org.robolectric:shadows-support-v4:3.0'
     testCompile 'org.robolectric:shadows-httpclient:3.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
-    testCompile project(':js-android-sdk-client')
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 }

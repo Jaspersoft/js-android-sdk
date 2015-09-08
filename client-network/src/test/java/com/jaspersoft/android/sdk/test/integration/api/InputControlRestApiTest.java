@@ -34,9 +34,16 @@ import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import rx.Observable;
 
@@ -51,14 +58,25 @@ import static org.hamcrest.core.IsNot.not;
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
     private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
     private InputControlRestApi mRestApi;
+    public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
+
+    static {
+        Set<String> values = new HashSet<>();
+        values.add("19");
+        CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
+    }
 
     @Before
     public void setup() {
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+
         mAuthenticator.authorize();
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder(mMetadata.getServerUrl(), cookie)
@@ -67,7 +85,7 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideInputControlsList() throws IOException {
+    public void shouldProvideInputControlsList() {
         Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI);
 
         List<InputControl> controls = call.toBlocking().first().getValues();
@@ -81,7 +99,7 @@ public class InputControlRestApiTest {
      * TODO: Implement annotation to mark specific API tests.
      */
     @Test
-    public void shouldProvideInputControlsListIfStateExcluded() throws IOException {
+    public void shouldProvideInputControlsListIfStateExcluded() {
         Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
 
         List<InputControl> controls = call.toBlocking().first().getValues();
@@ -92,15 +110,29 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideInitialInputControlsValues() throws IOException {
+    public void shouldProvideInitialInputControlsValues() {
         Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI);
         InputControlValueResponse response = call.toBlocking().first();
         assertThat(response.getValues(), is(not(empty())));
     }
 
     @Test
-    public void shouldProvideFreshInitialInputControlsValues() throws IOException {
+    public void shouldProvideFreshInitialInputControlsValues() {
         Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldProvideStatesForInputControls() {
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
+    }
+
+    @Test
+    public void shouldProvideFreshStatesForInputControls() {
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
         InputControlValueResponse response = call.toBlocking().first();
         assertThat(response.getValues(), is(not(empty())));
     }
