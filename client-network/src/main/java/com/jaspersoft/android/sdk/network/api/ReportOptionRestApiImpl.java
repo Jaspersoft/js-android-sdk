@@ -40,6 +40,7 @@ import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
@@ -132,7 +133,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
         @NonNull
         @Headers("Accept: application/json")
-        @POST("rest_v2/reports{reportUnitURI}/options/{optionId}")
+        @PUT("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Observable<com.squareup.okhttp.Response> updateReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId,

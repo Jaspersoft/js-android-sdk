@@ -51,7 +51,7 @@ public interface AuthenticationRestApi {
 
         public Builder(String baseUrl) {
             Utils.checkNotNull(baseUrl, "Base url should not be null");
-            mBaseUrl = baseUrl;
+            mBaseUrl = Utils.normalizeBaseUrl(baseUrl);
         }
 
         public Builder setLog(RestApiLog log) {
