@@ -58,13 +58,6 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Observable<InputControlResponse> requestInputControls(@Nullable String reportUri) {
-        checkNotNull(reportUri, "Report URI should not be null");
-        return requestInputControls(reportUri, false);
-    }
-
-    @NonNull
-    @Override
     public Observable<InputControlResponse> requestInputControls(@Nullable String reportUri, boolean excludeState) {
         checkNotNull(reportUri, "Report URI should not be null");
         return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null)
@@ -73,26 +66,9 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Observable<InputControlValueResponse> requestInputControlsInitialStates(@Nullable String reportUri) {
-        checkNotNull(reportUri, "Report URI should not be null");
-        return requestInputControlsInitialStates(reportUri, false);
-    }
-
-    @NonNull
-    @Override
     public Observable<InputControlValueResponse> requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
         return mRestApi.requestInputControlsInitialValues(reportUri, freshData)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
-    }
-
-    @NonNull
-    @Override
-    public Observable<InputControlValueResponse> requestInputControlsStates(@Nullable String reportUri,
-                                                                            @Nullable Map<String, Set<String>> controlsValues) {
-        checkNotNull(reportUri, "Report URI should not be null");
-        checkNotNull(controlsValues, "Controls values should not be null");
-        return requestInputControlsStates(reportUri, controlsValues, false)
                 .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 

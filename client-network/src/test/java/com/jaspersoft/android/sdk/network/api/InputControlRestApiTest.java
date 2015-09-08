@@ -45,24 +45,10 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void requestInputControlsShouldNotAllowNullReportUri1() {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControls(null);
-    }
-
-    @Test
-    public void requestInputControlsShouldNotAllowNullReportUri2() {
+    public void requestInputControlsShouldNotAllowNullReportUri() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
         restApiUnderTest.requestInputControls(null, false);
-    }
-
-    @Test
-    public void requestInputControlsInitialStatesShouldNotAllowNullReportUri1() {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControlsInitialStates(null);
     }
 
     @Test
@@ -76,21 +62,21 @@ public class InputControlRestApiTest {
     public void requestInputControlsStatesShouldNotAllowNullReportUri() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControlsStates(null, Collections.EMPTY_MAP);
+        restApiUnderTest.requestInputControlsStates(null, Collections.EMPTY_MAP, true);
     }
 
     @Test
     public void requestInputControlsStatesShouldNotAllowNullControlParams() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
-        restApiUnderTest.requestInputControlsStates("any_id", null);
+        restApiUnderTest.requestInputControlsStates("any_id", null, true);
     }
 
     @Test
     public void requestInputControlsShouldThrowRestError() {
         mExpectedException.expect(RestError.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        Observable<InputControlResponse> call = restApiUnderTest.requestInputControls("any_id");
+        Observable<InputControlResponse> call = restApiUnderTest.requestInputControls("any_id", true);
         call.toBlocking().first();
     }
 

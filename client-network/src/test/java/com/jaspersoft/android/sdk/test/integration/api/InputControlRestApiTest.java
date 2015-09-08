@@ -86,7 +86,7 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI);
+        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, false);
 
         List<InputControl> controls = call.toBlocking().first().getValues();
         assertThat(controls, is(not(empty())));
@@ -110,22 +110,8 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideInitialInputControlsValues() {
-        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI);
-        InputControlValueResponse response = call.toBlocking().first();
-        assertThat(response.getValues(), is(not(empty())));
-    }
-
-    @Test
     public void shouldProvideFreshInitialInputControlsValues() {
         Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
-        InputControlValueResponse response = call.toBlocking().first();
-        assertThat(response.getValues(), is(not(empty())));
-    }
-
-    @Test
-    public void shouldProvideStatesForInputControls() {
-        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS);
         InputControlValueResponse response = call.toBlocking().first();
         assertThat(response.getValues(), is(not(empty())));
     }

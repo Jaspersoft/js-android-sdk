@@ -42,9 +42,6 @@ import rx.Observable;
  */
 public interface InputControlRestApi {
 
-    @NonNull
-    Observable<InputControlResponse> requestInputControls(@NonNull String reportUri);
-
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
      *
@@ -58,18 +55,8 @@ public interface InputControlRestApi {
     Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri);
-
-    @NonNull
     Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
-
-    /**
-     * TODO: 1. consider to flatten controls id parameter.
-     */
-    @NonNull
-    Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
-                                                       @NonNull Map<String, Set<String>> controlsValues);
 
     /**
      * Provides values for specified controls. This API helpful to
