@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network.api;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class Utils {
     static <T> T checkNotNull(T object, String message) {

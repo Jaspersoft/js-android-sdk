@@ -16,7 +16,7 @@ import rx.Observable;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 public class InputControlRestApiTest {
 

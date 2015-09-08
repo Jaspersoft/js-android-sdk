@@ -47,7 +47,7 @@ import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class InputControlRestApiImpl implements InputControlRestApi {
     private final RestApi mRestApi;

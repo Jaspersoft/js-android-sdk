@@ -34,7 +34,7 @@ import okio.Buffer;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class LoggingInterceptor implements Interceptor {
     private final RestApiLog logger;
