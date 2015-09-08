@@ -39,7 +39,7 @@ dependencies {
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
     compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta1'
 
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
 
     testCompile('pl.pragmatists:JUnitParams:1.0.4') {
         exclude group: 'org.hamcrest'
@@ -55,6 +55,5 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.2'
     testCompile 'org.robolectric:shadows-support-v4:3.0'
     testCompile 'org.robolectric:shadows-httpclient:3.0'
-    testCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
 }

@@ -76,7 +76,7 @@ public final class WebMockRule extends ExternalResource {
     }
 
     public String getRootUrl() {
-        return server.getUrl("/").toExternalForm();
+        return server.url("/").url().toExternalForm();
     }
 
     public void enqueue(MockResponse mockResponse) {
