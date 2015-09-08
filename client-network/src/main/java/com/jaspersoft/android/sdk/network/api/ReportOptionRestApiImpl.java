@@ -76,13 +76,15 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NonNull
     @Override
-    public Observable<ReportOption> createReportOption(@Nullable String optionLabel,
+    public Observable<ReportOption> createReportOption(@Nullable String reportUnitUri,
+                                                       @Nullable String optionLabel,
                                                        @Nullable Map<String, Set<String>> controlsValues,
                                                        boolean overwrite) {
+        checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionLabel, "Option label should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
 
-        return mRestApi.createReportOption(optionLabel, controlsValues, overwrite)
+        return mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite)
                 .onErrorResumeNext(RestErrorAdapter.<ReportOption>get());
     }
 
@@ -115,22 +117,24 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
-        @GET("rest_v2/reports{reportUnitURI}/options")
+        @GET("rest_v2/reports{reportUnitUri}/options")
         Observable<ReportOptionResponse> requestReportOptionsList(
                 @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/options")
-        Observable<ReportOption> createReportOption(@NonNull @Query("label") String optionLabel,
-                                                    @NonNull @Body Map<String, Set<String>> controlsValues,
-                                                    @Query("overwrite") boolean overwrite);
+        Observable<ReportOption> createReportOption(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NonNull @Query("label") String optionLabel,
+                @NonNull @Body Map<String, Set<String>> controlsValues,
+                @Query("overwrite") boolean overwrite);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Observable<com.squareup.okhttp.Response> updateReportOption(
-                @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri,
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId,
                 @NonNull @Body Map<String, Set<String>> controlsValues);
 
@@ -138,7 +142,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         @Headers("Accept: application/json")
         @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Observable<com.squareup.okhttp.Response> deleteReportOption(
-                @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri,
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId);
     }
 }

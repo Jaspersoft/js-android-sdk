@@ -44,7 +44,8 @@ public interface ReportOptionRestApi {
     Observable<ReportOptionResponse> requestReportOptionsList(@NonNull String reportUnitUri);
 
     @NonNull
-    Observable<ReportOption> createReportOption(@NonNull String optionLabel,
+    Observable<ReportOption> createReportOption(@NonNull String reportUnitUri,
+                                                @NonNull String optionLabel,
                                                 @NonNull Map<String, Set<String>> controlsValues,
                                                 boolean overwrite);
 
