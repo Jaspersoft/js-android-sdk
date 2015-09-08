@@ -42,6 +42,8 @@ import rx.Observable;
 import rx.functions.Func0;
 
 /**
+ * TODO refactor following module in easy testable units
+ *
  * @author Tom Koptel
  * @since 2.0
  */
