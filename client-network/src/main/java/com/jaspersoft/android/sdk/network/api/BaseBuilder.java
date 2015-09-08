@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -32,6 +32,8 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 
 /**
+ * TODO separate OkHttp client creation from Retrofit client
+ *
  * @author Tom Koptel
  * @since 2.0
  */
@@ -49,22 +51,11 @@ abstract class BaseBuilder<API, SubBuilder> {
         mRestAdapterBuilder = new Retrofit.Builder();
 
         mRestAdapterBuilder.client(mOkHttpClient);
-        mRestAdapterBuilder.baseUrl(baseUrl);
+        mRestAdapterBuilder.baseUrl(Utils.normalizeBaseUrl(baseUrl));
 
         Gson configuredGson = GsonFactory.create();
         mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
         mRestAdapterBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
-
-        /*
-        TODO: Resolve error handling. It is still not clear what API will look like
-         */
-//        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
-//            @Override
-//            @SuppressWarnings("unchecked")
-//            public Throwable handleError(RetrofitError cause) {
-//                return ErrorHandler.DEFAULT.handleError(cause);
-//            }
-//        });
     }
 
     @SuppressWarnings("unchecked")
