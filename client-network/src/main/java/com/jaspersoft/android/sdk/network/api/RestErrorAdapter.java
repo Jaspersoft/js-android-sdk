@@ -24,46 +24,30 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
+import com.jaspersoft.android.sdk.network.exception.RestError;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.client.Header;
-import retrofit.client.Response;
+import retrofit.HttpException;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class HeaderUtil {
-    private final List<Header> mHeaders;
+final class RestErrorAdapter {
+    private RestErrorAdapter() {}
 
-    HeaderUtil(@NonNull List<Header> headers) {
-        mHeaders = headers;
-    }
-
-    public static HeaderUtil wrap(@NonNull Response response) {
-        return new HeaderUtil(response.getHeaders());
-    }
-
-    @NonNull
-    public SafeHeader getFirstHeader(String name) {
-        List<Header> headers = findHeaders(name);
-        if (headers.isEmpty()) {
-            return new SafeHeader(null);
-        } else {
-            return new SafeHeader(headers.get(0));
-        }
-    }
-
-    private List<Header> findHeaders(String name) {
-        List<Header> result = new ArrayList<>();
-        for (Header header : mHeaders) {
-            if (header.getName().equals(name)) {
-                result.add(header);
+    public static <T> Func1<Throwable, ? extends Observable<? extends T>> get() {
+        return new Func1<Throwable, Observable<? extends T>>() {
+            @Override
+            public Observable<? extends T> call(Throwable throwable) {
+                Class<?> exceptionClass = throwable.getClass();
+                if (HttpException.class.isAssignableFrom(exceptionClass)) {
+                    HttpException httpException = (HttpException) throwable;
+                    return Observable.error(RestError.httpError(httpException.response().raw()));
+                }
+                return Observable.error(RestError.unexpectedError(throwable));
             }
-        }
-        return result;
+        };
     }
 }

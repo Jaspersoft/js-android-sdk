@@ -24,51 +24,62 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.RetrofitExportInput;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.ResponseBody;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
-
-import retrofit.mime.TypedInput;
+import java.io.InputStream;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ResponseBody.class})
 public class RetrofitExportInputTest {
-    @Mock
-    TypedInput mTypedInput;
 
     private RetrofitExportInput objectUnderTest;
+    private ResponseBody mTypedInput;
+    @Mock
+    private InputStream input;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        mTypedInput = PowerMockito.mock(ResponseBody.class);
         objectUnderTest = new RetrofitExportInput(mTypedInput);
     }
 
     @Test
     public void shouldDelegateMimeType() {
+        when(mTypedInput.contentType()).thenReturn(MediaType.parse("multipart/form-data"));
         objectUnderTest.getMimeType();
-        verify(mTypedInput, times(1)).mimeType();
+        verify(mTypedInput, times(1)).contentType();
     }
 
     @Test
-    public void shouldDelegateLengrh() {
+    public void shouldDelegateLength()  throws IOException {
         objectUnderTest.getLength();
-        verify(mTypedInput, times(1)).length();
+        verify(mTypedInput, times(1)).contentLength();
     }
 
     @Test
     public void shouldDelegateInputStream() throws IOException {
+        when(mTypedInput.byteStream()).thenReturn(input);
         objectUnderTest.getStream();
-        verify(mTypedInput, times(1)).in();
+        verify(mTypedInput, times(1)).byteStream();
     }
 }

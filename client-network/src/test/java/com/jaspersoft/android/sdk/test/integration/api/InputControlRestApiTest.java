@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -25,17 +25,27 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import rx.Observable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -48,28 +58,40 @@ import static org.hamcrest.core.IsNot.not;
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
     private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
     private InputControlRestApi mRestApi;
+    public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
+
+    static {
+        Set<String> values = new HashSet<>();
+        values.add("19");
+        CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
+    }
 
     @Before
     public void setup() {
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+
         mAuthenticator.authorize();
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder(mMetadata.getServerUrl(), cookie)
                 .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
                 .build();
     }
 
     @Test
     public void shouldProvideInputControlsList() {
-        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI);
-        assertThat(response, is(not(empty())));
+        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, false);
 
-        InputControl control = response.get(0);
+        List<InputControl> controls = call.toBlocking().first().getValues();
+        assertThat(controls, is(not(empty())));
+
+        InputControl control = controls.get(0);
         assertThat(control.getState(), is(notNullValue()));
     }
 
@@ -78,22 +100,26 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        List<InputControl> response = mRestApi.requestInputControls(REPORT_URI, true);
-        assertThat(response, is(not(empty())));
+        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
 
-        InputControl control = response.get(0);
+        List<InputControl> controls = call.toBlocking().first().getValues();
+        assertThat(controls, is(not(empty())));
+
+        InputControl control = controls.get(0);
         assertThat(control.getState(), is(nullValue()));
     }
 
     @Test
-    public void shouldProvideInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideFreshInitialInputControlsValues() {
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
     }
 
     @Test
-    public void shouldProvideFreshInitialInputControlsValues() {
-        List<InputControlState> response = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
-        assertThat(response, is(not(empty())));
+    public void shouldProvideFreshStatesForInputControls() {
+        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
+        InputControlValueResponse response = call.toBlocking().first();
+        assertThat(response.getValues(), is(not(empty())));
     }
 }

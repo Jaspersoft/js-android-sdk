@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -31,8 +31,13 @@ package com.jaspersoft.android.sdk.network.entity.server;
 public final class AuthResponse {
     private final String mToken;
 
-    public AuthResponse(String token) {
+
+    private AuthResponse(String token) {
         mToken = token;
+    }
+
+    public static AuthResponse createSuccessResponse(String token) {
+        return new AuthResponse(token);
     }
 
     public String getToken() {

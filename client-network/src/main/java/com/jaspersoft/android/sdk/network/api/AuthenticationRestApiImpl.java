@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -28,99 +28,113 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.exception.RestError;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Header;
-import retrofit.client.Response;
-import retrofit.http.Headers;
-import retrofit.http.Multipart;
-import retrofit.http.POST;
-import retrofit.http.Part;
-import retrofit.http.PartMap;
+import rx.Observable;
+import rx.functions.Func0;
 
 /**
+ * TODO refactor following module in easy testable units
+ *
  * @author Tom Koptel
  * @since 2.0
  */
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
-    private final RestApi mRestApi;
+    private final String mBaseUrl;
+    private final OkHttpClient mClient;
 
-    AuthenticationRestApiImpl(RestAdapter restAdapter) {
-        mRestApi = restAdapter.create(RestApi.class);
+    AuthenticationRestApiImpl(String baseUrl, OkHttpClient okHttpClient) {
+        mBaseUrl = baseUrl;
+        mClient = okHttpClient;
     }
 
     @NonNull
     @Override
-    public AuthResponse authenticate(@NonNull String username,
-                                     @NonNull String password,
-                                     String organization,
-                                     Map<String, String> params) {
-        try {
-            Response response = mRestApi.authenticate(username, password, organization, params);
-            return createAuthResponse(response);
-        } catch (RestError error) {
-            RetrofitError retrofitError = extractRetrofitError(error);
-            if (retrofitError.getKind() == RetrofitError.Kind.HTTP) {
-                Response response = retrofitError.getResponse();
-                if (containsRedirect(response)) {
-                    String location = retrieveLocation(response);
+    public Observable<AuthResponse> authenticate(@NonNull final String username,
+                                                 @NonNull final String password,
+                                                 final String organization,
+                                                 final Map<String, String> params) {
+        return Observable.defer(new Func0<Observable<AuthResponse>>() {
+            @Override
+            public Observable<AuthResponse> call() {
 
-                    if (locationPointsToSuccess(location)) {
-                        return createAuthResponse(response);
+                Request request = createAuthRequest(username, password, organization, params);
+                Call call = mClient.newCall(request);
+                try {
+                    com.squareup.okhttp.Response response = call.execute();
+                    int statusCode = response.code();
+                    if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
+                        AuthResponse authResponse = AuthResponseFactory.create(response);
+                        return Observable.just(authResponse);
+                    } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+                        String location = response.headers().get("Location");
+                        if (location == null) {
+                            return Observable.error(new IllegalStateException("Location HEADER is missing please contact JRS admin"));
+                        }
+                        HttpUrl url = HttpUrl.parse(location);
+                        String errorQueryParameter = url.queryParameter("error");
+                        if (errorQueryParameter == null) {
+                            AuthResponse authResponse = AuthResponseFactory.create(response);
+                            return Observable.just(authResponse);
+                        } else {
+                            com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                                    .protocol(response.protocol())
+                                    .request(response.request())
+                                    .headers(response.headers())
+                                    .body(response.body())
+                                    .code(401)
+                                    .build();
+                            Throwable error = RestError.httpError(response401);
+                            return Observable.error(error);
+                        }
+                    } else if (statusCode == 401) {
+                        Throwable error = RestError.httpError(response);
+                        return Observable.error(error);
                     } else {
-                        throw error;
+                        Throwable error = RestError.httpError(response);
+                        return Observable.error(error);
                     }
-                } else {
-                    throw error;
+                } catch (IOException e) {
+                    return Observable.error(RestError.networkError(e));
                 }
-            } else {
-                throw error;
+            }
+        });
+    }
+
+    private Request createAuthRequest(
+            @NonNull final String username,
+            @NonNull final String password,
+            final String organization,
+            final Map<String, String> params) {
+
+        OkHttpClient client = new OkHttpClient();
+        client.setFollowRedirects(false);
+
+        FormEncodingBuilder formBody = new FormEncodingBuilder()
+                .add("j_username", username)
+                .add("j_password", password)
+                .add("orgId", organization);
+
+        if (params != null) {
+            Set<Map.Entry<String, String>> entrySet = params.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                formBody.add(entry.getKey(), entry.getValue());
             }
         }
-    }
-
-    private RetrofitError extractRetrofitError(RestError error) {
-        return (RetrofitError) error.getCause();
-    }
-
-    private boolean locationPointsToSuccess(String location) {
-        HttpUrl url = HttpUrl.parse(location);
-        String errorQueryParameter = url.queryParameter("error");
-        return errorQueryParameter == null;
-    }
-
-    @NonNull
-    private String retrieveLocation(Response response) {
-        List<Header> headers = response.getHeaders();
-        for (Header header : headers) {
-            if (header.getName().equals("Location")) {
-                return header.getValue();
-            }
-        }
-        throw new IllegalStateException("Missing 'Location' header");
-    }
-
-    private boolean containsRedirect(Response response) {
-        int status = response.getStatus();
-        return status >= 300 && status < 400;
-    }
-
-    private AuthResponse createAuthResponse(Response response) {
-        return AuthResponseFactory.create(response);
-    }
-
-    interface RestApi {
-        @Multipart
-        @Headers({"Accept:application/json"})
-        @POST(value = "/j_spring_security_check")
-        Response authenticate(@Part(value = "j_username") String username,
-                              @Part(value = "j_password") String password,
-                              @Part(value = "orgId ") String organization,
-                              @PartMap Map<String, String> params);
+        /**
+         * Constructs url http[s]://some.jrs/j_spring_security_check
+         */
+        return new Request.Builder()
+                .url(mBaseUrl + "j_spring_security_check")
+                .post(formBody.build())
+                .build();
     }
 }

@@ -33,6 +33,18 @@ import java.io.InputStream;
  */
 public interface ExportInput {
     String getMimeType();
+
+    /**
+     * TODO ??? do we need this
+     * @return -1 whether content length undefined
+     */
     long getLength();
+
+    /**
+     * Client responsible for closing stream
+     *
+     * @return raw stream of bytes of corresponding file
+     * @throws IOException
+     */
     InputStream getStream() throws IOException;
 }

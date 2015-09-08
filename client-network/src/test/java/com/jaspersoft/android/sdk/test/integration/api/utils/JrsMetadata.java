@@ -130,7 +130,7 @@ public final class JrsMetadata {
             assertPropertyNotEmpty(serverUrl, "serverUrl");
             assertPropertyNotEmpty(username, "username");
             assertPropertyNotEmpty(password, "password");
-            serverUrl = trimUrl(serverUrl);
+            serverUrl = resolveUrl(serverUrl);
             try {
                 new URL(serverUrl);
             } catch (MalformedURLException e) {
@@ -152,9 +152,9 @@ public final class JrsMetadata {
             }
         }
 
-        private static String trimUrl(String url) {
-            if (!isEmpty(url) && url.endsWith("/")) {
-                url = url.substring(0, url.length() - 1);
+        private static String resolveUrl(String url) {
+            if (!isEmpty(url) && !url.endsWith("/")) {
+                url = url + "/";
             }
             return url;
         }

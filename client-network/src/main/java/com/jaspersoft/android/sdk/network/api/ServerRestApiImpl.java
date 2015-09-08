@@ -24,29 +24,38 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import retrofit.RestAdapter;
+import android.support.annotation.NonNull;
+
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public enum RestApiLogLevel {
-    /** No logging. */
-    NONE,
-    /** Log only the request method and URL and the response status code and execution time. */
-    BASIC,
-    /** Log the basic information along with request and response headers. */
-    HEADERS,
-    /** Log the basic information along with request and response objects via toString(). */
-    HEADERS_AND_ARGS,
-    /**
-     * Log the headers, body, and metadata for both requests and responses.
-     * <p>
-     * Note: This requires that the entire request and response body be buffered in memory!
-     */
-    FULL;
+final class ServerRestApiImpl implements ServerRestApi {
 
-    static RestAdapter.LogLevel toRetrofitLog(RestApiLogLevel logLevel) {
-        return RestAdapter.LogLevel.valueOf(logLevel.name());
+    private final RestApi mApi;
+
+    public ServerRestApiImpl(Retrofit retrofit) {
+        mApi = retrofit.create(RestApi.class);
+    }
+
+    @NonNull
+    @Override
+    public Observable<ServerInfoResponse> requestServerInfo() {
+        return mApi.requestServerInfo()
+                .onErrorResumeNext(RestErrorAdapter.<ServerInfoResponse>get());
+    }
+
+    private interface RestApi {
+        @NonNull
+        @Headers("Accept: application/json")
+        @GET(value = "rest_v2/serverInfo")
+        Observable<ServerInfoResponse> requestServerInfo();
     }
 }

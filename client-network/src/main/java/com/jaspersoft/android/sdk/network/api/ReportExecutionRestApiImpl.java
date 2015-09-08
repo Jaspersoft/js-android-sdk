@@ -27,19 +27,17 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
 import java.util.Collection;
 import java.util.Map;
 
-import retrofit.ResponseEntity;
-import retrofit.RestAdapter;
-import retrofit.RestAdapterWrapper;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -47,6 +45,11 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.QueryMap;
+import rx.Observable;
+import rx.functions.Func1;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkArgument;
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
@@ -55,89 +58,117 @@ import retrofit.http.QueryMap;
 final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     private final RestApi mRestApi;
-    private final RestAdapterWrapper mRestAdapterWrapper;
 
-    ReportExecutionRestApiImpl(RestAdapter restAdapter) {
+    ReportExecutionRestApiImpl(Retrofit restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
-        mRestAdapterWrapper = RestAdapterWrapper.wrap(restAdapter);
     }
 
     @NonNull
     @Override
-    public ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions) {
-        return mRestApi.runReportExecution(executionOptions);
+    public Observable<ReportExecutionDetailsResponse> runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) {
+        checkNotNull(executionOptions, "Execution options should not be null");
+        return mRestApi.runReportExecution(executionOptions)
+                .onErrorResumeNext(RestErrorAdapter.<ReportExecutionDetailsResponse>get());
+
     }
 
     @NonNull
     @Override
-    public ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId) {
-        return mRestApi.requestReportExecutionDetails(executionId);
+    public Observable<ReportExecutionDetailsResponse> requestReportExecutionDetails(@Nullable String executionId) {
+        checkNotNull(executionId, "Execution id should not be null");
+        return mRestApi.requestReportExecutionDetails(executionId)
+                .onErrorResumeNext(RestErrorAdapter.<ReportExecutionDetailsResponse>get());
     }
 
     @NonNull
     @Override
-    public ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId) {
-        return mRestApi.requestReportExecutionStatus(executionId);
-    }
-
-    @Override
-    public boolean cancelReportExecution(@NonNull String executionId) {
-        Response response = mRestApi.cancelReportExecution(executionId, ExecutionStatusResponse.cancelledStatus());
-        int status = response.getStatus();
-        return status != 204;
-    }
-
-    @Override
-    public boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params) {
-        Response response = mRestApi.updateReportExecution(executionId, params);
-        int status = response.getStatus();
-        return status == 204;
+    public Observable<ExecutionStatusResponse> requestReportExecutionStatus(@Nullable String executionId) {
+        checkNotNull(executionId, "Execution id should not be null");
+        return mRestApi.requestReportExecutionStatus(executionId)
+                .onErrorResumeNext(RestErrorAdapter.<ExecutionStatusResponse>get());
     }
 
     @NonNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) {
-        Response response = mRestApi.searchReportExecution(params);
-        int status = response.getStatus();
-        if (status == 204) {
-            return ReportExecutionSearchResponse.empty();
-        } else {
-            ResponseEntity<ReportExecutionSearchResponse> responseEntity =
-                    mRestAdapterWrapper.produce(response, ReportExecutionSearchResponse.class);
-            return responseEntity.getEntity();
-        }
+    public Observable<Boolean> cancelReportExecution(@Nullable String executionId) {
+        checkNotNull(executionId, "Execution id should not be null");
+        return mRestApi.cancelReportExecution(executionId, ExecutionStatusResponse.cancelledStatus())
+                .flatMap(new Func1<Response<Object>, Observable<Boolean>>() {
+                    @Override
+                    public Observable<Boolean> call(Response<Object> response) {
+                        int status = response.code();
+                        return Observable.just(status != 204);
+                    }
+                })
+                .onErrorResumeNext(RestErrorAdapter.<Boolean>get());
+
+    }
+
+    @NonNull
+    @Override
+    public Observable<Boolean> updateReportExecution(@Nullable String executionId, @Nullable Collection<ReportParameter> params) {
+        checkNotNull(executionId, "Execution id should not be null");
+        checkNotNull(params, "Execution params id should not be null");
+        return mRestApi.updateReportExecution(executionId, params)
+                .flatMap(new Func1<Response<Object>, Observable<Boolean>>() {
+                    @Override
+                    public Observable<Boolean> call(Response<Object> response) {
+                        int status = response.code();
+                        return Observable.just(status == 204);
+                    }
+                })
+                .onErrorResumeNext(RestErrorAdapter.<Boolean>get());
+
+    }
+
+    @NonNull
+    @Override
+    public Observable<ReportExecutionSearchResponse> searchReportExecution(@Nullable Map<String, String> params) {
+        checkNotNull(params, "Search params should not be null");
+        checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
+        return mRestApi.searchReportExecution(params)
+                .flatMap(new Func1<ReportExecutionSearchResponse, Observable<ReportExecutionSearchResponse>>() {
+                    @Override
+                    public Observable<ReportExecutionSearchResponse> call(ReportExecutionSearchResponse response) {
+                        if (response == null) {
+                            return Observable.just(ReportExecutionSearchResponse.empty());
+                        }
+                        return Observable.just(response);
+                    }
+                })
+                .onErrorResumeNext(RestErrorAdapter.<ReportExecutionSearchResponse>get());
     }
 
     interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
-        @POST("/rest_v2/reportExecutions")
-        ReportExecutionDetailsResponse runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
+        @POST("rest_v2/reportExecutions")
+        Observable<ReportExecutionDetailsResponse> runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reportExecutions/{executionId}")
-        ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull @Path(value = "executionId", encode = false) String executionId);
+        @GET("rest_v2/reportExecutions/{executionId}")
+        Observable<ReportExecutionDetailsResponse> requestReportExecutionDetails(@NonNull @Path(value = "executionId", encoded = true) String executionId);
 
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reportExecutions/{executionId}/status")
-        ExecutionStatusResponse requestReportExecutionStatus(@NonNull @Path(value = "executionId", encode = false) String executionId);
+        @GET("rest_v2/reportExecutions/{executionId}/status")
+        Observable<ExecutionStatusResponse> requestReportExecutionStatus(@NonNull @Path(value = "executionId", encoded = true) String executionId);
 
         @NonNull
         @Headers("Accept: application/json")
-        @POST("/rest_v2/reportExecutions/{executionId}/parameters")
-        Response updateReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
-                                       @NonNull @Body Collection<ReportParameter> params);
+        @POST("rest_v2/reportExecutions/{executionId}/parameters")
+        Observable<Response<Object>> updateReportExecution(@NonNull @Path(value = "executionId", encoded = true) String executionId,
+                                                           @NonNull @Body Collection<ReportParameter> params);
 
         @NonNull
         @Headers("Accept: application/json")
-        @PUT("/rest_v2/reportExecutions/{executionId}/status")
-        Response cancelReportExecution(@NonNull @Path(value = "executionId", encode = false) String executionId,
-                                       @NonNull @Body ExecutionStatusResponse statusResponse);
+        @PUT("rest_v2/reportExecutions/{executionId}/status")
+        Observable<Response<Object>> cancelReportExecution(@NonNull @Path(value = "executionId", encoded = true) String executionId,
+                                                           @NonNull @Body ExecutionStatusResponse statusResponse);
 
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reportExecutions")
-        Response searchReportExecution(@Nullable @QueryMap(encodeValues = false) Map<String, String> params);
+        @GET("rest_v2/reportExecutions")
+        Observable<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params);
     }
 }

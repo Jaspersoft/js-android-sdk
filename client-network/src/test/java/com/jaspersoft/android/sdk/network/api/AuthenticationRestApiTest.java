@@ -34,6 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import rx.Observable;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -60,7 +62,7 @@ public class AuthenticationRestApiTest {
 
     @Test
     public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(IllegalArgumentException.class);
+        mExpectedException.expect(NullPointerException.class);
         new AuthenticationRestApi.Builder(null).build();
     }
 
@@ -70,7 +72,8 @@ public class AuthenticationRestApiTest {
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        Observable<AuthResponse> obs = mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        AuthResponse response = obs.toBlocking().first();
         assertThat(response.getToken(), is(notNullValue()));
     }
 
@@ -82,7 +85,7 @@ public class AuthenticationRestApiTest {
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR);
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
     }
 
     @Test
@@ -92,18 +95,18 @@ public class AuthenticationRestApiTest {
         MockResponse mockResponse = create500Response();
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
     }
 
     @Test
     public void shouldRiseIllegalExceptionIfLocationHeaderIsMissing() {
         mExpectedException.expect(IllegalStateException.class);
-        mExpectedException.expectMessage("Missing 'Location' header");
+        mExpectedException.expectMessage("Location HEADER is missing please contact JRS admin");
 
         MockResponse mockResponse = create302Response();
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
     }
 
     private MockResponse create302Response() {

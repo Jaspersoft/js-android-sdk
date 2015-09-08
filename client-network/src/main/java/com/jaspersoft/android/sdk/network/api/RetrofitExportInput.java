@@ -25,35 +25,38 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import retrofit.mime.TypedInput;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 final class RetrofitExportInput implements ExportInput {
-    private final TypedInput mDelegate;
+    private final ResponseBody mResponse;
 
-    public RetrofitExportInput(TypedInput input) {
-        mDelegate = input;
+    public RetrofitExportInput(ResponseBody input) {
+        mResponse = input;
     }
 
     @Override
     public String getMimeType() {
-        return mDelegate.mimeType();
+        return mResponse.contentType().type();
     }
 
     @Override
     public long getLength() {
-        return mDelegate.length();
+        try {
+            return mResponse.contentLength();
+        } catch (IOException e) {
+            return -1;
+        }
     }
 
     @Override
     public InputStream getStream() throws IOException {
-        return mDelegate.in();
+        return mResponse.byteStream();
     }
 }

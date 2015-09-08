@@ -32,8 +32,7 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
 
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -41,25 +40,30 @@ import retrofit.client.OkClient;
  */
 public interface AuthenticationRestApi {
     @NonNull
-    AuthResponse authenticate(@NonNull String username,
+    Observable<AuthResponse> authenticate(@NonNull String username,
                               @NonNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    final class Builder extends BaseBuilder<AuthenticationRestApi, Builder> {
+    final class Builder {
+        private final String mBaseUrl;
+        private RestApiLog mLog = RestApiLog.NONE;
+
         public Builder(String baseUrl) {
-            super(baseUrl);
+            Utils.checkNotNull(baseUrl, "Base url should not be null");
+            mBaseUrl = baseUrl;
         }
 
-        @Override
-        AuthenticationRestApi createApi() {
-            RestAdapter.Builder builder = getDefaultBuilder();
+        public Builder setLog(RestApiLog log) {
+            mLog = log;
+            return this;
+        }
 
-            OkHttpClient httpClient = new OkHttpClient();
-            httpClient.setFollowRedirects(false);
-            builder.setClient(new OkClient(httpClient));
-
-            return new AuthenticationRestApiImpl(builder.build());
+        public AuthenticationRestApi build() {
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okHttpClient.setFollowRedirects(false);
+            okHttpClient.interceptors().add(new LoggingInterceptor(mLog));
+            return new AuthenticationRestApiImpl(mBaseUrl, okHttpClient);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -224,7 +224,6 @@ public class ExecutionRequestOptions {
                 ", anchor='" + anchor + '\'' +
                 ", transformerKey='" + transformerKey + '\'' +
                 ", attachmentsPrefix='" + attachmentsPrefix + '\'' +
-                ", parameters=" + Arrays.toString(parameters.getReportParameters().toArray()) +
                 '}';
     }
 }

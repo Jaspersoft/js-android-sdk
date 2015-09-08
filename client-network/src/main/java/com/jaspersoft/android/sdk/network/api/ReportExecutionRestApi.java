@@ -26,14 +26,16 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
 import java.util.Collection;
 import java.util.Map;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -42,23 +44,25 @@ import java.util.Map;
 public interface ReportExecutionRestApi {
 
     @NonNull
-    ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
+    Observable<ReportExecutionDetailsResponse> runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
-    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
+    Observable<ReportExecutionDetailsResponse> requestReportExecutionDetails(@NonNull String executionId);
 
     @NonNull
-    ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+    Observable<ExecutionStatusResponse> requestReportExecutionStatus(@NonNull String executionId);
 
-    boolean cancelReportExecution(@NonNull String executionId);
+    @NonNull
+    Observable<Boolean> cancelReportExecution(@NonNull String executionId);
 
-    boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
+    @NonNull
+    Observable<Boolean> updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
 
     /**
      * TODO: API is broken requires investigation before release
      */
     @NonNull
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
+    Observable<ReportExecutionSearchResponse> searchReportExecution(Map<String, String> params);
 
     final class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

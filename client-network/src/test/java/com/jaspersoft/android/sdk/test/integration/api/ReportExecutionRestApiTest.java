@@ -26,22 +26,25 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
+import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import rx.Observable;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -55,11 +58,25 @@ import static org.junit.Assert.assertThat;
  */
 public class ReportExecutionRestApiTest {
 
-    private final String MOBILE_DEMO2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
     private final String REPORT_URI1 = "/public/Samples/Reports/AllAccounts";
     private final String REPORT_URI2 = "/public/Samples/Reports/ProfitDetailReport";
-    AuthResponse mAuthResponse;
-    ReportExecutionRestApi mApi;
+
+    ReportExecutionRestApi apiUnderTest;
+
+    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+
+    @Before
+    public void setup() {
+        mAuthenticator.authorize();
+        String cookie = mAuthenticator.getCookie();
+
+        if (apiUnderTest == null) {
+            apiUnderTest = new ReportExecutionRestApi.Builder(mMetadata.getServerUrl(), cookie)
+                    .setLog(TestLogger.get(this))
+                    .build();
+        }
+    }
 
     @Test
     public void shouldStartReportExecution() {
@@ -73,28 +90,28 @@ public class ReportExecutionRestApiTest {
      */
     @Ignore
     public void shouldCancelReportExecution() throws InterruptedException {
-        ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse response = startExecution();
-        boolean cancelled = api.cancelReportExecution(response.getExecutionId());
+        Observable<Boolean> call = apiUnderTest.cancelReportExecution(response.getExecutionId());
+        boolean cancelled = call.toBlocking().first();
         assertThat(cancelled, is(true));
     }
 
     @Test
-    public void shouldReturnReportExecutionDetails() {
-        ReportExecutionRestApi api = getApi();
+    public void shouldReturnReportExecutionDetails() throws IOException {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDetailsResponse response = api.requestReportExecutionDetails(executionResponse.getExecutionId());
+        Observable<ReportExecutionDetailsResponse> call = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDetailsResponse response = call.toBlocking().first();
         assertThat(response.getExecutionId(), is(executionId));
     }
 
     @Test
-    public void shouldCheckReportExecutionStatus() {
-        ReportExecutionRestApi api = getApi();
+    public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        ExecutionStatusResponse response = api.requestReportExecutionStatus(executionResponse.getExecutionId());
+        Observable<ExecutionStatusResponse> call = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatusResponse response = call.toBlocking().first();
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -102,25 +119,29 @@ public class ReportExecutionRestApiTest {
      * TODO: API is broken requires investigation before release
      */
     @Ignore
-    public void searchForExecutionShouldReturnResult() {
-        ReportExecutionRestApi api = getApi();
+    public void searchForExecutionShouldReturnResult() throws IOException {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse searchResponse = api.searchReportExecution(params);
-        assertThat(searchResponse.getItems(), is(not(empty())));
+        Observable<ReportExecutionSearchResponse> call = apiUnderTest.searchReportExecution(params);
+        ReportExecutionSearchResponse response = call.toBlocking().first();
+        assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() {
-        ReportExecutionRestApi api = getApi();
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        boolean success = api.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        Observable<Boolean> call = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        boolean success = call.toBlocking().first();
         assertThat(success, is(true));
     }
+
+    /**
+     * Helper methods
+     */
 
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
@@ -130,24 +151,8 @@ public class ReportExecutionRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        return getApi().runReportExecution(executionRequestOptions);
+        Observable<ReportExecutionDetailsResponse> call = apiUnderTest.runReportExecution(executionRequestOptions);
+        return call.toBlocking().first();
     }
 
-    private ReportExecutionRestApi getApi() {
-        if (mApi == null) {
-            mApi = new ReportExecutionRestApi.Builder(MOBILE_DEMO2, getAuthResponse().getToken())
-                    .setLog(TestLogger.get(this))
-                    .setLogLevel(RestApiLogLevel.FULL)
-                    .build();
-        }
-        return mApi;
-    }
-
-    private AuthResponse getAuthResponse() {
-        if (mAuthResponse == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(MOBILE_DEMO2).build();
-            mAuthResponse = restApi.authenticate("joeuser", "joeuser", "organization_1", null);
-        }
-        return mAuthResponse;
-    }
 }

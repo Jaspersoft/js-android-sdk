@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,34 +24,38 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.exception.ErrorHandler;
+import com.google.gson.Gson;
+import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+import com.squareup.okhttp.OkHttpClient;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 
 /**
+ * TODO separate OkHttp client creation from Retrofit client
+ *
  * @author Tom Koptel
  * @since 2.0
  */
 abstract class BaseBuilder<API, SubBuilder> {
-    private final RestAdapter.Builder mRestAdapterBuilder;
+    private final Retrofit.Builder mRestAdapterBuilder;
+    private final OkHttpClient mOkHttpClient;
+
     private RestApiLog mLog = RestApiLog.NONE;
-    private RestApiLogLevel mLogLevel = RestApiLogLevel.NONE;
 
     public BaseBuilder(String baseUrl){
         if (baseUrl == null || baseUrl.length() == 0) {
             throw new IllegalArgumentException("Base url should not be null or empty");
         }
-        mRestAdapterBuilder = new RestAdapter.Builder();
+        mOkHttpClient = new OkHttpClient();
+        mRestAdapterBuilder = new Retrofit.Builder();
 
-        mRestAdapterBuilder.setEndpoint(baseUrl);
-        mRestAdapterBuilder.setErrorHandler(new retrofit.ErrorHandler() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Throwable handleError(RetrofitError cause) {
-                return ErrorHandler.DEFAULT.handleError(cause);
-            }
-        });
+        mRestAdapterBuilder.client(mOkHttpClient);
+        mRestAdapterBuilder.baseUrl(Utils.normalizeBaseUrl(baseUrl));
+
+        Gson configuredGson = GsonFactory.create();
+        mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
+        mRestAdapterBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
 
     @SuppressWarnings("unchecked")
@@ -60,21 +64,18 @@ abstract class BaseBuilder<API, SubBuilder> {
         return (SubBuilder) this;
     }
 
-    @SuppressWarnings("unchecked")
-    public SubBuilder setLogLevel(RestApiLogLevel logLevel) {
-        mLogLevel = logLevel;
-        return (SubBuilder) this;
+    Retrofit.Builder getDefaultBuilder() {
+        return mRestAdapterBuilder;
     }
 
-    RestAdapter.Builder getDefaultBuilder() {
-        return mRestAdapterBuilder;
+    OkHttpClient getClient() {
+        return mOkHttpClient;
     }
 
     abstract API createApi();
 
     public API build() {
-        mRestAdapterBuilder.setLog(new RetrofitLog(mLog));
-        mRestAdapterBuilder.setLogLevel(RestApiLogLevel.toRetrofitLog(mLogLevel));
+        mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
         return createApi();
     }
 }

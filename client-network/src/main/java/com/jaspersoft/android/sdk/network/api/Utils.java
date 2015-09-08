@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,21 +24,39 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import retrofit.RestAdapter;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class RetrofitLog implements RestAdapter.Log {
-    private final RestApiLog delegate;
-
-    RetrofitLog(RestApiLog log) {
-        delegate = log;
+final class Utils {
+    static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
     }
 
-    @Override
-    public void log(String message) {
-        delegate.log(message);
+    static void checkArgument(boolean condition, String message) {
+        if (condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    static int headerToInt(com.squareup.okhttp.Headers headers, String key) {
+        String header = headers.get(key);
+        if (header == null) {
+            return 0;
+        } else {
+            return Integer.valueOf(header);
+        }
+    }
+
+    private Utils() {}
+
+    public static String normalizeBaseUrl(String baseUrl) {
+        if (baseUrl.endsWith("/")) {
+            return baseUrl;
+        }
+        return baseUrl + "/";
     }
 }

@@ -25,46 +25,42 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.Protocol;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-
-import retrofit.client.Header;
-import retrofit.client.Response;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Response.class})
 public class AuthResponseFactoryTest {
-    @Mock
-    Response mResponse;
+
+    private Request mRequest;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        mRequest = new Request.Builder()
+                .url("http://localhost")
+                .build();
     }
 
     @Test
     public void shouldExtractTokenFromNetworkResponse() {
-        when(mResponse.getHeaders()).thenReturn(new ArrayList<Header>() {{
-            add(new Header("Set-Cookie", "cookie1"));
-            add(new Header("Set-Cookie", "cookie2"));
-        }});
-        AuthResponse response = AuthResponseFactory.create(mResponse);
+        Response mockResponse = new Response.Builder()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie2")
+                .code(200)
+                .protocol(Protocol.HTTP_1_1)
+                .request(mRequest)
+                .build();
+
+        AuthResponse response = AuthResponseFactory.create(mockResponse);
         assertThat(response.getToken(), is("cookie1;cookie2"));
     }
 }

@@ -25,39 +25,74 @@
 package com.jaspersoft.android.sdk.network.exception;
 
 
-import retrofit.RetrofitError;
+//import retrofit.RetrofitError;
+
+import java.io.IOException;
 
 /**
+ * Wrapper around exceptions which could pop up during request processing.
+ * Motivation behind class was to incapsulate 3-d party errors in generic interface.
+ *
  * @author Tom Koptel
  * @since 2.0
  */
 public final class RestError extends RuntimeException {
-    private final Kind mKind;
-
-    RestError(String message, RetrofitError error, Kind kind) {
-        super(message, error);
-        mKind = kind;
+    public static RestError networkError(IOException exception) {
+        return new RestError(exception.getMessage(), null, Kind.NETWORK,
+                exception);
     }
 
-    static RestError createNetworkError(RetrofitError error) {
-        return new RestError(error.getMessage(), error, Kind.NETWORK);
+    public static RestError httpError(com.squareup.okhttp.Response response) {
+        String message = response.code() + " " + response.message();
+        return new RestError(message, response, Kind.HTTP, null);
     }
 
-    static RestError createHttpError(RetrofitError error) {
-        return new RestError(error.getMessage(), error, Kind.HTTP);
+    public static RestError unexpectedError(Throwable exception) {
+        return new RestError(exception.getMessage(), null, Kind.UNEXPECTED,
+                exception);
     }
 
-    static RestError createUnexpectedError(RetrofitError error) {
-        return new RestError(error.getMessage(), error,  Kind.UNEXPECTED);
+    private final com.squareup.okhttp.Response response;
+    private final Kind kind;
+
+    RestError(String message, com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+        super(message, exception);
+        this.response = response;
+        this.kind = kind;
     }
 
-    public Kind getKind() {
-        return mKind;
+    /** HTTP status code. */
+    public int code() {
+        return response.code();
     }
 
+    /** HTTP status message. */
+    public String message() {
+        return response.message();
+    }
+
+    public com.squareup.okhttp.Response response() {
+        return response;
+    }
+
+    public String urlString() {
+        return response.request().urlString();
+    }
+
+    public Kind kind() {
+        return kind;
+    }
+
+    /** Identifies the event kind which triggered a {@link RestError}. */
     public enum Kind {
+        /** An {@link IOException} occurred while communicating to the server. */
         NETWORK,
+        /** A non-200 HTTP status code was received from the server. */
         HTTP,
+        /**
+         * An internal error occurred while attempting to execute a request. It is best practice to
+         * re-throw this exception so your application crashes.
+         */
         UNEXPECTED
     }
 }

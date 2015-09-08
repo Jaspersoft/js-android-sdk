@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -41,6 +42,8 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -86,61 +89,63 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        Observable<ReportExportExecutionResponse> call = restApiUnderTest
+                .runExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        call.toBlocking().first();
     }
 
     @Test
     public void pathParameterShouldNotBeNullForRunRequestExecution() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
         restApiUnderTest.runExportExecution(null, ExecutionRequestOptions.newInstance());
     }
 
     @Test
     public void bodyShouldNotBeNullForRunRequestExecution() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Body parameter value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution options should not be null");
 
         restApiUnderTest.runExportExecution("any_id", null);
     }
 
     @Test
     public void executionIdShouldNotBeNullForCheckRequestExecutionStatus() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
         restApiUnderTest.checkExportExecutionStatus(null, "any_id");
     }
 
     @Test
     public void exportIdShouldNotBeNullForCheckRequestExecutionStatus() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Export id should not be null");
 
         restApiUnderTest.checkExportExecutionStatus("any_id", null);
     }
 
     @Test
     public void executionIdParameterShouldNotBeNullForAttachmentRequest() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"executionId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Execution id should not be null");
 
         restApiUnderTest.requestExportAttachment(null, "any_id", "any_id");
     }
 
     @Test
     public void exportIdParameterShouldNotBeNullForAttachmentRequest() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"exportId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Export id should not be null");
 
         restApiUnderTest.requestExportAttachment("any_id", null, "any_id");
     }
 
     @Test
     public void attachmentIdParameterShouldNotBeNullForAttachmentRequest() {
-        mExpectedException.expect(RestError.class);
-        mExpectedException.expectMessage("Path parameter \"attachmentId\" value must not be null.");
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Attachment id should not be null");
 
         restApiUnderTest.requestExportAttachment("any_id", "any_id", null);
     }
@@ -152,7 +157,8 @@ public class ReportExportRestApiTest {
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        Observable<ExportResourceResponse> call = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        ExportResourceResponse resource = call.toBlocking().first();
         assertThat(resource.getPages(), is("1-10"));
     }
 
@@ -163,7 +169,8 @@ public class ReportExportRestApiTest {
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        Observable<ExportResourceResponse> call = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        ExportResourceResponse resource = call.toBlocking().first();
         assertThat(resource.isFinal(), is(true));
     }
 
@@ -173,7 +180,8 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ExportInput resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
+        Observable<ExportInput> call = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
+        ExportInput resource = call.toBlocking().first();
         InputStream stream = resource.getStream();
         assertThat(stream, is(notNullValue()));
         stream.close();

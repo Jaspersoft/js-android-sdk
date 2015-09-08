@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -25,106 +25,87 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import retrofit.RestAdapter;
+import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
- * @since 2.2
+ * @since 2.0
  */
 final class InputControlRestApiImpl implements InputControlRestApi {
     private final RestApi mRestApi;
 
-    InputControlRestApiImpl(RestAdapter restAdapter) {
+    InputControlRestApiImpl(Retrofit restAdapter) {
         mRestApi = restAdapter.create(RestApi.class);
     }
 
     @NonNull
     @Override
-    public List<InputControl> requestInputControls(@NonNull String reportUri) {
-        return requestInputControls(reportUri, false);
+    public Observable<InputControlResponse> requestInputControls(@Nullable String reportUri, boolean excludeState) {
+        checkNotNull(reportUri, "Report URI should not be null");
+        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
     }
 
     @NonNull
     @Override
-    public List<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState) {
-        InputControlResponse response =  mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
-        List<InputControl> controls = response.getValues();
-        return Collections.unmodifiableList(controls);
+    public Observable<InputControlValueResponse> requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
+        checkNotNull(reportUri, "Report URI should not be null");
+        return mRestApi.requestInputControlsInitialValues(reportUri, freshData)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     @NonNull
     @Override
-    public List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri) {
-        return requestInputControlsInitialStates(reportUri, false);
-    }
+    public Observable<InputControlValueResponse> requestInputControlsStates(@Nullable String reportUri,
+                                                                            @Nullable Map<String, Set<String>> controlsValues,
+                                                                            boolean freshData) {
+        checkNotNull(reportUri, "Report URI should not be null");
+        checkNotNull(controlsValues, "Controls values should not be null");
 
-    @NonNull
-    @Override
-    public List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri, boolean freshData) {
-        InputControlValueResponse response = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
-        List<InputControlState> states = response.getValues();
-        return Collections.unmodifiableList(states);
-    }
-
-    @NonNull
-    @Override
-    public List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
-                                                              @NonNull Set<String> controlsId,
-                                                              @NonNull Map<String, Set<String>> controlsValues) {
-        return requestInputControlsStates(reportUri, controlsId, controlsValues, false);
-    }
-
-    @NonNull
-    @Override
-    public List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
-                                                              @NonNull Set<String> controlsId,
-                                                              @NonNull Map<String, Set<String>> controlsValues,
-                                                              boolean freshData) {
-        String ids = TextUtils.join(";", controlsId);
-        InputControlValueResponse response = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
-        List<InputControlState> states = response.getValues();
-        return Collections.unmodifiableList(states);
+        String ids = TextUtils.join(";", controlsValues.keySet());
+        return mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData)
+                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reports{reportUnitURI}/inputControls")
-        InputControlResponse requestInputControls(
-                @NonNull @Path(value = "reportUnitURI", encode = false) String reportUri,
+        @GET("rest_v2/reports{reportUnitURI}/inputControls")
+        Observable<InputControlResponse> requestInputControls(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("exclude") String state);
 
         @NonNull
         @Headers("Accept: application/json")
-        @GET("/rest_v2/reports{reportUnitURI}/inputControls/values")
-        InputControlValueResponse requestInputControlsInitialValues(
-                @NonNull @Path(value = "reportUnitURI", encode = false) String reportUri,
+        @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
+        Observable<InputControlValueResponse> requestInputControlsInitialValues(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("freshData") boolean freshData);
 
         @NonNull
         @Headers("Accept: application/json")
-        @POST("/rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
-        InputControlValueResponse requestInputControlsValues(
-                @NonNull @Path(value = "reportUnitURI", encode = false) String reportUri,
-                @NonNull @Path(value = "controlsId", encode = false) String ids,
+        @POST("rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
+        Observable<InputControlValueResponse> requestInputControlsValues(
+                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
+                @NonNull @Path(value = "controlsId", encoded = true) String ids,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
                 @Query("freshData") boolean freshData);
     }

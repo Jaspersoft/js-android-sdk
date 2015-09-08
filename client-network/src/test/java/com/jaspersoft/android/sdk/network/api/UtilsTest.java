@@ -24,46 +24,21 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.junit.Test;
 
-import retrofit.client.Header;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class SafeHeader {
-    private final Header mHeader;
+public class UtilsTest {
 
-    SafeHeader(@Nullable Header header) {
-        mHeader = header;
+    @Test
+    public void normalizeBaseUrlShouldAddTrailingSlashIfMissing() {
+        String url = "http://some.http";
+        assertThat(Utils.normalizeBaseUrl(url), is(url + "/"));
     }
 
-    public int asInt() {
-        if (mHeader == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(mHeader.getValue());
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    public boolean asBoolean() {
-        return mHeader != null && Boolean.parseBoolean(mHeader.getValue());
-    }
-
-    @NonNull
-    public String asString() {
-        if (mHeader == null) {
-            return "";
-        }
-        String value = mHeader.getValue();
-        if (value == null) {
-            return "";
-        }
-        return value;
-    }
 }

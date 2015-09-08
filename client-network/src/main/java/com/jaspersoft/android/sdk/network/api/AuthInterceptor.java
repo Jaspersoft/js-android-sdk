@@ -22,28 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package retrofit;
+package com.jaspersoft.android.sdk.network.api;
 
-import retrofit.client.Response;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResponseEntity<Entity> {
-    private final Entity mEntity;
-    private final Response mResponse;
+final class AuthInterceptor implements Interceptor {
+    private final String mToken;
 
-    public ResponseEntity(Entity entity, Response response) {
-        mEntity = entity;
-        mResponse = response;
+    AuthInterceptor(String token) {
+        mToken = token;
     }
 
-    public Entity getEntity() {
-        return mEntity;
+    public static AuthInterceptor newInstance(String token) {
+        checkNotNull(token, "Token should not be null");
+        return new AuthInterceptor(token);
     }
 
-    public Response getResponse() {
-        return mResponse;
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        Request compressedRequest = originalRequest.newBuilder()
+                .header("Cookie", mToken)
+                .build();
+        return chain.proceed(compressedRequest);
     }
 }

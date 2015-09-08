@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,26 +22,30 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.exception;
+package com.jaspersoft.android.sdk.test;
 
-import retrofit.*;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class RetrofitErrorHandler implements ErrorHandler<RetrofitError> {
-    @Override
-    public Throwable handleError(RetrofitError error) {
-        switch (error.getKind()) {
-            case HTTP:
-                return RestError.createHttpError(error);
-            case NETWORK:
-                return RestError.createNetworkError(error);
-            case UNEXPECTED:
-                return RestError.createUnexpectedError(error);
-            default:
-                throw error;
-        }
+public final class MockResponseFactory {
+
+    private MockResponseFactory() {}
+
+    public static MockResponse create200() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 200 Ok");
+    }
+
+    public static MockResponse create204() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 204 No Content");
+    }
+
+    public static MockResponse create500() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 500 Internal Server Error");
     }
 }

@@ -27,20 +27,20 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface InputControlRestApi {
-
-    @NonNull
-    List<InputControl> requestInputControls(@NonNull String reportUri);
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
@@ -52,36 +52,23 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NonNull
-    List<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState);
+    Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri);
-
-    @NonNull
-    List<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
+    Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
-
-    /**
-     * TODO: 1. consider to flatten controls id parameter.
-     */
-    @NonNull
-    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
-                                                       @NonNull Set<String> controlsId,
-                                                       @NonNull Map<String, Set<String>> controlsValues);
 
     /**
      * Provides values for specified controls. This API helpful to
      * delegate cascading resolving for the server, also should handle non-cascading cases
      *
      * @param reportUri uri of report
-     * @param controlsId collection of controls ids
-     * @param controlsValues collection of associated parameters client has provided
+     * @param controlsValues map of {control_id: [value, value]} associated input controls metadata
      * @param freshData whether data should be retrieved from cache or not
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
-    List<InputControlState> requestInputControlsStates(@NonNull String reportUri,
-                                                       @NonNull Set<String> controlsId,
+    Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Map<String, Set<String>> controlsValues,
                                                        boolean freshData);
 

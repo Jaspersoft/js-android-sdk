@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
-import com.jaspersoft.android.sdk.network.api.RestApiLogLevel;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -33,6 +32,8 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -44,15 +45,15 @@ import static org.junit.Assert.assertThat;
  */
 public class ServerRestTest {
 
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro";
+    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
         ServerRestApi api = new ServerRestApi.Builder(mobileDemo2)
                 .setLog(TestLogger.get(this))
-                .setLogLevel(RestApiLogLevel.FULL)
                 .build();
-        ServerInfoResponse response = api.requestServerInfo();
+        Observable<ServerInfoResponse> call = api.requestServerInfo();
+        ServerInfoResponse response = call.toBlocking().first();
         assertThat(response, is(notNullValue()));
     }
 }
