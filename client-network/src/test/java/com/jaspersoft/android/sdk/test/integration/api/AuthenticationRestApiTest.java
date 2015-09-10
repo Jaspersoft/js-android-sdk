@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -34,8 +34,6 @@ import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
-import rx.Observable;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -57,7 +55,7 @@ public class AuthenticationRestApiTest {
         AuthenticationRestApi authApi = new AuthenticationRestApi.Builder(mobileDemo2)
                 .setLog(TestLogger.get(this))
                 .build();
-        Observable<AuthResponse> response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
-        assertThat(response.toBlocking().first().getToken(), is(notNullValue()));
+        AuthResponse response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
+        assertThat(response.getToken(), is(notNullValue()));
     }
 }
