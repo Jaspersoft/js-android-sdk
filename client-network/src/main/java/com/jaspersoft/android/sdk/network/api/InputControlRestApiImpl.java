@@ -30,12 +30,10 @@ import android.support.annotation.Nullable;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 import retrofit.Call;
-import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -61,17 +59,9 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @Override
     public InputControlResponse requestInputControls(@Nullable String reportUri, boolean excludeState) {
         checkNotNull(reportUri, "Report URI should not be null");
-        try {
-            Call<InputControlResponse> call = mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
-            Response<InputControlResponse> response = call.execute();
-            if (response.isSuccess()) {
-                return response.body();
-            } else {
-                throw RestError.httpError(response);
-            }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
-        }
+
+        Call<InputControlResponse> call = mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
@@ -79,17 +69,8 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     public InputControlValueResponse requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
 
-        try {
-            Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
-            Response<InputControlValueResponse> response = call.execute();
-            if (response.isSuccess()) {
-                return response.body();
-            } else {
-                throw RestError.httpError(response);
-            }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
-        }
+        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
@@ -100,18 +81,9 @@ final class InputControlRestApiImpl implements InputControlRestApi {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
 
-        try {
-            String ids = Utils.joinString(";", controlsValues.keySet());
-            Call<InputControlValueResponse> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
-            Response<InputControlValueResponse> response = call.execute();
-            if (response.isSuccess()) {
-                return response.body();
-            } else {
-                throw RestError.httpError(response);
-            }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
-        }
+        String ids = Utils.joinString(";", controlsValues.keySet());
+        Call<InputControlValueResponse> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        return CallWrapper.wrap(call).body();
     }
 
     private interface RestApi {
