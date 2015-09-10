@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
@@ -35,8 +36,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import rx.Observable;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -65,22 +64,10 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldThroughRestErrorOnSearchRequestIfHttpError() {
-        mExpectedException.expect(RestError.class);
-
-        mWebMockRule.enqueue(create500Response());
-
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        call.toBlocking().first();
-    }
-
-    @Test
     public void shouldReturnEmptyResponseForNoContentResponse() {
-        mWebMockRule.enqueue(create204Response());
+        mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        ResourceSearchResponse response = call.toBlocking().first();
-
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getResources(), is(empty()));
     }
 
@@ -98,48 +85,45 @@ public class RepositoryRestApiTest {
 
     @Test
     public void requestForSearchShouldParseHeaderResultCount() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Result-Count", "100");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        ResourceSearchResponse response = call.toBlocking().first();
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getResultCount(), is(100));
     }
 
     @Test
     public void requestForSearchShouldParseHeaderTotalCount() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Total-Count", "1000");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        ResourceSearchResponse response = call.toBlocking().first();
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getTotalCount(), is(1000));
     }
+
     @Test
     public void requestForSearchShouldParseHeaderStartIndex() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Start-Index", "5");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        ResourceSearchResponse response = call.toBlocking().first();
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getStartIndex(), is(5));
     }
 
     @Test
     public void requestForSearchShouldParseHeaderNextOffset() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Next-Offset", "10");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ResourceSearchResponse> call = restApiUnderTest.searchResources(null);
-        ResourceSearchResponse response = call.toBlocking().first();
+        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getNextOffset(), is(10));
     }
 
@@ -175,18 +159,48 @@ public class RepositoryRestApiTest {
         restApiUnderTest.requestFolderResource(null);
     }
 
-    private MockResponse create200Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 200 Ok");
+    @Test
+    public void searchResourcesShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.searchResources(null);
     }
 
-    private MockResponse create204Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 204 No Content");
+    @Test
+    public void requestReportResourceShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestReportResource("any_id");
     }
 
-    private MockResponse create500Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
+    @Test
+    public void requestDashboardResourceShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestDashboardResource("any_id");
+    }
+
+    @Test
+    public void requestLegacyDashboardResourceShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestLegacyDashboardResource("any_id");
+    }
+
+    @Test
+    public void requestFolderResourceShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestFolderResource("any_id");
     }
 }

@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
@@ -35,27 +36,30 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 
 import java.util.Map;
 
-import rx.Observable;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface RepositoryRestApi {
     @NonNull
-    Observable<ResourceSearchResponse> searchResources(@Nullable Map<String, String> searchParams);
+    @WorkerThread
+    ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams);
 
     @NonNull
-    Observable<ReportLookupResponse> requestReportResource(@NonNull String resourceUri);
+    @WorkerThread
+    ReportLookupResponse requestReportResource(@NonNull String resourceUri);
 
     @NonNull
-    Observable<DashboardLookupResponse> requestDashboardResource(@NonNull String resourceUri);
+    @WorkerThread
+    DashboardLookupResponse requestDashboardResource(@NonNull String resourceUri);
 
     @NonNull
-    Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull String resourceUri);
+    @WorkerThread
+    LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull String resourceUri);
 
     @NonNull
-    Observable<FolderLookupResponse> requestFolderResource(@NonNull String resourceUri);
+    @WorkerThread
+    FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
     final class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

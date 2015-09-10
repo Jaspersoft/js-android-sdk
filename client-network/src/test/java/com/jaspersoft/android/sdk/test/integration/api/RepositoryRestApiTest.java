@@ -36,8 +36,6 @@ import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
 
-import rx.Observable;
-
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -68,32 +66,28 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestListOfResources() {
-        Observable<ResourceSearchResponse> call = api.searchResources(null);
-        ResourceSearchResponse resourceSearchResponse = call.toBlocking().first();
+        ResourceSearchResponse resourceSearchResponse = api.searchResources(null);
         assertThat(resourceSearchResponse, is(notNullValue()));
         assertThat(resourceSearchResponse.getResources(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestReport() {
-        Observable<ReportLookupResponse> call = api.requestReportResource("/public/Samples/Reports/AllAccounts");
-        ReportLookupResponse report = call.toBlocking().first();
+        ReportLookupResponse report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
 
     @Test
     public void shouldRequestDashboard() {
-        Observable<DashboardLookupResponse> call = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
-        DashboardLookupResponse dashboard = call.toBlocking().first();
+        DashboardLookupResponse dashboard = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
         assertThat(dashboard, is(notNullValue()));
         assertThat(dashboard.getFoundations(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestRootFolder() {
-        Observable<FolderLookupResponse> call = api.requestFolderResource("/");
-        FolderLookupResponse folder = call.toBlocking().first();
+        FolderLookupResponse folder = api.requestFolderResource("/");
         assertThat(folder, is(notNullValue()));
     }
 
