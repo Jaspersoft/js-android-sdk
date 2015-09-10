@@ -49,7 +49,7 @@ public class ReportOptionRestApiTest {
 
     @Before
     public void setup() {
-        restApiUnderTest = new ReportOptionRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
+        restApiUnderTest = new ReportOptionRestApi.Builder(mWebMockRule.getRootUrl()).build();
     }
 
     @Test

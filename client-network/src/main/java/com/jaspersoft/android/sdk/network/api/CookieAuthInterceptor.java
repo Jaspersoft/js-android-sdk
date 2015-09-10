@@ -24,48 +24,36 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.AuthPolicy;
-import com.jaspersoft.android.sdk.network.api.auth.Token;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class AuthBaseBuilder<API, SubBuilder> extends BaseBuilder<API, SubBuilder> {
-    private Token<?> mToken;
+final class CookieAuthInterceptor implements Interceptor {
     private final String mCookie;
-    private final AuthPolicy mAuthPolicy;
 
-    public AuthBaseBuilder(String baseUrl, String cookie) {
-        super(baseUrl);
+    CookieAuthInterceptor(String cookie) {
         mCookie = cookie;
-        mAuthPolicy = new DefaultAuthPolicy(getClient());
     }
 
-    @SuppressWarnings("unchecked")
-    public SubBuilder setToken(Token<?> token) {
-        mToken = token;
-        return (SubBuilder) this;
+    public static CookieAuthInterceptor newInstance(String token) {
+        checkNotNull(token, "Token should not be null");
+        return new CookieAuthInterceptor(token);
     }
 
     @Override
-    public API build() {
-//        ensureSaneDefaults();
-        setupAuthenticator();
-        return super.build();
-    }
-
-    private void ensureSaneDefaults() {
-        if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication");
-        }
-    }
-
-    private void setupAuthenticator() {
-        if (mCookie == null) {
-            mToken.acceptPolicy(mAuthPolicy);
-        } else {
-            getClient().interceptors().add(CookieAuthInterceptor.newInstance(mCookie));
-        }
+    public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        Request compressedRequest = originalRequest.newBuilder()
+                .header("Cookie", mCookie)
+                .build();
+        return chain.proceed(compressedRequest);
     }
 }

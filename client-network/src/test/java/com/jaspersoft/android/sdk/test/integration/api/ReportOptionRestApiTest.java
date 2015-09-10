@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.ReportOptionRestApi;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -69,8 +70,9 @@ public class ReportOptionRestApiTest {
         String cookie = mAuthenticator.getCookie();
 
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportOptionRestApi.Builder(mMetadata.getServerUrl(), cookie)
+            apiUnderTest = new ReportOptionRestApi.Builder(mMetadata.getServerUrl())
                     .setLog(TestLogger.get(this))
+                    .setToken(CookieToken.newInstance(cookie))
                     .build();
         }
     }

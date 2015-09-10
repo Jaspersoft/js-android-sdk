@@ -60,8 +60,8 @@ public interface ReportOptionRestApi {
                                         @NonNull String optionId);
 
     final class Builder extends AuthBaseBuilder<ReportOptionRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
+        public Builder(String baseUrl) {
+            super(baseUrl, null);
         }
 
         @Override
