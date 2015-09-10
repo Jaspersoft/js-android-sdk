@@ -25,14 +25,13 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -41,16 +40,20 @@ import rx.Observable;
 public interface ReportExportRestApi {
 
     @NonNull
-    Observable<ReportExportExecutionResponse> runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    @WorkerThread
+    ReportExportExecutionResponse runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
-    Observable<ExecutionStatusResponse> checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    @WorkerThread
+    ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
-    Observable<ExportResourceResponse> requestExportOutput(@NonNull String executionId, @NonNull String exportId);
+    @WorkerThread
+    ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
-    Observable<ExportInput> requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
+    @WorkerThread
+    ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
     final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
         public Builder(String baseUrl, String cookie) {

@@ -34,6 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 import com.squareup.okhttp.ResponseBody;
 
+import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
@@ -41,8 +42,6 @@ import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
-import rx.Observable;
-import rx.functions.Func1;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
@@ -59,92 +58,80 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public Observable<ReportExportExecutionResponse> runExportExecution(@Nullable String executionId,
-                                                                        @Nullable ExecutionRequestOptions executionOptions) {
+    public ReportExportExecutionResponse runExportExecution(@Nullable String executionId,
+                                                            @Nullable ExecutionRequestOptions executionOptions) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(executionOptions, "Execution options should not be null");
 
-        return mRestApi.runReportExportExecution(executionId, executionOptions)
-                .onErrorResumeNext(RestErrorAdapter.<ReportExportExecutionResponse>get());
+        Call<ReportExportExecutionResponse> call = mRestApi.runReportExportExecution(executionId, executionOptions);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public Observable<ExecutionStatusResponse> checkExportExecutionStatus(@Nullable String executionId, @Nullable String exportId) {
+    public ExecutionStatusResponse checkExportExecutionStatus(@Nullable String executionId, @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
-        return mRestApi.checkReportExportStatus(executionId, exportId)
-                .onErrorResumeNext(RestErrorAdapter.<ExecutionStatusResponse>get());
+        Call<ExecutionStatusResponse> call = mRestApi.checkReportExportStatus(executionId, exportId);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public Observable<ExportResourceResponse> requestExportOutput(@Nullable String executionId, @Nullable String exportId) {
+    public ExportResourceResponse requestExportOutput(@Nullable String executionId, @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
-        return mRestApi.requestReportExportOutput(executionId, exportId)
-                .flatMap(new Func1<Response<ResponseBody>, Observable<ExportResourceResponse>>() {
-                    @Override
-                    public Observable<ExportResourceResponse> call(Response<ResponseBody> rawResponse) {
-                        com.squareup.okhttp.Headers headers = rawResponse.headers();
+        Call<ResponseBody> call = mRestApi.requestReportExportOutput(executionId, exportId);
+        Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
+        com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-                        RetrofitExportInput exportInput = new RetrofitExportInput(rawResponse.body());
-                        String pages = headers.get("report-pages");
-                        boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
+        RetrofitExportInput exportInput = new RetrofitExportInput(rawResponse.body());
+        String pages = headers.get("report-pages");
+        boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
 
-                        ExportResourceResponse response = ExportResourceResponse.create(exportInput, pages, isFinal);
-                        return Observable.just(response);
-                    }
-                })
-                .onErrorResumeNext(RestErrorAdapter.<ExportResourceResponse>get());
+        return ExportResourceResponse.create(exportInput, pages, isFinal);
     }
 
     @NonNull
     @Override
-    public Observable<ExportInput> requestExportAttachment(@Nullable String executionId, @Nullable String exportId, @Nullable String attachmentId) {
+    public ExportInput requestExportAttachment(@Nullable String executionId, @Nullable String exportId, @Nullable String attachmentId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
         checkNotNull(attachmentId, "Attachment id should not be null");
 
-        return mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId)
-                .flatMap(new Func1<Response<ResponseBody>, Observable<ExportInput>>() {
-                    @Override
-                    public Observable<ExportInput> call(Response<ResponseBody> rawResponse) {
-                        ResponseBody body = rawResponse.body();
-                        ExportInput response = new RetrofitExportInput(body);
-                        return Observable.just(response);
-                    }
-                })
-                .onErrorResumeNext(RestErrorAdapter.<ExportInput>get());
+        Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
+        Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
+        ResponseBody body = rawResponse.body();
+        return new RetrofitExportInput(body);
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/exports")
-        Observable<ReportExportExecutionResponse> runReportExportExecution(@NonNull @Path("executionId") String executionId,
-                                                                           @NonNull @Body ExecutionRequestOptions executionOptions);
+        Call<ReportExportExecutionResponse> runReportExportExecution(@NonNull @Path("executionId") String executionId,
+                                                                     @NonNull @Body ExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
-        Observable<ExecutionStatusResponse> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
-                                                                    @NonNull @Path("exportId") String exportId);
+        Call<ExecutionStatusResponse> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
+                                                              @NonNull @Path("exportId") String exportId);
 
         /**
          * 'suppressContentDisposition' used due to security implications this header has
          */
         @NonNull
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
-        Observable<Response<ResponseBody>> requestReportExportOutput(@NonNull @Path("executionId") String executionId,
-                                                                     @NonNull @Path("exportId") String exportId);
+        Call<ResponseBody> requestReportExportOutput(@NonNull @Path("executionId") String executionId,
+                                                     @NonNull @Path("exportId") String exportId);
 
         @NonNull
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
-        Observable<Response<ResponseBody>> requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
-                                                                               @NonNull @Path("exportId") String exportId,
-                                                                               @NonNull @Path("attachmentId") String attachmentId);
+        Call<ResponseBody> requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
+                                                               @NonNull @Path("exportId") String exportId,
+                                                               @NonNull @Path("attachmentId") String attachmentId);
     }
 }
