@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 
+import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -47,15 +47,15 @@ final class ServerRestApiImpl implements ServerRestApi {
 
     @NonNull
     @Override
-    public Observable<ServerInfoResponse> requestServerInfo() {
-        return mApi.requestServerInfo()
-                .onErrorResumeNext(RestErrorAdapter.<ServerInfoResponse>get());
+    public ServerInfoResponse requestServerInfo() {
+        Call<ServerInfoResponse> call = mApi.requestServerInfo();
+        return CallWrapper.wrap(call).body();
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET(value = "rest_v2/serverInfo")
-        Observable<ServerInfoResponse> requestServerInfo();
+        Call<ServerInfoResponse> requestServerInfo();
     }
 }
