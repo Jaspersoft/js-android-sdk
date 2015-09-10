@@ -42,8 +42,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
-
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -95,7 +93,7 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(create500Response());
 
-        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri")).toBlocking().first();
+        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri"));
     }
 
     @Test
@@ -103,7 +101,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution options should not be null");
 
-        restApiUnderTest.runReportExecution(null).toBlocking().first();
+        restApiUnderTest.runReportExecution(null);
     }
 
     @Test
@@ -111,7 +109,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionDetails(null).toBlocking().first();
+        restApiUnderTest.requestReportExecutionDetails(null);
     }
 
     @Test
@@ -119,7 +117,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionStatus(null).toBlocking().first();
+        restApiUnderTest.requestReportExecutionStatus(null);
     }
 
     @Test
@@ -127,14 +125,14 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.cancelReportExecution(null).toBlocking().first();
+        restApiUnderTest.cancelReportExecution(null);
     }
 
     @Test
     public void responseShouldNotBeCancelledIfResponseIs204() {
         mWebMockRule.enqueue(create204Response());
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id").toBlocking().first();
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
 
         assertThat(cancelled, is(false));
     }
@@ -145,7 +143,7 @@ public class ReportExecutionRestApiTest {
         response.setBody(cancelledResponse.asString());
         mWebMockRule.enqueue(response);
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id").toBlocking().first();
+        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
 
         assertThat(cancelled, is(true));
     }
@@ -154,7 +152,7 @@ public class ReportExecutionRestApiTest {
     public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws IOException {
         mWebMockRule.enqueue(create204Response());
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS).toBlocking().first();
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS);
         assertThat(response.getItems(), is(empty()));
     }
 
@@ -164,7 +162,7 @@ public class ReportExecutionRestApiTest {
         mockResponse.setBody(searchExecutionResponse.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS).toBlocking().first();
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS);
         assertThat(response.getItems(), is(not(empty())));
     }
 
@@ -173,9 +171,7 @@ public class ReportExecutionRestApiTest {
     public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
         mWebMockRule.enqueue(create204Response());
 
-        Observable<Boolean> call = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
-        boolean response = call.toBlocking().first();
-
+        boolean response = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
         assertThat(response, is(true));
     }
 
@@ -184,7 +180,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution params id should not be null");
 
-        restApiUnderTest.updateReportExecution("any_id", null).toBlocking().first();
+        restApiUnderTest.updateReportExecution("any_id", null);
     }
 
     private MockResponse create200Response() {

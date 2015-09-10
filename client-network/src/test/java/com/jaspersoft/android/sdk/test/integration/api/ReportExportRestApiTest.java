@@ -123,7 +123,6 @@ public class ReportExportRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        Observable<ReportExecutionDetailsResponse> call = mExecApi.runReportExecution(executionRequestOptions);
-        return call.toBlocking().first();
+        return mExecApi.runReportExecution(executionRequestOptions);
     }
 }

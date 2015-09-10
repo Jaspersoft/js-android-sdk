@@ -56,4 +56,17 @@ final class CallWrapper<Body> {
             throw RestError.networkError(ex);
         }
     }
+
+    public Response<Body> response() {
+        try {
+            Response<Body> response = mDelegateCall.execute();
+            if (response.isSuccess()) {
+                return response;
+            } else {
+                throw RestError.httpError(response);
+            }
+        } catch (IOException ex) {
+            throw RestError.networkError(ex);
+        }
+    }
 }

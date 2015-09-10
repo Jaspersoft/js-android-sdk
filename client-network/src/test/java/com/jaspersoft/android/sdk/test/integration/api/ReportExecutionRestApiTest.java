@@ -44,8 +44,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
-
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -91,8 +89,7 @@ public class ReportExecutionRestApiTest {
     @Ignore
     public void shouldCancelReportExecution() throws InterruptedException {
         ReportExecutionDetailsResponse response = startExecution();
-        Observable<Boolean> call = apiUnderTest.cancelReportExecution(response.getExecutionId());
-        boolean cancelled = call.toBlocking().first();
+        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
@@ -101,8 +98,7 @@ public class ReportExecutionRestApiTest {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        Observable<ReportExecutionDetailsResponse> call = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
-        ReportExecutionDetailsResponse response = call.toBlocking().first();
+        ReportExecutionDetailsResponse response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
@@ -110,8 +106,7 @@ public class ReportExecutionRestApiTest {
     public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        Observable<ExecutionStatusResponse> call = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
-        ExecutionStatusResponse response = call.toBlocking().first();
+        ExecutionStatusResponse response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -125,8 +120,7 @@ public class ReportExecutionRestApiTest {
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        Observable<ReportExecutionSearchResponse> call = apiUnderTest.searchReportExecution(params);
-        ReportExecutionSearchResponse response = call.toBlocking().first();
+        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(params);
         assertThat(response.getItems(), is(not(empty())));
     }
 
@@ -134,8 +128,7 @@ public class ReportExecutionRestApiTest {
     public void updateOfParametersForExecutionShouldReturnResult() {
         ReportExecutionDetailsResponse executionResponse = startExecution();
 
-        Observable<Boolean> call = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
-        boolean success = call.toBlocking().first();
+        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
         assertThat(success, is(true));
     }
 
@@ -151,8 +144,7 @@ public class ReportExecutionRestApiTest {
     @NonNull
     private ReportExecutionDetailsResponse startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        Observable<ReportExecutionDetailsResponse> call = apiUnderTest.runReportExecution(executionRequestOptions);
-        return call.toBlocking().first();
+        return apiUnderTest.runReportExecution(executionRequestOptions);
     }
 
 }
