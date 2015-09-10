@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.exception.RestError;
-
 import retrofit.HttpException;
 import rx.Observable;
 import rx.functions.Func1;

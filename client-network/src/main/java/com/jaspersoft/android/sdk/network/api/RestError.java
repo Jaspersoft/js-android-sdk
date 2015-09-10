@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,12 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.exception;
+package com.jaspersoft.android.sdk.network.api;
 
 
-//import retrofit.RetrofitError;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
+
+import retrofit.HttpException;
+import retrofit.Response;
 
 /**
  * Wrapper around exceptions which could pop up during request processing.
@@ -37,17 +40,26 @@ import java.io.IOException;
  * @since 2.0
  */
 public final class RestError extends RuntimeException {
-    public static RestError networkError(IOException exception) {
+    static RestError networkError(IOException exception) {
         return new RestError(exception.getMessage(), null, Kind.NETWORK,
                 exception);
     }
 
-    public static RestError httpError(com.squareup.okhttp.Response response) {
+    static RestError httpError(HttpException httpException) {
+        Response response = httpException.response();
+        return httpError(response.raw());
+    }
+
+    static RestError httpError(Response response) {
+        return httpError(response.raw());
+    }
+
+    static RestError httpError(com.squareup.okhttp.Response response) {
         String message = response.code() + " " + response.message();
         return new RestError(message, response, Kind.HTTP, null);
     }
 
-    public static RestError unexpectedError(Throwable exception) {
+    static RestError unexpectedError(Throwable exception) {
         return new RestError(exception.getMessage(), null, Kind.UNEXPECTED,
                 exception);
     }
@@ -55,7 +67,7 @@ public final class RestError extends RuntimeException {
     private final com.squareup.okhttp.Response response;
     private final Kind kind;
 
-    RestError(String message, com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+    RestError(String message,com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
         super(message, exception);
         this.response = response;
         this.kind = kind;
@@ -71,8 +83,9 @@ public final class RestError extends RuntimeException {
         return response.message();
     }
 
-    public com.squareup.okhttp.Response response() {
-        return response;
+    @Nullable
+    public String errorBody() {
+        return Utils.bodyToString(response.body());
     }
 
     public String urlString() {

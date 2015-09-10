@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;

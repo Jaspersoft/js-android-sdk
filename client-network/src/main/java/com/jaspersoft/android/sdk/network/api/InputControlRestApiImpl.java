@@ -26,14 +26,16 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import retrofit.Call;
+import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -41,7 +43,6 @@ import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import rx.Observable;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
@@ -58,52 +59,80 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Observable<InputControlResponse> requestInputControls(@Nullable String reportUri, boolean excludeState) {
+    public InputControlResponse requestInputControls(@Nullable String reportUri, boolean excludeState) {
         checkNotNull(reportUri, "Report URI should not be null");
-        return mRestApi.requestInputControls(reportUri, excludeState ? "state" : null)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlResponse>get());
+        try {
+            Call<InputControlResponse> call = mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+            Response<InputControlResponse> response = call.execute();
+            if (response.isSuccess()) {
+                return response.body();
+            } else {
+                throw RestError.httpError(response);
+            }
+        } catch (IOException ex) {
+            throw RestError.networkError(ex);
+        }
     }
 
     @NonNull
     @Override
-    public Observable<InputControlValueResponse> requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
+    public InputControlValueResponse requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
-        return mRestApi.requestInputControlsInitialValues(reportUri, freshData)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
+
+        try {
+            Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+            Response<InputControlValueResponse> response = call.execute();
+            if (response.isSuccess()) {
+                return response.body();
+            } else {
+                throw RestError.httpError(response);
+            }
+        } catch (IOException ex) {
+            throw RestError.networkError(ex);
+        }
     }
 
     @NonNull
     @Override
-    public Observable<InputControlValueResponse> requestInputControlsStates(@Nullable String reportUri,
-                                                                            @Nullable Map<String, Set<String>> controlsValues,
-                                                                            boolean freshData) {
+    public InputControlValueResponse requestInputControlsStates(@Nullable String reportUri,
+                                                                @Nullable Map<String, Set<String>> controlsValues,
+                                                                boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
 
-        String ids = TextUtils.join(";", controlsValues.keySet());
-        return mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData)
-                .onErrorResumeNext(RestErrorAdapter.<InputControlValueResponse>get());
+        try {
+            String ids = Utils.joinString(";", controlsValues.keySet());
+            Call<InputControlValueResponse> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+            Response<InputControlValueResponse> response = call.execute();
+            if (response.isSuccess()) {
+                return response.body();
+            } else {
+                throw RestError.httpError(response);
+            }
+        } catch (IOException ex) {
+            throw RestError.networkError(ex);
+        }
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls")
-        Observable<InputControlResponse> requestInputControls(
+        Call<InputControlResponse> requestInputControls(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("exclude") String state);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
-        Observable<InputControlValueResponse> requestInputControlsInitialValues(
+        Call<InputControlValueResponse> requestInputControlsInitialValues(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @Query("freshData") boolean freshData);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
-        Observable<InputControlValueResponse> requestInputControlsValues(
+        Call<InputControlValueResponse> requestInputControlsValues(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @NonNull @Path(value = "controlsId", encoded = true) String ids,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
