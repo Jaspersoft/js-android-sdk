@@ -43,8 +43,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import rx.Observable;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -91,8 +89,7 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        Observable<ExecutionStatusResponse> call = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
-        ExecutionStatusResponse response = call.toBlocking().first();
+        ExecutionStatusResponse response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
@@ -100,8 +97,7 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDetailsResponse exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        Observable<ExportResourceResponse> call = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
-        ExportResourceResponse output = call.toBlocking().first();
+        ExportResourceResponse output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
 
         assertThat(output.getExportInput(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
@@ -116,14 +112,12 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        Observable<ReportExportExecutionResponse> call = apiUnderTest.runExportExecution(exec.getExecutionId(), options);
-        return call.toBlocking().first();
+        return apiUnderTest.runExportExecution(exec.getExecutionId(), options);
     }
 
     @NonNull
     private ReportExecutionDetailsResponse startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        Observable<ReportExecutionDetailsResponse> call = mExecApi.runReportExecution(executionRequestOptions);
-        return call.toBlocking().first();
+        return mExecApi.runReportExecution(executionRequestOptions);
     }
 }

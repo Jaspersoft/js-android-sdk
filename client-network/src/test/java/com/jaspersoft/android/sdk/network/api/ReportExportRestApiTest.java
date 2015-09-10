@@ -27,8 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
+import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
@@ -42,8 +41,6 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -81,17 +78,6 @@ public class ReportExportRestApiTest {
     public void shouldThrowIllegalArgumentExceptionForNullCookie() {
         mExpectedException.expect(IllegalArgumentException.class);
         new ReportExportRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
-    }
-
-    @Test
-    public void shouldThroughRestErrorOnSearchRequestIfHttpError() {
-        mExpectedException.expect(RestError.class);
-
-        mWebMockRule.enqueue(create500Response());
-
-        Observable<ReportExportExecutionResponse> call = restApiUnderTest
-                .runExportExecution("any_id", ExecutionRequestOptions.newInstance());
-        call.toBlocking().first();
     }
 
     @Test
@@ -152,48 +138,71 @@ public class ReportExportRestApiTest {
 
     @Test
     public void requestForOutputShouldParsePagesFromHeader() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody("")
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ExportResourceResponse> call = restApiUnderTest.requestExportOutput("any_id", "any_id");
-        ExportResourceResponse resource = call.toBlocking().first();
+        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.getPages(), is("1-10"));
     }
 
     @Test
     public void requestForOutputShouldParseIsFinalHeader() {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody("")
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ExportResourceResponse> call = restApiUnderTest.requestExportOutput("any_id", "any_id");
-        ExportResourceResponse resource = call.toBlocking().first();
+        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.isFinal(), is(true));
     }
 
     @Test
     public void requestForAttachmentShouldBeWrappedInsideInput() throws IOException {
-        MockResponse mockResponse = create200Response()
+        MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<ExportInput> call = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
-        ExportInput resource = call.toBlocking().first();
+        ExportInput resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
         InputStream stream = resource.getStream();
         assertThat(stream, is(notNullValue()));
         stream.close();
     }
 
-    private MockResponse create200Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 200 Ok");
+    @Test
+    public void runExportExecutionShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.newInstance());
     }
 
-    private MockResponse create500Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
+    @Test
+    public void checkExportExecutionStatusShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.checkExportExecutionStatus("any_id", "any_id");
+    }
+
+    @Test
+    public void requestExportOutputShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestExportOutput("any_id", "any_id");
+    }
+
+    @Test
+    public void requestExportAttachmentShouldThrowRestErrorOn500() {
+        mExpectedException.expect(RestError.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+
+        restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
     }
 }

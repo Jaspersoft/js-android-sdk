@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
@@ -37,9 +36,6 @@ import com.squareup.okhttp.Request;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-
-import rx.Observable;
-import rx.functions.Func0;
 
 /**
  * TODO refactor following module in easy testable units
@@ -58,55 +54,42 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     @Override
-    public Observable<AuthResponse> authenticate(@NonNull final String username,
-                                                 @NonNull final String password,
-                                                 final String organization,
-                                                 final Map<String, String> params) {
-        return Observable.defer(new Func0<Observable<AuthResponse>>() {
-            @Override
-            public Observable<AuthResponse> call() {
-
-                Request request = createAuthRequest(username, password, organization, params);
-                Call call = mClient.newCall(request);
-                try {
-                    com.squareup.okhttp.Response response = call.execute();
-                    int statusCode = response.code();
-                    if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
-                        AuthResponse authResponse = AuthResponseFactory.create(response);
-                        return Observable.just(authResponse);
-                    } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
-                        String location = response.headers().get("Location");
-                        if (location == null) {
-                            return Observable.error(new IllegalStateException("Location HEADER is missing please contact JRS admin"));
-                        }
-                        HttpUrl url = HttpUrl.parse(location);
-                        String errorQueryParameter = url.queryParameter("error");
-                        if (errorQueryParameter == null) {
-                            AuthResponse authResponse = AuthResponseFactory.create(response);
-                            return Observable.just(authResponse);
-                        } else {
-                            com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
-                                    .protocol(response.protocol())
-                                    .request(response.request())
-                                    .headers(response.headers())
-                                    .body(response.body())
-                                    .code(401)
-                                    .build();
-                            Throwable error = RestError.httpError(response401);
-                            return Observable.error(error);
-                        }
-                    } else if (statusCode == 401) {
-                        Throwable error = RestError.httpError(response);
-                        return Observable.error(error);
-                    } else {
-                        Throwable error = RestError.httpError(response);
-                        return Observable.error(error);
-                    }
-                } catch (IOException e) {
-                    return Observable.error(RestError.networkError(e));
+    public AuthResponse authenticate(@NonNull final String username,
+                                     @NonNull final String password,
+                                     final String organization,
+                                     final Map<String, String> params) {
+        Request request = createAuthRequest(username, password, organization, params);
+        Call call = mClient.newCall(request);
+        try {
+            com.squareup.okhttp.Response response = call.execute();
+            int statusCode = response.code();
+            if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
+                return AuthResponseFactory.create(response);
+            } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+                String location = response.headers().get("Location");
+                if (location == null) {
+                    throw new IllegalStateException("Location HEADER is missing please contact JRS admin");
                 }
+                HttpUrl url = HttpUrl.parse(location);
+                String errorQueryParameter = url.queryParameter("error");
+                if (errorQueryParameter == null) {
+                    return AuthResponseFactory.create(response);
+                } else {
+                    com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                            .protocol(response.protocol())
+                            .request(response.request())
+                            .headers(response.headers())
+                            .body(response.body())
+                            .code(401)
+                            .build();
+                    throw RestError.httpError(response401);
+                }
+            } else {
+                throw RestError.httpError(response);
             }
-        });
+        } catch (IOException ex) {
+            throw RestError.networkError(ex);
+        }
     }
 
     private Request createAuthRequest(

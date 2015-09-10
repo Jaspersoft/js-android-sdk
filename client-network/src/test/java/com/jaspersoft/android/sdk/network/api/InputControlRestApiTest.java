@@ -1,7 +1,5 @@
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
@@ -12,12 +10,11 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Collections;
 
-import rx.Observable;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@SuppressWarnings("unchecked")
 public class InputControlRestApiTest {
 
     @Rule
@@ -73,11 +70,22 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void requestInputControlsShouldThrowRestError() {
+    public void requestInputControlsShouldThrowRestErrorFor500() {
         mExpectedException.expect(RestError.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        Observable<InputControlResponse> call = restApiUnderTest.requestInputControls("any_id", true);
-        call.toBlocking().first();
+        restApiUnderTest.requestInputControls("any_id", true);
+    }
+    @Test
+    public void requestInputControlsInitialStatesShouldThrowRestErrorFor500() {
+        mExpectedException.expect(RestError.class);
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+        restApiUnderTest.requestInputControlsInitialStates("any_id", true);
     }
 
+    @Test
+    public void requestInputControlsStatesShouldThrowRestErrorFor500() {
+        mExpectedException.expect(RestError.class);
+        mWebMockRule.enqueue(MockResponseFactory.create500());
+        restApiUnderTest.requestInputControlsStates("any_id", Collections.EMPTY_MAP, true);
+    }
 }

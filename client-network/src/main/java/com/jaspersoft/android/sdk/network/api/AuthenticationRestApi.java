@@ -26,13 +26,12 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Map;
-
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -40,7 +39,8 @@ import rx.Observable;
  */
 public interface AuthenticationRestApi {
     @NonNull
-    Observable<AuthResponse> authenticate(@NonNull String username,
+    @WorkerThread
+    AuthResponse authenticate(@NonNull String username,
                               @NonNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);

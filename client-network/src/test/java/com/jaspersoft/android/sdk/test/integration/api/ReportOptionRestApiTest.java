@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -39,8 +39,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import rx.Observable;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -79,21 +77,17 @@ public class ReportOptionRestApiTest {
 
     @Test
     public void shouldRequestReportOptionsList() {
-        Observable<ReportOptionResponse> call = apiUnderTest.requestReportOptionsList(REPORT_URI);
-        ReportOptionResponse response = call.toBlocking().first();
+        ReportOptionResponse response = apiUnderTest.requestReportOptionsList(REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 
     @Test
     public void apiSupportsCrudForReportOption() {
-        Observable<ReportOption> createCall = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
-        ReportOption response = createCall.toBlocking().first();
+        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
         assertThat(response.getLabel(), is("label"));
 
-        Observable<Void> updateCall = apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
-        updateCall.toBlocking().firstOrDefault(null);
+        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
 
-        Observable<Void> deleteCall = apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
-        deleteCall.toBlocking().firstOrDefault(null);
+        apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
@@ -35,8 +33,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Collections;
-
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -69,8 +65,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        Observable<ReportOptionResponse> call = restApiUnderTest.requestReportOptionsList("any_id");
-        call.toBlocking().first();
+        restApiUnderTest.requestReportOptionsList("any_id");
     }
 
     @Test
@@ -79,8 +74,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        Observable<Void> call = restApiUnderTest.updateReportOption("any_id", "option_id", Collections.EMPTY_MAP);
-        call.toBlocking().first();
+        restApiUnderTest.updateReportOption("any_id", "option_id", Collections.EMPTY_MAP);
     }
 
     @Test
@@ -89,8 +83,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        Observable<Void> call = restApiUnderTest.deleteReportOption("any_id", "option_id");
-        call.toBlocking().first();
+        restApiUnderTest.deleteReportOption("any_id", "option_id");
     }
 
     @Test

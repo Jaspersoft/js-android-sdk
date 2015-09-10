@@ -24,9 +24,8 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.exception.RestError;
+import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,10 +46,10 @@ public class ServerRestApiTest {
     public void shouldThroughRestErrorForHttpError() {
         mExpectedException.expect(RestError.class);
 
-        mWebMockRule.enqueue(create500Response());
+        mWebMockRule.enqueue(MockResponseFactory.create500());
 
         ServerRestApi restApi = new ServerRestApi.Builder(mWebMockRule.getRootUrl()).build();
-        restApi.requestServerInfo().toBlocking().first();
+        restApi.requestServerInfo();
     }
 
     @Test
@@ -59,8 +58,4 @@ public class ServerRestApiTest {
         new ServerRestApi.Builder(null).build();
     }
 
-    private MockResponse create500Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
-    }
 }

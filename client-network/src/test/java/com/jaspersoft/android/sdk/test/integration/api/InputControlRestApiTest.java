@@ -34,18 +34,12 @@ import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import rx.Observable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -58,8 +52,6 @@ import static org.hamcrest.core.IsNot.not;
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
@@ -75,8 +67,6 @@ public class InputControlRestApiTest {
 
     @Before
     public void setup() {
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
-
         mAuthenticator.authorize();
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder(mMetadata.getServerUrl(), cookie)
@@ -86,9 +76,8 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, false);
-
-        List<InputControl> controls = call.toBlocking().first().getValues();
+        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI, false);
+        List<InputControl> controls = response.getValues();
         assertThat(controls, is(not(empty())));
 
         InputControl control = controls.get(0);
@@ -100,9 +89,9 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        Observable<InputControlResponse> call = mRestApi.requestInputControls(REPORT_URI, true);
+        InputControlResponse response = mRestApi.requestInputControls(REPORT_URI, true);
 
-        List<InputControl> controls = call.toBlocking().first().getValues();
+        List<InputControl> controls = response.getValues();
         assertThat(controls, is(not(empty())));
 
         InputControl control = controls.get(0);
@@ -111,15 +100,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
-        InputControlValueResponse response = call.toBlocking().first();
+        InputControlValueResponse response = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
         assertThat(response.getValues(), is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshStatesForInputControls() {
-        Observable<InputControlValueResponse> call = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
-        InputControlValueResponse response = call.toBlocking().first();
+        InputControlValueResponse response = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
         assertThat(response.getValues(), is(not(empty())));
     }
 }

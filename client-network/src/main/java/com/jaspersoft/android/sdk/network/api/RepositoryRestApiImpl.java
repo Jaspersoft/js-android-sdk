@@ -35,15 +35,13 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 
 import java.util.Map;
 
-import retrofit.HttpException;
+import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;
 import retrofit.http.QueryMap;
-import rx.Observable;
-import rx.functions.Func1;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 import static com.jaspersoft.android.sdk.network.api.Utils.headerToInt;
@@ -61,101 +59,96 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public Observable<ResourceSearchResponse> searchResources(@Nullable Map<String, String> searchParams) {
-        return mRestApi.searchResources(searchParams)
-                .flatMap(new Func1<Response<ResourceSearchResponse>, Observable<Response<ResourceSearchResponse>>>() {
-                    @Override
-                    public Observable<Response<ResourceSearchResponse>> call(Response<ResourceSearchResponse> response) {
-                        // If we user Response<?> return type we need manually handle 500 errors
-                        if (response.isSuccess()) {
-                            return Observable.just(response);
-                        }
-                        return Observable.error(new HttpException(response));
-                    }
-                })
-                .flatMap(new Func1<Response<ResourceSearchResponse>, Observable<ResourceSearchResponse>>() {
-                    @Override
-                    public Observable<ResourceSearchResponse> call(Response<ResourceSearchResponse> rawResponse) {
-                        int status = rawResponse.code();
-                        ResourceSearchResponse entity;
-                        if (status == 204) {
-                            entity = ResourceSearchResponse.empty();
-                        } else {
-                            entity = rawResponse.body();
-                            com.squareup.okhttp.Headers headers = rawResponse.headers();
+    public ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams) {
+        Call<ResourceSearchResponse> call = mRestApi.searchResources(searchParams);
+        Response<ResourceSearchResponse> rawResponse = CallWrapper.wrap(call).response();
 
-                            int resultCount = headerToInt(headers, "Result-Count");
-                            int totalCount = headerToInt(headers, "Total-Count");
-                            int startIndex = headerToInt(headers, "Start-Index");
-                            int nextOffset = headerToInt(headers, "Next-Offset");
+        int status = rawResponse.code();
+        ResourceSearchResponse entity;
+        if (status == 204) {
+            entity = ResourceSearchResponse.empty();
+        } else {
+            entity = rawResponse.body();
+            com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-                            entity.setResultCount(resultCount);
-                            entity.setTotalCount(totalCount);
-                            entity.setStartIndex(startIndex);
-                            entity.setNextOffset(nextOffset);
-                        }
-                        return Observable.just(entity);
-                    }
-                })
-                .onErrorResumeNext(RestErrorAdapter.<ResourceSearchResponse>get());
+            int resultCount = headerToInt(headers, "Result-Count");
+            int totalCount = headerToInt(headers, "Total-Count");
+            int startIndex = headerToInt(headers, "Start-Index");
+            int nextOffset = headerToInt(headers, "Next-Offset");
+
+            entity.setResultCount(resultCount);
+            entity.setTotalCount(totalCount);
+            entity.setStartIndex(startIndex);
+            entity.setNextOffset(nextOffset);
+        }
+        return entity;
     }
 
     @NonNull
     @Override
-    public Observable<ReportLookupResponse> requestReportResource(@Nullable String resourceUri) {
+    public ReportLookupResponse requestReportResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Report uri should not be null");
-        return mRestApi.requestReportResource(resourceUri)
-                .onErrorResumeNext(RestErrorAdapter.<ReportLookupResponse>get());
+
+        Call<ReportLookupResponse> call = mRestApi.requestReportResource(resourceUri);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public Observable<DashboardLookupResponse> requestDashboardResource(@Nullable String resourceUri) {
+    public DashboardLookupResponse requestDashboardResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Dashboard uri should not be null");
-        return mRestApi.requestDashboardResource(resourceUri)
-                .onErrorResumeNext(RestErrorAdapter.<DashboardLookupResponse>get());
+
+        Call<DashboardLookupResponse> call =  mRestApi.requestDashboardResource(resourceUri);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@Nullable String resourceUri) {
+    public LegacyDashboardLookupResponse requestLegacyDashboardResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Legacy dashboard uri should not be null");
-        return mRestApi.requestLegacyDashboardResource(resourceUri)
-                .onErrorResumeNext(RestErrorAdapter.<LegacyDashboardLookupResponse>get());
+
+        Call<LegacyDashboardLookupResponse> call =  mRestApi.requestLegacyDashboardResource(resourceUri);
+        return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public Observable<FolderLookupResponse> requestFolderResource(@Nullable String resourceUri) {
+    public FolderLookupResponse requestFolderResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
-        return mRestApi.requestFolderResource(resourceUri)
-                .onErrorResumeNext(RestErrorAdapter.<FolderLookupResponse>get());
+
+        Call<FolderLookupResponse> call =  mRestApi.requestFolderResource(resourceUri);
+        return CallWrapper.wrap(call).body();
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/resources")
-        Observable<Response<ResourceSearchResponse>> searchResources(@Nullable @QueryMap Map<String, String> searchParams);
+        Call<ResourceSearchResponse> searchResources(
+                @Nullable @QueryMap Map<String, String> searchParams);
 
         @NonNull
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
-        Observable<ReportLookupResponse> requestReportResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<ReportLookupResponse> requestReportResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.dashboard+json")
         @GET("rest_v2/resources{resourceUri}")
-        Observable<DashboardLookupResponse> requestDashboardResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<DashboardLookupResponse> requestDashboardResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.legacyDashboard+json")
         @GET("rest_v2/resources{resourceUri}")
-        Observable<LegacyDashboardLookupResponse> requestLegacyDashboardResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<LegacyDashboardLookupResponse> requestLegacyDashboardResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull
         @Headers("Accept: application/repository.folder+json")
         @GET("rest_v2/resources{resourceUri}")
-        Observable<FolderLookupResponse> requestFolderResource(@NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<FolderLookupResponse> requestFolderResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
     }
 }

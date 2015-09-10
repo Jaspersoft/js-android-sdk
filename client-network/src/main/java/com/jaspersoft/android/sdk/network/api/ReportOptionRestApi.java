@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -25,14 +25,13 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 
 import java.util.Map;
 import java.util.Set;
-
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -41,21 +40,23 @@ import rx.Observable;
 public interface ReportOptionRestApi {
 
     @NonNull
-    Observable<ReportOptionResponse> requestReportOptionsList(@NonNull String reportUnitUri);
+    @WorkerThread
+    ReportOptionResponse requestReportOptionsList(@NonNull String reportUnitUri);
 
     @NonNull
-    Observable<ReportOption> createReportOption(@NonNull String reportUnitUri,
+    @WorkerThread
+    ReportOption createReportOption(@NonNull String reportUnitUri,
                                                 @NonNull String optionLabel,
                                                 @NonNull Map<String, Set<String>> controlsValues,
                                                 boolean overwrite);
 
-    @NonNull
-    Observable<Void> updateReportOption(@NonNull String reportUnitUri,
+    @WorkerThread
+    void updateReportOption(@NonNull String reportUnitUri,
                                         @NonNull String optionId,
                                         @NonNull Map<String, Set<String>> controlsValues);
 
-    @NonNull
-    Observable<Void> deleteReportOption(@NonNull String reportUnitUri,
+    @WorkerThread
+    void deleteReportOption(@NonNull String reportUnitUri,
                                         @NonNull String optionId);
 
     final class Builder extends AuthBaseBuilder<ReportOptionRestApi, Builder> {

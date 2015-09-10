@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.exception.RestError;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
@@ -33,8 +32,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import rx.Observable;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -72,8 +69,7 @@ public class AuthenticationRestApiTest {
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        Observable<AuthResponse> obs = mRestApi.authenticate("joeuser", "joeuser", "null", null);
-        AuthResponse response = obs.toBlocking().first();
+        AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", "null", null);
         assertThat(response.getToken(), is(notNullValue()));
     }
 
@@ -85,7 +81,7 @@ public class AuthenticationRestApiTest {
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR);
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
+        mRestApi.authenticate("joeuser", "joeuser", "null", null);
     }
 
     @Test
@@ -95,7 +91,7 @@ public class AuthenticationRestApiTest {
         MockResponse mockResponse = create500Response();
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
+        mRestApi.authenticate("joeuser", "joeuser", "null", null);
     }
 
     @Test
@@ -106,7 +102,7 @@ public class AuthenticationRestApiTest {
         MockResponse mockResponse = create302Response();
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null).toBlocking().first();
+        mRestApi.authenticate("joeuser", "joeuser", "null", null);
     }
 
     private MockResponse create302Response() {

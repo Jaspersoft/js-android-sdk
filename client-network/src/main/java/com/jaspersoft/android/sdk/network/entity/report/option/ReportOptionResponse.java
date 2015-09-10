@@ -38,6 +38,12 @@ import java.util.Set;
  */
 public final class ReportOptionResponse {
 
+    private ReportOptionResponse() {}
+
+    public static ReportOptionResponse empty() {
+        return new ReportOptionResponse();
+    }
+
     @Expose
     @SerializedName("reportOptionsSummary")
     private Set<ReportOption> mOptions = Collections.emptySet();

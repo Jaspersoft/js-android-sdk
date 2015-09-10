@@ -29,7 +29,6 @@ import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
 
 /**
  * TODO separate OkHttp client creation from Retrofit client
@@ -55,7 +54,6 @@ abstract class BaseBuilder<API, SubBuilder> {
 
         Gson configuredGson = GsonFactory.create();
         mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
-        mRestAdapterBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
 
     @SuppressWarnings("unchecked")

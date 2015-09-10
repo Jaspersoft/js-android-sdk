@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
@@ -33,8 +34,6 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlValueRespon
 
 import java.util.Map;
 import java.util.Set;
-
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -52,10 +51,12 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NonNull
-    Observable<InputControlResponse> requestInputControls(@NonNull String reportUri, boolean excludeState);
+    @WorkerThread
+    InputControlResponse requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
-    Observable<InputControlValueResponse> requestInputControlsInitialStates(@NonNull String reportUri,
+    @WorkerThread
+    InputControlValueResponse requestInputControlsInitialStates(@NonNull String reportUri,
                                                               boolean freshData);
 
     /**
@@ -68,7 +69,8 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NonNull
-    Observable<InputControlValueResponse> requestInputControlsStates(@NonNull String reportUri,
+    @WorkerThread
+    InputControlValueResponse requestInputControlsStates(@NonNull String reportUri,
                                                        @NonNull Map<String, Set<String>> controlsValues,
                                                        boolean freshData);
 
