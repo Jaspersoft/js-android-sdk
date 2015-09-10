@@ -29,7 +29,6 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
-import retrofit.HttpException;
 import retrofit.Response;
 
 /**
@@ -43,11 +42,6 @@ public final class RestError extends RuntimeException {
     static RestError networkError(IOException exception) {
         return new RestError(exception.getMessage(), null, Kind.NETWORK,
                 exception);
-    }
-
-    static RestError httpError(HttpException httpException) {
-        Response response = httpException.response();
-        return httpError(response.raw());
     }
 
     static RestError httpError(Response response) {
