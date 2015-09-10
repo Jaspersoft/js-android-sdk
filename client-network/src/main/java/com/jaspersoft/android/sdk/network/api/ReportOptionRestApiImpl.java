@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 import com.squareup.okhttp.Response;
@@ -34,6 +35,7 @@ import com.squareup.okhttp.Response;
 import java.util.Map;
 import java.util.Set;
 
+import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -43,8 +45,6 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import rx.Observable;
-import rx.functions.Func1;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
@@ -55,29 +55,31 @@ import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     private final RestApi mRestApi;
 
-    private static final Func1<Response, Observable<Void>> VOID_MAP_LAMBDA = new Func1<Response, Observable<Void>>() {
-        @Override
-        public Observable<Void> call(Response response) {
-            return Observable.empty();
-        }
-    };
-
     ReportOptionRestApiImpl(Retrofit retrofit) {
         mRestApi = retrofit.create(RestApi.class);
     }
 
     @NonNull
     @Override
-    public Observable<ReportOptionResponse> requestReportOptionsList(@Nullable String reportUnitUri) {
+    public ReportOptionResponse requestReportOptionsList(@Nullable String reportUnitUri) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
 
-        return mRestApi.requestReportOptionsList(reportUnitUri)
-                .onErrorResumeNext(RestErrorAdapter.<ReportOptionResponse>get());
+        Call<ReportOptionResponse> call = mRestApi.requestReportOptionsList(reportUnitUri);
+        try {
+            return CallWrapper.wrap(call).body();
+        } catch (JsonSyntaxException ex) {
+            /**
+             * This possible when there is no report options
+             * API responds with plain/text message: 'No options found for {URI}'
+             * As soon as there 2 options to reserve this we decide to swallow exception and return empty object
+             */
+            return ReportOptionResponse.empty();
+        }
     }
 
     @NonNull
     @Override
-    public Observable<ReportOption> createReportOption(@Nullable String reportUnitUri,
+    public ReportOption createReportOption(@Nullable String reportUnitUri,
                                                        @Nullable String optionLabel,
                                                        @Nullable Map<String, Set<String>> controlsValues,
                                                        boolean overwrite) {
@@ -85,47 +87,43 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         checkNotNull(optionLabel, "Option label should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
 
-        return mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite)
-                .onErrorResumeNext(RestErrorAdapter.<ReportOption>get());
+        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite);
+        return CallWrapper.wrap(call).body();
     }
 
-    @NonNull
     @Override
-    public Observable<Void> updateReportOption(@Nullable String reportUnitUri,
+    public void updateReportOption(@Nullable String reportUnitUri,
                                                @Nullable String optionId,
                                                @Nullable Map<String, Set<String>> controlsValues) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
 
-        return mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues)
-                .flatMap(VOID_MAP_LAMBDA)
-                .onErrorResumeNext(RestErrorAdapter.<Void>get());
+        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues);
+        CallWrapper.wrap(call).body();
     }
 
-    @NonNull
     @Override
-    public Observable<Void> deleteReportOption(@Nullable String reportUnitUri,
+    public void deleteReportOption(@Nullable String reportUnitUri,
                                                @Nullable String optionId) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
 
-        return mRestApi.deleteReportOption(reportUnitUri, optionId)
-                .flatMap(VOID_MAP_LAMBDA)
-                .onErrorResumeNext(RestErrorAdapter.<Void>get());
+        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId);
+        CallWrapper.wrap(call).body();
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitUri}/options")
-        Observable<ReportOptionResponse> requestReportOptionsList(
+        Call<ReportOptionResponse> requestReportOptionsList(
                 @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/options")
-        Observable<ReportOption> createReportOption(
+        Call<ReportOption> createReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Query("label") String optionLabel,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
@@ -134,7 +132,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @PUT("rest_v2/reports{reportUnitURI}/options/{optionId}")
-        Observable<com.squareup.okhttp.Response> updateReportOption(
+        Call<com.squareup.okhttp.Response> updateReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId,
                 @NonNull @Body Map<String, Set<String>> controlsValues);
@@ -142,7 +140,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
-        Observable<com.squareup.okhttp.Response> deleteReportOption(
+        Call<com.squareup.okhttp.Response> deleteReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId);
     }
