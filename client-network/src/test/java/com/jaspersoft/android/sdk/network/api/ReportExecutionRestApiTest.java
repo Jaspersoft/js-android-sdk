@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -36,6 +37,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -69,22 +72,17 @@ public class ReportExecutionRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
     private ReportExecutionRestApi restApiUnderTest;
 
+    @Mock
+    Token<?> mToken;
+
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
-        restApiUnderTest = new ReportExecutionRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        new RepositoryRestApi.Builder(null, "cookie").build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullCookie() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        RepositoryRestApi restApi = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
+        restApiUnderTest = new ReportExecutionRestApi.Builder()
+                .setToken(mToken)
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
     }
 
     @Test

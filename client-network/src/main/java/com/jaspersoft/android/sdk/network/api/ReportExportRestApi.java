@@ -56,10 +56,6 @@ public interface ReportExportRestApi {
     ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
     final class Builder extends AuthBaseBuilder<ReportExportRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
-        }
-
         @Override
         ReportExportRestApi createApi() {
             return new ReportExportRestApiImpl(getDefaultBuilder().build());

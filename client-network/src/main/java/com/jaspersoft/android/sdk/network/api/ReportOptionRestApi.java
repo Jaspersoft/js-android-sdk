@@ -60,10 +60,6 @@ public interface ReportOptionRestApi {
                                         @NonNull String optionId);
 
     final class Builder extends AuthBaseBuilder<ReportOptionRestApi, Builder> {
-        public Builder(String baseUrl) {
-            super(baseUrl, null);
-        }
-
         @Override
         ReportOptionRestApi createApi() {
             return new ReportOptionRestApiImpl(getDefaultBuilder().build());

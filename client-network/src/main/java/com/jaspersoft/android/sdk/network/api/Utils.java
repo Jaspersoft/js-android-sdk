@@ -61,11 +61,15 @@ final class Utils {
         }
     }
 
-    public static String normalizeBaseUrl(String baseUrl) {
-        if (baseUrl.endsWith("/")) {
-            return baseUrl;
+    public static String normalizeBaseUrl(String url) {
+        // If url is empty skip appending slash
+        if (url == null || url.length() == 0) {
+            return url;
         }
-        return baseUrl + "/";
+        if (url.endsWith("/")) {
+            return url;
+        }
+        return url + "/";
     }
 
     public static String bodyToString(ResponseBody responseBody) {

@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
@@ -70,7 +71,9 @@ public class ReportExecutionRestApiTest {
         String cookie = mAuthenticator.getCookie();
 
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportExecutionRestApi.Builder(mMetadata.getServerUrl(), cookie)
+            apiUnderTest = new ReportExecutionRestApi.Builder()
+                    .setToken(CookieToken.newInstance(cookie))
+                    .baseUrl(mMetadata.getServerUrl())
                     .setLog(TestLogger.get(this))
                     .build();
         }

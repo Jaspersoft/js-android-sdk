@@ -40,10 +40,6 @@ public interface ServerRestApi {
     ServerInfoResponse requestServerInfo();
 
     final class Builder extends BaseBuilder<ServerRestApi, Builder> {
-        public Builder(String baseUrl) {
-           super(baseUrl);
-        }
-
         @Override
         ServerRestApi createApi() {
             return new ServerRestApiImpl(getDefaultBuilder().build());

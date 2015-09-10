@@ -70,9 +70,10 @@ public class ReportOptionRestApiTest {
         String cookie = mAuthenticator.getCookie();
 
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportOptionRestApi.Builder(mMetadata.getServerUrl())
+            apiUnderTest = new ReportOptionRestApi.Builder()
                     .setLog(TestLogger.get(this))
                     .setToken(CookieToken.newInstance(cookie))
+                    .baseUrl(mMetadata.getServerUrl())
                     .build();
         }
     }

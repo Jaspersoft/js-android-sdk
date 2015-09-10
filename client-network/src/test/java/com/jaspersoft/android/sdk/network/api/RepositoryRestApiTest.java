@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -36,6 +37,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -57,10 +60,17 @@ public class RepositoryRestApiTest {
 
     private RepositoryRestApi restApiUnderTest;
 
+    @Mock
+    Token<?> mToken;
+
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
-        restApiUnderTest = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
+        restApiUnderTest = new RepositoryRestApi.Builder()
+                .setToken(mToken)
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
     }
 
     @Test
@@ -69,18 +79,6 @@ public class RepositoryRestApiTest {
 
         ResourceSearchResponse response = restApiUnderTest.searchResources(null);
         assertThat(response.getResources(), is(empty()));
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        new RepositoryRestApi.Builder(null, "cookie").build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullCookie() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        RepositoryRestApi restApi = new RepositoryRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
     }
 
     @Test
