@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -48,7 +48,7 @@ public final class FeatureSet {
         return mRawData;
     }
 
-    public static FeatureSet create(String rawString) {
+    public static FeatureSet parse(String rawString) {
         return new FeatureSet(rawString);
     }
 
