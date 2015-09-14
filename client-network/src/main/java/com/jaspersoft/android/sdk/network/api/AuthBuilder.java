@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,43 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
+import com.squareup.okhttp.OkHttpClient;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import retrofit.Retrofit;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+final class AuthBuilder {
+    private final AdapterBuilder mAdapterBuilder;
+    private Token<?> mToken;
 
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    public AuthBuilder(AdapterBuilder adapterBuilder) {
+        mAdapterBuilder = adapterBuilder;
+    }
 
-    final class Builder extends GenericBuilder<Builder, ServerRestApi> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(createAdapter());
+    public AuthBuilder setToken(Token<?> token) {
+        checkNotNull(token, "token == null");
+        mToken = token;
+        return this;
+    }
+
+    void ensureDefaults() {
+        if (mToken == null) {
+            throw new IllegalStateException("This API requires authentication token");
         }
+    }
+
+    Retrofit createAdapter() {
+        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
+
+        DefaultAuthPolicy authPolicy = new DefaultAuthPolicy(client);
+        mToken.acceptPolicy(authPolicy);
+
+        return mAdapterBuilder.createAdapter();
     }
 }

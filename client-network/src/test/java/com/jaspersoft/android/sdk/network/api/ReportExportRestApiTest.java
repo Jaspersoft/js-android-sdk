@@ -73,7 +73,7 @@ public class ReportExportRestApiTest {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
         restApiUnderTest = new ReportExportRestApi.Builder()
-                .setToken(mToken)
+                .token(mToken)
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

@@ -34,7 +34,7 @@ public class InputControlRestApiTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         restApiUnderTest = new InputControlRestApi.Builder()
-                .setToken(mToken)
+                .token(mToken)
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

@@ -44,10 +44,10 @@ import java.util.Set;
  * @since 2.0
  */
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
-    private final String mBaseUrl;
+    private final HttpUrl mBaseUrl;
     private final OkHttpClient mClient;
 
-    AuthenticationRestApiImpl(String baseUrl, OkHttpClient okHttpClient) {
+    AuthenticationRestApiImpl(HttpUrl baseUrl, OkHttpClient okHttpClient) {
         mBaseUrl = baseUrl;
         mClient = okHttpClient;
     }

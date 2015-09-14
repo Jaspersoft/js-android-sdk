@@ -57,7 +57,7 @@ public class ReportOptionRestApiTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         restApiUnderTest = new ReportOptionRestApi.Builder()
-                .setToken(mToken)
+                .token(mToken)
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

@@ -59,10 +59,10 @@ public interface ReportOptionRestApi {
     void deleteReportOption(@NonNull String reportUnitUri,
                                         @NonNull String optionId);
 
-    final class Builder extends AuthBaseBuilder<ReportOptionRestApi, Builder> {
+    final class Builder extends GenericAuthBuilder<Builder, ReportOptionRestApi> {
         @Override
         ReportOptionRestApi createApi() {
-            return new ReportOptionRestApiImpl(getDefaultBuilder().build());
+            return new ReportOptionRestApiImpl(createAdapter());
         }
     }
 }

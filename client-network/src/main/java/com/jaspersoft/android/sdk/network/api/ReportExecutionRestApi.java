@@ -67,10 +67,10 @@ public interface ReportExecutionRestApi {
     @WorkerThread
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
 
-    final class Builder extends AuthBaseBuilder<ReportExecutionRestApi, Builder> {
+    final class Builder extends GenericAuthBuilder<Builder, ReportExecutionRestApi> {
         @Override
         ReportExecutionRestApi createApi() {
-            return new ReportExecutionRestApiImpl(getDefaultBuilder().build());
+            return new ReportExecutionRestApiImpl(createAdapter());
         }
     }
 }

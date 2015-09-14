@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,37 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+final class ClientBuilder {
+    private final OkHttpClient mOkHttpClient;
+    private RestApiLog mLog = RestApiLog.NONE;
 
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    public ClientBuilder() {
+        mOkHttpClient = new OkHttpClient();
+    }
 
-    final class Builder extends GenericBuilder<Builder, ServerRestApi> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(createAdapter());
+    public ClientBuilder setLog(RestApiLog logger) {
+        mLog = logger;
+        return this;
+    }
+
+    public OkHttpClient build() {
+        mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
+        return mOkHttpClient;
+    }
+
+    OkHttpClient getClient() {
+        return mOkHttpClient;
+    }
+
+    void ensureDefaults() {
+        if (mLog == null) {
+            mLog = RestApiLog.NONE;
         }
     }
 }

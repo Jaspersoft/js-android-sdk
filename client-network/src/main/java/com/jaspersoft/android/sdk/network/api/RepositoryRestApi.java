@@ -61,10 +61,10 @@ public interface RepositoryRestApi {
     @WorkerThread
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
-    final class Builder extends AuthBaseBuilder<RepositoryRestApi, Builder> {
+    final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
         @Override
         RepositoryRestApi createApi() {
-            return new RepositoryRestApiImpl(getDefaultBuilder().build());
+            return new RepositoryRestApiImpl(createAdapter());
         }
     }
 }

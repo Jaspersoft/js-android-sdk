@@ -48,7 +48,7 @@ public class ServerRestTest {
     @Test
     public void shouldRequestServerInfo() throws IOException {
         ServerRestApi api = new ServerRestApi.Builder()
-                .setLog(TestLogger.get(this))
+                .logger(TestLogger.get(this))
                 .baseUrl(mobileDemo2)
                 .build();
         ServerInfoResponse response = api.requestServerInfo();

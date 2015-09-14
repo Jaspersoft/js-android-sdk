@@ -24,37 +24,57 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.AuthPolicy;
 import com.jaspersoft.android.sdk.network.api.auth.Token;
+
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class AuthBaseBuilder<API, SubBuilder> extends BaseBuilder<API, SubBuilder> {
-    private Token<?> mToken;
-    private final AuthPolicy mAuthPolicy;
+abstract class GenericAuthBuilder<TargetBuilder, Api> {
+    private final ClientBuilder mClientBuilder;
+    private final AdapterBuilder mAdapterBuilder;
+    private final AuthBuilder mAuthBuilder;
 
-    public AuthBaseBuilder() {
-        mAuthPolicy = new DefaultAuthPolicy(getClient());
+    public GenericAuthBuilder() {
+        mClientBuilder = new ClientBuilder();
+        mAdapterBuilder = new AdapterBuilder(mClientBuilder);
+        mAuthBuilder = new AuthBuilder(mAdapterBuilder);
     }
 
     @SuppressWarnings("unchecked")
-    public SubBuilder setToken(Token<?> token) {
-        mToken = token;
-        return (SubBuilder) this;
+    public TargetBuilder baseUrl(String baseUrl) {
+        mAdapterBuilder.baseUrl(baseUrl);
+        return  (TargetBuilder) this;
     }
 
-    @Override
-    public API build() {
-        if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication");
-        }
-        setupAuthenticator();
-        return super.build();
+    @SuppressWarnings("unchecked")
+    public TargetBuilder logger(RestApiLog log) {
+        mClientBuilder.setLog(log);
+        return (TargetBuilder) this;
     }
 
-    private void setupAuthenticator() {
-        mToken.acceptPolicy(mAuthPolicy);
+    @SuppressWarnings("unchecked")
+    public TargetBuilder token(Token<?> token) {
+        mAuthBuilder.setToken(token);
+        return (TargetBuilder) this;
+    }
+
+    abstract Api createApi();
+
+    public Api build() {
+        ensureDefaults();
+        return createApi();
+    }
+
+    void ensureDefaults() {
+        mClientBuilder.ensureDefaults();
+        mAdapterBuilder.ensureDefaults();
+        mAuthBuilder.ensureDefaults();
+    }
+
+    Retrofit createAdapter() {
+        return mAuthBuilder.createAdapter();
     }
 }

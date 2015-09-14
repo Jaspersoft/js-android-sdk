@@ -80,7 +80,7 @@ public class ReportExecutionRestApiTest {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
         restApiUnderTest = new ReportExecutionRestApi.Builder()
-                .setToken(mToken)
+                .token(mToken)
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

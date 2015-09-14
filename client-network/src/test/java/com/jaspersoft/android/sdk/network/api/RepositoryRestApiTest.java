@@ -68,7 +68,7 @@ public class RepositoryRestApiTest {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
         restApiUnderTest = new RepositoryRestApi.Builder()
-                .setToken(mToken)
+                .token(mToken)
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }
