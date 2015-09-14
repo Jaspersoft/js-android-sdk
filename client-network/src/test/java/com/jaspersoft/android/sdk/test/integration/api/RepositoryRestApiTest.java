@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
@@ -58,7 +59,9 @@ public class RepositoryRestApiTest {
         String cookie = mAuthenticator.getCookie();
 
         if (api == null) {
-            api = new RepositoryRestApi.Builder(mMetadata.getServerUrl(), cookie)
+            api = new RepositoryRestApi.Builder()
+                    .setToken(CookieToken.newInstance(cookie))
+                    .baseUrl(mMetadata.getServerUrl())
                     .setLog(TestLogger.get(this))
                     .build();
         }

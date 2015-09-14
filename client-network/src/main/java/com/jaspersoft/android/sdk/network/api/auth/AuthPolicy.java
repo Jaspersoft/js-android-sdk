@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,27 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+package com.jaspersoft.android.sdk.network.api.auth;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
-
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
-
-    final class Builder extends BaseBuilder<ServerRestApi, Builder> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(getDefaultBuilder().build());
-        }
-    }
+public interface AuthPolicy {
+    void applyCookieToken(CookieToken token);
 }

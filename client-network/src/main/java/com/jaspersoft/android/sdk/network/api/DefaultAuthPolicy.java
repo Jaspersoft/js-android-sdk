@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,24 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.api.auth.AuthPolicy;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+final class DefaultAuthPolicy implements AuthPolicy {
 
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    private final OkHttpClient mHttpClient;
 
-    final class Builder extends BaseBuilder<ServerRestApi, Builder> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(getDefaultBuilder().build());
-        }
+    DefaultAuthPolicy(OkHttpClient httpClient) {
+        mHttpClient = httpClient;
+    }
+
+    @Override
+    public void applyCookieToken(CookieToken token) {
+        mHttpClient.interceptors().add(CookieAuthInterceptor.newInstance(token.get()));
     }
 }

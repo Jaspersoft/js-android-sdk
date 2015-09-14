@@ -26,9 +26,14 @@ package com.jaspersoft.android.sdk.network.api;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
+import retrofit.Converter;
 import retrofit.Retrofit;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+
 
 /**
  * TODO separate OkHttp client creation from Retrofit client
@@ -39,21 +44,29 @@ import retrofit.Retrofit;
 abstract class BaseBuilder<API, SubBuilder> {
     private final Retrofit.Builder mRestAdapterBuilder;
     private final OkHttpClient mOkHttpClient;
+    private final Converter.Factory mConverterFactory;
 
     private RestApiLog mLog = RestApiLog.NONE;
+    private HttpUrl mBaseUrl;
 
-    public BaseBuilder(String baseUrl){
-        if (baseUrl == null || baseUrl.length() == 0) {
-            throw new IllegalArgumentException("Base url should not be null or empty");
-        }
+    public BaseBuilder() {
         mOkHttpClient = new OkHttpClient();
         mRestAdapterBuilder = new Retrofit.Builder();
 
-        mRestAdapterBuilder.client(mOkHttpClient);
-        mRestAdapterBuilder.baseUrl(Utils.normalizeBaseUrl(baseUrl));
-
         Gson configuredGson = GsonFactory.create();
-        mRestAdapterBuilder.addConverterFactory(GsonConverterFactory.create(configuredGson));
+        mConverterFactory = GsonConverterFactory.create(configuredGson);
+    }
+
+    @SuppressWarnings("unchecked")
+    public SubBuilder baseUrl(String baseUrl) {
+        checkNotNull(baseUrl, "baseUrl == null");
+        baseUrl = Utils.normalizeBaseUrl(baseUrl);
+        HttpUrl httpUrl = HttpUrl.parse(baseUrl);
+        if (httpUrl == null) {
+            throw new IllegalArgumentException("Illegal URL: " + baseUrl);
+        }
+        mBaseUrl = httpUrl;
+        return (SubBuilder) this;
     }
 
     @SuppressWarnings("unchecked")
@@ -73,7 +86,16 @@ abstract class BaseBuilder<API, SubBuilder> {
     abstract API createApi();
 
     public API build() {
+        if (mBaseUrl == null) {
+            throw new IllegalStateException("Base url should be supplied to work with JRS API");
+        }
+
         mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
+
+        mRestAdapterBuilder.client(mOkHttpClient);
+        mRestAdapterBuilder.baseUrl(mBaseUrl);
+        mRestAdapterBuilder.addConverterFactory(mConverterFactory);
+
         return createApi();
     }
 }

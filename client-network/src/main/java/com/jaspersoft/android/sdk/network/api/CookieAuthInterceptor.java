@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,36 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import java.io.IOException;
+
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+final class CookieAuthInterceptor implements Interceptor {
+    private final String mCookie;
 
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    CookieAuthInterceptor(String cookie) {
+        mCookie = cookie;
+    }
 
-    final class Builder extends BaseBuilder<ServerRestApi, Builder> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(getDefaultBuilder().build());
-        }
+    public static CookieAuthInterceptor newInstance(String token) {
+        checkNotNull(token, "Token should not be null");
+        return new CookieAuthInterceptor(token);
+    }
+
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        Request compressedRequest = originalRequest.newBuilder()
+                .header("Cookie", mCookie)
+                .build();
+        return chain.proceed(compressedRequest);
     }
 }

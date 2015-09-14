@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
@@ -66,13 +67,17 @@ public class ReportExportRestApiTest {
         String cookie = mAuthenticator.getCookie();
 
         if (mExecApi == null) {
-            mExecApi = new ReportExecutionRestApi.Builder(mMetadata.getServerUrl(), cookie)
+            mExecApi = new ReportExecutionRestApi.Builder()
+                    .setToken(CookieToken.newInstance(cookie))
+                    .baseUrl(mMetadata.getServerUrl())
                     .setLog(TestLogger.get(this))
                     .build();
         }
 
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportExportRestApi.Builder(mMetadata.getServerUrl(), cookie)
+            apiUnderTest = new ReportExportRestApi.Builder()
+                    .setToken(CookieToken.newInstance(cookie))
+                    .baseUrl(mMetadata.getServerUrl())
                     .setLog(TestLogger.get(this))
                     .build();
         }

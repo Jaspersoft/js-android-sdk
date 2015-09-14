@@ -75,10 +75,6 @@ public interface InputControlRestApi {
                                                        boolean freshData);
 
     final class Builder extends AuthBaseBuilder<InputControlRestApi, Builder> {
-        public Builder(String baseUrl, String cookie) {
-            super(baseUrl, cookie);
-        }
-
         @Override
         InputControlRestApi createApi() {
             return new InputControlRestApiImpl(getDefaultBuilder().build());

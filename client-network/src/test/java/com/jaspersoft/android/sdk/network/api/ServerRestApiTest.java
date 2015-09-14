@@ -27,9 +27,11 @@ package com.jaspersoft.android.sdk.network.api;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.MockitoAnnotations;
 
 /**
  * @author Tom Koptel
@@ -48,14 +50,10 @@ public class ServerRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        ServerRestApi restApi = new ServerRestApi.Builder(mWebMockRule.getRootUrl()).build();
+        ServerRestApi restApi = new ServerRestApi.Builder()
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
         restApi.requestServerInfo();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        new ServerRestApi.Builder(null).build();
     }
 
 }

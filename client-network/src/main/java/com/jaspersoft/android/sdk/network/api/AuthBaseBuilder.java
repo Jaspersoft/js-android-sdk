@@ -24,27 +24,37 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.jaspersoft.android.sdk.network.api.auth.AuthPolicy;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 abstract class AuthBaseBuilder<API, SubBuilder> extends BaseBuilder<API, SubBuilder> {
-    private final String mCookie;
+    private Token<?> mToken;
+    private final AuthPolicy mAuthPolicy;
 
-    public AuthBaseBuilder(String baseUrl, String cookie) {
-        super(baseUrl);
-        if (cookie == null || cookie.length() == 0) {
-            throw new IllegalArgumentException("Cookie should not be null or empty");
+    public AuthBaseBuilder() {
+        mAuthPolicy = new DefaultAuthPolicy(getClient());
+    }
+
+    @SuppressWarnings("unchecked")
+    public SubBuilder setToken(Token<?> token) {
+        mToken = token;
+        return (SubBuilder) this;
+    }
+
+    @Override
+    public API build() {
+        if (mToken == null) {
+            throw new IllegalStateException("This API requires authentication");
         }
-        mCookie = cookie;
         setupAuthenticator();
+        return super.build();
     }
 
     private void setupAuthenticator() {
-        getClient().interceptors().add(AuthInterceptor.newInstance(mCookie));
-    }
-
-    public String getCookie() {
-        return mCookie;
+        mToken.acceptPolicy(mAuthPolicy);
     }
 }

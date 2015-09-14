@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Tom Koptel
@@ -37,8 +38,19 @@ public class UtilsTest {
 
     @Test
     public void normalizeBaseUrlShouldAddTrailingSlashIfMissing() {
-        String url = "http://some.http";
+        String url = "http://mobiledemo.jaspersoft.com/jasperserver-pro";
         assertThat(Utils.normalizeBaseUrl(url), is(url + "/"));
+    }
+
+    @Test
+    public void normalizeBaseUrlShouldNotNormalizeEmptyString() {
+        String url = "";
+        assertThat(Utils.normalizeBaseUrl(url), is(""));
+    }
+    @Test
+    public void normalizeBaseUrlShouldNotNormalizeNullString() {
+        String url = null;
+        assertThat(Utils.normalizeBaseUrl(url), is(nullValue()));
     }
 
 }

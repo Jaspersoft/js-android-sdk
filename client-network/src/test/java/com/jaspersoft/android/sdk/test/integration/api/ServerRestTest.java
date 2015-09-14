@@ -47,8 +47,9 @@ public class ServerRestTest {
 
     @Test
     public void shouldRequestServerInfo() throws IOException {
-        ServerRestApi api = new ServerRestApi.Builder(mobileDemo2)
+        ServerRestApi api = new ServerRestApi.Builder()
                 .setLog(TestLogger.get(this))
+                .baseUrl(mobileDemo2)
                 .build();
         ServerInfoResponse response = api.requestServerInfo();
         assertThat(response, is(notNullValue()));

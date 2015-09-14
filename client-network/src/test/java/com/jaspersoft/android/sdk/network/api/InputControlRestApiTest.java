@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.network.api;
 
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
@@ -7,6 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 
@@ -22,23 +25,18 @@ public class InputControlRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
+    @Mock
+    Token<?> mToken;
+
     private InputControlRestApi restApiUnderTest;
 
     @Before
     public void setup() {
-        restApiUnderTest = new InputControlRestApi.Builder(mWebMockRule.getRootUrl(), "cookie").build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        new InputControlRestApi.Builder(null, "cookie").build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullCookie() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        InputControlRestApi restApi = new InputControlRestApi.Builder(mWebMockRule.getRootUrl(), null).build();
+        MockitoAnnotations.initMocks(this);
+        restApiUnderTest = new InputControlRestApi.Builder()
+                .setToken(mToken)
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
     }
 
     @Test
