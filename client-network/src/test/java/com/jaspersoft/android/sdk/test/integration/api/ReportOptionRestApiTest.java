@@ -71,7 +71,7 @@ public class ReportOptionRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportOptionRestApi.Builder()
-                    .log(TestLogger.get(this))
+                    .logger(TestLogger.get(this))
                     .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .build();

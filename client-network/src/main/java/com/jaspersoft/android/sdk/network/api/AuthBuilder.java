@@ -29,6 +29,8 @@ import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.Retrofit;
 
+import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -42,13 +44,14 @@ final class AuthBuilder {
     }
 
     public AuthBuilder setToken(Token<?> token) {
+        checkNotNull(token, "token == null");
         mToken = token;
         return this;
     }
 
     void ensureDefaults() {
         if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication");
+            throw new IllegalStateException("This API requires authentication token");
         }
     }
 

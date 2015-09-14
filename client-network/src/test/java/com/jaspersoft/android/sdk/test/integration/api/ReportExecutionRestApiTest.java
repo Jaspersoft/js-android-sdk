@@ -74,7 +74,7 @@ public class ReportExecutionRestApiTest {
             apiUnderTest = new ReportExecutionRestApi.Builder()
                     .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .log(TestLogger.get(this))
+                    .logger(TestLogger.get(this))
                     .build();
         }
     }

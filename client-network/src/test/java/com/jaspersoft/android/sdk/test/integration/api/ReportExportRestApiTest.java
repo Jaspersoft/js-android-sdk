@@ -70,7 +70,7 @@ public class ReportExportRestApiTest {
             mExecApi = new ReportExecutionRestApi.Builder()
                     .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .log(TestLogger.get(this))
+                    .logger(TestLogger.get(this))
                     .build();
         }
 
@@ -78,7 +78,7 @@ public class ReportExportRestApiTest {
             apiUnderTest = new ReportExportRestApi.Builder()
                     .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .log(TestLogger.get(this))
+                    .logger(TestLogger.get(this))
                     .build();
         }
     }

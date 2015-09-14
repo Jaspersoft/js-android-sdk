@@ -50,7 +50,7 @@ abstract class GenericAuthBuilder<TargetBuilder, Api> {
     }
 
     @SuppressWarnings("unchecked")
-    public TargetBuilder log(RestApiLog log) {
+    public TargetBuilder logger(RestApiLog log) {
         mClientBuilder.setLog(log);
         return (TargetBuilder) this;
     }

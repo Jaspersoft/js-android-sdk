@@ -73,7 +73,7 @@ public class InputControlRestApiTest {
         mRestApi = new InputControlRestApi.Builder()
                 .token(CookieToken.newInstance(cookie))
                 .baseUrl(mMetadata.getServerUrl())
-                .log(TestLogger.get(this))
+                .logger(TestLogger.get(this))
                 .build();
     }
 
