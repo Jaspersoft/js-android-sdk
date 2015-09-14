@@ -54,13 +54,9 @@ public class AuthenticationRestApiTest {
 
     @Before
     public void setup() {
-        mRestApi = new AuthenticationRestApi.Builder(mWebMockRule.getRootUrl()).build();
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionForNullBaseUrl() {
-        mExpectedException.expect(NullPointerException.class);
-        new AuthenticationRestApi.Builder(null).build();
+        mRestApi = new AuthenticationRestApi.Builder()
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
     }
 
     @Test

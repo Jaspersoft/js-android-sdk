@@ -24,37 +24,40 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.AuthPolicy;
 import com.jaspersoft.android.sdk.network.api.auth.Token;
+import com.squareup.okhttp.OkHttpClient;
+
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class AuthBaseBuilder<API, SubBuilder> extends BaseBuilder<API, SubBuilder> {
+final class AuthBuilder {
+    private final AdapterBuilder mAdapterBuilder;
     private Token<?> mToken;
-    private final AuthPolicy mAuthPolicy;
 
-    public AuthBaseBuilder() {
-        mAuthPolicy = new DefaultAuthPolicy(getClient());
+    public AuthBuilder(AdapterBuilder adapterBuilder) {
+        mAdapterBuilder = adapterBuilder;
     }
 
-    @SuppressWarnings("unchecked")
-    public SubBuilder setToken(Token<?> token) {
+    public AuthBuilder setToken(Token<?> token) {
         mToken = token;
-        return (SubBuilder) this;
+        return this;
     }
 
-    @Override
-    public API build() {
+    void ensureDefaults() {
         if (mToken == null) {
             throw new IllegalStateException("This API requires authentication");
         }
-        setupAuthenticator();
-        return super.build();
     }
 
-    private void setupAuthenticator() {
-        mToken.acceptPolicy(mAuthPolicy);
+    Retrofit createAdapter() {
+        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
+
+        DefaultAuthPolicy authPolicy = new DefaultAuthPolicy(client);
+        mToken.acceptPolicy(authPolicy);
+
+        return mAdapterBuilder.createAdapter();
     }
 }

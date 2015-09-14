@@ -71,9 +71,9 @@ public class InputControlRestApiTest {
         mAuthenticator.authorize();
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder()
-                .setToken(CookieToken.newInstance(cookie))
+                .token(CookieToken.newInstance(cookie))
                 .baseUrl(mMetadata.getServerUrl())
-                .setLog(TestLogger.get(this))
+                .log(TestLogger.get(this))
                 .build();
     }
 

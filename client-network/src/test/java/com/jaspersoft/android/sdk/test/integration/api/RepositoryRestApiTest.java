@@ -60,9 +60,9 @@ public class RepositoryRestApiTest {
 
         if (api == null) {
             api = new RepositoryRestApi.Builder()
-                    .setToken(CookieToken.newInstance(cookie))
+                    .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .setLog(TestLogger.get(this))
+                    .log(TestLogger.get(this))
                     .build();
         }
     }

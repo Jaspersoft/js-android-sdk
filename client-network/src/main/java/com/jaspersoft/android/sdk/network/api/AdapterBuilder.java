@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -29,73 +29,54 @@ import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
-import retrofit.Converter;
 import retrofit.Retrofit;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
 
-
 /**
- * TODO separate OkHttp client creation from Retrofit client
- *
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class BaseBuilder<API, SubBuilder> {
+final class AdapterBuilder {
     private final Retrofit.Builder mRestAdapterBuilder;
-    private final OkHttpClient mOkHttpClient;
-    private final Converter.Factory mConverterFactory;
+    private final GsonConverterFactory mConverterFactory;
 
-    private RestApiLog mLog = RestApiLog.NONE;
-    private HttpUrl mBaseUrl;
+    final ClientBuilder clientBuilder;
+    HttpUrl baseUrl;
 
-    public BaseBuilder() {
-        mOkHttpClient = new OkHttpClient();
+    public AdapterBuilder(ClientBuilder clientBuilder){
         mRestAdapterBuilder = new Retrofit.Builder();
 
         Gson configuredGson = GsonFactory.create();
         mConverterFactory = GsonConverterFactory.create(configuredGson);
+
+        this.clientBuilder = clientBuilder;
     }
 
     @SuppressWarnings("unchecked")
-    public SubBuilder baseUrl(String baseUrl) {
+    public AdapterBuilder baseUrl(String baseUrl) {
         checkNotNull(baseUrl, "baseUrl == null");
         baseUrl = Utils.normalizeBaseUrl(baseUrl);
         HttpUrl httpUrl = HttpUrl.parse(baseUrl);
         if (httpUrl == null) {
             throw new IllegalArgumentException("Illegal URL: " + baseUrl);
         }
-        mBaseUrl = httpUrl;
-        return (SubBuilder) this;
+        this.baseUrl = httpUrl;
+        return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public SubBuilder setLog(RestApiLog log) {
-        mLog = log;
-        return (SubBuilder) this;
-    }
-
-    Retrofit.Builder getDefaultBuilder() {
-        return mRestAdapterBuilder;
-    }
-
-    OkHttpClient getClient() {
-        return mOkHttpClient;
-    }
-
-    abstract API createApi();
-
-    public API build() {
-        if (mBaseUrl == null) {
+    public void ensureDefaults() {
+        if (baseUrl == null) {
             throw new IllegalStateException("Base url should be supplied to work with JRS API");
         }
+    }
 
-        mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
-
-        mRestAdapterBuilder.client(mOkHttpClient);
-        mRestAdapterBuilder.baseUrl(mBaseUrl);
+    Retrofit createAdapter() {
+        OkHttpClient client = clientBuilder.build();
+        mRestAdapterBuilder.client(client);
+        mRestAdapterBuilder.baseUrl(baseUrl);
         mRestAdapterBuilder.addConverterFactory(mConverterFactory);
 
-        return createApi();
+        return mRestAdapterBuilder.build();
     }
 }

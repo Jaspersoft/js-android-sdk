@@ -46,7 +46,9 @@ public final class TestAuthenticator {
 
     public void authorize() {
         if (mAuthResponse == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder(mJrsMetadata.getServerUrl()).build();
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                    .baseUrl(mJrsMetadata.getServerUrl())
+                    .build();
             mAuthResponse = restApi
                     .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
         }

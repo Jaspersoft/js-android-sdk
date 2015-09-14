@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,25 +24,46 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+abstract class GenericBuilder<TargetBuilder, Api> {
+    protected final ClientBuilder clientBuilder;
+    protected final AdapterBuilder adapterBuilder;
 
-    @NonNull
-    @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    public GenericBuilder() {
+        clientBuilder = new ClientBuilder();
+        adapterBuilder = new AdapterBuilder(clientBuilder);
+    }
 
-    final class Builder extends GenericBuilder<Builder, ServerRestApi> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(createAdapter());
-        }
+    @SuppressWarnings("unchecked")
+    public TargetBuilder baseUrl(String baseUrl) {
+        adapterBuilder.baseUrl(baseUrl);
+        return  (TargetBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TargetBuilder log(RestApiLog log) {
+        clientBuilder.setLog(log);
+        return (TargetBuilder) this;
+    }
+
+    void ensureDefaults() {
+        clientBuilder.ensureDefaults();
+        adapterBuilder.ensureDefaults();
+    }
+
+    Retrofit createAdapter() {
+        return adapterBuilder.createAdapter();
+    }
+
+    abstract Api createApi();
+
+    public Api build() {
+        ensureDefaults();
+        return createApi();
     }
 }

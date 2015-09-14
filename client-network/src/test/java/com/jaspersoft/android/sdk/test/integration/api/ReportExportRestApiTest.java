@@ -68,17 +68,17 @@ public class ReportExportRestApiTest {
 
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .setToken(CookieToken.newInstance(cookie))
+                    .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .setLog(TestLogger.get(this))
+                    .log(TestLogger.get(this))
                     .build();
         }
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExportRestApi.Builder()
-                    .setToken(CookieToken.newInstance(cookie))
+                    .token(CookieToken.newInstance(cookie))
                     .baseUrl(mMetadata.getServerUrl())
-                    .setLog(TestLogger.get(this))
+                    .log(TestLogger.get(this))
                     .build();
         }
     }
