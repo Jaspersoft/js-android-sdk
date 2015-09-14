@@ -24,46 +24,42 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import retrofit.Retrofit;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class GenericBuilder<TargetBuilder, Api> {
-    protected final ClientBuilder clientBuilder;
-    protected final AdapterBuilder adapterBuilder;
+public class AuthenticationRestApiBuilderTest {
 
-    public GenericBuilder() {
-        clientBuilder = new ClientBuilder();
-        adapterBuilder = new AdapterBuilder(clientBuilder);
+    private AuthenticationRestApi.Builder builderUnderTest;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Before
+    public void setup() {
+        builderUnderTest = new AuthenticationRestApi.Builder();
     }
 
-    @SuppressWarnings("unchecked")
-    public TargetBuilder baseUrl(String baseUrl) {
-        adapterBuilder.baseUrl(baseUrl);
-        return  (TargetBuilder) this;
+    @Test
+    public void builderShouldNotAllowNullBaseUrl() {
+        expectedException.expect(NullPointerException.class);
+        builderUnderTest.baseUrl(null);
     }
 
-    @SuppressWarnings("unchecked")
-    public TargetBuilder logger(RestApiLog log) {
-        clientBuilder.setLog(log);
-        return (TargetBuilder) this;
+    @Test
+    public void builderShouldNotAllowEmptyUrl() {
+        expectedException.expect(IllegalArgumentException.class);
+        builderUnderTest.baseUrl("");
     }
 
-    void ensureDefaults() {
-        clientBuilder.ensureDefaults();
-        adapterBuilder.ensureDefaults();
-    }
-
-    Retrofit createAdapter() {
-        return adapterBuilder.createAdapter();
-    }
-
-    abstract Api createApi();
-
-    public Api build() {
-        ensureDefaults();
-        return createApi();
+    @Test
+    public void builderShouldAllowNullLogLevel() {
+        builderUnderTest.logger(null);
+        builderUnderTest.build();
     }
 }

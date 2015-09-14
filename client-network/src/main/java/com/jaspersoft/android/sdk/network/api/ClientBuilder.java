@@ -38,8 +38,8 @@ final class ClientBuilder {
         mOkHttpClient = new OkHttpClient();
     }
 
-    public ClientBuilder setLog(RestApiLog log) {
-        mLog = log;
+    public ClientBuilder setLog(RestApiLog logger) {
+        mLog = logger;
         return this;
     }
 
@@ -53,5 +53,8 @@ final class ClientBuilder {
     }
 
     void ensureDefaults() {
+        if (mLog == null) {
+            mLog = RestApiLog.NONE;
+        }
     }
 }

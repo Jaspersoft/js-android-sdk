@@ -54,7 +54,7 @@ public class AuthenticationRestApiTest {
     public void shouldReturnResponseForSpringRequest() throws IOException {
         AuthenticationRestApi authApi = new AuthenticationRestApi.Builder()
                 .baseUrl(mobileDemo2)
-                .log(TestLogger.get(this))
+                .logger(TestLogger.get(this))
                 .build();
         AuthResponse response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
         assertThat(response.getToken(), is(notNullValue()));

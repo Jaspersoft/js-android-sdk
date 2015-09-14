@@ -66,9 +66,6 @@ final class AdapterBuilder {
     }
 
     public void ensureDefaults() {
-        if (baseUrl == null) {
-            throw new IllegalStateException("Base url should be supplied to work with JRS API");
-        }
     }
 
     Retrofit createAdapter() {
