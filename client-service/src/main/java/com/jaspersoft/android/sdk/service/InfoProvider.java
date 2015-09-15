@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.server;
+package com.jaspersoft.android.sdk.service;
 
 import android.support.annotation.NonNull;
 

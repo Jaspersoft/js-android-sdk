@@ -22,20 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.server;
+package com.jaspersoft.android.sdk.service;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
+import android.support.annotation.WorkerThread;
+
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
+ * Always make call on server
+ *
  * @author Tom Koptel
  * @since 2.0
  */
-final class Utils {
-    private Utils() {
+final class GreedyInfoProvider implements InfoProvider {
+    private final ServerInfoService mServerInfoService;
+
+    @VisibleForTesting
+    GreedyInfoProvider(ServerInfoService serverInfoService) {
+        mServerInfoService = serverInfoService;
     }
 
-    public static <T> T checkNotNull(T object, String message) {
-        if (object == null) {
-            throw new NullPointerException(message);
-        }
-        return object;
+    public static InfoProvider newInstance(String serverUrl) {
+        ServerInfoService service = ServerInfoService.newInstance(serverUrl);
+        return new GreedyInfoProvider(service);
+    }
+
+    @Override
+    @NonNull
+    @WorkerThread
+    public ServerInfo provideInfo() {
+        return mServerInfoService.requestServerInfo()
+                .toBlocking().first();
     }
 }

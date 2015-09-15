@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.server;
+package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;

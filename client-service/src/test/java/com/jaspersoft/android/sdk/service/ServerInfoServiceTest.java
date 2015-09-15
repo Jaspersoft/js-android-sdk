@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.service.server;
+package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
