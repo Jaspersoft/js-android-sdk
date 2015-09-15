@@ -28,6 +28,14 @@ public final class ServerService {
         return new ServerService(restApi, ServerInfoTransformer.getInstance());
     }
 
+    public static ServerService newInstance(String baseUrl) {
+        ServerRestApi restApi = new ServerRestApi.Builder()
+                .baseUrl(baseUrl)
+                .build();
+
+        return new ServerService(restApi, ServerInfoTransformer.getInstance());
+    }
+
     public rx.Observable<ServerInfo> requestServerInfo() {
         return requestApiCall().flatMap(new Func1<ServerInfoResponse, Observable<ServerInfo>>() {
             @Override

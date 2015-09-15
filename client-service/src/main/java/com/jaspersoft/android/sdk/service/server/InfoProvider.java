@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
@@ -31,5 +33,6 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
  * @since 2.0
  */
 public interface InfoProvider {
+    @NonNull
     ServerInfo provideInfo();
 }

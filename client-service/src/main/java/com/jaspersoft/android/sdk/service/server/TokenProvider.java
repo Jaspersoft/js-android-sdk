@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.auth.Token;
 
 /**
@@ -31,5 +33,6 @@ import com.jaspersoft.android.sdk.network.api.auth.Token;
  * @since 2.0
  */
 public interface TokenProvider {
+    @NonNull
     Token<?> provideToken();
 }

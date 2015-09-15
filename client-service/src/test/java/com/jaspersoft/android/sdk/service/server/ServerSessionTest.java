@@ -24,34 +24,45 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final ServerService mServerService;
+public class ServerSessionTest {
 
-    @VisibleForTesting
-    GreedyInfoProvider(ServerService serverService) {
-        mServerService = serverService;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    InfoProvider mInfoProvider;
+
+    String serverUrl = "http://localhost";
+
+    private ServerSession objectUnderTest;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        objectUnderTest = new ServerSession(serverUrl, mTokenProvider, mInfoProvider);
     }
 
-    public static InfoProvider newInstance(String serverUrl) {
-        ServerService service = ServerService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
+    @Test
+    public void sessionShouldProvideInfo() {
+        objectUnderTest.getInfo();
+        verify(mInfoProvider, times(1)).provideInfo();
     }
 
-    @Override
-    @NonNull
-    @WorkerThread
-    public ServerInfo provideInfo() {
-        return mServerService.requestServerInfo()
-                .toBlocking().first();
+    @Test
+    public void sessionShouldProvideToken() {
+        objectUnderTest.getToken();
+        verify(mTokenProvider, times(1)).provideToken();
     }
+
 }

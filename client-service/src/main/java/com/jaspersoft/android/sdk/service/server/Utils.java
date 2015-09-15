@@ -24,34 +24,18 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final ServerService mServerService;
-
-    @VisibleForTesting
-    GreedyInfoProvider(ServerService serverService) {
-        mServerService = serverService;
+final class Utils {
+    private Utils() {
     }
 
-    public static InfoProvider newInstance(String serverUrl) {
-        ServerService service = ServerService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
-    }
-
-    @Override
-    @NonNull
-    @WorkerThread
-    public ServerInfo provideInfo() {
-        return mServerService.requestServerInfo()
-                .toBlocking().first();
+    public static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
     }
 }

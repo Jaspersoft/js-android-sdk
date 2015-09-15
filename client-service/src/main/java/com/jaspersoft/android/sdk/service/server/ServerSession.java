@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
@@ -34,23 +36,28 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 public final class ServerSession {
     private final TokenProvider mTokenProvider;
     private final InfoProvider mInfoProvider;
-    private final String mBaseUrl;
+    private final String mServerUrl;
 
-    public ServerSession(Builder builder) {
-        mBaseUrl = builder.serverUrl;
-        mInfoProvider = builder.infoProvider;
-        mTokenProvider = builder.tokenProvider;
+    ServerSession(@NonNull String serverUrl,
+                  @NonNull TokenProvider tokenProvider,
+                  @NonNull InfoProvider infoProvider) {
+        mTokenProvider = tokenProvider;
+        mInfoProvider = infoProvider;
+        mServerUrl = serverUrl;
     }
 
-    public String getBaseUrl() {
-        return mBaseUrl;
+    @NonNull
+    public String getServerUrl() {
+        return mServerUrl;
     }
 
+    @NonNull
     public ServerInfo getInfo() {
         return mInfoProvider.provideInfo();
     }
 
-    public Token<?> getTokenProvider() {
+    @NonNull
+    public Token<?> getToken() {
         return mTokenProvider.provideToken();
     }
 
@@ -59,23 +66,37 @@ public final class ServerSession {
         private TokenProvider tokenProvider;
         private InfoProvider infoProvider;
 
-        public Builder serverUrl(String serverUrl) {
+        public Builder serverUrl(@NonNull String serverUrl) {
+            Utils.checkNotNull(serverUrl, "serverUrl == null");
             this.serverUrl = serverUrl;
             return this;
         }
 
-        public Builder tokenProvider(TokenProvider tokenProvider) {
+        public Builder tokenProvider(@NonNull TokenProvider tokenProvider) {
+            Utils.checkNotNull(serverUrl, "tokenProvider == null");
             this.tokenProvider = tokenProvider;
             return this;
         }
 
-        public Builder infoProvider(InfoProvider infoProvider) {
-            this.infoProvider = infoProvider;
-            return this;
+        @NonNull
+        public ServerSession build() {
+            ensureState();
+            ensureSaneDefaults();
+
+            return new ServerSession(serverUrl, tokenProvider, infoProvider);
         }
 
-        public ServerSession build() {
-            return new ServerSession(this);
+        private void ensureState() {
+            if (serverUrl == null) {
+                throw new IllegalStateException("Session requires server url");
+            }
+            if (tokenProvider == null) {
+                throw new IllegalStateException("Session requires token provider");
+            }
+        }
+
+        private void ensureSaneDefaults() {
+            infoProvider = GreedyInfoProvider.newInstance(serverUrl);
         }
     }
 }
