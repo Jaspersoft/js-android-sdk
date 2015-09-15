@@ -31,6 +31,8 @@ import android.support.annotation.WorkerThread;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
+ * Always make call on server
+ *
  * @author Tom Koptel
  * @since 2.0
  */

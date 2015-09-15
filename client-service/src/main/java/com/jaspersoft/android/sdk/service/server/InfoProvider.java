@@ -29,10 +29,12 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
+ * Internal interface to abstract out server info generation strategy
+ *
  * @author Tom Koptel
  * @since 2.0
  */
-public interface InfoProvider {
+interface InfoProvider {
     @NonNull
     ServerInfo provideInfo();
 }
