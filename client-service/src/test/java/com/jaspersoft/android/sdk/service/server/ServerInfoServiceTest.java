@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerInfoResponse.class})
-public class ServerServiceTest {
+public class ServerInfoServiceTest {
 
     @Mock
     ServerRestApi mockApi;
@@ -30,12 +30,12 @@ public class ServerServiceTest {
     @Mock
     ServerInfoResponse mockResponse;
 
-    private ServerService serviceUnderTest;
+    private ServerInfoService serviceUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        serviceUnderTest = new ServerService(mockApi, mockTransformer);
+        serviceUnderTest = new ServerInfoService(mockApi, mockTransformer);
     }
 
     @Test

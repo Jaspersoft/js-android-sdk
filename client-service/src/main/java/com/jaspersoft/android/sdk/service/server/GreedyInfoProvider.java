@@ -35,15 +35,15 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
  * @since 2.0
  */
 final class GreedyInfoProvider implements InfoProvider {
-    private final ServerService mServerService;
+    private final ServerInfoService mServerInfoService;
 
     @VisibleForTesting
-    GreedyInfoProvider(ServerService serverService) {
-        mServerService = serverService;
+    GreedyInfoProvider(ServerInfoService serverInfoService) {
+        mServerInfoService = serverInfoService;
     }
 
     public static InfoProvider newInstance(String serverUrl) {
-        ServerService service = ServerService.newInstance(serverUrl);
+        ServerInfoService service = ServerInfoService.newInstance(serverUrl);
         return new GreedyInfoProvider(service);
     }
 
@@ -51,7 +51,7 @@ final class GreedyInfoProvider implements InfoProvider {
     @NonNull
     @WorkerThread
     public ServerInfo provideInfo() {
-        return mServerService.requestServerInfo()
+        return mServerInfoService.requestServerInfo()
                 .toBlocking().first();
     }
 }

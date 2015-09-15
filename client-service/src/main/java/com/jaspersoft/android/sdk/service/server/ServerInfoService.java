@@ -14,28 +14,31 @@ import rx.functions.Func1;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ServerService {
+public final class ServerInfoService {
     private final ServerRestApi mRestApi;
     private final ServerInfoTransformer mTransformer;
 
     @VisibleForTesting
-    ServerService(ServerRestApi restApi, ServerInfoTransformer transformer) {
+    ServerInfoService(ServerRestApi restApi, ServerInfoTransformer transformer) {
         mRestApi = restApi;
         mTransformer = transformer;
     }
 
-    public static ServerService newInstance(ServerRestApi restApi) {
-        return new ServerService(restApi, ServerInfoTransformer.getInstance());
+    public static ServerInfoService newInstance(ServerRestApi restApi) {
+        return new ServerInfoService(restApi, ServerInfoTransformer.getInstance());
     }
 
-    public static ServerService newInstance(String baseUrl) {
+    public static ServerInfoService newInstance(String baseUrl) {
         ServerRestApi restApi = new ServerRestApi.Builder()
                 .baseUrl(baseUrl)
                 .build();
 
-        return new ServerService(restApi, ServerInfoTransformer.getInstance());
+        return new ServerInfoService(restApi, ServerInfoTransformer.getInstance());
     }
 
+    /**
+     * TODO: Replace with abstract ASYNC policy
+     */
     public rx.Observable<ServerInfo> requestServerInfo() {
         return requestApiCall().flatMap(new Func1<ServerInfoResponse, Observable<ServerInfo>>() {
             @Override
