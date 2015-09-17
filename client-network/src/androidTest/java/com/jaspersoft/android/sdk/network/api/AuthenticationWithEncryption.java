@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,40 +24,38 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import android.test.AndroidTestCase;
+import android.util.Log;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
 
-import java.util.Map;
+import java.net.URLEncoder;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationRestApi {
-    @NonNull
-    @WorkerThread
-    AuthResponse authenticate(@NonNull String username,
-                              @NonNull String password,
-                              @Nullable String organization,
-                              @Nullable Map<String, String> params);
+public class AuthenticationWithEncryption extends AndroidTestCase {
 
-    @NonNull
-    @WorkerThread
-    EncryptionMetadata requestEncryptionMetadata();
+    public void testEncryptionWithPassword() throws Exception {
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                .baseUrl("http://192.168.88.55:8085/jasperserver-pro-61/")
+                .logger(new RestApiLog() {
+                    @Override
+                    public void log(String message) {
+                        Log.d(AuthenticationWithEncryption.class.getSimpleName(), message);
+                    }
+                })
+                .build();
+        EncryptionMetadata metadata = restApi.requestEncryptionMetadata();
 
-    final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {
-        @Override
-        AuthenticationRestApi createApi() {
-            HttpUrl baseUrl = adapterBuilder.baseUrl;
-            OkHttpClient okHttpClient = clientBuilder.getClient();
-            okHttpClient.setFollowRedirects(false);
-            return new AuthenticationRestApiImpl(baseUrl, okHttpClient, getAdapter());
-        }
+        PasswordEncryption generator = new PasswordEncryption(
+                metadata.getModulus(),
+                metadata.getExponent());
+        String cipher = generator.encrypt(URLEncoder.encode("superuser", "UTF-8"));
+
+        AuthResponse authResponse = restApi.authenticate("superuser", cipher, null, null);
+        assertTrue(authResponse != null);
     }
 }

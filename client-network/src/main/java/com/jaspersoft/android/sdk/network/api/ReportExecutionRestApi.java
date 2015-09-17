@@ -70,7 +70,7 @@ public interface ReportExecutionRestApi {
     final class Builder extends GenericAuthBuilder<Builder, ReportExecutionRestApi> {
         @Override
         ReportExecutionRestApi createApi() {
-            return new ReportExecutionRestApiImpl(createAdapter());
+            return new ReportExecutionRestApiImpl(getAdapter().build());
         }
     }
 }

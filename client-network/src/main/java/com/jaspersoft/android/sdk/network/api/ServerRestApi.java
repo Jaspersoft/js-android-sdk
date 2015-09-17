@@ -42,7 +42,7 @@ public interface ServerRestApi {
     final class Builder extends GenericBuilder<Builder, ServerRestApi> {
         @Override
         ServerRestApi createApi() {
-            return new ServerRestApiImpl(createAdapter());
+            return new ServerRestApiImpl(getAdapter().build());
         }
     }
 }

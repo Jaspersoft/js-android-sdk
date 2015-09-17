@@ -71,12 +71,12 @@ final class AdapterBuilder {
         }
     }
 
-    Retrofit createAdapter() {
+    Retrofit.Builder getAdapter() {
         OkHttpClient client = clientBuilder.build();
         mRestAdapterBuilder.client(client);
         mRestAdapterBuilder.baseUrl(baseUrl);
         mRestAdapterBuilder.addConverterFactory(mConverterFactory);
 
-        return mRestAdapterBuilder.build();
+        return mRestAdapterBuilder;
     }
 }

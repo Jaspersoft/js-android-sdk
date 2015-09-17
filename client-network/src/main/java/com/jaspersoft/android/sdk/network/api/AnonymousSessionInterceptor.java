@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,43 +24,29 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.squareup.okhttp.OkHttpClient;
+import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import retrofit.Retrofit;
-
-import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class AuthBuilder {
-    private final AdapterBuilder mAdapterBuilder;
-    private Token<?> mToken;
+final class AnonymousSessionInterceptor implements Interceptor {
+    private final AuthResponse mAuthResponse;
 
-    public AuthBuilder(AdapterBuilder adapterBuilder) {
-        mAdapterBuilder = adapterBuilder;
+    AnonymousSessionInterceptor(AuthResponse authResponse) {
+        mAuthResponse = authResponse;
     }
 
-    public AuthBuilder setToken(Token<?> token) {
-        checkNotNull(token, "token == null");
-        mToken = token;
-        return this;
-    }
-
-    void ensureDefaults() {
-        if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication token");
-        }
-    }
-
-    Retrofit.Builder getAdapter() {
-        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
-
-        DefaultAuthPolicy authPolicy = new DefaultAuthPolicy(client);
-        mToken.acceptPolicy(authPolicy);
-
-        return mAdapterBuilder.getAdapter();
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request request = chain.request().newBuilder()
+                .addHeader("Cookie", mAuthResponse.getToken())
+                .build();
+        return chain.proceed(request);
     }
 }

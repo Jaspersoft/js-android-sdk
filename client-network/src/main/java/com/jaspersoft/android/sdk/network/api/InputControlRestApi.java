@@ -77,7 +77,7 @@ public interface InputControlRestApi {
     final class Builder extends GenericAuthBuilder<Builder, InputControlRestApi> {
         @Override
         InputControlRestApi createApi() {
-            return new InputControlRestApiImpl(createAdapter());
+            return new InputControlRestApiImpl(getAdapter().build());
         }
     }
 }
