@@ -43,7 +43,7 @@ final class CookieAuthInterceptor implements Interceptor {
         mCookie = cookie;
     }
 
-    public static CookieAuthInterceptor newInstance(String token) {
+    public static CookieAuthInterceptor create(String token) {
         checkNotNull(token, "Token should not be null");
         return new CookieAuthInterceptor(token);
     }

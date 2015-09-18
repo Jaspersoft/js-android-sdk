@@ -52,7 +52,7 @@ import static org.hamcrest.core.IsNot.not;
 public class ReportOptionRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
     private ReportOptionRestApi apiUnderTest;
 
 
@@ -72,7 +72,7 @@ public class ReportOptionRestApiTest {
         if (apiUnderTest == null) {
             apiUnderTest = new ReportOptionRestApi.Builder()
                     .logger(TestLogger.get(this))
-                    .token(CookieToken.newInstance(cookie))
+                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .build();
         }

@@ -108,7 +108,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         AuthResponse anonymousResponse = AuthResponseFactory.create(response.raw());
         String anonymousCookie = anonymousResponse.getToken();
 
-        mClient.interceptors().add(CookieAuthInterceptor.newInstance(anonymousCookie));
+        mClient.interceptors().add(CookieAuthInterceptor.create(anonymousCookie));
         mRestAdapterBuilder.client(mClient);
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 

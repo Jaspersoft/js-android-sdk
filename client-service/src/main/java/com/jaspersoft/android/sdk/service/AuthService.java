@@ -49,7 +49,7 @@ public final class AuthService {
                 .flatMap(new Func1<AuthResponse, Observable<? extends Token<?>>>() {
                     @Override
                     public Observable<? extends Token<?>> call(AuthResponse authResponse) {
-                        Token<?> cookieToken = CookieToken.newInstance(authResponse.getToken());
+                        Token<?> cookieToken = CookieToken.create(authResponse.getToken());
                         return Observable.just(cookieToken);
                     }
                 });

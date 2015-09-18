@@ -40,7 +40,7 @@ public final class TestAuthenticator {
         mJrsMetadata = jrsMetadata;
     }
 
-    public static TestAuthenticator newInstance(JrsMetadata metadata) {
+    public static TestAuthenticator create(JrsMetadata metadata) {
         return new TestAuthenticator(metadata);
     }
 

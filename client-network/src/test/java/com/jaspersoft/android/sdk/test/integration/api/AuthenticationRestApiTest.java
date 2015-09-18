@@ -62,7 +62,7 @@ public class AuthenticationRestApiTest {
                 .build();
         EncryptionMetadata metadata = restApi.requestEncryptionMetadata();
 
-        PasswordEncryption generator = PasswordEncryption.newInstance(
+        PasswordEncryption generator = PasswordEncryption.create(
                 new BouncyCastleProvider(),
                 metadata.getModulus(),
                 metadata.getExponent());

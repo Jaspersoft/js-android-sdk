@@ -17,7 +17,7 @@ public class PasswordEncryptionTest {
     @Test
     public void testGenerateKey() throws Exception {
         PasswordEncryption keyGenerator = PasswordEncryption.
-                newInstance(new BouncyCastleProvider(), MODULUS, PUBLIC_EXPONENT);
+                create(new BouncyCastleProvider(), MODULUS, PUBLIC_EXPONENT);
         String encryptedPass = keyGenerator.encrypt("superuser");
         assertTrue(RESULT.equals(encryptedPass));
     }

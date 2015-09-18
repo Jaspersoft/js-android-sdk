@@ -35,7 +35,7 @@ public final class CookieToken implements Token<String> {
         mCookie = cookie;
     }
 
-    public static CookieToken newInstance(String cookie) {
+    public static CookieToken create(String cookie) {
         return new CookieToken(cookie);
     }
 

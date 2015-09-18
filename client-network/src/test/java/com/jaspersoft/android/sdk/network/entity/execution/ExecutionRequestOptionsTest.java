@@ -55,7 +55,7 @@ public class ExecutionRequestOptionsTest {
 
     @Before
     public void setup() {
-        requestUnderTest = ExecutionRequestOptions.newInstance();
+        requestUnderTest = ExecutionRequestOptions.create();
     }
 
     @Test

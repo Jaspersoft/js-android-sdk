@@ -31,12 +31,12 @@ public final class PasswordEncryption {
         mProvider = provider;
     }
 
-    public static PasswordEncryption newInstance(String modulus, String exponent) {
+    public static PasswordEncryption create(String modulus, String exponent) {
         BouncyCastleProvider provider = new BouncyCastleProvider();
-        return newInstance(provider, modulus, exponent);
+        return create(provider, modulus, exponent);
     }
 
-    public static PasswordEncryption newInstance(Provider provider, String modulus, String exponent) {
+    public static PasswordEncryption create(Provider provider, String modulus, String exponent) {
         return new PasswordEncryption(provider, modulus, exponent);
     }
 
