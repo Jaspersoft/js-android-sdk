@@ -19,7 +19,7 @@ import javax.crypto.Cipher;
  */
 public final class JSEncryptionAlgorithm {
     private static final String UTF_8 = "UTF-8";
-    public static final int RADIX_16 = 16;
+    private static final int RADIX_16 = 16;
 
     private final Provider mProvider;
 
@@ -46,8 +46,7 @@ public final class JSEncryptionAlgorithm {
             String utfPass = URLEncoder.encode(text, UTF_8);
             byte[] encryptedUtfPass = cipher.doFinal(utfPass.getBytes());
 
-            String hashedInput = byteArrayToHexString(encryptedUtfPass);
-            return hashedInput;
+            return byteArrayToHexString(encryptedUtfPass);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -76,8 +75,8 @@ public final class JSEncryptionAlgorithm {
             int high = (b & 0xF0) >> 4;
             int low = b & 0x0F;
 
-            sb.append(Character.forDigit(high, 16));
-            sb.append(Character.forDigit(low, 16));
+            sb.append(Character.forDigit(high, RADIX_16));
+            sb.append(Character.forDigit(low, RADIX_16));
         }
         return sb.toString();
     }
