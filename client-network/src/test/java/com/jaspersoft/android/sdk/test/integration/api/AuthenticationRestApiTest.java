@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.api.PasswordEncryption;
+import com.jaspersoft.android.sdk.network.api.JSEncryptionManager;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -62,7 +62,7 @@ public class AuthenticationRestApiTest {
                 .build();
         EncryptionMetadata metadata = restApi.requestEncryptionMetadata();
 
-        PasswordEncryption generator = PasswordEncryption.create(
+        JSEncryptionManager generator = JSEncryptionManager.create(
                 new BouncyCastleProvider(),
                 metadata.getModulus(),
                 metadata.getExponent());

@@ -17,7 +17,7 @@ import javax.crypto.Cipher;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class PasswordEncryption {
+public final class JSEncryptionManager {
     private static final String UTF_8 = "UTF-8";
     public static final int RADIX_16 = 16;
 
@@ -25,19 +25,19 @@ public final class PasswordEncryption {
     private final BigInteger mExponent;
     private final Provider mProvider;
 
-    private PasswordEncryption(Provider provider, String modulus, String exponent) {
+    private JSEncryptionManager(Provider provider, String modulus, String exponent) {
         mModulus = new BigInteger(modulus, RADIX_16);
         mExponent = new BigInteger(exponent, RADIX_16);
         mProvider = provider;
     }
 
-    public static PasswordEncryption create(String modulus, String exponent) {
+    public static JSEncryptionManager create(String modulus, String exponent) {
         BouncyCastleProvider provider = new BouncyCastleProvider();
         return create(provider, modulus, exponent);
     }
 
-    public static PasswordEncryption create(Provider provider, String modulus, String exponent) {
-        return new PasswordEncryption(provider, modulus, exponent);
+    public static JSEncryptionManager create(Provider provider, String modulus, String exponent) {
+        return new JSEncryptionManager(provider, modulus, exponent);
     }
 
     public String encrypt(String text) {
