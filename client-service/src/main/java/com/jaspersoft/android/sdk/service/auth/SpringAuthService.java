@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
@@ -38,6 +39,8 @@ import rx.Observable;
 import rx.functions.Func0;
 import rx.functions.Func1;
 
+import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -47,7 +50,7 @@ public final class SpringAuthService implements AuthService {
     private final String mUsername;
     private final String mPassword;
     private final String mOrganization;
-    private final JSEncryptionAlgorithm mEncryptionAlgorythm;
+    private final JSEncryptionAlgorithm mEncryptionAlgorithm;
 
     @VisibleForTesting
     SpringAuthService(
@@ -56,16 +59,17 @@ public final class SpringAuthService implements AuthService {
             @NonNull String username,
             @NonNull String password,
             @NonNull String organization) {
-        mEncryptionAlgorythm = generator;
+        mEncryptionAlgorithm = generator;
         mRestApi = restApi;
         mUsername = username;
         mPassword = password;
         mOrganization = organization;
     }
 
+    @NonNull
     @Override
     public Observable<Token<?>> authenticate() {
-        return authenticationCall(mUsername, mPassword, mOrganization)
+        return authenticationCall()
                 .flatMap(new Func1<AuthResponse, Observable<? extends Token<?>>>() {
                     @Override
                     public Observable<? extends Token<?>> call(AuthResponse authResponse) {
@@ -75,30 +79,32 @@ public final class SpringAuthService implements AuthService {
                 });
     }
 
-    private Observable<AuthResponse> authenticationCall(final String username, final String password, final String organization) {
+    @NonNull
+    private Observable<AuthResponse> authenticationCall() {
         return Observable.defer(new Func0<Observable<AuthResponse>>() {
             @Override
             public Observable<AuthResponse> call() {
-                AuthResponse response = invokeAuthentication(password, username, organization);
+                AuthResponse response = invokeAuthentication();
                 return Observable.just(response);
             }
         });
     }
 
     @NonNull
-    private AuthResponse invokeAuthentication(String password, String username, String organization) {
-        String targetPassword = password;
+    private AuthResponse invokeAuthentication() {
+        String password = mPassword;
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
         if (encryptionKey.isAvailable()) {
-            targetPassword = encryptPassword(password, encryptionKey);
+            password = encryptPassword(mPassword, encryptionKey);
         }
 
-        return mRestApi.authenticate(username, targetPassword, organization, null);
+        return mRestApi.authenticate(mUsername, password, mOrganization, null);
     }
 
+    @NonNull
     private String encryptPassword(String password, EncryptionKey key) {
-        return mEncryptionAlgorythm.encrypt(key.getModulus(), key.getExponent(), password);
+        return mEncryptionAlgorithm.encrypt(key.getModulus(), key.getExponent(), password);
     }
 
     public static class Builder {
@@ -107,41 +113,50 @@ public final class SpringAuthService implements AuthService {
         private String mPassword;
         private String mOrganization;
 
-        public Builder username(String username) {
-            // Assert value
-            mUsername = username;
+        public Builder username(@NonNull String username) {
+            mUsername = checkNotNull(username, "username == null");
             return this;
         }
 
-        public Builder password(String password) {
-            // Assert value
-            mPassword = password;
+        public Builder password(@NonNull String password) {
+            mPassword = checkNotNull(password, "password == null");
             return this;
         }
 
-        public Builder organization(String organization) {
-            // Assert value
+        public Builder restApi(@NonNull AuthenticationRestApi restApi) {
+            mRestApi = checkNotNull(restApi, "restApi == null");
+            return this;
+        }
+
+        public Builder organization(@Nullable String organization) {
             mOrganization = organization;
             return this;
         }
 
-        public Builder restApi(AuthenticationRestApi restApi) {
-            // Assert value
-            mRestApi = restApi;
-            return this;
-        }
-
-        public Builder withDefaultApiProvider(String serverUrl) {
+        public Builder withDefaultApiProvider(@NonNull String serverUrl) {
             mRestApi = new AuthenticationRestApi.Builder()
                     .baseUrl(serverUrl)
                     .build();
             return this;
         }
 
+        @NonNull
         public SpringAuthService build() {
-            // Assert values
+            ensureValidState();
             JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
             return new SpringAuthService(algorithm, mRestApi, mUsername, mPassword, mOrganization);
+        }
+
+        private void ensureValidState() {
+            if (mUsername == null) {
+                throw new IllegalStateException("Username should not be null");
+            }
+            if (mPassword == null) {
+                throw new IllegalStateException("Password should not be null");
+            }
+            if (mRestApi == null) {
+                throw new IllegalStateException("Rest api should not be null. Either set it or call withDefaultApiProvider(url)");
+            }
         }
     }
 }

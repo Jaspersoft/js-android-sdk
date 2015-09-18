@@ -22,19 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
-
-import android.support.annotation.NonNull;
-
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-
-import rx.Observable;
+package com.jaspersoft.android.sdk.service;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthService {
-    @NonNull
-    Observable<Token<?>> authenticate();
+public final class Preconditions {
+    private Preconditions() {
+    }
+
+    public static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
+    }
 }
