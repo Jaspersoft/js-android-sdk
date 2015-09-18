@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
@@ -107,8 +106,9 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
         AuthResponse anonymousResponse = AuthResponseFactory.create(response.raw());
+        String anonymousCookie = anonymousResponse.getToken();
 
-        mClient.interceptors().add(new AnonymousSessionInterceptor(anonymousResponse));
+        mClient.interceptors().add(CookieAuthInterceptor.newInstance(anonymousCookie));
         mRestAdapterBuilder.client(mClient);
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 
@@ -149,9 +149,9 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     private interface RestApi {
         @NonNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/serverInfo")
-        retrofit.Call<ServerInfoResponse> requestAnonymousCookie();
+        @Headers("Accept: text/plain")
+        @GET("rest_v2/serverInfo/edition")
+        retrofit.Call<String> requestAnonymousCookie();
 
         @NonNull
         @GET("GetEncryptionKey")
