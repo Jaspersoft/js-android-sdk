@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
@@ -102,7 +102,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     @Override
-    public EncryptionMetadata requestEncryptionMetadata() {
+    public EncryptionKey requestEncryptionMetadata() {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
         AuthResponse anonymousResponse = AuthResponseFactory.create(response.raw());
@@ -155,6 +155,6 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
         @NonNull
         @GET("GetEncryptionKey")
-        retrofit.Call<EncryptionMetadata> requestEncryptionMetadata();
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata();
     }
 }

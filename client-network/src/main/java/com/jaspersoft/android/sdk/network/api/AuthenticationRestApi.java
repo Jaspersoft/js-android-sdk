@@ -29,7 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -49,7 +49,7 @@ public interface AuthenticationRestApi {
 
     @NonNull
     @WorkerThread
-    EncryptionMetadata requestEncryptionMetadata();
+    EncryptionKey requestEncryptionMetadata();
 
     final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {
         @Override

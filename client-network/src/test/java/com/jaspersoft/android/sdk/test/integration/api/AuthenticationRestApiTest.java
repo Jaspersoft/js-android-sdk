@@ -25,9 +25,9 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.api.JSEncryptionManager;
+import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.jaspersoft.android.sdk.network.entity.server.EncryptionMetadata;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -60,13 +60,10 @@ public class AuthenticationRestApiTest {
                 .baseUrl("http://192.168.88.55:8085/jasperserver-pro-61/")
                 .logger(TestLogger.get(this))
                 .build();
-        EncryptionMetadata metadata = restApi.requestEncryptionMetadata();
+        EncryptionKey key = restApi.requestEncryptionMetadata();
 
-        JSEncryptionManager generator = JSEncryptionManager.create(
-                new BouncyCastleProvider(),
-                metadata.getModulus(),
-                metadata.getExponent());
-        String cipher = generator.encrypt(URLEncoder.encode("superuser", "UTF-8"));
+        JSEncryptionAlgorithm generator = JSEncryptionAlgorithm.create(new BouncyCastleProvider());
+        String cipher = generator.encrypt(key.getModulus(), key.getExponent(), "superuser");
 
         AuthResponse authResponse = restApi.authenticate("superuser", cipher, null, null);
         assertThat(authResponse, is(notNullValue()));

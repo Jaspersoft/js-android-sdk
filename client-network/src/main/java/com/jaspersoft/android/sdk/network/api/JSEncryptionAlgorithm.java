@@ -17,32 +17,28 @@ import javax.crypto.Cipher;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class JSEncryptionManager {
+public final class JSEncryptionAlgorithm {
     private static final String UTF_8 = "UTF-8";
     public static final int RADIX_16 = 16;
 
-    private final BigInteger mModulus;
-    private final BigInteger mExponent;
     private final Provider mProvider;
 
-    private JSEncryptionManager(Provider provider, String modulus, String exponent) {
-        mModulus = new BigInteger(modulus, RADIX_16);
-        mExponent = new BigInteger(exponent, RADIX_16);
+    private JSEncryptionAlgorithm(Provider provider) {
         mProvider = provider;
     }
 
-    public static JSEncryptionManager create(String modulus, String exponent) {
+    public static JSEncryptionAlgorithm create() {
         BouncyCastleProvider provider = new BouncyCastleProvider();
-        return create(provider, modulus, exponent);
+        return create(provider);
     }
 
-    public static JSEncryptionManager create(Provider provider, String modulus, String exponent) {
-        return new JSEncryptionManager(provider, modulus, exponent);
+    public static JSEncryptionAlgorithm create(Provider provider) {
+        return new JSEncryptionAlgorithm(provider);
     }
 
-    public String encrypt(String text) {
+    public String encrypt(String modulus, String exponent, String text) {
         try {
-            PublicKey publicKey = createPublicKey();
+            PublicKey publicKey = createPublicKey(modulus, exponent);
 
             Cipher cipher = Cipher.getInstance("RSA/NONE/NoPadding", mProvider);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -57,9 +53,13 @@ public final class JSEncryptionManager {
         }
     }
 
-    private PublicKey createPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private PublicKey createPublicKey(String modulus, String exponent)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+        BigInteger m = new BigInteger(modulus, RADIX_16);
+        BigInteger e = new BigInteger(exponent, RADIX_16);
+
         KeyFactory keyFactory = KeyFactory.getInstance("RSA", mProvider);
-        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(mModulus, mExponent);
+        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(m, e);
         return keyFactory.generatePublic(pubKeySpec);
     }
 

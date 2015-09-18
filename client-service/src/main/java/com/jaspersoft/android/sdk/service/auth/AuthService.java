@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,46 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.server;
+package com.jaspersoft.android.sdk.service.auth;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class EncryptionMetadata {
-    @Expose
-    private int maxdigits;
-    @Expose
-    @SerializedName("Error")
-    private String error;
-    @Expose
-    @SerializedName("e")
-    private String exponent;
-    @Expose
-    @SerializedName("n")
-    private String modulus;
-
+public interface AuthService {
     @NonNull
-    public String getExponent() {
-        return exponent;
-    }
+    Observable<Token<?>> authenticate();
 
-    @NonNull
-    public int getMaxdigits() {
-        return maxdigits;
-    }
-
-    @NonNull
-    public String getModulus() {
-        return modulus;
-    }
-
-    public boolean isAvailable() {
-        return error == null;
-    }
 }
