@@ -56,4 +56,6 @@ dependencies {
     testCompile 'org.robolectric:shadows-support-v4:3.0'
     testCompile 'org.robolectric:shadows-httpclient:3.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    // In order to test on JVM side we need stock BouncyCastle provider
+    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
 }

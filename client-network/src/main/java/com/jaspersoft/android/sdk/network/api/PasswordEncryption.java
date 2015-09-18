@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.KeyFactory;
@@ -23,11 +25,19 @@ public final class PasswordEncryption {
     private final BigInteger mExponent;
     private final Provider mProvider;
 
-    public PasswordEncryption(String modulus, String exponent) {
-        exponent = new StringBuilder(exponent).insert(0, "0").toString();
+    private PasswordEncryption(Provider provider, String modulus, String exponent) {
         mModulus = new BigInteger(modulus, RADIX_16);
         mExponent = new BigInteger(exponent, RADIX_16);
-        mProvider = new org.spongycastle.jce.provider.BouncyCastleProvider();
+        mProvider = provider;
+    }
+
+    public static PasswordEncryption newInstance(String modulus, String exponent) {
+        BouncyCastleProvider provider = new BouncyCastleProvider();
+        return newInstance(provider, modulus, exponent);
+    }
+
+    public static PasswordEncryption newInstance(Provider provider, String modulus, String exponent) {
+        return new PasswordEncryption(provider, modulus, exponent);
     }
 
     public String encrypt(String text) {

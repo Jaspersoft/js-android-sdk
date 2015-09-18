@@ -37,6 +37,9 @@ public final class EncryptionMetadata {
     @Expose
     private int maxdigits;
     @Expose
+    @SerializedName("Error")
+    private String error;
+    @Expose
     @SerializedName("e")
     private String exponent;
     @Expose
@@ -56,5 +59,9 @@ public final class EncryptionMetadata {
     @NonNull
     public String getModulus() {
         return modulus;
+    }
+
+    public boolean isAvailable() {
+        return error == null;
     }
 }
