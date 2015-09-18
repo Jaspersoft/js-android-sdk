@@ -52,10 +52,91 @@ final class ServerRestApiImpl implements ServerRestApi {
         return CallWrapper.wrap(call).body();
     }
 
+    @NonNull
+    @Override
+    public String requestEdition() {
+        return CallWrapper.wrap(mApi.requestEdition()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestVersion() {
+        return CallWrapper.wrap(mApi.requestVersion()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestBuild() {
+        return CallWrapper.wrap(mApi.requestBuild()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestFeatures() {
+        return CallWrapper.wrap(mApi.requestFeatures()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestEditionName() {
+        return CallWrapper.wrap(mApi.requestEditionName()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestLicenseType() {
+        return CallWrapper.wrap(mApi.requestLicenseType()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestExpiration() {
+        return CallWrapper.wrap(mApi.requestExpiration()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestDateFormatPattern() {
+        return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
+    }
+
+    @NonNull
+    @Override
+    public String requestDateTimeFormatPattern() {
+        return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
+    }
+
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET(value = "rest_v2/serverInfo")
         Call<ServerInfoResponse> requestServerInfo();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/edition")
+        Call<String> requestEdition();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/version")
+        Call<String> requestVersion();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/build")
+        Call<String> requestBuild();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/features")
+        Call<String> requestFeatures();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/editionName")
+        Call<String> requestEditionName();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/licenseType")
+        Call<String> requestLicenseType();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/expiration")
+        Call<String> requestExpiration();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/dateFormatPattern")
+        Call<String> requestDateFormatPattern();
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/datetimeFormatPattern")
+        Call<String> requestDateTimeFormatPattern();
     }
 }

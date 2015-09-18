@@ -38,6 +38,33 @@ public interface ServerRestApi {
     @NonNull
     @WorkerThread
     ServerInfoResponse requestServerInfo();
+    @NonNull
+    @WorkerThread
+    String requestBuild();
+    @NonNull
+    @WorkerThread
+    String requestDateFormatPattern();
+    @NonNull
+    @WorkerThread
+    String requestDateTimeFormatPattern();
+    @NonNull
+    @WorkerThread
+    String requestEdition();
+    @NonNull
+    @WorkerThread
+    String requestEditionName();
+    @NonNull
+    @WorkerThread
+    String requestVersion();
+    @NonNull
+    @WorkerThread
+    String requestFeatures();
+    @NonNull
+    @WorkerThread
+    String requestLicenseType();
+    @NonNull
+    @WorkerThread
+    String requestExpiration();
 
     final class Builder extends GenericBuilder<Builder, ServerRestApi> {
         @Override

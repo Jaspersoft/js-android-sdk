@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 
@@ -55,11 +56,14 @@ final class LoggingInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         long t2 = System.nanoTime();
+        String bodyString = response.body().string();
         logger.log(String.format("<-----------------------------------------------------Received response" +
-                        "%nUrl: %s%nTime spent: %.1fms%n%s",
-                response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+                        "%nUrl: %s%nTime spent: %.1fms%n%s%nBody: %s",
+                response.request().url(), (t2 - t1) / 1e6d, response.headers(), bodyString));
 
-        return response;
+        return response.newBuilder()
+                .body(ResponseBody.create(response.body().contentType(), bodyString))
+                .build();
     }
 
     private static String bodyToString(final Request request) {
