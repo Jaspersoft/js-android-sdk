@@ -82,6 +82,22 @@ public class SpringAuthServiceBuilderTest {
     }
 
     @Test
+    public void builderShouldNotAllowNullLocale() {
+        mException.expect(NullPointerException.class);
+        mException.expectMessage("locale == null");
+
+        objectUnderTest.locale(null);
+    }
+
+    @Test
+    public void builderShouldNotAllowNullTimeZone() {
+        mException.expect(NullPointerException.class);
+        mException.expectMessage("timeZone == null");
+
+        objectUnderTest.timeZone(null);
+    }
+
+    @Test
     public void serviceShouldThrowIfBuildWithNullUsername() {
         mException.expect(IllegalStateException.class);
         mException.expectMessage("Username should not be null");

@@ -13,6 +13,11 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -25,9 +30,13 @@ import static org.mockito.Mockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({AuthResponse.class, EncryptionKey.class, JSEncryptionAlgorithm.class})
+@PrepareForTest({
+        Locale.class,
+        AuthResponse.class,
+        EncryptionKey.class,
+        JSEncryptionAlgorithm.class,
+})
 public class SpringAuthServiceTest {
-
     @Mock
     AuthenticationRestApi mRestApi;
     @Mock
@@ -36,8 +45,17 @@ public class SpringAuthServiceTest {
     JSEncryptionAlgorithm mAlgorithm;
     @Mock
     EncryptionKey mKey;
+    @Mock
+    TimeZone mTimeZone;
 
     private SpringAuthService objectUnderTest;
+
+    private static final Map<String, String> sOptionals = new HashMap<>();
+
+    static {
+        sOptionals.put("userLocale", "en_US");
+        sOptionals.put("userTimezone", "Europe/Helsinki");
+    }
 
     @Before
     public void setup() {
@@ -47,15 +65,18 @@ public class SpringAuthServiceTest {
                 mRestApi,
                 "user",
                 "1234",
-                "organization"
+                "organization",
+                Locale.US,
+                mTimeZone
         );
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
+        when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
         when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn(mAuthResponse);
     }
 
     @Test
-    public void shouldAuthenticateWithHashedPasswordIfEncryptionKeyIsMissing()  {
+    public void shouldAuthenticateWithHashedPasswordIfEncryptionKeyIsMissing() {
         when(mKey.isAvailable()).thenReturn(true);
         when(mKey.getExponent()).thenReturn("e");
         when(mKey.getModulus()).thenReturn("m");
@@ -63,18 +84,18 @@ public class SpringAuthServiceTest {
 
         objectUnderTest.authenticate().subscribe();
 
-        verify(mRestApi, times(1)).authenticate("user", "hashed password", "organization", null);
+        verify(mRestApi, times(1)).authenticate("user", "hashed password", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
         verify(mAlgorithm, times(1)).encrypt("m", "e", "1234");
     }
 
     @Test
-    public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing()  {
+    public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing() {
         when(mKey.isAvailable()).thenReturn(false);
 
         objectUnderTest.authenticate().subscribe();
 
-        verify(mRestApi, times(1)).authenticate("user", "1234", "organization", null);
+        verify(mRestApi, times(1)).authenticate("user", "1234", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
         verifyZeroInteractions(mAlgorithm);
     }

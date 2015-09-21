@@ -35,6 +35,11 @@ import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+
 import rx.Observable;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -51,6 +56,8 @@ public final class SpringAuthService implements AuthService {
     private final String mPassword;
     private final String mOrganization;
     private final JSEncryptionAlgorithm mEncryptionAlgorithm;
+    private final Locale mLocale;
+    private final TimeZone mTimeZone;
 
     @VisibleForTesting
     SpringAuthService(
@@ -58,12 +65,17 @@ public final class SpringAuthService implements AuthService {
             @NonNull AuthenticationRestApi restApi,
             @NonNull String username,
             @NonNull String password,
-            @NonNull String organization) {
+            @NonNull String organization,
+            @NonNull Locale locale,
+            @NonNull TimeZone timeZone
+            ) {
         mEncryptionAlgorithm = generator;
         mRestApi = restApi;
         mUsername = username;
         mPassword = password;
         mOrganization = organization;
+        mLocale = locale;
+        mTimeZone = timeZone;
     }
 
     @NonNull
@@ -99,7 +111,22 @@ public final class SpringAuthService implements AuthService {
             password = encryptPassword(mPassword, encryptionKey);
         }
 
-        return mRestApi.authenticate(mUsername, password, mOrganization, null);
+        Map<String, String> params = prepareOptionals();
+        return mRestApi.authenticate(mUsername, password, mOrganization, params);
+    }
+
+    private Map<String, String> prepareOptionals() {
+        Map<String, String> params = new HashMap<>();
+
+        // For Locale.US it will produce "en_US" result
+        String locale = mLocale.getLanguage() + "_" + mLocale.getCountry();
+        // Result could be "Europe/Helsinki"
+        String timeZone = mTimeZone.getID();
+
+        params.put("userLocale", locale);
+        params.put("userTimezone", timeZone);
+
+        return params;
     }
 
     @NonNull
@@ -112,6 +139,10 @@ public final class SpringAuthService implements AuthService {
         private String mUsername;
         private String mPassword;
         private String mOrganization;
+
+        // Optional
+        private Locale mLocale;
+        private TimeZone mTimeZone;
 
         public Builder username(@NonNull String username) {
             mUsername = checkNotNull(username, "username == null");
@@ -133,6 +164,16 @@ public final class SpringAuthService implements AuthService {
             return this;
         }
 
+        public Builder timeZone(@NonNull TimeZone timeZone) {
+            mTimeZone = checkNotNull(timeZone, "timeZone == null");
+            return this;
+        }
+
+        public Builder locale(@NonNull Locale locale) {
+            mLocale = checkNotNull(locale, "locale == null");
+            return this;
+        }
+
         /**
          * TODO experimental API consider before release
          */
@@ -146,8 +187,24 @@ public final class SpringAuthService implements AuthService {
         @NonNull
         public SpringAuthService build() {
             ensureValidState();
+            ensureDefaults();
             JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
-            return new SpringAuthService(algorithm, mRestApi, mUsername, mPassword, mOrganization);
+            return new SpringAuthService(algorithm,
+                    mRestApi,
+                    mUsername,
+                    mPassword,
+                    mOrganization,
+                    mLocale,
+                    mTimeZone);
+        }
+
+        private void ensureDefaults() {
+            if (mTimeZone == null) {
+                mTimeZone = TimeZone.getDefault();
+            }
+            if (mLocale == null) {
+                mLocale = Locale.getDefault();
+            }
         }
 
         private void ensureValidState() {
