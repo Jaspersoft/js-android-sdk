@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,49 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.server;
+package com.jaspersoft.android.sdk.service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
+import android.support.annotation.WorkerThread;
+
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
+ * Always make call on server
+ *
  * @author Tom Koptel
  * @since 2.0
  */
-public final class FeatureSet {
-    private final String mRawData;
+final class GreedyInfoProvider implements InfoProvider {
+    private final ServerInfoService mServerInfoService;
 
-    FeatureSet(String rawData) {
-        mRawData = rawData;
+    @VisibleForTesting
+    GreedyInfoProvider(ServerInfoService serverInfoService) {
+        mServerInfoService = serverInfoService;
     }
 
-    public Set<String> asSet() {
-        String[] split = mRawData.split(" ");
-        return new HashSet<>(Arrays.asList(split));
-    }
-
-    public String asString() {
-        return mRawData;
-    }
-
-    public static FeatureSet parse(String rawString) {
-        return new FeatureSet(rawString);
+    public static InfoProvider newInstance(String serverUrl) {
+        ServerInfoService service = ServerInfoService.newInstance(serverUrl);
+        return new GreedyInfoProvider(service);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeatureSet that = (FeatureSet) o;
-
-        return !(mRawData != null ? !mRawData.equals(that.mRawData) : that.mRawData != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return mRawData != null ? mRawData.hashCode() : 0;
+    @NonNull
+    @WorkerThread
+    public ServerInfo provideInfo() {
+        return mServerInfoService.requestServerInfo()
+                .toBlocking().first();
     }
 }

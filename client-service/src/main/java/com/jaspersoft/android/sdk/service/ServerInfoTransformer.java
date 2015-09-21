@@ -22,49 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.server;
+package com.jaspersoft.android.sdk.service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class FeatureSet {
-    private final String mRawData;
+class ServerInfoTransformer {
 
-    FeatureSet(String rawData) {
-        mRawData = rawData;
+    private static class InstanceHolder {
+        private static ServerInfoTransformer INSTANCE = new ServerInfoTransformer();
     }
 
-    public Set<String> asSet() {
-        String[] split = mRawData.split(" ");
-        return new HashSet<>(Arrays.asList(split));
+    private ServerInfoTransformer() {
+        // single instance
     }
 
-    public String asString() {
-        return mRawData;
+    public static ServerInfoTransformer getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
-    public static FeatureSet parse(String rawString) {
-        return new FeatureSet(rawString);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeatureSet that = (FeatureSet) o;
-
-        return !(mRawData != null ? !mRawData.equals(that.mRawData) : that.mRawData != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return mRawData != null ? mRawData.hashCode() : 0;
+    public ServerInfo transform(ServerInfoResponse response) {
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setBuild(response.getBuild());
+        serverInfo.setDateFormatPattern(response.getDateFormatPattern());
+        serverInfo.setDatetimeFormatPattern(response.getDatetimeFormatPattern());
+        serverInfo.setVersion(response.getVersion());
+        serverInfo.setEdition(response.getEdition());
+        serverInfo.setEditionName(response.getEditionName());
+        serverInfo.setFeatures(response.getFeatures());
+        return serverInfo;
     }
 }
