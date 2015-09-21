@@ -25,14 +25,18 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -48,6 +52,21 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+    }
+
+    @Test
+    public void shouldEncryptWithPassword() throws Exception {
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                .baseUrl("http://192.168.88.55:8085/jasperserver-pro-61/")
+                .logger(TestLogger.get(this))
+                .build();
+        EncryptionKey key = restApi.requestEncryptionMetadata();
+
+        JSEncryptionAlgorithm generator = JSEncryptionAlgorithm.create(new BouncyCastleProvider());
+        String cipher = generator.encrypt(key.getModulus(), key.getExponent(), "superuser");
+
+        AuthResponse authResponse = restApi.authenticate("superuser", cipher, null, null);
+        assertThat(authResponse, is(notNullValue()));
     }
 
     @Test

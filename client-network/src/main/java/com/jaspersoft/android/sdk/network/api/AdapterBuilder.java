@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
+import retrofit.Converter;
 import retrofit.Retrofit;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
@@ -39,7 +40,8 @@ import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
  */
 final class AdapterBuilder {
     private final Retrofit.Builder mRestAdapterBuilder;
-    private final GsonConverterFactory mConverterFactory;
+    private final Converter.Factory mGsonConverterFactory;
+    private final Converter.Factory mStringConverterFactory;
 
     final ClientBuilder clientBuilder;
     HttpUrl baseUrl;
@@ -48,7 +50,8 @@ final class AdapterBuilder {
         mRestAdapterBuilder = new Retrofit.Builder();
 
         Gson configuredGson = GsonFactory.create();
-        mConverterFactory = GsonConverterFactory.create(configuredGson);
+        mGsonConverterFactory = GsonConverterFactory.create(configuredGson);
+        mStringConverterFactory = StringConverterFactory.create();
 
         this.clientBuilder = clientBuilder;
     }
@@ -71,12 +74,13 @@ final class AdapterBuilder {
         }
     }
 
-    Retrofit createAdapter() {
+    Retrofit.Builder getAdapter() {
         OkHttpClient client = clientBuilder.build();
         mRestAdapterBuilder.client(client);
         mRestAdapterBuilder.baseUrl(baseUrl);
-        mRestAdapterBuilder.addConverterFactory(mConverterFactory);
+        mRestAdapterBuilder.addConverterFactory(mStringConverterFactory);
+        mRestAdapterBuilder.addConverterFactory(mGsonConverterFactory);
 
-        return mRestAdapterBuilder.build();
+        return mRestAdapterBuilder;
     }
 }

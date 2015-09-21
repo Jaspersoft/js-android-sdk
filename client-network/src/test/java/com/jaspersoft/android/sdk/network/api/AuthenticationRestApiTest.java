@@ -65,7 +65,7 @@ public class AuthenticationRestApiTest {
         mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", null, null);
         assertThat(response.getToken(), is(notNullValue()));
     }
 

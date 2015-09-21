@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,38 +22,19 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
+package com.jaspersoft.android.sdk.service.auth;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import android.support.annotation.NonNull;
 
-import java.io.IOException;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 
-import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CookieAuthInterceptor implements Interceptor {
-    private final String mCookie;
-
-    CookieAuthInterceptor(String cookie) {
-        mCookie = cookie;
-    }
-
-    public static CookieAuthInterceptor create(String token) {
-        checkNotNull(token, "Token should not be null");
-        return new CookieAuthInterceptor(token);
-    }
-
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
-        Request compressedRequest = originalRequest.newBuilder()
-                .header("Cookie", mCookie)
-                .build();
-        return chain.proceed(compressedRequest);
-    }
+public interface AuthService {
+    @NonNull
+    Observable<Token<?>> authenticate();
 }

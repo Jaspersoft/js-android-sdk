@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -46,13 +47,17 @@ public interface AuthenticationRestApi {
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
+    @NonNull
+    @WorkerThread
+    EncryptionKey requestEncryptionMetadata();
+
     final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {
         @Override
         AuthenticationRestApi createApi() {
             HttpUrl baseUrl = adapterBuilder.baseUrl;
             OkHttpClient okHttpClient = clientBuilder.getClient();
             okHttpClient.setFollowRedirects(false);
-            return new AuthenticationRestApiImpl(baseUrl, okHttpClient);
+            return new AuthenticationRestApiImpl(baseUrl, okHttpClient, getAdapter());
         }
     }
 }

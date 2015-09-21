@@ -66,7 +66,7 @@ public class ExecutionRequestOptions {
 
     protected ExecutionRequestOptions() {}
 
-    public static ExecutionRequestOptions newInstance() {
+    public static ExecutionRequestOptions create() {
         return new ExecutionRequestOptions();
     }
 

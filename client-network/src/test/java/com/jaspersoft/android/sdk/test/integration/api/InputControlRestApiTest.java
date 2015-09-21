@@ -56,7 +56,7 @@ import static org.hamcrest.core.IsNot.not;
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
     private InputControlRestApi mRestApi;
     public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
 
@@ -71,7 +71,7 @@ public class InputControlRestApiTest {
         mAuthenticator.authorize();
         String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder()
-                .token(CookieToken.newInstance(cookie))
+                .token(CookieToken.create(cookie))
                 .baseUrl(mMetadata.getServerUrl())
                 .logger(TestLogger.get(this))
                 .build();

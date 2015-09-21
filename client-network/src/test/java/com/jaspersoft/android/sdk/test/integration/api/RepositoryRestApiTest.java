@@ -50,7 +50,7 @@ import static org.junit.Assert.assertThat;
 public class RepositoryRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
     private RepositoryRestApi api;
 
     @Before
@@ -60,7 +60,7 @@ public class RepositoryRestApiTest {
 
         if (api == null) {
             api = new RepositoryRestApi.Builder()
-                    .token(CookieToken.newInstance(cookie))
+                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();

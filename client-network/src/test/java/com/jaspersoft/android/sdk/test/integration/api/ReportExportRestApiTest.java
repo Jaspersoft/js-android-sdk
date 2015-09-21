@@ -59,7 +59,7 @@ public class ReportExportRestApiTest {
     ReportExportRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
 
     @Before
     public void setup() {
@@ -68,7 +68,7 @@ public class ReportExportRestApiTest {
 
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.newInstance(cookie))
+                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -76,7 +76,7 @@ public class ReportExportRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExportRestApi.Builder()
-                    .token(CookieToken.newInstance(cookie))
+                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -114,7 +114,7 @@ public class ReportExportRestApiTest {
      */
     @NonNull
     private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
-        ExecutionRequestOptions options = ExecutionRequestOptions.newInstance()
+        ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
         return apiUnderTest.runExportExecution(exec.getExecutionId(), options);

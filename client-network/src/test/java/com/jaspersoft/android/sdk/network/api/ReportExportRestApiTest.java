@@ -83,7 +83,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.runExportExecution(null, ExecutionRequestOptions.newInstance());
+        restApiUnderTest.runExportExecution(null, ExecutionRequestOptions.create());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.newInstance());
+        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.create());
     }
 
     @Test

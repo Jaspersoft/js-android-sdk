@@ -63,7 +63,7 @@ public class ReportExecutionRestApiTest {
     ReportExecutionRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.newInstance(mMetadata);
+    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
 
     @Before
     public void setup() {
@@ -72,7 +72,7 @@ public class ReportExecutionRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.newInstance(cookie))
+                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();

@@ -22,45 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
+package com.jaspersoft.android.sdk.network.entity.server;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.squareup.okhttp.OkHttpClient;
+import android.support.annotation.NonNull;
 
-import retrofit.Retrofit;
-
-import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class AuthBuilder {
-    private final AdapterBuilder mAdapterBuilder;
-    private Token<?> mToken;
+public final class EncryptionKey {
+    @Expose
+    private int maxdigits;
+    @Expose
+    @SerializedName("Error")
+    private String error;
+    @Expose
+    @SerializedName("e")
+    private String exponent;
+    @Expose
+    @SerializedName("n")
+    private String modulus;
 
-    public AuthBuilder(AdapterBuilder adapterBuilder) {
-        mAdapterBuilder = adapterBuilder;
+    @NonNull
+    public String getExponent() {
+        return exponent;
     }
 
-    public AuthBuilder setToken(Token<?> token) {
-        checkNotNull(token, "token == null");
-        mToken = token;
-        return this;
+    @NonNull
+    public int getMaxdigits() {
+        return maxdigits;
     }
 
-    void ensureDefaults() {
-        if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication token");
-        }
+    @NonNull
+    public String getModulus() {
+        return modulus;
     }
 
-    Retrofit.Builder getAdapter() {
-        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
-
-        DefaultAuthPolicy authPolicy = new DefaultAuthPolicy(client);
-        mToken.acceptPolicy(authPolicy);
-
-        return mAdapterBuilder.getAdapter();
+    public boolean isAvailable() {
+        return error == null;
     }
 }

@@ -29,9 +29,8 @@ import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
+import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -43,15 +42,74 @@ import static org.junit.Assert.assertThat;
  */
 public class ServerRestTest {
 
-    String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
+    private String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
+    private ServerRestApi apiUnderTest;
 
-    @Test
-    public void shouldRequestServerInfo() throws IOException {
-        ServerRestApi api = new ServerRestApi.Builder()
+    @Before
+    public void setup() {
+        apiUnderTest = new ServerRestApi.Builder()
                 .logger(TestLogger.get(this))
                 .baseUrl(mobileDemo2)
                 .build();
-        ServerInfoResponse response = api.requestServerInfo();
+    }
+
+    @Test
+    public void shouldRequestServerInfo() throws Exception {
+        ServerInfoResponse response = apiUnderTest.requestServerInfo();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestBuild() throws Exception {
+        String response = apiUnderTest.requestBuild();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestDateFormatPattern() throws Exception {
+        String response = apiUnderTest.requestDateFormatPattern();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestDateTimeFormatPattern() throws Exception {
+        String response = apiUnderTest.requestDateTimeFormatPattern();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestEdition() throws Exception {
+        String response = apiUnderTest.requestEdition();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestEditionName() throws Exception {
+        String response = apiUnderTest.requestEditionName();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestVersion() throws Exception {
+        String response = apiUnderTest.requestVersion();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestFeatures() throws Exception {
+        String response = apiUnderTest.requestFeatures();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestLicenseType() throws Exception {
+        String response = apiUnderTest.requestLicenseType();
+        assertThat(response, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldRequestExpiration() throws Exception {
+        String response = apiUnderTest.requestExpiration();
         assertThat(response, is(notNullValue()));
     }
 }

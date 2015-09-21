@@ -64,7 +64,7 @@ public interface RepositoryRestApi {
     final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
         @Override
         RepositoryRestApi createApi() {
-            return new RepositoryRestApiImpl(createAdapter());
+            return new RepositoryRestApiImpl(getAdapter().build());
         }
     }
 }

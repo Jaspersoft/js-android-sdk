@@ -74,7 +74,7 @@ abstract class GenericAuthBuilder<TargetBuilder, Api> {
         mAuthBuilder.ensureDefaults();
     }
 
-    Retrofit createAdapter() {
-        return mAuthBuilder.createAdapter();
+    Retrofit.Builder getAdapter() {
+        return mAuthBuilder.getAdapter();
     }
 }

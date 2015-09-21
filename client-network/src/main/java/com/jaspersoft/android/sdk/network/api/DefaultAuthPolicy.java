@@ -42,6 +42,6 @@ final class DefaultAuthPolicy implements AuthPolicy {
 
     @Override
     public void applyCookieToken(CookieToken token) {
-        mHttpClient.interceptors().add(CookieAuthInterceptor.newInstance(token.get()));
+        mHttpClient.interceptors().add(CookieAuthInterceptor.create(token.get()));
     }
 }

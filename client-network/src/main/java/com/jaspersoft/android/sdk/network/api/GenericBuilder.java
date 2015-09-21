@@ -56,8 +56,8 @@ abstract class GenericBuilder<TargetBuilder, Api> {
         adapterBuilder.ensureDefaults();
     }
 
-    Retrofit createAdapter() {
-        return adapterBuilder.createAdapter();
+    Retrofit.Builder getAdapter() {
+        return adapterBuilder.getAdapter();
     }
 
     abstract Api createApi();

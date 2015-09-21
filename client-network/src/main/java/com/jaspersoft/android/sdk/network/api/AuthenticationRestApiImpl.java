@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
@@ -37,6 +38,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import retrofit.Response;
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+
 /**
  * TODO refactor following module in easy testable units
  *
@@ -46,10 +52,12 @@ import java.util.Set;
 final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     private final HttpUrl mBaseUrl;
     private final OkHttpClient mClient;
+    private final Retrofit.Builder mRestAdapterBuilder;
 
-    AuthenticationRestApiImpl(HttpUrl baseUrl, OkHttpClient okHttpClient) {
+    AuthenticationRestApiImpl(HttpUrl baseUrl, OkHttpClient okHttpClient, Retrofit.Builder retrofit) {
         mBaseUrl = baseUrl;
         mClient = okHttpClient;
+        mRestAdapterBuilder = retrofit;
     }
 
     @NonNull
@@ -92,6 +100,21 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         }
     }
 
+    @NonNull
+    @Override
+    public EncryptionKey requestEncryptionMetadata() {
+        RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
+        Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
+        AuthResponse anonymousResponse = AuthResponseFactory.create(response.raw());
+        String anonymousCookie = anonymousResponse.getToken();
+
+        mClient.interceptors().add(CookieAuthInterceptor.create(anonymousCookie));
+        mRestAdapterBuilder.client(mClient);
+        RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
+
+        return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata()).body();
+    }
+
     private Request createAuthRequest(
             @NonNull final String username,
             @NonNull final String password,
@@ -102,9 +125,12 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         client.setFollowRedirects(false);
 
         FormEncodingBuilder formBody = new FormEncodingBuilder()
-                .add("j_username", username)
                 .add("j_password", password)
-                .add("orgId", organization);
+                .add("j_username", username);
+
+        if (organization != null) {
+            formBody.add("orgId", organization);
+        }
 
         if (params != null) {
             Set<Map.Entry<String, String>> entrySet = params.entrySet();
@@ -119,5 +145,16 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                 .url(mBaseUrl + "j_spring_security_check")
                 .post(formBody.build())
                 .build();
+    }
+
+    private interface RestApi {
+        @NonNull
+        @Headers("Accept: text/plain")
+        @GET("rest_v2/serverInfo/edition")
+        retrofit.Call<String> requestAnonymousCookie();
+
+        @NonNull
+        @GET("GetEncryptionKey")
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata();
     }
 }
