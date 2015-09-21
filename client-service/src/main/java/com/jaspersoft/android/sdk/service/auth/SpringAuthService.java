@@ -133,6 +133,9 @@ public final class SpringAuthService implements AuthService {
             return this;
         }
 
+        /**
+         * TODO experimental API consider before release
+         */
         public Builder withDefaultApiProvider(@NonNull String serverUrl) {
             mRestApi = new AuthenticationRestApi.Builder()
                     .baseUrl(serverUrl)
@@ -155,7 +158,7 @@ public final class SpringAuthService implements AuthService {
                 throw new IllegalStateException("Password should not be null");
             }
             if (mRestApi == null) {
-                throw new IllegalStateException("Rest api should not be null. Either set it or call withDefaultApiProvider(url)");
+                throw new IllegalStateException("Rest api should not be null. Either set it or call useDefaultApi(url)");
             }
         }
     }
