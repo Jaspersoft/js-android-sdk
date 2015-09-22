@@ -1350,14 +1350,30 @@ public class JsRestClient {
 
     public ReportOptionResponse getReportOptionsList(String reportUnitUri) {
         String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
-        return restTemplate.getForObject(uri, ReportOptionResponse.class);
+
+        try {
+            return restTemplate.getForObject(uri, ReportOptionResponse.class);
+        } catch (Exception ex) {
+            Class<?> target = ex.getClass();
+            /**
+             * This possible when there is no report options
+             * API responds with plain/text message: 'No options found for {URI}'
+             * As soon as there 2 options to resolve this we decide to swallow exception and return empty object
+             */
+            if (HttpMessageNotReadableException.class.isAssignableFrom(target)) {
+                return new ReportOptionResponse();
+            } else {
+                // all other errors rethrow
+                throw ex;
+            }
+        }
     }
 
     public ReportOption createReportOption(String reportUnitUri, String optionLabel,
                                            Map<String, Set<String>> controlsValues,
                                            boolean overwrite) {
         String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
-        Uri uri =  Uri.parse(base)
+        Uri uri = Uri.parse(base)
                 .buildUpon()
                 .appendQueryParameter("label", optionLabel)
                 .appendQueryParameter("overwrite", String.valueOf(overwrite))

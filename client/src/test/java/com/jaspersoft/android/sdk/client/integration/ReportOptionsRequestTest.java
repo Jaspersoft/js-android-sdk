@@ -91,6 +91,17 @@ public class ReportOptionsRequestTest extends ParametrizedTest {
     }
 
     @Test
+    public void requestShouldListEmptyList() throws Exception {
+        JsRestClient jsRestClient = getJsRestClient();
+        String uri = "/public/Samples/Reports/AllAccounts";
+        ReportOptionsRequest runReportExecutionRequest = new ReportOptionsRequest(jsRestClient, uri);
+
+        ReportOptionResponse response = runReportExecutionRequest.loadDataFromNetwork();
+
+        assertThat(response.getOptions(), is(empty()));
+    }
+
+    @Test
     public void shouldSupportCrudForReportOption() throws Exception {
         JsRestClient jsRestClient = getJsRestClient();
         String uri = getFactoryGirl().getResourceUri(jsRestClient);
