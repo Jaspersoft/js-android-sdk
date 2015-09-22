@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.client;
 
+import android.net.Uri;
+
 import com.jaspersoft.android.sdk.client.oxm.ReportDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceParameter;
@@ -43,6 +45,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
@@ -1349,6 +1352,36 @@ public class JsRestClient {
         String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + resourceUri + REST_REPORT_OPTIONS_URI;
         return restTemplate.getForObject(uri, ReportOptionResponse.class);
     }
+
+    public ReportOption createReportOption(String resourceUri, String optionLabel,
+                                           Map<String, Set<String>> controlsValues,
+                                           boolean overwrite) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + resourceUri + REST_REPORT_OPTIONS_URI;
+        Uri uri =  Uri.parse(base)
+                .buildUpon()
+                .appendQueryParameter("label", optionLabel)
+                .appendQueryParameter("overwrite", String.valueOf(overwrite))
+                .build();
+
+        if (dataType == DataType.JSON) {
+            return restTemplate.postForObject(uri.toString(), controlsValues, ReportOption.class);
+        } else if (dataType == DataType.XML) {
+            ReportParametersList list = new ReportParametersList();
+            for (Map.Entry<String, Set<String>> entry : controlsValues.entrySet()) {
+                String reportParamId = entry.getKey();
+                Set<String> reportParams = entry.getValue();
+
+                ReportParameter param = new ReportParameter();
+                param.setName(reportParamId);
+                param.setValues(reportParams);
+                list.getReportParameters().add(param);
+            }
+            return restTemplate.postForObject(uri.toString(), list, ReportOption.class);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------
