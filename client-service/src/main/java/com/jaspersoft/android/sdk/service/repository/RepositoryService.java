@@ -1,13 +1,19 @@
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.data.resource.ResourceLookup;
-
-import java.util.Collection;
+import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface RepositoryService {
-    Collection<ResourceLookup> searchResources();
+public class RepositoryService {
+    private final RepositoryRestApi.Factory mRestApiFactory;
+
+    public RepositoryService(RepositoryRestApi.Factory apiFactory) {
+        mRestApiFactory = apiFactory;
+    }
+
+    public SearchTask search(SearchCriteria criteria) {
+        return new SearchTask(criteria, mRestApiFactory);
+    }
 }
