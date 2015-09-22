@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -30,8 +30,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Class that wraps {@link JsRestClient} instance in order to send update request of report option
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 1.11
  */
 public class UpdateReportOptionsRequest extends BaseRequest<Void> {
     private final String mReportUri;

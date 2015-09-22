@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,8 +27,10 @@ package com.jaspersoft.android.sdk.client.async.request;
 import com.jaspersoft.android.sdk.client.JsRestClient;
 
 /**
+ * Class that wraps {@link JsRestClient} instance in order to send delete request of report option
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 1.11
  */
 public class DeleteReportOptionRequest extends BaseRequest<Void> {
     private final String mReportUri;
