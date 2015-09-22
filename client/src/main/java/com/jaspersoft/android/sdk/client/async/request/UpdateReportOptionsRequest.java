@@ -25,22 +25,31 @@
 package com.jaspersoft.android.sdk.client.async.request;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
-import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
- * @since 1.11
+ * @since 2.0
  */
-public class ReportOptionsRequest extends BaseRequest<ReportOptionResponse> {
+public class UpdateReportOptionsRequest extends BaseRequest<Void> {
     private final String mReportUri;
+    private final String mOptionId;
+    private final Map<String, Set<String>> mControlsValue;
 
-    public ReportOptionsRequest(JsRestClient jsRestClient, String reportUri) {
-        super(jsRestClient, ReportOptionResponse.class);
+    public UpdateReportOptionsRequest(JsRestClient jsRestClient, String reportUri,
+                                      String optionId, Map<String, Set<String>> controlsValues) {
+        super(jsRestClient, Void.class);
         mReportUri = reportUri;
+        mOptionId = optionId;
+        mControlsValue = controlsValues;
     }
 
     @Override
-    public ReportOptionResponse loadDataFromNetwork() throws Exception {
-        return getJsRestClient().getReportOptionsList(mReportUri);
+    public Void loadDataFromNetwork() throws Exception {
+        getJsRestClient().updateReportOption(mReportUri, mOptionId, mControlsValue);
+        // We do not care about response
+        return null;
     }
 }

@@ -1348,15 +1348,15 @@ public class JsRestClient {
     // Report options API
     //---------------------------------------------------------------------
 
-    public ReportOptionResponse getReportOptionsList(String resourceUri) {
-        String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + resourceUri + REST_REPORT_OPTIONS_URI;
+    public ReportOptionResponse getReportOptionsList(String reportUnitUri) {
+        String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
         return restTemplate.getForObject(uri, ReportOptionResponse.class);
     }
 
-    public ReportOption createReportOption(String resourceUri, String optionLabel,
+    public ReportOption createReportOption(String reportUnitUri, String optionLabel,
                                            Map<String, Set<String>> controlsValues,
                                            boolean overwrite) {
-        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + resourceUri + REST_REPORT_OPTIONS_URI;
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
         Uri uri =  Uri.parse(base)
                 .buildUpon()
                 .appendQueryParameter("label", optionLabel)
@@ -1366,17 +1366,25 @@ public class JsRestClient {
         if (dataType == DataType.JSON) {
             return restTemplate.postForObject(uri.toString(), controlsValues, ReportOption.class);
         } else if (dataType == DataType.XML) {
-            ReportParametersList list = new ReportParametersList();
-            for (Map.Entry<String, Set<String>> entry : controlsValues.entrySet()) {
-                String reportParamId = entry.getKey();
-                Set<String> reportParams = entry.getValue();
-
-                ReportParameter param = new ReportParameter();
-                param.setName(reportParamId);
-                param.setValues(reportParams);
-                list.getReportParameters().add(param);
-            }
+            ReportParametersList list = ReportParamsAdapter.INSTANCE.adapt(controlsValues);
             return restTemplate.postForObject(uri.toString(), list, ReportOption.class);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void updateReportOption(String reportUnitUri, String optionId, Map<String, Set<String>> controlsValues) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
+        Uri uri = Uri.parse(base)
+                .buildUpon()
+                .appendPath(optionId)
+                .build();
+
+        if (dataType == DataType.JSON) {
+            restTemplate.put(uri.toString(), controlsValues);
+        } else if (dataType == DataType.XML) {
+            ReportParametersList list = ReportParamsAdapter.INSTANCE.adapt(controlsValues);
+            restTemplate.put(uri.toString(), list);
         } else {
             throw new UnsupportedOperationException();
         }

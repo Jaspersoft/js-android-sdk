@@ -22,25 +22,34 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.async.request;
+package com.jaspersoft.android.sdk.client;
 
-import com.jaspersoft.android.sdk.client.JsRestClient;
-import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
+import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
- * @since 1.11
+ * @since 2.0
  */
-public class ReportOptionsRequest extends BaseRequest<ReportOptionResponse> {
-    private final String mReportUri;
+enum ReportParamsAdapter {
+    INSTANCE;
 
-    public ReportOptionsRequest(JsRestClient jsRestClient, String reportUri) {
-        super(jsRestClient, ReportOptionResponse.class);
-        mReportUri = reportUri;
-    }
+    public ReportParametersList adapt(Map<String, Set<String>> controlsValues) {
+        ReportParametersList list = new ReportParametersList();
+        for (Map.Entry<String, Set<String>> entry : controlsValues.entrySet()) {
+            String reportParamId = entry.getKey();
+            Set<String> reportParams = entry.getValue();
 
-    @Override
-    public ReportOptionResponse loadDataFromNetwork() throws Exception {
-        return getJsRestClient().getReportOptionsList(mReportUri);
+            if (reportParamId != null && reportParams != null) {
+                ReportParameter param = new ReportParameter();
+                param.setName(reportParamId);
+                param.setValues(reportParams);
+                list.getReportParameters().add(param);
+            }
+        }
+        return list;
     }
 }

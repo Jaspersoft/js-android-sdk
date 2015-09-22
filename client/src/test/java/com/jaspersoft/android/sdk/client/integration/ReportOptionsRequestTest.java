@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.client.integration;
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.CreateReportOptionsRequest;
 import com.jaspersoft.android.sdk.client.async.request.ReportOptionsRequest;
+import com.jaspersoft.android.sdk.client.async.request.UpdateReportOptionsRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.client.util.RealHttpRule;
@@ -89,7 +90,7 @@ public class ReportOptionsRequestTest extends ParametrizedTest {
     }
 
     @Test
-    public void requestShouldCreateReportOption() throws Exception {
+    public void shouldSupportCrudForReportOption() throws Exception {
         JsRestClient jsRestClient = getJsRestClient();
         String uri = getFactoryGirl().getResourceUri(jsRestClient);
         CreateReportOptionsRequest createReportOptionsRequest =
@@ -97,5 +98,8 @@ public class ReportOptionsRequestTest extends ParametrizedTest {
 
         ReportOption response = createReportOptionsRequest.loadDataFromNetwork();
         assertThat(response, is(notNullValue()));
+
+        UpdateReportOptionsRequest request = new UpdateReportOptionsRequest(jsRestClient, uri, response.getId(), CONTROL_PARAMETERS);
+        request.loadDataFromNetwork();
     }
 }
