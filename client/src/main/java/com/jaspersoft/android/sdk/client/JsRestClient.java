@@ -43,6 +43,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
@@ -101,6 +102,7 @@ public class JsRestClient {
     public static final String REST_RESOURCE_URI = "/resource";
     public static final String REST_RESOURCES_URI = "/resources";
     public static final String REST_REPORT_URI = "/report";
+    public static final String REST_REPORT_OPTIONS_URI = "/options";
     public static final String REST_REPORTS_URI = "/reports";
     public static final String REST_INPUT_CONTROLS_URI = "/inputControls";
     public static final String REST_VALUES_URI = "/values";
@@ -146,7 +148,7 @@ public class JsRestClient {
 
     public JsRestClient(RestTemplate restTemplate,
                         SimpleClientHttpRequestFactory factory) {
-       this(restTemplate, factory, DataType.XML);
+        this(restTemplate, factory, DataType.XML);
     }
 
     private JsRestClient(Builder builder) {
@@ -824,7 +826,7 @@ public class JsRestClient {
      * Sends request with porpose to fetch current export datum.
      *
      * @param executionId Identifies current id of running report.
-     * @param request we delegate to the restTemplate.
+     * @param request     we delegate to the restTemplate.
      * @return response with all exports datum associated with request.
      * @throws RestClientException
      */
@@ -879,7 +881,7 @@ public class JsRestClient {
     /**
      * Sends request for the current running export for the status check.
      *
-     * @param executionId Identifies current id of running report.
+     * @param executionId  Identifies current id of running report.
      * @param exportOutput Identifier which refers to current requested export.
      * @return response which expose current export status.
      */
@@ -890,7 +892,7 @@ public class JsRestClient {
     /**
      * Generates link for requesting report execution status.
      *
-     * @param executionId Identifies current id of running report.
+     * @param executionId  Identifies current id of running report.
      * @param exportOutput Identifier which refers to current requested export.
      * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/status"
      */
@@ -1100,7 +1102,7 @@ public class JsRestClient {
 
     /**
      * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
-     *
+     * <p/>
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1131,7 +1133,7 @@ public class JsRestClient {
 
     /**
      * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
-     *
+     * <p/>
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1330,7 +1332,7 @@ public class JsRestClient {
     /**
      * Returns thumbnail image or encoded image of the requested URI
      *
-     * @param resourceUri Uri of resource
+     * @param resourceUri    Uri of resource
      * @param defaultAllowed If true, a placeholder thumbnail will be provided when no thumbnail is available (default: false)
      * @return {serverUrl}/rest_v2/thumbnails/{resourceUri}?defaultAllowed={allowedFlag}
      */
@@ -1339,6 +1341,14 @@ public class JsRestClient {
                 + resourceUri + "?defaultAllowed=" + Boolean.toString(defaultAllowed);
     }
 
+    //---------------------------------------------------------------------
+    // Report options API
+    //---------------------------------------------------------------------
+
+    public ReportOptionResponse getReportOptionsList(String resourceUri) {
+        String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + resourceUri + REST_REPORT_OPTIONS_URI;
+        return restTemplate.getForObject(uri, ReportOptionResponse.class);
+    }
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------
