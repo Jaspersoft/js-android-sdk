@@ -1390,6 +1390,15 @@ public class JsRestClient {
         }
     }
 
+    public void deleteReportOption(String reportUnitUri, String optionId) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
+        Uri uri = Uri.parse(base)
+                .buildUpon()
+                .appendPath(optionId)
+                .build();
+        restTemplate.delete(URI.create(uri.toString()));
+    }
+
     //---------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------

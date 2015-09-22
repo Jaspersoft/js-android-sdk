@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.client.integration;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.CreateReportOptionsRequest;
+import com.jaspersoft.android.sdk.client.async.request.DeleteReportOptionRequest;
 import com.jaspersoft.android.sdk.client.async.request.ReportOptionsRequest;
 import com.jaspersoft.android.sdk.client.async.request.UpdateReportOptionsRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
@@ -96,10 +97,13 @@ public class ReportOptionsRequestTest extends ParametrizedTest {
         CreateReportOptionsRequest createReportOptionsRequest =
                 new CreateReportOptionsRequest(jsRestClient, uri, "label", CONTROL_PARAMETERS);
 
-        ReportOption response = createReportOptionsRequest.loadDataFromNetwork();
-        assertThat(response, is(notNullValue()));
+        ReportOption reportOption = createReportOptionsRequest.loadDataFromNetwork();
+        assertThat(reportOption, is(notNullValue()));
 
-        UpdateReportOptionsRequest request = new UpdateReportOptionsRequest(jsRestClient, uri, response.getId(), CONTROL_PARAMETERS);
-        request.loadDataFromNetwork();
+        UpdateReportOptionsRequest updateRequest = new UpdateReportOptionsRequest(jsRestClient, uri, reportOption.getId(), CONTROL_PARAMETERS);
+        updateRequest.loadDataFromNetwork();
+
+        DeleteReportOptionRequest deleteRequest = new DeleteReportOptionRequest(jsRestClient, uri, reportOption.getId());
+        deleteRequest.loadDataFromNetwork();
     }
 }
