@@ -28,6 +28,8 @@ import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 
 import rx.Observable;
+import rx.functions.Func0;
+import rx.functions.Func1;
 
 /**
  * @author Tom Koptel
@@ -49,6 +51,34 @@ public final class SearchTask {
     }
 
     public Observable<SearchResult> nextLookup() {
-        return Observable.empty();
+        return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<SearchResult>>() {
+            @Override
+            public Observable<SearchResult> call(SearchStrategy searchStrategy) {
+                return searchStrategy.search();
+            }
+        });
+    }
+
+    private Observable<SearchStrategy> defineSearchStrategy() {
+        if (searchStrategyObservable == null) {
+            searchStrategyObservable = requestServerVersion().flatMap(new Func1<String, Observable<SearchStrategy>>() {
+                @Override
+                public Observable<SearchStrategy> call(String version) {
+                    SearchStrategy strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
+                    return Observable.just(strategy);
+                }
+            }).cache();
+        }
+        return searchStrategyObservable;
+    }
+
+    private Observable<String> requestServerVersion() {
+        return Observable.defer(new Func0<Observable<String>>() {
+            @Override
+            public Observable<String> call() {
+                String version = mInfoApiFactory.get().requestVersion();
+                return Observable.just(version);
+            }
+        });
     }
 }

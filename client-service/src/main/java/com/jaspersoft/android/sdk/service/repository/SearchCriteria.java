@@ -63,6 +63,11 @@ public final class SearchCriteria {
     }
 
     @NonNull
+    public static SearchCriteria none() {
+        return builder().create();
+    }
+
+    @NonNull
     public Map<String, String> toMap() {
         Map<String, String> params = new HashMap<>();
 
