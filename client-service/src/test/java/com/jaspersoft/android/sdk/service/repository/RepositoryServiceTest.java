@@ -21,10 +21,10 @@ public class RepositoryServiceTest {
         RepositoryRestApi.Factory apiFactory = new RepositoryRestApiFactory(mServerUrl, mTokenProvider);
         RepositoryService service = new RepositoryService(apiFactory);
 
-        SearchCriteria criteria = new SearchCriteria.Builder()
+        SearchCriteria criteria = SearchCriteria.builder()
                 .limitCount(10)
                 .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
-                .build();
+                .create();
         SearchTask task = service.search(criteria);
         // 10
         task.nextLookup().subscribe();
