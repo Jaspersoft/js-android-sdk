@@ -56,6 +56,18 @@ public class SearchCriteriaTest {
     }
 
     @Test
+    public void shouldIncludeOffsetInParams() {
+        SearchCriteria criteria = SearchCriteria.builder()
+                .offset(100)
+                .create();
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("offset", "100");
+
+        assertThat(criteria.toMap(), is(resultMap));
+    }
+
+    @Test
     public void shouldIncludeRecursiveInParams() {
         SearchCriteria criteria = SearchCriteria.builder()
                 .recursive(true)
@@ -157,5 +169,67 @@ public class SearchCriteriaTest {
         SearchCriteria criteria = SearchCriteria.builder().create();
         Map<String, String> resultMap = new HashMap<>();
         assertThat(criteria.toMap(), is(resultMap));
+    }
+
+    @Test
+    public void newBuilderShouldCopyCount() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .limitCount(100)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getCount(), is(100));
+    }
+
+    @Test
+    public void newBuilderShouldCopyOffset() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .offset(100)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getOffset(), is(100));
+    }
+
+    @Test
+    public void newBuilderShouldCopyForceFullPageFlag() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .forceFullPage(true)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getForceFullPage(), is(true));
+    }
+
+    @Test
+    public void newBuilderShouldCopyQuery() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .query("q")
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getQuery(), is("q"));
+    }
+
+    @Test
+    public void newBuilderShouldCopyRecursiveFlag() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .recursive(true)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getRecursive(), is(true));
+    }
+
+    @Test
+    public void newBuilderShouldCopySortBy() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .sortByCreationDate()
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getSortBy(), is("creationDate"));
+    }
+    @Test
+    public void newBuilderShouldCopyResourceMask() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getResourceMask(), is(SearchCriteria.REPORT | SearchCriteria.DASHBOARD));
     }
 }

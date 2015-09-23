@@ -42,6 +42,7 @@ public final class SearchCriteria {
     public static int LEGACY_DASHBOARD = (1 << 3);
 
     private final Integer mCount;
+    private final Integer mOffset;
     private final int mResourceMask;
     private final Boolean mRecursive;
     private final Boolean mForceFullPage;
@@ -50,6 +51,7 @@ public final class SearchCriteria {
 
     private SearchCriteria(Builder builder) {
         mCount = builder.count;
+        mOffset = builder.offset;
         mResourceMask = builder.resourceMask;
         mRecursive = builder.recursive;
         mForceFullPage = builder.forceFullPage;
@@ -67,12 +69,74 @@ public final class SearchCriteria {
         return builder().create();
     }
 
+    @Nullable
+    public Integer getCount() {
+        return mCount;
+    }
+
+    @Nullable
+    public Integer getOffset() {
+        return mOffset;
+    }
+
+    @Nullable
+    public Boolean getForceFullPage() {
+        return mForceFullPage;
+    }
+
+    @Nullable
+    public String getQuery() {
+        return mQuery;
+    }
+
+    @Nullable
+    public Boolean getRecursive() {
+        return mRecursive;
+    }
+
+    @Nullable
+    public String getSortBy() {
+        return mSortBy;
+    }
+
+    public int getResourceMask() {
+        return mResourceMask;
+    }
+
+    @NonNull
+    public SearchCriteria.Builder newBuilder() {
+        SearchCriteria.Builder builder = builder();
+        if (mCount != null) {
+            builder.limitCount(mCount);
+        }
+        if (mOffset != null) {
+            builder.offset(mOffset);
+        }
+        if (mRecursive != null) {
+            builder.recursive(mRecursive);
+        }
+        if (mForceFullPage != null) {
+            builder.forceFullPage(mForceFullPage);
+        }
+        if (mQuery != null) {
+            builder.query(mQuery);
+        }
+        if (mSortBy != null) {
+            builder.sortBy(mSortBy);
+        }
+        builder.resourceMask(mResourceMask);
+        return builder;
+    }
+
     @NonNull
     public Map<String, String> toMap() {
         Map<String, String> params = new HashMap<>();
 
         if (mCount != null) {
             params.put("limit", String.valueOf(mCount));
+        }
+        if (mOffset != null) {
+            params.put("offset", String.valueOf(mOffset));
         }
         if (mRecursive != null) {
             params.put("recursive", String.valueOf(mRecursive));
@@ -112,6 +176,8 @@ public final class SearchCriteria {
     public static class Builder {
         @Nullable
         private Integer count;
+        @Nullable
+        private Integer offset;
         private int resourceMask;
         @Nullable
         private Boolean recursive;
@@ -124,6 +190,11 @@ public final class SearchCriteria {
 
         public Builder limitCount(int count) {
             this.count = count;
+            return this;
+        }
+
+        public Builder offset(@Nullable Integer offset) {
+            this.offset = offset;
             return this;
         }
 
@@ -144,6 +215,11 @@ public final class SearchCriteria {
 
         public Builder query(@Nullable String query) {
             this.query = query;
+            return this;
+        }
+
+        Builder sortBy(String sort) {
+            this.sort = sort;
             return this;
         }
 
