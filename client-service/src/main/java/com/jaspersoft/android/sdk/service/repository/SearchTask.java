@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 
 import rx.Observable;
 
@@ -34,11 +35,17 @@ import rx.Observable;
  */
 public final class SearchTask {
     private final SearchCriteria mCriteria;
-    private final RepositoryRestApi.Factory mRestFactory;
+    private final RepositoryRestApi.Factory mRepositoryApiFactory;
+    private final ServerRestApi.Factory mInfoApiFactory;
 
-    public SearchTask( SearchCriteria criteria, RepositoryRestApi.Factory restFactory) {
+    private Observable<SearchStrategy> searchStrategyObservable;
+
+    SearchTask(SearchCriteria criteria,
+                      RepositoryRestApi.Factory repositoryApiFactory,
+                      ServerRestApi.Factory infoApiFactory) {
         mCriteria = criteria;
-        mRestFactory = restFactory;
+        mRepositoryApiFactory = repositoryApiFactory;
+        mInfoApiFactory = infoApiFactory;
     }
 
     public Observable<SearchResult> nextLookup() {

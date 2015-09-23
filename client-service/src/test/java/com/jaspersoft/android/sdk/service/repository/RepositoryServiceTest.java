@@ -1,7 +1,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.service.TokenProvider;
+import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -18,8 +20,9 @@ public class RepositoryServiceTest {
 
     @Test
     public void shouldProvideListOfResources() {
-        RepositoryRestApi.Factory apiFactory = new RepositoryRestApiFactory(mServerUrl, mTokenProvider);
-        RepositoryService service = new RepositoryService(apiFactory);
+        RepositoryRestApi.Factory repoApi = new RepositoryRestApiFactory(mServerUrl, mTokenProvider);
+        ServerRestApi.Factory infoApi = new ServerRestApiFactory(mServerUrl);
+        RepositoryService service = new RepositoryService(repoApi, infoApi);
 
         SearchCriteria criteria = SearchCriteria.builder()
                 .limitCount(10)
