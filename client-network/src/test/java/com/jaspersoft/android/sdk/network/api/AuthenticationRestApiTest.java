@@ -25,7 +25,12 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
+import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Before;
@@ -52,8 +57,12 @@ public class AuthenticationRestApiTest {
 
     private AuthenticationRestApi mRestApi;
 
+    @ResourceFile("json/encryption_key.json")
+    TestResource mKey;
+
     @Before
     public void setup() {
+        TestResourceInjector.inject(this);
         mRestApi = new AuthenticationRestApi.Builder()
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
@@ -61,8 +70,9 @@ public class AuthenticationRestApiTest {
 
     @Test
     public void shouldReturnResponseForSuccessRedirect() {
-        MockResponse mockResponse = create302Response();
-        mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
+        MockResponse mockResponse = MockResponseFactory.create302()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
         AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", null, null);
@@ -73,8 +83,9 @@ public class AuthenticationRestApiTest {
     public void shouldRiseErrorForErrorRedirect() {
         mExpectedException.expect(RestError.class);
 
-        MockResponse mockResponse = create302Response();
-        mockResponse.addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR);
+        MockResponse mockResponse = MockResponseFactory.create302()
+                .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR)
+                .addHeader("Set-Cookie", "cookie1");
         mWebMockRule.enqueue(mockResponse);
 
         mRestApi.authenticate("joeuser", "joeuser", "null", null);
@@ -84,8 +95,7 @@ public class AuthenticationRestApiTest {
     public void shouldRiseErrorForHttpException() {
         mExpectedException.expect(RestError.class);
 
-        MockResponse mockResponse = create500Response();
-        mWebMockRule.enqueue(mockResponse);
+        mWebMockRule.enqueue(MockResponseFactory.create500());
 
         mRestApi.authenticate("joeuser", "joeuser", "null", null);
     }
@@ -95,20 +105,39 @@ public class AuthenticationRestApiTest {
         mExpectedException.expect(IllegalStateException.class);
         mExpectedException.expectMessage("Location HEADER is missing please contact JRS admin");
 
-        MockResponse mockResponse = create302Response();
-        mWebMockRule.enqueue(mockResponse);
+        mWebMockRule.enqueue(MockResponseFactory.create302().addHeader("Set-Cookie", "cookie1"));
 
         mRestApi.authenticate("joeuser", "joeuser", "null", null);
     }
 
-    private MockResponse create302Response() {
-        return new MockResponse()
-                .addHeader("Set-Cookie", "cookie1")
-                .setStatus("HTTP/1.1 302 Found");
+    @Test
+    public void shouldReturnEncryptionKeyIfApiAvailable() {
+        MockResponse anonymousCookie = MockResponseFactory.create200()
+                .setBody("6.1")
+                .addHeader("Set-Cookie", "cookie1");
+        MockResponse encryptionKey = MockResponseFactory.create200()
+                .setBody(mKey.asString());
+        mWebMockRule.enqueue(anonymousCookie);
+        mWebMockRule.enqueue(encryptionKey);
+
+        EncryptionKey keyResponse = mRestApi.requestEncryptionMetadata();
+        assertThat(keyResponse, is(notNullValue()));
     }
 
-    private MockResponse create500Response() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
+    @Test
+    public void shouldReturnEmptyEncryptionKeyIfApiNotAvailable() {
+        MockResponse anonymousCookie = MockResponseFactory.create200()
+                .setBody("6.1")
+                .addHeader("Set-Cookie", "cookie1");
+
+        String malformedJson = "{Error: Key generation is off}";
+        MockResponse encryptionKey = MockResponseFactory.create200()
+                .setBody(malformedJson);
+
+        mWebMockRule.enqueue(anonymousCookie);
+        mWebMockRule.enqueue(encryptionKey);
+
+        EncryptionKey keyResponse = mRestApi.requestEncryptionMetadata();
+        assertThat(keyResponse.isAvailable(), is(false));
     }
 }

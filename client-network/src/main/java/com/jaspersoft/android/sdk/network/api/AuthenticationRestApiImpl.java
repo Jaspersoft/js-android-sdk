@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
@@ -112,7 +113,16 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         mRestAdapterBuilder.client(mClient);
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 
-        return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata()).body();
+        try {
+            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata()).body();
+        } catch (JsonSyntaxException ex) {
+            /**
+             * This possible when security option is disabled on JRS side.
+             * API responds with malformed json. E.g. {Error: Key generation is off}. As you can see no quotes
+             * As soon as there 2 options to resolve this we decide to swallow exception and return empty object
+             */
+            return EncryptionKey.empty();
+        }
     }
 
     private Request createAuthRequest(

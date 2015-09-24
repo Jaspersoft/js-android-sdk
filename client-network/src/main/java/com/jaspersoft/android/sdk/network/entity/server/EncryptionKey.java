@@ -46,6 +46,9 @@ public final class EncryptionKey {
     @SerializedName("n")
     private String modulus;
 
+    private EncryptionKey() {
+    }
+
     @NonNull
     public String getExponent() {
         return exponent;
@@ -62,6 +65,10 @@ public final class EncryptionKey {
     }
 
     public boolean isAvailable() {
-        return error == null;
+        return exponent != null && modulus != null;
+    }
+
+    public static EncryptionKey empty() {
+        return new EncryptionKey();
     }
 }
