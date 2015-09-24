@@ -208,18 +208,8 @@ public final class SearchCriteria {
             return this;
         }
 
-        public Builder forceFullPage(boolean forceFullPage) {
-            this.forceFullPage = forceFullPage;
-            return this;
-        }
-
         public Builder query(@Nullable String query) {
             this.query = query;
-            return this;
-        }
-
-        Builder sortBy(String sort) {
-            this.sort = sort;
             return this;
         }
 
@@ -230,6 +220,26 @@ public final class SearchCriteria {
 
         public Builder sortByCreationDate() {
             this.sort = "creationDate";
+            return this;
+        }
+
+        /**
+         * Internal use. Mutating sortBy value.
+         * @param sort either 'label' or 'creationDate'
+         * @return chain builder instance
+         */
+        Builder sortBy(String sort) {
+            this.sort = sort;
+            return this;
+        }
+
+        /**
+         * Internal use. Mutating forceFullPage value.
+         * @param forceFullPage either true or false
+         * @return chain builder instance
+         */
+        Builder forceFullPage(boolean forceFullPage) {
+            this.forceFullPage = forceFullPage;
             return this;
         }
 

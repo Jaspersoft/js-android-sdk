@@ -25,20 +25,65 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+
+import java.util.Collection;
 
 import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
-    public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
+    private final RepositoryRestApi.Factory mRepoFactory;
+    private final SearchCriteria mInitialCriteria;
 
+    private int mNextOffset;
+
+    public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
+        mRepoFactory = repositoryApiFactory;
+        // Internally enabling 'forceFullPageFlag'
+        mInitialCriteria = criteria.newBuilder()
+                .forceFullPage(true)
+                .create();
+
+        int initialOffset = (criteria.getOffset() == null) ? 0 : criteria.getOffset();
+        mNextOffset = initialOffset;
     }
 
     @Override
-    public Observable<SearchResult> search() {
-        return null;
+    public Observable<Collection<ResourceLookupResponse>> search() {
+        return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
+            @Override
+            public Observable<Collection<ResourceLookupResponse>> call() {
+                return Observable.just(makeApiCall());
+            }
+        });
+    }
+
+    private Collection<ResourceLookupResponse> makeApiCall() {
+        SearchCriteria newSearchCriteria = resolveNextCriteria();
+        RepositoryRestApi api = mRepoFactory.get();
+        ResourceSearchResponse result = api.searchResources(newSearchCriteria.toMap());
+        updateNextOffset(result);
+        return result.getResources();
+    }
+
+    private void updateNextOffset(ResourceSearchResponse result) {
+        int nextOffset = result.getNextOffset();
+
+        boolean endReached = (nextOffset == 0);
+        if (!endReached) {
+            mNextOffset = nextOffset;
+        }
+    }
+
+    private SearchCriteria resolveNextCriteria() {
+        SearchCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
+        newCriteriaBuilder.offset(mNextOffset);
+        return newCriteriaBuilder.create();
     }
 }

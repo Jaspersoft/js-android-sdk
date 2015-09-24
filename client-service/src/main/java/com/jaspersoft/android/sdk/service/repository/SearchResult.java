@@ -24,22 +24,40 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.data.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class SearchResult {
-    private final Collection<ResourceLookup> mResult;
+    private static final SearchResult EMPTY = new SearchResult(Collections.<ResourceLookupResponse>emptyList(), false);
 
-    public SearchResult(Collection<ResourceLookup> raw) {
+    private final List<ResourceLookupResponse> mResult;
+    private final boolean mReachedEnd;
+
+    private SearchResult(List<ResourceLookupResponse> raw, boolean endResult) {
         mResult = raw;
+        mReachedEnd = endResult;
     }
 
-    public Collection<ResourceLookup> getResult() {
+    public List<ResourceLookupResponse> getResult() {
         return mResult;
+    }
+
+    public boolean hasReachedEnd() {
+        return mReachedEnd;
+    }
+
+    public static SearchResult reachedEnd(ResourceSearchResponse response) {
+        return new SearchResult(response.getResources(), true);
+    }
+
+    public static SearchResult create(ResourceSearchResponse response) {
+        return new SearchResult(response.getResources(), false);
     }
 }

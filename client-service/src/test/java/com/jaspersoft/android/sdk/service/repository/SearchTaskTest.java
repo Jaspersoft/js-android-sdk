@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.Collection;
 
 import rx.Observable;
 
@@ -75,7 +78,7 @@ public class SearchTaskTest {
         when(mRepoApiFactory.get()).thenReturn(mRepoApi);
         when(mInfoApiFactory.get()).thenReturn(mInfoApi);
 
-        Observable<SearchResult> resultObservable = Observable.just(null);
+        Observable<Collection<ResourceLookupResponse>> resultObservable = Observable.just(null);
         when(mSearchStrategy.search()).thenReturn(resultObservable);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);

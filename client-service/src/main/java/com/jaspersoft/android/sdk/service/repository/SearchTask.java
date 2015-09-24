@@ -26,6 +26,9 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+
+import java.util.Collection;
 
 import rx.Observable;
 import rx.functions.Func0;
@@ -50,10 +53,10 @@ public final class SearchTask {
         mInfoApiFactory = infoApiFactory;
     }
 
-    public Observable<SearchResult> nextLookup() {
-        return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<SearchResult>>() {
+    public Observable<Collection<ResourceLookupResponse>> nextLookup() {
+        return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<Collection<ResourceLookupResponse>>>() {
             @Override
-            public Observable<SearchResult> call(SearchStrategy searchStrategy) {
+            public Observable<Collection<ResourceLookupResponse>> call(SearchStrategy searchStrategy) {
                 return searchStrategy.search();
             }
         });

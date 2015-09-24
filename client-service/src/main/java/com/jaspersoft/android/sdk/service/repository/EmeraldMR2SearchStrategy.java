@@ -25,6 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+
+import java.util.Collection;
 
 import rx.Observable;
 
@@ -38,7 +41,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Observable<SearchResult> search() {
+    public Observable<Collection<ResourceLookupResponse>> search() {
         return null;
     }
 }

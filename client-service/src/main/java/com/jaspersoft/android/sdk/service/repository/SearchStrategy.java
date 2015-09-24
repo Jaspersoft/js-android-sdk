@@ -25,7 +25,10 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import java.util.Collection;
 
 import rx.Observable;
 
@@ -33,8 +36,8 @@ import rx.Observable;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface SearchStrategy {
-    Observable<SearchResult> search();
+interface SearchStrategy {
+    Observable<Collection<ResourceLookupResponse>> search();
 
     class Factory {
         public static SearchStrategy get(String serverVersion,
