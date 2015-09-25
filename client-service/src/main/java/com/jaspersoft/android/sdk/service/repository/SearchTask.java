@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import android.support.annotation.Nullable;
+
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
@@ -43,7 +45,8 @@ public final class SearchTask {
     private final RepositoryRestApi.Factory mRepositoryApiFactory;
     private final ServerRestApi.Factory mInfoApiFactory;
 
-    private Observable<SearchStrategy> searchStrategyObservable;
+    @Nullable
+    private SearchStrategy strategy;
 
     SearchTask(SearchCriteria criteria,
                       RepositoryRestApi.Factory repositoryApiFactory,
@@ -62,17 +65,28 @@ public final class SearchTask {
         });
     }
 
+    public boolean hasNext() {
+        /**
+         * Strategy not defined only, if user has not made any lookup requests.
+         * There is no 100% guarantee that API has items until we made request.
+         */
+        if (strategy != null) {
+            return strategy.hasNext();
+        }
+        return true;
+    }
+
     private Observable<SearchStrategy> defineSearchStrategy() {
-        if (searchStrategyObservable == null) {
-            searchStrategyObservable = requestServerVersion().flatMap(new Func1<String, Observable<SearchStrategy>>() {
+        if (strategy == null) {
+            return requestServerVersion().flatMap(new Func1<String, Observable<SearchStrategy>>() {
                 @Override
                 public Observable<SearchStrategy> call(String version) {
-                    SearchStrategy strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
+                    strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
                     return Observable.just(strategy);
                 }
-            }).cache();
+            });
         }
-        return searchStrategyObservable;
+        return Observable.just(strategy);
     }
 
     private Observable<String> requestServerVersion() {

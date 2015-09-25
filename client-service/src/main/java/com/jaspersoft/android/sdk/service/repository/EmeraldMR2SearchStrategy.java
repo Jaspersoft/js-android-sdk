@@ -45,21 +45,23 @@ import rx.functions.Func0;
 final class EmeraldMR2SearchStrategy implements SearchStrategy {
     private static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
     private static final int RETRY_COUNT = 5;
+    private final static int UNDEFINED = -1;
 
     private final RepositoryRestApi.Factory mRepoFactory;
     private final SearchCriteria mInitialCriteria;
-    private final int mLimit;
 
-    private int mNextOffset;
+    private int mUserOffset;
+    private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
+
     private Collection<ResourceLookupResponse> tempBuffer = Collections.emptyList();
+    private SearchCriteria mNextCriteria;
 
     public EmeraldMR2SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
         mRepoFactory = repositoryApiFactory;
         mInitialCriteria = criteria.newBuilder().create();
 
-        mNextOffset = criteria.getOffset();
-        mLimit = criteria.getLimit();
+        mUserOffset = criteria.getOffset();
     }
 
     @Override
@@ -67,9 +69,15 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
+                if (mInternalOffset == UNDEFINED) {
+                    defineInternalOffset();
+                }
                 if (mEndReached){
                     return Observable.just(EMPTY_RESPONSE);
                 }
+                mNextCriteria = mInitialCriteria.newBuilder()
+                        .offset(mInternalOffset)
+                        .create();
                 return Observable.just(performAlignedRequests());
             }
         });
@@ -80,9 +88,20 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         return !mEndReached;
     }
 
+    private void defineInternalOffset() {
+        mInternalOffset = 0;
+        if (mUserOffset != 0) {
+            mNextCriteria = mInitialCriteria.newBuilder()
+                    .limit(mUserOffset)
+                    .offset(0)
+                    .create();
+            performAlignedRequests();
+        }
+    }
+
     private Collection<ResourceLookupResponse> performAlignedRequests() {
-        SearchCriteria newSearchCriteria = createNextCriteria();
-        ResourceSearchResponse response = performApiCall(newSearchCriteria);
+        int emptyRequestCount = 1;
+        ResourceSearchResponse response = performApiCall();
 
         List<ResourceLookupResponse> collectionFromApi = response.getResources();
 
@@ -90,41 +109,41 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         localBuffer.addAll(collectionFromApi);
 
         Collection<ResourceLookupResponse> result;
-        int count = 0;
+
         if (tempBuffer.isEmpty()) {
-            result = alignBuffer(localBuffer, count);
+            result = alignBuffer(localBuffer, emptyRequestCount);
         } else {
             List<ResourceLookupResponse> accumulatedBuffer = new LinkedList<>(tempBuffer);
             accumulatedBuffer.addAll(localBuffer);
-            result = alignBuffer(accumulatedBuffer, count);
+            result = alignBuffer(accumulatedBuffer, emptyRequestCount);
         }
 
         return result;
     }
 
     private Collection<ResourceLookupResponse> alignBuffer(List<ResourceLookupResponse> accumulatedBuffer, int count) {
-        if (accumulatedBuffer.size() > mLimit) {
+        int limit = mNextCriteria.getLimit();
+        if (accumulatedBuffer.size() > limit) {
             return cacheRemainedBuffer(accumulatedBuffer);
-        } else if (accumulatedBuffer.size() < mLimit) {
+        } else if (accumulatedBuffer.size() < limit) {
             return alignBufferWithResponse(accumulatedBuffer, count);
         } else {
+            tempBuffer = Collections.emptyList();
             return accumulatedBuffer;
         }
     }
 
     @NonNull
     private Collection<ResourceLookupResponse> cacheRemainedBuffer(List<ResourceLookupResponse> buffer) {
-        Collection<ResourceLookupResponse> leftPart = buffer.subList(0, mLimit - 1);
-        Collection<ResourceLookupResponse> rightPart = buffer.subList(mLimit - 1, buffer.size());
+        int limit = mNextCriteria.getLimit();
+        Collection<ResourceLookupResponse> leftPart = buffer.subList(0, limit - 1);
+        Collection<ResourceLookupResponse> rightPart = buffer.subList(limit - 1, buffer.size());
         tempBuffer = rightPart;
         return leftPart;
     }
 
     private Collection<ResourceLookupResponse> alignBufferWithResponse(List<ResourceLookupResponse> resources, int count) {
-        count++;
-
-        SearchCriteria newSearchCriteria = createNextCriteria();
-        ResourceSearchResponse response = performApiCall(newSearchCriteria);
+        ResourceSearchResponse response = performApiCall();
         List<ResourceLookupResponse> collectionFromApi = response.getResources();
         resources.addAll(collectionFromApi);
 
@@ -141,24 +160,28 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
             return resources;
         }
 
+        if (collectionFromApi.isEmpty()) {
+            count++;
+        }
+
         return alignBuffer(resources, count);
     }
 
-    private SearchCriteria createNextCriteria() {
-        SearchCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
-        newCriteriaBuilder.offset(mNextOffset);
-
-        return newCriteriaBuilder.create();
-    }
-
-    private ResourceSearchResponse performApiCall(SearchCriteria criteria) {
+    private ResourceSearchResponse performApiCall() {
         RepositoryRestApi api = mRepoFactory.get();
-        ResourceSearchResponse response = api.searchResources(criteria.toMap());
+        ResourceSearchResponse response = api.searchResources(mNextCriteria.toMap());
         updateNextOffset();
+        updateNextCriteria();
         return response;
     }
 
     private void updateNextOffset() {
-        mNextOffset += mLimit;
+        mInternalOffset += mNextCriteria.getLimit();
+    }
+
+    private void updateNextCriteria() {
+        mNextCriteria = mNextCriteria.newBuilder()
+                .offset(mInternalOffset)
+                .create();
     }
 }
