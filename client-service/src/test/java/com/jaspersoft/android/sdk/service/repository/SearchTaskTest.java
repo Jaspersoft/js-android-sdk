@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -79,7 +79,7 @@ public class SearchTaskTest {
         when(mInfoApiFactory.get()).thenReturn(mInfoApi);
 
         Observable<Collection<ResourceLookupResponse>> resultObservable = Observable.just(null);
-        when(mSearchStrategy.search()).thenReturn(resultObservable);
+        when(mSearchStrategy.searchNext()).thenReturn(resultObservable);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
         PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(SearchCriteria.class))).thenReturn(mSearchStrategy);
@@ -95,7 +95,7 @@ public class SearchTaskTest {
 
         verify(mInfoApi, times(1)).requestVersion();
         verify(mInfoApiFactory, times(1)).get();
-        verify(mSearchStrategy, times(1)).search();
+        verify(mSearchStrategy, times(1)).searchNext();
     }
 
     @Test
@@ -110,6 +110,6 @@ public class SearchTaskTest {
 
         verify(mInfoApi, times(1)).requestVersion();
         verify(mInfoApiFactory, times(1)).get();
-        verify(mSearchStrategy, times(2)).search();
+        verify(mSearchStrategy, times(2)).searchNext();
     }
 }

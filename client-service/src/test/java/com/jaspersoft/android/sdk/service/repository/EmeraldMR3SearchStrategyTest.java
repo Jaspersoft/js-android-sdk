@@ -117,6 +117,7 @@ public class EmeraldMR3SearchStrategyTest {
         List<Collection<ResourceLookupResponse>> events = performSearch(strategy).getOnNextEvents();
         Collection<ResourceLookupResponse> response = events.get(0);
         assertThat(response, is(empty()));
+        assertThat(strategy.hasNext(), is(false));
 
         verify(mApiFactory, times(2)).get();
         verify(mResponse, times(2)).getNextOffset();
@@ -125,7 +126,7 @@ public class EmeraldMR3SearchStrategyTest {
 
     private TestSubscriber performSearch(EmeraldMR3SearchStrategy strategy) {
         TestSubscriber<Collection<ResourceLookupResponse>> testSubscriber = new TestSubscriber<>();
-        strategy.search().subscribe(testSubscriber);
+        strategy.searchNext().subscribe(testSubscriber);
         testSubscriber.assertNoErrors();
 
         return testSubscriber;

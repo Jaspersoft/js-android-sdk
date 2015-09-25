@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -37,7 +37,8 @@ import rx.Observable;
  * @since 2.0
  */
 interface SearchStrategy {
-    Observable<Collection<ResourceLookupResponse>> search();
+    Observable<Collection<ResourceLookupResponse>> searchNext();
+    boolean hasNext();
 
     class Factory {
         public static SearchStrategy get(String serverVersion,
@@ -50,7 +51,7 @@ interface SearchStrategy {
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
                 return new EmeraldMR3SearchStrategy(repositoryApiFactory, criteria);
             }
-            throw new UnsupportedOperationException("Could not resolve search strategy for serverVersion: " + serverVersion);
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + serverVersion);
         }
     }
 }

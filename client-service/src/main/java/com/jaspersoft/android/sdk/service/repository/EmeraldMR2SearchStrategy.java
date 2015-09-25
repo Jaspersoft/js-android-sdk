@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -59,13 +59,18 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Observable<Collection<ResourceLookupResponse>> search() {
+    public Observable<Collection<ResourceLookupResponse>> searchNext() {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
                 return Observable.just(performAlignedRequests());
             }
         });
+    }
+
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     private Collection<ResourceLookupResponse> performAlignedRequests() {

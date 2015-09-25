@@ -57,7 +57,7 @@ public final class SearchTask {
         return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call(SearchStrategy searchStrategy) {
-                return searchStrategy.search();
+                return searchStrategy.searchNext();
             }
         });
     }

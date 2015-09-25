@@ -61,7 +61,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Observable<Collection<ResourceLookupResponse>> search() {
+    public Observable<Collection<ResourceLookupResponse>> searchNext() {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
@@ -74,6 +74,11 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
                 return Observable.just(performLookup());
             }
         });
+    }
+
+    @Override
+    public boolean hasNext() {
+        return !mEndReached;
     }
 
     @NonNull
