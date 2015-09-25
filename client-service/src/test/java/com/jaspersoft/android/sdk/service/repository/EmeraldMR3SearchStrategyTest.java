@@ -15,10 +15,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.observers.TestSubscriber;
 
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +49,9 @@ public class EmeraldMR3SearchStrategyTest {
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
         when(mApiFactory.get()).thenReturn(mApi);
-        when(mResponse.getResources()).thenReturn(Collections.<ResourceLookupResponse>emptyList());
+
+        List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
+        when(mResponse.getResources()).thenReturn(stubLookup);
     }
 
     @Test
@@ -98,9 +104,30 @@ public class EmeraldMR3SearchStrategyTest {
         verify(mApi, times(1)).searchResources(params);
     }
 
-    private void performSearch(EmeraldMR3SearchStrategy strategy) {
+    @Test
+    public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() {
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, SearchCriteria.none());
+
+        when(mResponse.getNextOffset()).thenReturn(133);
+        performSearch(strategy);
+
+        when(mResponse.getNextOffset()).thenReturn(0);
+        performSearch(strategy);
+
+        List<Collection<ResourceLookupResponse>> events = performSearch(strategy).getOnNextEvents();
+        Collection<ResourceLookupResponse> response = events.get(0);
+        assertThat(response, is(empty()));
+
+        verify(mApiFactory, times(2)).get();
+        verify(mResponse, times(2)).getNextOffset();
+        verify(mApi, times(2)).searchResources(anyMap());
+    }
+
+    private TestSubscriber performSearch(EmeraldMR3SearchStrategy strategy) {
         TestSubscriber<Collection<ResourceLookupResponse>> testSubscriber = new TestSubscriber<>();
         strategy.search().subscribe(testSubscriber);
         testSubscriber.assertNoErrors();
+
+        return testSubscriber;
     }
 }

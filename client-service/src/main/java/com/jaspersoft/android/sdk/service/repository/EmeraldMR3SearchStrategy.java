@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import rx.Observable;
 import rx.functions.Func0;
@@ -40,6 +41,7 @@ import rx.functions.Func0;
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
+    public static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
     private final RepositoryRestApi.Factory mRepoFactory;
@@ -47,6 +49,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     private int mUserOffset;
     private int mInternalOffset = UNDEFINED;
+    private boolean mEndReached;
 
     public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
         mRepoFactory = repositoryApiFactory;
@@ -64,6 +67,9 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
             public Observable<Collection<ResourceLookupResponse>> call() {
                 if (mInternalOffset == UNDEFINED) {
                     defineInternalOffset();
+                }
+                if (mEndReached){
+                    return Observable.just(EMPTY_RESPONSE);
                 }
                 return Observable.just(performLookup());
             }
@@ -100,8 +106,8 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     private void updateInternalOffset(ResourceSearchResponse result) {
         int nextOffset = result.getNextOffset();
 
-        boolean endReached = (nextOffset == 0);
-        if (!endReached) {
+        mEndReached = (nextOffset == 0);
+        if (!mEndReached) {
             mInternalOffset = nextOffset;
         }
     }
