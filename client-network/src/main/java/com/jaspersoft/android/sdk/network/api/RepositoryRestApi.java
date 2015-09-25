@@ -43,7 +43,7 @@ import java.util.Map;
 public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
-    ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams);
+    ResourceSearchResponse searchResources(@Nullable Map<String, Object> searchParams);
 
     @NonNull
     @WorkerThread

@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,6 +40,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -200,5 +206,36 @@ public class RepositoryRestApiTest {
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
         restApiUnderTest.requestFolderResource("any_id");
+    }
+
+    @Test
+    public void searchEndpointShouldHandleMultipleResourceTypes() throws Exception {
+        MockResponse response = MockResponseFactory.create200()
+                .setBody("{\"resourceLookup\": []}");
+        mWebMockRule.enqueue(response);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("folderUri", "/");
+
+        Set<String> types = new HashSet<>();
+        types.add("reportUnit");
+        types.add("dashboard");
+        params.put("type", types);
+
+        restApiUnderTest.searchResources(params);
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request.getPath(), is("/rest_v2/resources?folderUri=/&type=reportUnit&type=dashboard"));
+    }
+
+    @Test
+    public void searchEndpointShouldNotAcceptNullVorTypeKey() throws Exception {
+        mExpectedException.expect(IllegalStateException.class);
+        mExpectedException.expectMessage("Found null for key 'type'. Ensure this to be not a null");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", null);
+
+        restApiUnderTest.searchResources(params);
     }
 }

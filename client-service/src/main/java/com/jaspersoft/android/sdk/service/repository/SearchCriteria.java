@@ -28,7 +28,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -38,10 +40,10 @@ public final class SearchCriteria {
     private static final int DEFAULT_OFFSET = 0;
     private static final int DEFAULT_LIMIT = 100;
 
+    public static int ALL = 1;
     public static int REPORT = (1 << 1);
     public static int DASHBOARD = (1 << 2);
     public static int LEGACY_DASHBOARD = (1 << 3);
-    public static int ALL = REPORT | DASHBOARD | LEGACY_DASHBOARD;
 
     private final int mLimit;
     private final int mOffset;
@@ -148,8 +150,8 @@ public final class SearchCriteria {
     }
 
     @NonNull
-    public Map<String, String> toMap() {
-        Map<String, String> params = new HashMap<>();
+    public Map<String, Object> toMap() {
+        Map<String, Object> params = new HashMap<>();
 
         if (mLimit != DEFAULT_LIMIT) {
             params.put("limit", String.valueOf(mLimit));
@@ -180,21 +182,27 @@ public final class SearchCriteria {
         return params;
     }
 
-    private void populateTypes(Map<String, String> params) {
+    private void populateTypes(Map<String, Object> params) {
+        Set<String> types = new HashSet<>();
+
         boolean includeReport =
                 (mResourceMask & REPORT) == REPORT || (mResourceMask & ALL) == ALL;
         if (includeReport) {
-            params.put("type", "reportUnit");
+            types.add("reportUnit");
         }
         boolean includeDashboard =
                 (mResourceMask & DASHBOARD) == DASHBOARD || (mResourceMask & ALL) == ALL;
         if (includeDashboard) {
-            params.put("type", "dashboard");
+            types.add("dashboard");
         }
         boolean includeLegacyDashboard =
                 (mResourceMask & LEGACY_DASHBOARD) == LEGACY_DASHBOARD || (mResourceMask & ALL) == ALL;
         if (includeLegacyDashboard) {
-            params.put("type", "legacyDashboard");
+            types.add("legacyDashboard");
+        }
+
+        if (!types.isEmpty()) {
+            params.put("type", types);
         }
     }
 

@@ -27,8 +27,11 @@ package com.jaspersoft.android.sdk.service.repository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -49,7 +52,7 @@ public class SearchCriteriaTest {
                 .limit(101)
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("limit", "101");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -61,7 +64,7 @@ public class SearchCriteriaTest {
                 .offset(100)
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("offset", "100");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -73,7 +76,7 @@ public class SearchCriteriaTest {
                 .recursive(true)
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("recursive", "true");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -85,7 +88,7 @@ public class SearchCriteriaTest {
                 .forceFullPage(true)
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("forceFullPage", "true");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -97,7 +100,7 @@ public class SearchCriteriaTest {
                 .forceTotalCount(true)
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("forceTotalCount", "true");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -109,7 +112,7 @@ public class SearchCriteriaTest {
                 .query("any")
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("q", "any");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -121,7 +124,7 @@ public class SearchCriteriaTest {
                 .sortByLabel()
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("sortBy", "label");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -133,7 +136,7 @@ public class SearchCriteriaTest {
                 .sortByCreationDate()
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("sortBy", "creationDate");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -145,7 +148,7 @@ public class SearchCriteriaTest {
                 .folderUri("/")
                 .create();
 
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("folderUri", "/");
 
         assertThat(criteria.toMap(), is(resultMap));
@@ -157,7 +160,7 @@ public class SearchCriteriaTest {
                 .query("")
                 .create();
 
-        Map<String, String> emptytMap = new HashMap<>();
+        Map<String, Object> emptytMap = new HashMap<>();
         assertThat(criteria.toMap(), is(emptytMap));
     }
 
@@ -167,23 +170,30 @@ public class SearchCriteriaTest {
             "DASHBOARD|dashboard",
             "LEGACY_DASHBOARD|legacyDashboard",
             "ALL|reportUnit:dashboard:legacyDashboard",
+            "REPORT:DASHBOARD|reportUnit:dashboard",
     })
-    public void criteriaShouldIncludeTypeInParams(String flag, String types) throws Exception {
-        Integer resource = (Integer) SearchCriteria.class.getField(flag).get(null);
-
-        SearchCriteria criteria = SearchCriteria.builder()
-                .resourceMask(resource)
-                .create();
-
-        Map<String, String> resultMap = new HashMap<>();
-        if (types.contains(":")) {
-            for (String type : types.split(":")) {
-                resultMap.put("type", type);
+    public void criteriaShouldIncludeTypeInParams(String flags, String types) throws Exception {
+        int mask = 0;
+        if (flags.contains(":")) {
+            for (String flag : flags.split(":")) {
+                mask |= (Integer) SearchCriteria.class.getField(flag).get(null);
             }
         } else {
-            resultMap.put("type", types);
+            mask = (Integer) SearchCriteria.class.getField(flags).get(null);
         }
 
+        SearchCriteria criteria = SearchCriteria.builder()
+                .resourceMask(mask)
+                .create();
+
+        Map<String, Object> resultMap = new HashMap<>();
+        Set<String> typeSet = new HashSet<>();
+        if (types.contains(":")) {
+            typeSet.addAll(Arrays.asList(types.split(":")));
+        } else {
+            typeSet.add(types);
+        }
+        resultMap.put("type", typeSet);
 
         assertThat(criteria.toMap(), is(resultMap));
     }
@@ -191,7 +201,7 @@ public class SearchCriteriaTest {
     @Test
     public void shouldReturnEmptyParamsIfNoSupplied() {
         SearchCriteria criteria = SearchCriteria.builder().create();
-        Map<String, String> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         assertThat(criteria.toMap(), is(resultMap));
     }
 
