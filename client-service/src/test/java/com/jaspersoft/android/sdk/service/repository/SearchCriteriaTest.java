@@ -46,11 +46,11 @@ public class SearchCriteriaTest {
     @Test
     public void shouldIncludeCountInParams() {
         SearchCriteria criteria = SearchCriteria.builder()
-                .limitCount(100)
+                .limit(101)
                 .create();
 
         Map<String, String> resultMap = new HashMap<>();
-        resultMap.put("limit", "100");
+        resultMap.put("limit", "101");
 
         assertThat(criteria.toMap(), is(resultMap));
     }
@@ -92,6 +92,18 @@ public class SearchCriteriaTest {
     }
 
     @Test
+    public void shouldIncludeForceTotalCountPageInParams() {
+        SearchCriteria criteria = SearchCriteria.builder()
+                .forceTotalCount(true)
+                .create();
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("forceTotalCount", "true");
+
+        assertThat(criteria.toMap(), is(resultMap));
+    }
+
+    @Test
     public void shouldIncludeQueryPageInParams() {
         SearchCriteria criteria = SearchCriteria.builder()
                 .query("any")
@@ -123,6 +135,18 @@ public class SearchCriteriaTest {
 
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("sortBy", "creationDate");
+
+        assertThat(criteria.toMap(), is(resultMap));
+    }
+
+    @Test
+    public void shouldIncludeFolderUriInParams() {
+        SearchCriteria criteria = SearchCriteria.builder()
+                .folderUri("/")
+                .create();
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("folderUri", "/");
 
         assertThat(criteria.toMap(), is(resultMap));
     }
@@ -174,10 +198,10 @@ public class SearchCriteriaTest {
     @Test
     public void newBuilderShouldCopyCount() {
         SearchCriteria searchCriteria = SearchCriteria.builder()
-                .limitCount(100)
+                .limit(100)
                 .create();
         SearchCriteria newCriteria = searchCriteria.newBuilder().create();
-        assertThat(newCriteria.getCount(), is(100));
+        assertThat(newCriteria.getLimit(), is(100));
     }
 
     @Test
@@ -224,6 +248,7 @@ public class SearchCriteriaTest {
         SearchCriteria newCriteria = searchCriteria.newBuilder().create();
         assertThat(newCriteria.getSortBy(), is("creationDate"));
     }
+
     @Test
     public void newBuilderShouldCopyResourceMask() {
         SearchCriteria searchCriteria = SearchCriteria.builder()
@@ -231,5 +256,23 @@ public class SearchCriteriaTest {
                 .create();
         SearchCriteria newCriteria = searchCriteria.newBuilder().create();
         assertThat(newCriteria.getResourceMask(), is(SearchCriteria.REPORT | SearchCriteria.DASHBOARD));
+    }
+
+    @Test
+    public void newBuilderShouldCopyForceTotalPageFlag() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .forceTotalCount(true)
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getForceTotalCount(), is(true));
+    }
+
+    @Test
+    public void newBuilderShouldCopyFolderUri() {
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .folderUri("/")
+                .create();
+        SearchCriteria newCriteria = searchCriteria.newBuilder().create();
+        assertThat(newCriteria.getFolderUri(), is("/"));
     }
 }

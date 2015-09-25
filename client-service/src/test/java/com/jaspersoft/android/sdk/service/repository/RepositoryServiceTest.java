@@ -49,7 +49,7 @@ public class RepositoryServiceTest {
         RepositoryService service = new RepositoryService(repoApi, infoApi);
 
         SearchCriteria criteria = SearchCriteria.builder()
-                .limitCount(10)
+                .limit(10)
                 .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
                 .create();
         SearchTask task = service.search(criteria);

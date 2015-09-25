@@ -49,9 +49,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         mInitialCriteria = criteria.newBuilder()
                 .forceFullPage(true)
                 .create();
-
-        int initialOffset = (criteria.getOffset() == null) ? 0 : criteria.getOffset();
-        mNextOffset = initialOffset;
+        mNextOffset = criteria.getOffset();
     }
 
     @Override

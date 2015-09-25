@@ -35,28 +35,34 @@ import java.util.Map;
  * @since 2.0
  */
 public final class SearchCriteria {
+    private static final int DEFAULT_OFFSET = 0;
+    private static final int DEFAULT_LIMIT = 100;
 
-    public static int ALL = 1;
     public static int REPORT = (1 << 1);
     public static int DASHBOARD = (1 << 2);
     public static int LEGACY_DASHBOARD = (1 << 3);
+    public static int ALL = REPORT | DASHBOARD | LEGACY_DASHBOARD;
 
-    private final Integer mCount;
-    private final Integer mOffset;
+    private final int mLimit;
+    private final int mOffset;
     private final int mResourceMask;
     private final Boolean mRecursive;
     private final Boolean mForceFullPage;
+    private final Boolean mForceTotalCount;
     private final String mQuery;
     private final String mSortBy;
+    private final String mFolderUri;
 
     private SearchCriteria(Builder builder) {
-        mCount = builder.count;
+        mLimit = builder.limit;
         mOffset = builder.offset;
         mResourceMask = builder.resourceMask;
         mRecursive = builder.recursive;
         mForceFullPage = builder.forceFullPage;
+        mForceTotalCount = builder.forceTotalCount;
         mQuery = builder.query;
         mSortBy = builder.sort;
+        mFolderUri = builder.folderUri;
     }
 
     @NonNull
@@ -69,19 +75,22 @@ public final class SearchCriteria {
         return builder().create();
     }
 
-    @Nullable
-    public Integer getCount() {
-        return mCount;
+    public int getLimit() {
+        return mLimit;
     }
 
-    @Nullable
-    public Integer getOffset() {
+    public int getOffset() {
         return mOffset;
     }
 
     @Nullable
     public Boolean getForceFullPage() {
         return mForceFullPage;
+    }
+
+    @Nullable
+    public Boolean getForceTotalCount() {
+        return mForceTotalCount;
     }
 
     @Nullable
@@ -103,20 +112,23 @@ public final class SearchCriteria {
         return mResourceMask;
     }
 
+    @Nullable
+    public String getFolderUri() {
+        return mFolderUri;
+    }
+
     @NonNull
     public SearchCriteria.Builder newBuilder() {
         SearchCriteria.Builder builder = builder();
-        if (mCount != null) {
-            builder.limitCount(mCount);
-        }
-        if (mOffset != null) {
-            builder.offset(mOffset);
-        }
+
         if (mRecursive != null) {
             builder.recursive(mRecursive);
         }
         if (mForceFullPage != null) {
             builder.forceFullPage(mForceFullPage);
+        }
+        if (mForceTotalCount != null) {
+            builder.forceTotalCount(mForceTotalCount);
         }
         if (mQuery != null) {
             builder.query(mQuery);
@@ -124,7 +136,14 @@ public final class SearchCriteria {
         if (mSortBy != null) {
             builder.sortBy(mSortBy);
         }
+        if (mFolderUri != null) {
+            builder.folderUri(mFolderUri);
+        }
+
         builder.resourceMask(mResourceMask);
+        builder.limit(mLimit);
+        builder.offset(mOffset);
+
         return builder;
     }
 
@@ -132,10 +151,10 @@ public final class SearchCriteria {
     public Map<String, String> toMap() {
         Map<String, String> params = new HashMap<>();
 
-        if (mCount != null) {
-            params.put("limit", String.valueOf(mCount));
+        if (mLimit != DEFAULT_LIMIT) {
+            params.put("limit", String.valueOf(mLimit));
         }
-        if (mOffset != null) {
+        if (mOffset != DEFAULT_OFFSET) {
             params.put("offset", String.valueOf(mOffset));
         }
         if (mRecursive != null) {
@@ -144,11 +163,17 @@ public final class SearchCriteria {
         if (mForceFullPage != null) {
             params.put("forceFullPage", String.valueOf(mForceFullPage));
         }
+        if (mForceTotalCount != null) {
+            params.put("forceTotalCount", String.valueOf(mForceTotalCount));
+        }
         if (mQuery != null && mQuery.length() > 0) {
             params.put("q", mQuery);
         }
         if (mSortBy != null) {
             params.put("sortBy", mSortBy);
+        }
+        if (mFolderUri != null) {
+            params.put("folderUri", mFolderUri);
         }
 
         populateTypes(params);
@@ -174,26 +199,29 @@ public final class SearchCriteria {
     }
 
     public static class Builder {
-        @Nullable
-        private Integer count;
-        @Nullable
-        private Integer offset;
-        private int resourceMask;
+        private int limit = DEFAULT_LIMIT;
+        private int offset = DEFAULT_OFFSET;
+        private int resourceMask = Integer.MIN_VALUE;
+
         @Nullable
         private Boolean recursive;
         @Nullable
         private Boolean forceFullPage;
         @Nullable
+        public Boolean forceTotalCount;
+        @Nullable
         private String query;
         @Nullable
         private String sort;
+        @Nullable
+        private String folderUri;
 
-        public Builder limitCount(int count) {
-            this.count = count;
+        public Builder limit(int limit) {
+            this.limit = limit;
             return this;
         }
 
-        public Builder offset(@Nullable Integer offset) {
+        public Builder offset(int offset) {
             this.offset = offset;
             return this;
         }
@@ -223,6 +251,11 @@ public final class SearchCriteria {
             return this;
         }
 
+        public Builder folderUri(@Nullable String folderUri) {
+            this.folderUri = folderUri;
+            return this;
+        }
+
         /**
          * Internal use. Mutating sortBy value.
          * @param sort either 'label' or 'creationDate'
@@ -240,6 +273,16 @@ public final class SearchCriteria {
          */
         Builder forceFullPage(boolean forceFullPage) {
             this.forceFullPage = forceFullPage;
+            return this;
+        }
+
+        /**
+         * Internal use. Mutating forceTotalCount value.
+         * @param forceTotalCount either true or false
+         * @return chain builder instance
+         */
+        Builder forceTotalCount(@Nullable Boolean forceTotalCount) {
+            this.forceTotalCount = forceTotalCount;
             return this;
         }
 
