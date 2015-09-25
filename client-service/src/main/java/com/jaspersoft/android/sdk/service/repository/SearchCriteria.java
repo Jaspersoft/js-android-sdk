@@ -289,7 +289,7 @@ public final class SearchCriteria {
          * @param forceTotalCount either true or false
          * @return chain builder instance
          */
-        Builder forceTotalCount(@Nullable Boolean forceTotalCount) {
+        Builder forceTotalCount(boolean forceTotalCount) {
             this.forceTotalCount = forceTotalCount;
             return this;
         }
