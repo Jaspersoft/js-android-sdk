@@ -46,7 +46,7 @@ interface SearchStrategy {
                                          SearchCriteria criteria) {
             ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
-                return new EmeraldMR2SearchStrategy(repositoryApiFactory, criteria);
+                return new EmeraldMR2SearchStrategy_(repositoryApiFactory, criteria);
             }
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
                 return new EmeraldMR3SearchStrategy(repositoryApiFactory, criteria);
