@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +41,9 @@ import rx.functions.Func0;
  * @since 2.0
  */
 final class EmeraldMR2SearchStrategy_ implements SearchStrategy {
-    public static final int MAX_RETRY_COUNT = 5;
+    private static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
+    private static final int MAX_RETRY_COUNT = 5;
+
     private final RepositoryRestApi.Factory mRepoFactory;
     private final SearchCriteria mInitialCriteria;
 
@@ -59,7 +62,15 @@ final class EmeraldMR2SearchStrategy_ implements SearchStrategy {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
-                return Observable.just(internalSearch());
+                int limit = mInitialCriteria.getLimit();
+                int offset = mInitialCriteria.getOffset();
+
+                if (mEndReached || limit == 0) {
+                    return Observable.just(EMPTY_RESPONSE);
+                }
+
+                calculateDisposition(offset);
+                return Observable.just(internalSearch(limit));
             }
         });
     }
@@ -69,16 +80,29 @@ final class EmeraldMR2SearchStrategy_ implements SearchStrategy {
         return !mEndReached;
     }
 
-    private Collection<ResourceLookupResponse> internalSearch() {
-        int limit = mInitialCriteria.getLimit();
+    private void calculateDisposition(int offset) {
+        boolean serverDispositionUndefined = offset >= mServerDisposition;
+        if (serverDispositionUndefined) {
+            internalSearch(offset);
+        }
+    }
 
+    private Collection<ResourceLookupResponse> internalSearch(int limit) {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
-            ResourceSearchResponse response = performSearch();
+            ResourceSearchResponse response = performSearch(limit);
             mBuffer.addAll(response.getResources());
             mServerDisposition += limit;
 
             if (response.getResources().isEmpty()) {
+                /**
+                 * This is ugly condition. API for 5.5 is broken and there is no way to
+                 * determine weather we reached total count value.
+                 *
+                 * Corresponding situation happens if API has returned 204 for request.
+                 * We are trying to retry request 5 times. If 5 times sequentially
+                 * received 204 we consider that API has no more items for client to consume
+                 */
                 mEndReached = (count == MAX_RETRY_COUNT);
                 count++;
             }
@@ -90,9 +114,10 @@ final class EmeraldMR2SearchStrategy_ implements SearchStrategy {
         return result;
     }
 
-    private ResourceSearchResponse performSearch() {
+    private ResourceSearchResponse performSearch(int limit) {
         SearchCriteria nextCriteria = mInitialCriteria.newBuilder()
                 .offset(mServerDisposition)
+                .limit(limit)
                 .create();
         RepositoryRestApi api = mRepoFactory.get();
         return api.searchResources(nextCriteria.toMap());
