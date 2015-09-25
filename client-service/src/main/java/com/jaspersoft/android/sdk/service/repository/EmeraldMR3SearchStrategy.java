@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
@@ -38,10 +40,13 @@ import rx.functions.Func0;
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
+    private final static int UNDEFINED = -1;
+
     private final RepositoryRestApi.Factory mRepoFactory;
     private final SearchCriteria mInitialCriteria;
 
-    private int mNextOffset;
+    private int mUserOffset;
+    private int mInternalOffset = UNDEFINED;
 
     public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
         mRepoFactory = repositoryApiFactory;
@@ -49,7 +54,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         mInitialCriteria = criteria.newBuilder()
                 .forceFullPage(true)
                 .create();
-        mNextOffset = criteria.getOffset();
+        mUserOffset = criteria.getOffset();
     }
 
     @Override
@@ -57,31 +62,54 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
-                return Observable.just(makeApiCall());
+                if (mInternalOffset == UNDEFINED) {
+                    defineInternalOffset();
+                }
+                return Observable.just(performLookup());
             }
         });
     }
 
-    private Collection<ResourceLookupResponse> makeApiCall() {
-        SearchCriteria newSearchCriteria = resolveNextCriteria();
-        RepositoryRestApi api = mRepoFactory.get();
-        ResourceSearchResponse result = api.searchResources(newSearchCriteria.toMap());
-        updateNextOffset(result);
+    @NonNull
+    private Collection<ResourceLookupResponse> performLookup() {
+        SearchCriteria newSearchCriteria = createNextCriteria();
+        ResourceSearchResponse result = performApiCall(newSearchCriteria);
+        updateInternalOffset(result);
         return result.getResources();
     }
 
-    private void updateNextOffset(ResourceSearchResponse result) {
+    @NonNull
+    private ResourceSearchResponse performApiCall(SearchCriteria newSearchCriteria) {
+        RepositoryRestApi api = mRepoFactory.get();
+        return api.searchResources(newSearchCriteria.toMap());
+    }
+
+    private void defineInternalOffset() {
+        if (mUserOffset == 0) {
+            mInternalOffset = mUserOffset;
+        } else {
+            SearchCriteria newCriteria = mInitialCriteria.newBuilder()
+                    .limit(mUserOffset)
+                    .offset(0)
+                    .create();
+            ResourceSearchResponse result = performApiCall(newCriteria);
+            mInternalOffset = result.getNextOffset();
+        }
+    }
+
+    private void updateInternalOffset(ResourceSearchResponse result) {
         int nextOffset = result.getNextOffset();
 
         boolean endReached = (nextOffset == 0);
         if (!endReached) {
-            mNextOffset = nextOffset;
+            mInternalOffset = nextOffset;
         }
     }
 
-    private SearchCriteria resolveNextCriteria() {
+    @NonNull
+    private SearchCriteria createNextCriteria() {
         SearchCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
-        newCriteriaBuilder.offset(mNextOffset);
+        newCriteriaBuilder.offset(mInternalOffset);
         return newCriteriaBuilder.create();
     }
 }
