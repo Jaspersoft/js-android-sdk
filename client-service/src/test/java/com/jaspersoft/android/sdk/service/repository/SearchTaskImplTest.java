@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchStrategy.Factory.class)
-public class SearchTaskTest {
+public class SearchTaskImplTest {
     private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
@@ -68,12 +68,12 @@ public class SearchTaskTest {
     @Mock
     SearchStrategy mSearchStrategy;
 
-    private SearchTask objectUnderTest;
+    private SearchTaskImpl objectUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTask(CRITERIA, mRepoApiFactory, mInfoApiFactory);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApiFactory, mInfoApiFactory);
         when(mRepoApiFactory.get()).thenReturn(mRepoApi);
         when(mInfoApiFactory.get()).thenReturn(mInfoApi);
 

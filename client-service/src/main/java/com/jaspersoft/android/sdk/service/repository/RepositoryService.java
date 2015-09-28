@@ -49,7 +49,7 @@ public class RepositoryService {
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTask(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
     }
 
     public Observable<FolderLookupResponse> requestFolder(@NonNull final String folderUri) {

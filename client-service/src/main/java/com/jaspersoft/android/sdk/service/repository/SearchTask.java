@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,81 +21,22 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 
 import java.util.Collection;
 
 import rx.Observable;
-import rx.functions.Func0;
-import rx.functions.Func1;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class SearchTask {
-    private final InternalCriteria mCriteria;
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
-
-    @Nullable
-    private SearchStrategy strategy;
-
-    SearchTask(InternalCriteria criteria,
-                      RepositoryRestApi.Factory repositoryApiFactory,
-                      ServerRestApi.Factory infoApiFactory) {
-        mCriteria = criteria;
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
-    }
-
-    public Observable<Collection<ResourceLookupResponse>> nextLookup() {
-        return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<Collection<ResourceLookupResponse>>>() {
-            @Override
-            public Observable<Collection<ResourceLookupResponse>> call(SearchStrategy searchStrategy) {
-                return searchStrategy.searchNext();
-            }
-        });
-    }
-
-    public boolean hasNext() {
-        /**
-         * Strategy not defined only, if user has not made any lookup requests.
-         * There is no 100% guarantee that API has items until we made request.
-         */
-        if (strategy != null) {
-            return strategy.hasNext();
-        }
-        return true;
-    }
-
-    private Observable<SearchStrategy> defineSearchStrategy() {
-        if (strategy == null) {
-            return requestServerVersion().flatMap(new Func1<String, Observable<SearchStrategy>>() {
-                @Override
-                public Observable<SearchStrategy> call(String version) {
-                    strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
-                    return Observable.just(strategy);
-                }
-            });
-        }
-        return Observable.just(strategy);
-    }
-
-    private Observable<String> requestServerVersion() {
-        return Observable.defer(new Func0<Observable<String>>() {
-            @Override
-            public Observable<String> call() {
-                String version = mInfoApiFactory.get().requestVersion();
-                return Observable.just(version);
-            }
-        });
-    }
+public interface SearchTask {
+    @NonNull
+    Observable<Collection<ResourceLookupResponse>> nextLookup();
+    boolean hasNext();
 }
