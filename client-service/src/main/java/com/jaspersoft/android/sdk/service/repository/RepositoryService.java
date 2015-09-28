@@ -24,12 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
+import com.jaspersoft.android.sdk.service.Preconditions;
 
 import rx.Observable;
 import rx.functions.Func0;
@@ -52,7 +53,8 @@ public class RepositoryService {
         return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
     }
 
-    public Observable<FolderLookupResponse> requestFolder(@NonNull final String folderUri) {
+    public Observable<FolderLookupResponse> requestFolder(@Nullable final String folderUri) {
+        Preconditions.checkNotNull(folderUri, "Folder URI should not be null");
         return Observable.defer(new Func0<Observable<FolderLookupResponse>>() {
             @Override
             public Observable<FolderLookupResponse> call() {
@@ -63,7 +65,8 @@ public class RepositoryService {
         });
     }
 
-    public Observable<ReportLookupResponse> requestReport(@NonNull final String folderUri) {
+    public Observable<ReportLookupResponse> requestReport(@Nullable final String folderUri) {
+        Preconditions.checkNotNull(folderUri, "Report URI should not be null");
         return Observable.defer(new Func0<Observable<ReportLookupResponse>>() {
             @Override
             public Observable<ReportLookupResponse> call() {

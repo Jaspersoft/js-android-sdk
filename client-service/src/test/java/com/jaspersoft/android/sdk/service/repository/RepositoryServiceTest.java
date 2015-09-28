@@ -31,7 +31,9 @@ import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -60,6 +62,9 @@ public class RepositoryServiceTest {
     ReportLookupResponse mReportResponse;
 
     private RepositoryService objectUnderTest;
+
+    @Rule
+    public ExpectedException mExpectedException = ExpectedException.none();
 
     @Before
     public void setup() {
@@ -92,5 +97,19 @@ public class RepositoryServiceTest {
         assertThat(result, is(Matchers.notNullValue()));
 
         verify(repoApi).requestReportResource("/uri");
+    }
+
+    @Test
+    public void shouldNotAcceptNullUriForFolder() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Folder URI should not be null");
+        objectUnderTest.requestFolder(null);
+    }
+
+    @Test
+    public void shouldNotAcceptNullUriForReport() {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Report URI should not be null");
+        objectUnderTest.requestReport(null);
     }
 }
