@@ -1357,6 +1357,7 @@ public class JsRestClient {
 
     /**
      * List all available report options for particular resources.
+     *
      * @param reportUnitUri uri of report
      * @return response that wraps report options collection
      */
@@ -1384,10 +1385,10 @@ public class JsRestClient {
     /**
      * Creates new report option.
      *
-     * @param reportUnitUri uri of report we are going to use for new option
-     * @param optionLabel name of report option we are going to create
+     * @param reportUnitUri  uri of report we are going to use for new option
+     * @param optionLabel    name of report option we are going to create
      * @param controlsValues report parameters associated wtith report
-     * @param overwrite override values, if such report option exist
+     * @param overwrite      override values, if such report option exist
      * @return newly created report option
      */
     public ReportOption createReportOption(String reportUnitUri, String optionLabel,
@@ -1413,8 +1414,8 @@ public class JsRestClient {
     /**
      * Updating of report options with corresponding data set
      *
-     * @param reportUnitUri uri of report we are going to use for particular option
-     * @param optionId id of report option we are going to update
+     * @param reportUnitUri  uri of report we are going to use for particular option
+     * @param optionId       id of report option we are going to update
      * @param controlsValues new values we are going to pass
      */
     public void updateReportOption(String reportUnitUri, String optionId, Map<String, Set<String>> controlsValues) {
@@ -1438,7 +1439,7 @@ public class JsRestClient {
      * API to delete report option
      *
      * @param reportUnitUri uri of report we are going to use for particular option
-     * @param optionId id of report option we are going to delete
+     * @param optionId      id of report option we are going to delete
      */
     public void deleteReportOption(String reportUnitUri, String optionId) {
         String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
@@ -1447,6 +1448,17 @@ public class JsRestClient {
                 .appendPath(optionId)
                 .build();
         restTemplate.delete(URI.create(uri.toString()));
+    }
+
+    /**
+     * API to list control states associated with corresponding report option
+     *
+     * @param reportOptionUri uri of report option
+     * @return the list of the input controls states
+     */
+    public InputControlStatesList getReportOptionsValues(String reportOptionUri) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportOptionUri + REST_INPUT_CONTROLS_URI;
+        return restTemplate.getForObject(base, InputControlStatesList.class);
     }
 
     //---------------------------------------------------------------------
