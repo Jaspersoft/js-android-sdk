@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
@@ -53,7 +55,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
 
     public EmeraldMR2SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
         mRepoFactory = repositoryApiFactory;
-        mInitialCriteria = criteria.newBuilder().create();
+        mInitialCriteria = criteria;
         mEndReached = false;
     }
 
@@ -87,6 +89,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         }
     }
 
+    @NonNull
     private Collection<ResourceLookupResponse> internalSearch(int limit) {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
@@ -108,12 +111,13 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
             }
         }
 
-        int measure = Math.min(limit, mBuffer.size());
-        Collection<ResourceLookupResponse> result = mBuffer.subList(0, measure);
-        mBuffer = mBuffer.subList(measure, mBuffer.size());
+        int median = Math.min(limit, mBuffer.size());
+        Collection<ResourceLookupResponse> result = mBuffer.subList(0, median);
+        mBuffer = mBuffer.subList(median, mBuffer.size());
         return result;
     }
 
+    @NonNull
     private ResourceSearchResponse performSearch(int limit) {
         SearchCriteria nextCriteria = mInitialCriteria.newBuilder()
                 .offset(mServerDisposition)
