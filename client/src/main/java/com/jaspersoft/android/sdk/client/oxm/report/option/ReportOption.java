@@ -50,6 +50,12 @@ public class ReportOption {
 
     public ReportOption() {}
 
+    public ReportOption(String reportUri, String id, String label) {
+        this.label = label;
+        this.uri = reportUri;
+        this.id = id;
+    }
+
     @NonNull
     public String getId() {
         return id;
