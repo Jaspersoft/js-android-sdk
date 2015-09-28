@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,11 +27,6 @@ package com.jaspersoft.android.sdk.service.repository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import static com.jaspersoft.android.sdk.service.Preconditions.checkArgument;
 
 /**
@@ -39,8 +34,8 @@ import static com.jaspersoft.android.sdk.service.Preconditions.checkArgument;
  * @since 2.0
  */
 public final class SearchCriteria {
-    private static final int DEFAULT_OFFSET = 0;
-    private static final int DEFAULT_LIMIT = 100;
+    static final int DEFAULT_OFFSET = 0;
+    static final int DEFAULT_LIMIT = 100;
 
     public static int ALL = 1;
     public static int REPORT = (1 << 1);
@@ -51,8 +46,7 @@ public final class SearchCriteria {
     private final int mOffset;
     private final int mResourceMask;
     private final Boolean mRecursive;
-    private final Boolean mForceFullPage;
-    private final Boolean mForceTotalCount;
+
     private final String mQuery;
     private final String mSortBy;
     private final String mFolderUri;
@@ -62,8 +56,6 @@ public final class SearchCriteria {
         mOffset = builder.offset;
         mResourceMask = builder.resourceMask;
         mRecursive = builder.recursive;
-        mForceFullPage = builder.forceFullPage;
-        mForceTotalCount = builder.forceTotalCount;
         mQuery = builder.query;
         mSortBy = builder.sort;
         mFolderUri = builder.folderUri;
@@ -85,16 +77,6 @@ public final class SearchCriteria {
 
     public int getOffset() {
         return mOffset;
-    }
-
-    @Nullable
-    public Boolean getForceFullPage() {
-        return mForceFullPage;
-    }
-
-    @Nullable
-    public Boolean getForceTotalCount() {
-        return mForceTotalCount;
     }
 
     @Nullable
@@ -121,93 +103,6 @@ public final class SearchCriteria {
         return mFolderUri;
     }
 
-    @NonNull
-    public SearchCriteria.Builder newBuilder() {
-        SearchCriteria.Builder builder = builder();
-
-        if (mRecursive != null) {
-            builder.recursive(mRecursive);
-        }
-        if (mForceFullPage != null) {
-            builder.forceFullPage(mForceFullPage);
-        }
-        if (mForceTotalCount != null) {
-            builder.forceTotalCount(mForceTotalCount);
-        }
-        if (mQuery != null) {
-            builder.query(mQuery);
-        }
-        if (mSortBy != null) {
-            builder.sortBy(mSortBy);
-        }
-        if (mFolderUri != null) {
-            builder.folderUri(mFolderUri);
-        }
-
-        builder.resourceMask(mResourceMask);
-        builder.limit(mLimit);
-        builder.offset(mOffset);
-
-        return builder;
-    }
-
-    @NonNull
-    public Map<String, Object> toMap() {
-        Map<String, Object> params = new HashMap<>();
-
-        if (mLimit != DEFAULT_LIMIT) {
-            params.put("limit", String.valueOf(mLimit));
-        }
-        if (mOffset != DEFAULT_OFFSET) {
-            params.put("offset", String.valueOf(mOffset));
-        }
-        if (mRecursive != null) {
-            params.put("recursive", String.valueOf(mRecursive));
-        }
-        if (mForceFullPage != null) {
-            params.put("forceFullPage", String.valueOf(mForceFullPage));
-        }
-        if (mForceTotalCount != null) {
-            params.put("forceTotalCount", String.valueOf(mForceTotalCount));
-        }
-        if (mQuery != null && mQuery.length() > 0) {
-            params.put("q", mQuery);
-        }
-        if (mSortBy != null) {
-            params.put("sortBy", mSortBy);
-        }
-        if (mFolderUri != null) {
-            params.put("folderUri", mFolderUri);
-        }
-
-        populateTypes(params);
-        return params;
-    }
-
-    private void populateTypes(Map<String, Object> params) {
-        Set<String> types = new HashSet<>();
-
-        boolean includeReport =
-                (mResourceMask & REPORT) == REPORT || (mResourceMask & ALL) == ALL;
-        if (includeReport) {
-            types.add("reportUnit");
-        }
-        boolean includeDashboard =
-                (mResourceMask & DASHBOARD) == DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeDashboard) {
-            types.add("dashboard");
-        }
-        boolean includeLegacyDashboard =
-                (mResourceMask & LEGACY_DASHBOARD) == LEGACY_DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeLegacyDashboard) {
-            types.add("legacyDashboard");
-        }
-
-        if (!types.isEmpty()) {
-            params.put("type", types);
-        }
-    }
-
     public static class Builder {
         private int limit = DEFAULT_LIMIT;
         private int offset = DEFAULT_OFFSET;
@@ -215,10 +110,6 @@ public final class SearchCriteria {
 
         @Nullable
         private Boolean recursive;
-        @Nullable
-        private Boolean forceFullPage;
-        @Nullable
-        public Boolean forceTotalCount;
         @Nullable
         private String query;
         @Nullable
@@ -265,36 +156,6 @@ public final class SearchCriteria {
 
         public Builder folderUri(@Nullable String folderUri) {
             this.folderUri = folderUri;
-            return this;
-        }
-
-        /**
-         * Internal use. Mutating sortBy value.
-         * @param sort either 'label' or 'creationDate'
-         * @return chain builder instance
-         */
-        Builder sortBy(String sort) {
-            this.sort = sort;
-            return this;
-        }
-
-        /**
-         * Internal use. Mutating forceFullPage value.
-         * @param forceFullPage either true or false
-         * @return chain builder instance
-         */
-        Builder forceFullPage(boolean forceFullPage) {
-            this.forceFullPage = forceFullPage;
-            return this;
-        }
-
-        /**
-         * Internal use. Mutating forceTotalCount value.
-         * @param forceTotalCount either true or false
-         * @return chain builder instance
-         */
-        Builder forceTotalCount(boolean forceTotalCount) {
-            this.forceTotalCount = forceTotalCount;
             return this;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -41,14 +41,14 @@ import rx.functions.Func1;
  * @since 2.0
  */
 public final class SearchTask {
-    private final SearchCriteria mCriteria;
+    private final InternalCriteria mCriteria;
     private final RepositoryRestApi.Factory mRepositoryApiFactory;
     private final ServerRestApi.Factory mInfoApiFactory;
 
     @Nullable
     private SearchStrategy strategy;
 
-    SearchTask(SearchCriteria criteria,
+    SearchTask(InternalCriteria criteria,
                       RepositoryRestApi.Factory repositoryApiFactory,
                       ServerRestApi.Factory infoApiFactory) {
         mCriteria = criteria;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -45,13 +45,13 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     private final static int UNDEFINED = -1;
 
     private final RepositoryRestApi.Factory mRepoFactory;
-    private final SearchCriteria mInitialCriteria;
+    private final InternalCriteria mInitialCriteria;
 
     private int mUserOffset;
     private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
 
-    public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, SearchCriteria criteria) {
+    public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, InternalCriteria criteria) {
         mRepoFactory = repositoryApiFactory;
         // Internally enabling 'forceFullPageFlag'
         mInitialCriteria = criteria.newBuilder()
@@ -83,14 +83,14 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     @NonNull
     private Collection<ResourceLookupResponse> performLookup() {
-        SearchCriteria newSearchCriteria = createNextCriteria();
+        InternalCriteria newSearchCriteria = createNextCriteria();
         ResourceSearchResponse result = performApiCall(newSearchCriteria);
         updateInternalOffset(result);
         return result.getResources();
     }
 
     @NonNull
-    private ResourceSearchResponse performApiCall(SearchCriteria newSearchCriteria) {
+    private ResourceSearchResponse performApiCall(InternalCriteria newSearchCriteria) {
         RepositoryRestApi api = mRepoFactory.get();
         return api.searchResources(newSearchCriteria.toMap());
     }
@@ -99,7 +99,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         if (mUserOffset == 0) {
             mInternalOffset = mUserOffset;
         } else {
-            SearchCriteria newCriteria = mInitialCriteria.newBuilder()
+            InternalCriteria newCriteria = mInitialCriteria.newBuilder()
                     .limit(mUserOffset)
                     .offset(0)
                     .create();
@@ -118,8 +118,8 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private SearchCriteria createNextCriteria() {
-        SearchCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
+    private InternalCriteria createNextCriteria() {
+        InternalCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
         newCriteriaBuilder.offset(mInternalOffset);
         return newCriteriaBuilder.create();
     }

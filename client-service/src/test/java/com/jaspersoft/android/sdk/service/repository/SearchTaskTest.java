@@ -55,8 +55,7 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchStrategy.Factory.class)
 public class SearchTaskTest {
-
-    SearchCriteria mSearchCriteria = SearchCriteria.none();
+    private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
     RepositoryRestApi.Factory mRepoApiFactory;
@@ -74,7 +73,7 @@ public class SearchTaskTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTask(mSearchCriteria, mRepoApiFactory, mInfoApiFactory);
+        objectUnderTest = new SearchTask(CRITERIA, mRepoApiFactory, mInfoApiFactory);
         when(mRepoApiFactory.get()).thenReturn(mRepoApi);
         when(mInfoApiFactory.get()).thenReturn(mInfoApi);
 
@@ -82,7 +81,7 @@ public class SearchTaskTest {
         when(mSearchStrategy.searchNext()).thenReturn(resultObservable);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
-        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(SearchCriteria.class))).thenReturn(mSearchStrategy);
+        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
     }
 
     @Test
@@ -91,7 +90,7 @@ public class SearchTaskTest {
         objectUnderTest.nextLookup().toBlocking().first();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(mSearchCriteria));
+        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
 
         verify(mInfoApi, times(1)).requestVersion();
         verify(mInfoApiFactory, times(1)).get();
@@ -106,7 +105,7 @@ public class SearchTaskTest {
         objectUnderTest.nextLookup().toBlocking().first();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(mSearchCriteria));
+        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
 
         verify(mInfoApi, times(1)).requestVersion();
         verify(mInfoApiFactory, times(1)).get();

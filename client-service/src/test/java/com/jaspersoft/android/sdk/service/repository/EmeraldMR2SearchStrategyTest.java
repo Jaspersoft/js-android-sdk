@@ -63,10 +63,10 @@ public class EmeraldMR2SearchStrategyTest {
         List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
         when(mResponse.getResources()).thenReturn(stubLookup);
 
-        SearchCriteria criteria = SearchCriteria.builder().limit(10).create();
+        InternalCriteria criteria = InternalCriteria.builder().limit(10).create();
         search10itemsStrategy = new EmeraldMR2SearchStrategy(mApiFactory, criteria);
 
-        SearchCriteria userCriteria = criteria.newBuilder().offset(5).create();
+        InternalCriteria userCriteria = criteria.newBuilder().offset(5).create();
         search10itemsStrategyWithUserOffset5 = new EmeraldMR2SearchStrategy(mApiFactory, userCriteria);
     }
 
@@ -138,7 +138,7 @@ public class EmeraldMR2SearchStrategyTest {
 
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() {
-        SearchCriteria userCriteria = SearchCriteria.builder().limit(0).offset(5).create();
+        InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(mApiFactory, userCriteria);
 
         Collection<ResourceLookupResponse> result = strategy.searchNext().toBlocking().first();

@@ -43,7 +43,7 @@ interface SearchStrategy {
     class Factory {
         public static SearchStrategy get(String serverVersion,
                                          RepositoryRestApi.Factory repositoryApiFactory,
-                                         SearchCriteria criteria) {
+                                         InternalCriteria criteria) {
             ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
                 return new EmeraldMR2SearchStrategy(repositoryApiFactory, criteria);
