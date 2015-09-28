@@ -24,22 +24,22 @@
 package com.jaspersoft.android.sdk.client.async.request;
 
 import com.jaspersoft.android.sdk.client.JsRestClient;
-import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlsList;
 
 /**
  * @author Tom Koptel
  * @since 1.11
  */
-public class GetReportOptionValuesRequest extends BaseRequest<InputControlStatesList> {
+public class GetReportOptionValuesRequest extends BaseRequest<InputControlsList> {
     private final String mReportOptionUri;
 
     public GetReportOptionValuesRequest(JsRestClient jsRestClient, String reportOptionUri) {
-        super(jsRestClient, InputControlStatesList.class);
+        super(jsRestClient, InputControlsList.class);
         mReportOptionUri = reportOptionUri;
     }
 
     @Override
-    public InputControlStatesList loadDataFromNetwork() throws Exception {
+    public InputControlsList loadDataFromNetwork() throws Exception {
         return getJsRestClient().getReportOptionsValues(mReportOptionUri);
     }
 }
