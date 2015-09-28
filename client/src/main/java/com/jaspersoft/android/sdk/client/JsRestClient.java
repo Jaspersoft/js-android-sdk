@@ -1456,9 +1456,9 @@ public class JsRestClient {
      * @param reportOptionUri uri of report option
      * @return the list of the input controls states
      */
-    public InputControlsList getReportOptionsValues(String reportOptionUri) {
-        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportOptionUri + REST_INPUT_CONTROLS_URI;
-        return restTemplate.getForObject(base, InputControlsList.class);
+    public InputControlStatesList getReportOptionsValues(String reportOptionUri) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportOptionUri + REST_INPUT_CONTROLS_URI + REST_VALUES_URI;
+        return restTemplate.getForObject(base, InputControlStatesList.class);
     }
 
     //---------------------------------------------------------------------
