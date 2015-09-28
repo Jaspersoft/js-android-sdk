@@ -26,7 +26,10 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,6 +38,9 @@ import org.mockito.MockitoAnnotations;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Tom Koptel
@@ -42,21 +48,49 @@ import static org.hamcrest.core.IsNull.notNullValue;
  */
 public class RepositoryServiceTest {
     @Mock
-    RepositoryRestApi.Factory repoApi;
+    RepositoryRestApi.Factory repoApiFactory;
+    @Mock
+    RepositoryRestApi repoApi;
     @Mock
     ServerRestApi.Factory infoApi;
+
+    @Mock
+    FolderLookupResponse mFolderResponse;
+    @Mock
+    ReportLookupResponse mReportResponse;
 
     private RepositoryService objectUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new RepositoryService(repoApi, infoApi);
+        when(repoApiFactory.get()).thenReturn(repoApi);
+        objectUnderTest = new RepositoryService(repoApiFactory, infoApi);
     }
 
     @Test
     public void shouldProvideListOfResources() {
         SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
         assertThat(searchTask, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldProvideFolder() {
+        when(repoApi.requestFolderResource(anyString())).thenReturn(mFolderResponse);
+
+        FolderLookupResponse result = objectUnderTest.requestFolder("/uri").toBlocking().first();
+        assertThat(result, is(Matchers.notNullValue()));
+
+        verify(repoApi).requestFolderResource("/uri");
+    }
+
+    @Test
+    public void shouldProvideReport() {
+        when(repoApi.requestReportResource(anyString())).thenReturn(mReportResponse);
+
+        ReportLookupResponse result = objectUnderTest.requestReport("/uri").toBlocking().first();
+        assertThat(result, is(Matchers.notNullValue()));
+
+        verify(repoApi).requestReportResource("/uri");
     }
 }

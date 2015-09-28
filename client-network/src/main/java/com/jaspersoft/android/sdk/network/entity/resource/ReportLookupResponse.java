@@ -33,7 +33,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportLookupResponse extends ResourceLookupResponse {
+public class ReportLookupResponse extends ResourceLookupResponse {
 
     @Expose
     private DataSource dataSource;
@@ -49,6 +49,8 @@ public final class ReportLookupResponse extends ResourceLookupResponse {
     private String controlsLayout;
     @Expose
     private List<ReportResource> resources;
+
+    public ReportLookupResponse() {}
 
     @Override
     public String getResourceType() {

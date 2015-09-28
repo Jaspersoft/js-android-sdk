@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,8 +24,15 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
+
+import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
@@ -43,5 +50,27 @@ public class RepositoryService {
 
     public SearchTask search(SearchCriteria criteria) {
         return new SearchTask(criteria, mRepositoryApiFactory, mInfoApiFactory);
+    }
+
+    public Observable<FolderLookupResponse> requestFolder(@NonNull final String folderUri) {
+        return Observable.defer(new Func0<Observable<FolderLookupResponse>>() {
+            @Override
+            public Observable<FolderLookupResponse> call() {
+                FolderLookupResponse result = mRepositoryApiFactory.get()
+                        .requestFolderResource(folderUri);
+                return Observable.just(result);
+            }
+        });
+    }
+
+    public Observable<ReportLookupResponse> requestReport(@NonNull final String folderUri) {
+        return Observable.defer(new Func0<Observable<ReportLookupResponse>>() {
+            @Override
+            public Observable<ReportLookupResponse> call() {
+                ReportLookupResponse result = mRepositoryApiFactory.get()
+                        .requestReportResource(folderUri);
+                return Observable.just(result);
+            }
+        });
     }
 }
