@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,11 +26,15 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.service.TokenProvider;
-import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
@@ -38,28 +42,21 @@ import org.mockito.Mock;
  */
 public class RepositoryServiceTest {
     @Mock
-    TokenProvider mTokenProvider;
+    RepositoryRestApi.Factory repoApi;
+    @Mock
+    ServerRestApi.Factory infoApi;
 
-    String mServerUrl = "http://localhost";
+    private RepositoryService objectUnderTest;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        objectUnderTest = new RepositoryService(repoApi, infoApi);
+    }
 
     @Test
     public void shouldProvideListOfResources() {
-        RepositoryRestApi.Factory repoApi = new RepositoryRestApiFactory(mServerUrl, mTokenProvider);
-        ServerRestApi.Factory infoApi = new ServerRestApiFactory(mServerUrl);
-        RepositoryService service = new RepositoryService(repoApi, infoApi);
-
-        SearchCriteria criteria = SearchCriteria.builder()
-                .limit(10)
-                .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
-                .create();
-        SearchTask task = service.search(criteria);
-        // 10
-        task.nextLookup().subscribe();
-        // 20
-        task.nextLookup().subscribe();
-        // 5
-        task.nextLookup().subscribe();
-        // 0
-        task.nextLookup().subscribe();
+        SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
+        assertThat(searchTask, is(notNullValue()));
     }
 }

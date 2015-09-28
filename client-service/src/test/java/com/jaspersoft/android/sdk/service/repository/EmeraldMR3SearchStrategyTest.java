@@ -4,6 +4,7 @@ import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -122,6 +124,17 @@ public class EmeraldMR3SearchStrategyTest {
         verify(mApiFactory, times(2)).get();
         verify(mResponse, times(2)).getNextOffset();
         verify(mApi, times(2)).searchResources(anyMap());
+    }
+
+    @Test
+    public void shouldReturnEmptyCollectionForZeroLimit() {
+        SearchCriteria userCriteria = SearchCriteria.builder().limit(0).offset(5).create();
+        SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, userCriteria);
+
+        Collection<ResourceLookupResponse> result = strategy.searchNext().toBlocking().first();
+        assertThat(result, Matchers.is(Matchers.empty()));
+
+        verifyZeroInteractions(mApi);
     }
 
     private TestSubscriber performSearch(EmeraldMR3SearchStrategy strategy) {

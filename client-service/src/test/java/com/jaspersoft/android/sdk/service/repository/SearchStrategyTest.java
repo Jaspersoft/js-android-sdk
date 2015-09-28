@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public final class SearchStrategyTest {
+public class SearchStrategyTest {
 
     @Mock
     RepositoryRestApi.Factory mFactory;

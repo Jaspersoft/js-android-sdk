@@ -65,11 +65,11 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
             @Override
             public Observable<Collection<ResourceLookupResponse>> call() {
+                if (mEndReached || mInitialCriteria.getLimit() == 0){
+                    return Observable.just(EMPTY_RESPONSE);
+                }
                 if (mInternalOffset == UNDEFINED) {
                     defineInternalOffset();
-                }
-                if (mEndReached){
-                    return Observable.just(EMPTY_RESPONSE);
                 }
                 return Observable.just(performLookup());
             }
