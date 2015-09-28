@@ -83,6 +83,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1217,8 +1218,14 @@ public class JsRestClient {
         Object request = null;
         if (dataType == DataType.JSON) {
             Map<String, Set<String>> map = new HashMap<String, Set<String>>();
-            for (ReportParameter reportParameter : selectedValues) {
-                map.put(reportParameter.getName(), reportParameter.getValues());
+            if (selectedValues.isEmpty()) {
+                for (String controlId : controlsIds) {
+                    map.put(controlId, Collections.<String>emptySet());
+                }
+            } else {
+                for (ReportParameter reportParameter : selectedValues) {
+                    map.put(reportParameter.getName(), reportParameter.getValues());
+                }
             }
             request = map;
         } else if (dataType == DataType.XML) {
