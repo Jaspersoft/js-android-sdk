@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.jaspersoft.android.sdk.service.Preconditions.checkArgument;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -225,11 +227,13 @@ public final class SearchCriteria {
         private String folderUri;
 
         public Builder limit(int limit) {
+            checkArgument(limit >= 0, "Limit should be positive");
             this.limit = limit;
             return this;
         }
 
         public Builder offset(int offset) {
+            checkArgument(offset >= 0, "Offset should be positive");
             this.offset = offset;
             return this;
         }

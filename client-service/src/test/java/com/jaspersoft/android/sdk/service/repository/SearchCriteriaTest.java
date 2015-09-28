@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,7 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
@@ -45,6 +47,9 @@ import static org.hamcrest.core.Is.is;
  */
 @RunWith(JUnitParamsRunner.class)
 public class SearchCriteriaTest {
+
+    @Rule
+    public ExpectedException mThrowsException = ExpectedException.none();
 
     @Test
     public void shouldIncludeCountInParams() {
@@ -162,6 +167,20 @@ public class SearchCriteriaTest {
 
         Map<String, Object> emptytMap = new HashMap<>();
         assertThat(criteria.toMap(), is(emptytMap));
+    }
+
+    @Test
+    public void shouldNotAcceptNegativeOffset() {
+        mThrowsException.expect(IllegalArgumentException.class);
+        mThrowsException.expectMessage("Offset should be positive");
+        SearchCriteria.builder().offset(-1).create();
+    }
+
+    @Test
+    public void shouldNotAcceptNegativeLimit() {
+        mThrowsException.expect(IllegalArgumentException.class);
+        mThrowsException.expectMessage("Limit should be positive");
+        SearchCriteria.builder().limit(-1).create();
     }
 
     @Test
