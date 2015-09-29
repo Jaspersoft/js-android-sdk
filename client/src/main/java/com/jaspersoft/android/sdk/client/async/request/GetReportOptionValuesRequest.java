@@ -21,63 +21,25 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.client.async.request;
 
-package com.jaspersoft.android.sdk.client.oxm.report.option;
-
-import android.support.annotation.NonNull;
-
-import com.google.gson.annotations.Expose;
-
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.oxm.control.InputControlStatesList;
 
 /**
  * @author Tom Koptel
  * @since 1.11
  */
-@Root(name="reportOptionsSummary")
-public class ReportOption {
+public class GetReportOptionValuesRequest extends BaseRequest<InputControlStatesList> {
+    private final String mReportOptionUri;
 
-    @Expose
-    @Element
-    private String uri;
-    @Expose
-    @Element
-    private String id;
-    @Expose
-    @Element
-    private String label;
-
-    public ReportOption() {}
-
-    public ReportOption(String reportUri, String id, String label) {
-        this.label = label;
-        this.uri = reportUri;
-        this.id = id;
-    }
-
-    @NonNull
-    public String getId() {
-        return id;
-    }
-
-    @NonNull
-    public String getLabel() {
-        return label;
-    }
-
-    @NonNull
-    public String getUri() {
-        return uri;
+    public GetReportOptionValuesRequest(JsRestClient jsRestClient, String reportOptionUri) {
+        super(jsRestClient, InputControlStatesList.class);
+        mReportOptionUri = reportOptionUri;
     }
 
     @Override
-    public String toString() {
-        return "ReportOption{" +
-                "id='" + id + '\'' +
-                ", uri='" + uri + '\'' +
-                ", label='" + label + '\'' +
-                '}';
+    public InputControlStatesList loadDataFromNetwork() throws Exception {
+        return getJsRestClient().getReportOptionsValues(mReportOptionUri);
     }
 }
-
