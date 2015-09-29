@@ -78,38 +78,4 @@ public class RepositoryServiceTest {
         SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
         assertThat(searchTask, is(notNullValue()));
     }
-
-    @Test
-    public void shouldProvideFolder() {
-        when(repoApi.requestFolderResource(anyString())).thenReturn(mFolderResponse);
-
-        FolderLookupResponse result = objectUnderTest.requestFolder("/uri").toBlocking().first();
-        assertThat(result, is(Matchers.notNullValue()));
-
-        verify(repoApi).requestFolderResource("/uri");
-    }
-
-    @Test
-    public void shouldProvideReport() {
-        when(repoApi.requestReportResource(anyString())).thenReturn(mReportResponse);
-
-        ReportLookupResponse result = objectUnderTest.requestReport("/uri").toBlocking().first();
-        assertThat(result, is(Matchers.notNullValue()));
-
-        verify(repoApi).requestReportResource("/uri");
-    }
-
-    @Test
-    public void shouldNotAcceptNullUriForFolder() {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Folder URI should not be null");
-        objectUnderTest.requestFolder(null);
-    }
-
-    @Test
-    public void shouldNotAcceptNullUriForReport() {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Report URI should not be null");
-        objectUnderTest.requestReport(null);
-    }
 }

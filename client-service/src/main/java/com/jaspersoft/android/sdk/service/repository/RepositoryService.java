@@ -24,16 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.Nullable;
-
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
-import com.jaspersoft.android.sdk.service.Preconditions;
-
-import rx.Observable;
-import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
@@ -51,29 +43,5 @@ public class RepositoryService {
 
     public SearchTask search(SearchCriteria criteria) {
         return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
-    }
-
-    public Observable<FolderLookupResponse> requestFolder(@Nullable final String folderUri) {
-        Preconditions.checkNotNull(folderUri, "Folder URI should not be null");
-        return Observable.defer(new Func0<Observable<FolderLookupResponse>>() {
-            @Override
-            public Observable<FolderLookupResponse> call() {
-                FolderLookupResponse result = mRepositoryApiFactory.get()
-                        .requestFolderResource(folderUri);
-                return Observable.just(result);
-            }
-        });
-    }
-
-    public Observable<ReportLookupResponse> requestReport(@Nullable final String folderUri) {
-        Preconditions.checkNotNull(folderUri, "Report URI should not be null");
-        return Observable.defer(new Func0<Observable<ReportLookupResponse>>() {
-            @Override
-            public Observable<ReportLookupResponse> call() {
-                ReportLookupResponse result = mRepositoryApiFactory.get()
-                        .requestReportResource(folderUri);
-                return Observable.just(result);
-            }
-        });
     }
 }
