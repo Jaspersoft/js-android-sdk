@@ -126,4 +126,10 @@ public class InputControlOption implements Parcelable {
         return label;
     }
 
+    @Override
+    public int hashCode() {
+        int result = value != null ? value.hashCode() : 0;
+        result = 31 * result + (selected ? 1 : 0);
+        return result;
+    }
 }

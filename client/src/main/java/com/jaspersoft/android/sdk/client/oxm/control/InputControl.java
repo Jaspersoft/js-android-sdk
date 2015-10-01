@@ -329,4 +329,10 @@ public class InputControl implements Parcelable {
         this.errorView = errorView;
     }
 
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        return result;
+    }
 }

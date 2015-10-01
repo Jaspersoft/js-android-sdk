@@ -144,4 +144,11 @@ public class InputControlState implements Parcelable {
         this.options = options;
     }
 
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (options != null ? options.hashCode() : 0);
+        return result;
+    }
 }
