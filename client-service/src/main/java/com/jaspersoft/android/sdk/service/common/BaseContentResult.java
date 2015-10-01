@@ -21,20 +21,36 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.service;
-
-import android.support.annotation.NonNull;
-
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+package com.jaspersoft.android.sdk.service.common;
 
 /**
- * Internal interface to abstract out server info generation strategy
- *
  * @author Tom Koptel
  * @since 2.0
  */
-interface InfoProvider {
-    @NonNull
-    ServerInfo provideInfo();
+public final class BaseContentResult<Content> implements ContentResult<Content> {
+    private final Content mContent;
+    private final Status mStatus;
+
+    public BaseContentResult(Content content) {
+        this(content, Status.success());
+    }
+
+    public BaseContentResult(Throwable throwable) {
+        this(null, new Status(throwable));
+    }
+
+    private BaseContentResult(Content content, Status status) {
+        mContent = content;
+        mStatus = status;
+    }
+
+    @Override
+    public Content getContent() {
+        return mContent;
+    }
+
+    @Override
+    public Status getStatus() {
+        return mStatus;
+    }
 }

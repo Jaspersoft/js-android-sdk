@@ -21,36 +21,12 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-package com.jaspersoft.android.sdk.service.result;
+package com.jaspersoft.android.sdk.service.common;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class BaseContentResult<Content> implements ContentResult<Content> {
-    private final Content mContent;
-    private final Status mStatus;
-
-    public BaseContentResult(Content content) {
-        this(content, Status.success());
-    }
-
-    public BaseContentResult(Throwable throwable) {
-        this(null, new Status(throwable));
-    }
-
-    private BaseContentResult(Content content, Status status) {
-        mContent = content;
-        mStatus = status;
-    }
-
-    @Override
-    public Content getContent() {
-        return mContent;
-    }
-
-    @Override
-    public Status getStatus() {
-        return mStatus;
-    }
+public interface ContentResult<Content> extends Result {
+    Content getContent();
 }

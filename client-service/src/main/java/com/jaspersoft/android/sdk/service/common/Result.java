@@ -21,21 +21,12 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-package com.jaspersoft.android.sdk.service.result;
+package com.jaspersoft.android.sdk.service.common;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Status {
-
-    private final Throwable mError;
-
-    public Status(Throwable error) {
-        mError = error;
-    }
-
-    public static Status success() {
-        return null;
-    }
+public interface Result {
+    Status getStatus();
 }

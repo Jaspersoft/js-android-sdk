@@ -1,14 +1,14 @@
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.api.RestError;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.result.BaseContentResult;
-import com.jaspersoft.android.sdk.service.result.CallAction;
-import com.jaspersoft.android.sdk.service.result.CallPendingResult;
-import com.jaspersoft.android.sdk.service.result.ContentResult;
-import com.jaspersoft.android.sdk.service.result.PendingResult;
+import com.jaspersoft.android.sdk.service.common.BaseContentResult;
+import com.jaspersoft.android.sdk.service.common.CallAction;
+import com.jaspersoft.android.sdk.service.common.CallPendingResult;
+import com.jaspersoft.android.sdk.service.common.ContentResult;
+import com.jaspersoft.android.sdk.service.common.PendingResult;
 
 /**
  * @author Tom Koptel

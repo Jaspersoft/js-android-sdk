@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,12 +21,12 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-package com.jaspersoft.android.sdk.service.result;
+package com.jaspersoft.android.sdk.service.common;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Result {
-    Status getStatus();
+public interface CallAction<Result> {
+    Result doCall();
 }

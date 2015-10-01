@@ -21,7 +21,7 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-package com.jaspersoft.android.sdk.service.result;
+package com.jaspersoft.android.sdk.service.common;
 
 import rx.Observable;
 import rx.Scheduler;
