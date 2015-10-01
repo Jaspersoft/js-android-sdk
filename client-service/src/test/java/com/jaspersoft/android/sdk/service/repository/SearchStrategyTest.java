@@ -25,57 +25,52 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class RepositoryServiceTest {
-    @Mock
-    RepositoryRestApi.Factory repoApiFactory;
-    @Mock
-    RepositoryRestApi repoApi;
-    @Mock
-    ServerRestApi.Factory infoApi;
+@RunWith(JUnitParamsRunner.class)
+public class SearchStrategyTest {
+    private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    FolderLookupResponse mFolderResponse;
-    @Mock
-    ReportLookupResponse mReportResponse;
-
-    private RepositoryService objectUnderTest;
-
-    @Rule
-    public ExpectedException mExpectedException = ExpectedException.none();
+    RepositoryRestApi.Factory mFactory;
 
     @Before
-    public void setup() {
+    public void before() {
         MockitoAnnotations.initMocks(this);
-        when(repoApiFactory.get()).thenReturn(repoApi);
-        objectUnderTest = new RepositoryService(repoApiFactory, infoApi);
     }
 
     @Test
-    public void shouldProvideListOfResources() {
-        SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
-        assertThat(searchTask, is(notNullValue()));
+    @Parameters({
+            "5.0",
+            "5.5",
+    })
+    public void factoryCreatesEmeraldMR2Strategy(String version) {
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
+    }
+
+    @Test
+    @Parameters({
+            "6.0",
+            "6.0.1",
+    })
+    public void factoryCreatesEmeraldMR3Strategy(String version) {
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));
     }
 }

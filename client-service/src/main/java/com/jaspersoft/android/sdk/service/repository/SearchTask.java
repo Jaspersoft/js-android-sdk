@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,19 +21,22 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.repository;
 
-package com.jaspersoft.android.sdk.network.entity.resource;
+import android.support.annotation.NonNull;
+
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+
+import java.util.Collection;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class FolderLookupResponse extends ResourceLookupResponse {
-
-    public FolderLookupResponse() {}
-
-    @Override
-    public String getResourceType() {
-        return "folder";
-    }
+public interface SearchTask {
+    @NonNull
+    Observable<Collection<ResourceLookupResponse>> nextLookup();
+    boolean hasNext();
 }

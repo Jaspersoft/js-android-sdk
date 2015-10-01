@@ -25,23 +25,33 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import java.util.Collection;
+
+import rx.Observable;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class RepositoryService {
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
+interface SearchStrategy {
+    Observable<Collection<ResourceLookupResponse>> searchNext();
+    boolean hasNext();
 
-    public RepositoryService(RepositoryRestApi.Factory repositoryApiFactory,
-                             ServerRestApi.Factory infoApiFactory) {
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
-    }
-
-    public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
+    class Factory {
+        public static SearchStrategy get(String serverVersion,
+                                         RepositoryRestApi.Factory repositoryApiFactory,
+                                         InternalCriteria criteria) {
+            ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
+            if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
+                return new EmeraldMR2SearchStrategy(repositoryApiFactory, criteria);
+            }
+            if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
+                return new EmeraldMR3SearchStrategy(repositoryApiFactory, criteria);
+            }
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + serverVersion);
+        }
     }
 }

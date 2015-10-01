@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,18 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.resource;
+package com.jaspersoft.android.sdk.service.repository;
+
+import android.support.annotation.WorkerThread;
+
+import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.service.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class FolderLookupResponse extends ResourceLookupResponse {
+public final class RepositoryRestApiFactory implements RepositoryRestApi.Factory {
+    private final String mServerUrl;
+    private final TokenProvider mTokenProvider;
 
-    public FolderLookupResponse() {}
+    public RepositoryRestApiFactory(String serverUrl, TokenProvider tokenProvider) {
+        mServerUrl = serverUrl;
+        mTokenProvider = tokenProvider;
+    }
 
     @Override
-    public String getResourceType() {
-        return "folder";
+    @WorkerThread
+    public RepositoryRestApi get() {
+        return new RepositoryRestApi.Builder()
+                .baseUrl(mServerUrl)
+                .token(mTokenProvider.provideToken())
+                .build();
     }
 }

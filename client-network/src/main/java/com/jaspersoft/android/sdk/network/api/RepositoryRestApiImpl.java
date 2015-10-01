@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookupR
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit.Call;
@@ -41,6 +42,7 @@ import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
 import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
@@ -59,8 +61,27 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams) {
-        Call<ResourceSearchResponse> call = mRestApi.searchResources(searchParams);
+    public ResourceSearchResponse searchResources(@Nullable Map<String, Object> searchParams) {
+        Iterable<?> types = null;
+        Call<ResourceSearchResponse> call;
+
+        if (searchParams == null) {
+            call = mRestApi.searchResources(null, null);
+        } else {
+            Map<String, Object> copy = new HashMap<>(searchParams);
+            Object typeValues = copy.get("type");
+            copy.remove("type");
+
+            if (typeValues == null) {
+                throw new IllegalStateException("Found null for key 'type'. Ensure this to be not a null");
+            }
+            if (typeValues instanceof Iterable<?>) {
+                types = (Iterable<?>) typeValues;
+            }
+
+            call = mRestApi.searchResources(copy, types);
+        }
+
         Response<ResourceSearchResponse> rawResponse = CallWrapper.wrap(call).response();
 
         int status = rawResponse.code();
@@ -125,7 +146,8 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @Headers("Accept: application/json")
         @GET("rest_v2/resources")
         Call<ResourceSearchResponse> searchResources(
-                @Nullable @QueryMap Map<String, String> searchParams);
+                @Nullable @QueryMap Map<String, Object> searchParams,
+                @Nullable @Query("type") Iterable<?> types);
 
         @NonNull
         @Headers("Accept: application/repository.reportUnit+json")

@@ -48,4 +48,9 @@ public final class MockResponseFactory {
         return new MockResponse()
                 .setStatus("HTTP/1.1 500 Internal Server Error");
     }
+
+    public static MockResponse create302() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 302 Found");
+    }
 }

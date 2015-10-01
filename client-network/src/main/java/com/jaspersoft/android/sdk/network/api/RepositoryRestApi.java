@@ -43,7 +43,7 @@ import java.util.Map;
 public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
-    ResourceSearchResponse searchResources(@Nullable Map<String, String> searchParams);
+    ResourceSearchResponse searchResources(@Nullable Map<String, Object> searchParams);
 
     @NonNull
     @WorkerThread
@@ -60,6 +60,10 @@ public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
+
+    interface Factory {
+        RepositoryRestApi get();
+    }
 
     final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
         @Override

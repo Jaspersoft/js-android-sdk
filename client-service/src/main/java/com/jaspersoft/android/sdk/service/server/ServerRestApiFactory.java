@@ -22,20 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
+
+import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class Utils {
-    private Utils() {
+public final class ServerRestApiFactory implements ServerRestApi.Factory {
+    private final String mServerUrl;
+
+    public ServerRestApiFactory(String serverUrl) {
+        mServerUrl = serverUrl;
     }
 
-    public static <T> T checkNotNull(T object, String message) {
-        if (object == null) {
-            throw new NullPointerException(message);
-        }
-        return object;
+    @Override
+    public ServerRestApi get() {
+        return new ServerRestApi.Builder()
+                .baseUrl(mServerUrl)
+                .build();
     }
 }
