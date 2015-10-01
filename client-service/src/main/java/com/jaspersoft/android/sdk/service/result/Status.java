@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,39 +21,21 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.service;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+package com.jaspersoft.android.sdk.service.result;
 
 /**
- * Always make call on server
- *
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final JasperServerImpl mServerInfoServiceImpl;
+public final class Status {
 
-    @VisibleForTesting
-    GreedyInfoProvider(JasperServerImpl serverInfoServiceImpl) {
-        mServerInfoServiceImpl = serverInfoServiceImpl;
+    private final Throwable mError;
+
+    public Status(Throwable error) {
+        mError = error;
     }
 
-    public static InfoProvider newInstance(String serverUrl) {
-        JasperServerImpl service = JasperServerImpl.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
-    }
-
-    @Override
-    @NonNull
-    @WorkerThread
-    public ServerInfo provideInfo() {
-        return mServerInfoServiceImpl.requestServerInfo()
-                .toBlocking().first();
+    public static Status success() {
+        return null;
     }
 }

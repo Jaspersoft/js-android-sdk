@@ -21,39 +21,36 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.service;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+package com.jaspersoft.android.sdk.service.result;
 
 /**
- * Always make call on server
- *
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final JasperServerImpl mServerInfoServiceImpl;
+public final class BaseContentResult<Content> implements ContentResult<Content> {
+    private final Content mContent;
+    private final Status mStatus;
 
-    @VisibleForTesting
-    GreedyInfoProvider(JasperServerImpl serverInfoServiceImpl) {
-        mServerInfoServiceImpl = serverInfoServiceImpl;
+    public BaseContentResult(Content content) {
+        this(content, Status.success());
     }
 
-    public static InfoProvider newInstance(String serverUrl) {
-        JasperServerImpl service = JasperServerImpl.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
+    public BaseContentResult(Throwable throwable) {
+        this(null, new Status(throwable));
+    }
+
+    private BaseContentResult(Content content, Status status) {
+        mContent = content;
+        mStatus = status;
     }
 
     @Override
-    @NonNull
-    @WorkerThread
-    public ServerInfo provideInfo() {
-        return mServerInfoServiceImpl.requestServerInfo()
-                .toBlocking().first();
+    public Content getContent() {
+        return mContent;
+    }
+
+    @Override
+    public Status getStatus() {
+        return mStatus;
     }
 }
