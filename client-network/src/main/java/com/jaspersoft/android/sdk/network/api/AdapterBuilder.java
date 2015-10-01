@@ -78,10 +78,8 @@ final class AdapterBuilder {
         OkHttpClient client = clientBuilder.build();
         mRestAdapterBuilder.client(client);
         mRestAdapterBuilder.baseUrl(baseUrl);
-        /**
-         * TODO this is broken
-         */
-//        mRestAdapterBuilder.addConverterFactory(mStringConverterFactory);
+
+        mRestAdapterBuilder.addConverterFactory(mStringConverterFactory);
         mRestAdapterBuilder.addConverterFactory(mGsonConverterFactory);
 
         return mRestAdapterBuilder;
