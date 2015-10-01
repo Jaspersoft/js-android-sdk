@@ -21,39 +21,12 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.service;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
-
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+package com.jaspersoft.android.sdk.service.common;
 
 /**
- * Always make call on server
- *
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final ServerInfoService mServerInfoService;
-
-    @VisibleForTesting
-    GreedyInfoProvider(ServerInfoService serverInfoService) {
-        mServerInfoService = serverInfoService;
-    }
-
-    public static InfoProvider newInstance(String serverUrl) {
-        ServerInfoService service = ServerInfoService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
-    }
-
-    @Override
-    @NonNull
-    @WorkerThread
-    public ServerInfo provideInfo() {
-        return mServerInfoService.requestServerInfo()
-                .toBlocking().first();
-    }
+public interface ContentResult<Content> extends Result {
+    Content getContent();
 }

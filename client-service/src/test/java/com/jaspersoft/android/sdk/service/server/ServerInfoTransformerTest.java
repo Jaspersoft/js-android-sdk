@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
 import com.jaspersoft.android.sdk.service.data.server.ServerEdition;

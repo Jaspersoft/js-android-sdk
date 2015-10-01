@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerInfoResponse.class})
-public class ServerInfoServiceTest {
+public class JasperServerImplTest {
 
     @Mock
     ServerRestApi mockApi;
@@ -30,19 +30,19 @@ public class ServerInfoServiceTest {
     @Mock
     ServerInfoResponse mockResponse;
 
-    private ServerInfoService serviceUnderTest;
+    private JasperServerImpl serviceUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        serviceUnderTest = new ServerInfoService(mockApi, mockTransformer);
+        serviceUnderTest = new JasperServerImpl(mockApi, mockTransformer);
     }
 
     @Test
     public void requestInfoShouldProvideServerInfoDataObject() {
         when(mockApi.requestServerInfo()).thenReturn(mockResponse);
 
-        serviceUnderTest.requestServerInfo().subscribe();
+        serviceUnderTest.requestInfo().await();
 
         verify(mockTransformer, times(1)).transform(mockResponse);
         verify(mockApi, times(1)).requestServerInfo();
