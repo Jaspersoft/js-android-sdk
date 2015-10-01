@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
@@ -47,8 +48,8 @@ final class StringConverterFactory implements Converter.Factory {
 
     @Override
     public Converter<String> get(Type type) {
-        Class<?> cls = (Class<?>) type;
-        if (String.class.isAssignableFrom(cls)) {
+        Type stringType = new TypeToken<String>() {}.getType();
+        if (stringType.equals(type)) {
             return new StringConverter();
         }
         return null;

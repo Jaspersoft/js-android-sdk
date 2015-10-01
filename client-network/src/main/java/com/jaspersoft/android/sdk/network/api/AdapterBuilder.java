@@ -78,6 +78,7 @@ final class AdapterBuilder {
         OkHttpClient client = clientBuilder.build();
         mRestAdapterBuilder.client(client);
         mRestAdapterBuilder.baseUrl(baseUrl);
+
         mRestAdapterBuilder.addConverterFactory(mStringConverterFactory);
         mRestAdapterBuilder.addConverterFactory(mGsonConverterFactory);
 

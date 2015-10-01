@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.network.api;
 import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +38,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * @author Tom Koptel
@@ -151,5 +159,18 @@ public class ReportOptionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
         restApiUnderTest.deleteReportOption("any_id", null);
+    }
+
+    @Test
+    public void shouldNotEncodeReportOptionLabelDuringCreation() throws Exception {
+        MockResponse mockResponse = MockResponseFactory.create200();
+        mWebMockRule.enqueue(mockResponse);
+
+        Map<String, Set<String>> params = new HashMap<>();
+        params.put("key", Collections.<String>emptySet());
+
+        restApiUnderTest.createReportOption("/any/uri", "my label", params, true);
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options?label=my%20label&overwrite=true"));
     }
 }

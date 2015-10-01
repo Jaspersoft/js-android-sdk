@@ -31,7 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.MockitoAnnotations;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * @author Tom Koptel
@@ -44,16 +46,132 @@ public class ServerRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
+    private ServerRestApi objectUnderTest;
+
+    @Before
+    public void setup() {
+        objectUnderTest = new ServerRestApi.Builder()
+                .baseUrl(mWebMockRule.getRootUrl())
+                .build();
+    }
+
     @Test
     public void shouldThroughRestErrorForHttpError() {
         mExpectedException.expect(RestError.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        ServerRestApi restApi = new ServerRestApi.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .build();
-        restApi.requestServerInfo();
+        objectUnderTest.requestServerInfo();
     }
 
+    @Test
+    public void shouldHandlePlainTextResponseForBuild() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("Enterprise for AWS")
+        );
+        String editionName = objectUnderTest.requestBuild();
+        assertThat(editionName, is("Enterprise for AWS"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/build"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForDateFormatPattern() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("yyyy-MM-dd")
+        );
+        String editionName = objectUnderTest.requestDateFormatPattern();
+        assertThat(editionName, is("yyyy-MM-dd"));
+
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/dateFormatPattern"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForDatetimeFormatPattern() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("yyyy-MM-dd'T'HH:mm:ss")
+        );
+        String editionName = objectUnderTest.requestDateTimeFormatPattern();
+        assertThat(editionName, is("yyyy-MM-dd'T'HH:mm:ss"));
+
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/datetimeFormatPattern"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForEdition() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("PRO")
+        );
+        String editionName = objectUnderTest.requestEdition();
+        assertThat(editionName, is("PRO"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/edition"));
+    }
+
+
+    @Test
+    public void shouldHandlePlainTextResponseForEditionName() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("Enterprise for AWS")
+        );
+        String editionName = objectUnderTest.requestEditionName();
+        assertThat(editionName, is("Enterprise for AWS"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/editionName"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForExpiration() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("1000")
+        );
+        String editionName = objectUnderTest.requestExpiration();
+        assertThat(editionName, is("1000"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/expiration"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForFeatures() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("Fusion AHD EXP DB ANA AUD MT ")
+        );
+        String editionName = objectUnderTest.requestFeatures();
+        assertThat(editionName, is("Fusion AHD EXP DB ANA AUD MT "));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/features"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseForLicenseType() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("Commercial")
+        );
+        String editionName = objectUnderTest.requestLicenseType();
+        assertThat(editionName, is("Commercial"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/licenseType"));
+    }
+
+    @Test
+    public void shouldHandlePlainTextResponseFor() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("5.5.0")
+        );
+        String editionName = objectUnderTest.requestVersion();
+        assertThat(editionName, is("5.5.0"));
+
+        String path = mWebMockRule.get().takeRequest().getPath();
+        assertThat(path, is("/rest_v2/serverInfo/version"));
+    }
 }
