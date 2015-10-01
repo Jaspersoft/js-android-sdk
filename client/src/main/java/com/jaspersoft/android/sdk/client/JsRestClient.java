@@ -1394,18 +1394,22 @@ public class JsRestClient {
     public ReportOption createReportOption(String reportUnitUri, String optionLabel,
                                            Map<String, Set<String>> controlsValues,
                                            boolean overwrite) {
-        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
-        Uri uri = Uri.parse(base)
-                .buildUpon()
-                .appendQueryParameter("label", optionLabel)
-                .appendQueryParameter("overwrite", String.valueOf(overwrite))
-                .build();
+        StringBuilder base = new StringBuilder()
+                .append(jsServerProfile.getServerUrl())
+                .append(REST_SERVICES_V2_URI)
+                .append(REST_REPORTS_URI)
+                .append(reportUnitUri)
+                .append(REST_REPORT_OPTIONS_URI)
+                .append("?label=")
+                .append(optionLabel)
+                .append("&overwrite")
+                .append(overwrite);
 
         if (dataType == DataType.JSON) {
-            return restTemplate.postForObject(uri.toString(), controlsValues, ReportOption.class);
+            return restTemplate.postForObject(base.toString(), controlsValues, ReportOption.class);
         } else if (dataType == DataType.XML) {
             ReportParametersList list = ReportParamsAdapter.INSTANCE.adapt(controlsValues);
-            return restTemplate.postForObject(uri.toString(), list, ReportOption.class);
+            return restTemplate.postForObject(base.toString(), list, ReportOption.class);
         } else {
             throw new UnsupportedOperationException();
         }
