@@ -23,6 +23,8 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
@@ -41,27 +43,28 @@ public class ReportService {
     private final ReportExecutionRestApi.Factory mExecutionApiFactory;
     private final ServerRestApi.Factory mInfoApiFactory;
     private final String mBaseUrl;
+    private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
 
-    public ReportService(String serverUrl, TokenProvider tokenProvider) {
-        mBaseUrl = serverUrl;
-        mExecutionApiFactory = new ReportOptionRestApiFactory(serverUrl, tokenProvider);
-        mInfoApiFactory = new ServerRestApiFactory(serverUrl);
+    @VisibleForTesting
+    ReportService(String baseUrl,
+                         ReportExecutionRestApi.Factory executionApiFactory,
+                         ServerRestApi.Factory infoApiFactory,
+                         ExecutionOptionsDataMapper executionOptionsMapper) {
+        mExecutionApiFactory = executionApiFactory;
+        mInfoApiFactory = infoApiFactory;
+        mBaseUrl = baseUrl;
+        mExecutionOptionsMapper = executionOptionsMapper;
     }
 
-    public ExecutionSession run(String reportUri, Map<String, Set<String>> reportParameter) {
-        ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
-        options.withBaseUrl(mBaseUrl);
-        options.withParameters(reportParameter);
-        options.withAsync(true);
-        options.withIgnorePagination(false);
+    public static ReportService create(String serverUrl, TokenProvider tokenProvider) {
+        ReportOptionRestApiFactory executionApiFactory = new ReportOptionRestApiFactory(serverUrl, tokenProvider);
+        ServerRestApiFactory infoApiFactory = new ServerRestApiFactory(serverUrl);
+        ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.getInstance();
+        return new ReportService(serverUrl, executionApiFactory, infoApiFactory, executionOptionsMapper);
+    }
 
-        // TODO: following parameters should be configurable
-        options.withFreshData(true);
-        options.withInteractive(true);
-        options.withSaveDataSnapshot(true);
-        options.withOutputFormat("HTML");
-        options.withPages("1");
-
+    public ExecutionSession run(String reportUri, ExecutionConfiguration configuration, Map<String, Set<String>> reportParameter) {
+        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transform(mBaseUrl, reportUri, configuration, reportParameter);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
         return new ExecutionSession(mExecutionApiFactory, details);
     }
