@@ -67,6 +67,10 @@ public interface ReportExecutionRestApi {
     @WorkerThread
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
 
+    interface Factory {
+        ReportExecutionRestApi get();
+    }
+
     final class Builder extends GenericAuthBuilder<Builder, ReportExecutionRestApi> {
         @Override
         ReportExecutionRestApi createApi() {
