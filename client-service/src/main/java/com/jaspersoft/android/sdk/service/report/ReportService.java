@@ -50,10 +50,10 @@ public class ReportService {
                   ReportExportRestApi.Factory exportApiFactory,
                   ServerRestApi.Factory infoApiFactory,
                   ExecutionOptionsDataMapper executionOptionsMapper) {
+        mBaseUrl = baseUrl;
         mExecutionApiFactory = executionApiFactory;
         mExportApiFactory = exportApiFactory;
         mInfoApiFactory = infoApiFactory;
-        mBaseUrl = baseUrl;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
@@ -66,8 +66,13 @@ public class ReportService {
     }
 
     public ExecutionSession run(String reportUri, ExecutionConfiguration configuration) {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transform(reportUri, mBaseUrl, configuration);
+        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformReportOptions(reportUri, mBaseUrl, configuration);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
-        return new ExecutionSession(mExecutionApiFactory, mExportApiFactory, details);
+        return new ExecutionSession(
+                mBaseUrl,
+                mExecutionApiFactory,
+                mExportApiFactory,
+                mExecutionOptionsMapper,
+                details.getExecutionId());
     }
 }

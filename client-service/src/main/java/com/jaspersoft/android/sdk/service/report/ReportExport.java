@@ -24,6 +24,7 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 
 /**
  * @author Tom Koptel
@@ -32,9 +33,15 @@ import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 public final class ReportExport {
     private final String mExecutionId;
     private final ReportExportRestApi.Factory mExportApiFactory;
+    private final String mId;
 
-    public ReportExport(String executionId, ReportExportRestApi.Factory exportApiFactory) {
+    public ReportExport(String executionId, String exportId, ReportExportRestApi.Factory exportApiFactory) {
+        mId = exportId;
         mExecutionId = executionId;
         mExportApiFactory = exportApiFactory;
+    }
+
+    public ExportResourceResponse download() {
+        return mExportApiFactory.get().requestExportOutput(mExecutionId, mId);
     }
 }

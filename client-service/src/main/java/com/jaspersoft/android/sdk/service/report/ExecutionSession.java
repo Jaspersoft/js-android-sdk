@@ -25,8 +25,10 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 
 /**
  * @author Tom Koptel
@@ -35,15 +37,21 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetail
 public final class ExecutionSession {
     private final ReportExecutionRestApi.Factory mExecutionApiFactory;
     private final ReportExportRestApi.Factory mExportApiFactory;
+    private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+
+    private final String mBaseUrl;
     private final String mId;
 
-    public ExecutionSession(
+    ExecutionSession(
+            String baseUrl,
             ReportExecutionRestApi.Factory executionApiFactory,
             ReportExportRestApi.Factory exportApiFactory,
-            ReportExecutionDetailsResponse details) {
+            ExecutionOptionsDataMapper executionOptionsMapper, String executionId) {
+        mBaseUrl = baseUrl;
         mExecutionApiFactory = executionApiFactory;
         mExportApiFactory = exportApiFactory;
-        mId = details.getExecutionId();
+        mExecutionOptionsMapper = executionOptionsMapper;
+        mId = executionId;
     }
 
     public ReportExecutionDetailsResponse requestDetails() {
@@ -55,6 +63,8 @@ public final class ExecutionSession {
     }
 
     public ReportExport requestExport(ExecutionConfiguration configuration) {
-        return new ReportExport(mId, mExportApiFactory);
+        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, configuration);
+        ReportExportExecutionResponse details = mExportApiFactory.get().runExportExecution(mId, options);
+        return new ReportExport(mId, details.getExportId(), mExportApiFactory);
     }
 }

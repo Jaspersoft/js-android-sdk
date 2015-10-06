@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 
 import org.junit.Before;
@@ -24,15 +25,13 @@ public class ExecutionOptionsDataMapperTest {
     public static final Map<String, Set<String>> REPORT_PARAMS = Collections.emptyMap();
 
     private ExecutionOptionsDataMapper mapper;
+    private ExecutionConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
         mapper = ExecutionOptionsDataMapper.getInstance();
-    }
 
-    @Test
-    public void shouldMapExecConfigurationOnOptions() {
-        ExecutionConfiguration configuration = ExecutionConfiguration.builder()
+        configuration = ExecutionConfiguration.builder()
                 .format(ExecutionConfiguration.Format.HTML)
                 .freshData(true)
                 .interactive(false)
@@ -41,10 +40,27 @@ public class ExecutionOptionsDataMapperTest {
                 .params(REPORT_PARAMS)
                 .attachmentPrefix("./")
                 .create();
+    }
 
-        ReportExecutionRequestOptions options = mapper.transform(REPORT_URI, BASE_URL, configuration);
+    @Test
+    public void shouldMapExecConfigurationOnOptions() {
 
+    }
+
+    @Test
+    public void testTransformReportOptions() throws Exception {
+        ReportExecutionRequestOptions options = mapper.transformReportOptions(REPORT_URI, BASE_URL, configuration);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
+        assertOptions(options);
+    }
+
+    @Test
+    public void testTransformExportOptions() throws Exception {
+        ExecutionRequestOptions options = mapper.transformExportOptions(BASE_URL, configuration);
+        assertOptions(options);
+    }
+
+    private void assertOptions(ExecutionRequestOptions options) {
         assertThat(options.getFreshData(), is(true));
         assertThat(options.getSaveDataSnapshot(), is(true));
         assertThat(options.getInteractive(), is(false));

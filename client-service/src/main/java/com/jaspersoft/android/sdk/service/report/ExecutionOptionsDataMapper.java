@@ -25,6 +25,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
 
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 
 import java.io.UnsupportedEncodingException;
@@ -44,9 +45,19 @@ final class ExecutionOptionsDataMapper {
         return InstanceHolder.INSTANCE;
     }
 
-    public ReportExecutionRequestOptions transform(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionConfiguration criteria) {
+    public ReportExecutionRequestOptions transformReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionConfiguration configuration) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
+        adaptFields(serverUrl, configuration, options);
+        return options;
+    }
 
+    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull ExecutionConfiguration configuration) {
+        ExecutionRequestOptions options = ExecutionRequestOptions.create();
+        adaptFields(serverUrl, configuration, options);
+        return options;
+    }
+
+    private void adaptFields(@NonNull String serverUrl, @NonNull ExecutionConfiguration criteria, ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 
@@ -58,8 +69,6 @@ final class ExecutionOptionsDataMapper {
 
         options.withAsync(true);
         options.withBaseUrl(serverUrl);
-
-        return options;
     }
 
     static class Helper {

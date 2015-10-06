@@ -74,7 +74,7 @@ public class ReportServiceTest {
         ExecutionSession session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
-        verify(mapper).transform("/report/uri", "http:://localhost", configuration);
+        verify(mapper).transformReportOptions("/report/uri", "http:://localhost", configuration);
         verify(executionApi).runReportExecution(any(ReportExecutionRequestOptions.class));
     }
 
