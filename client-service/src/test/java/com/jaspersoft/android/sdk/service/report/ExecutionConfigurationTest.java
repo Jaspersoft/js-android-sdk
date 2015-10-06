@@ -45,9 +45,4 @@ public class ExecutionConfigurationTest {
     public void interactiveShouldBeTrueByDefault() {
         assertThat(objectUnderTest.isInteractive(), is(true));
     }
-
-    @Test
-    public void interactiveShouldBeNoneByDefault() {
-        assertThat(objectUnderTest.getFormat(), is(ExecutionConfiguration.Format.NONE));
-    }
 }

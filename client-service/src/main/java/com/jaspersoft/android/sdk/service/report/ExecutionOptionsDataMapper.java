@@ -24,12 +24,11 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 
-import java.util.Map;
-import java.util.Set;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * @author Tom Koptel
@@ -41,18 +40,45 @@ final class ExecutionOptionsDataMapper {
         private static ExecutionOptionsDataMapper INSTANCE = new ExecutionOptionsDataMapper();
     }
 
-    private ExecutionOptionsDataMapper() {
-        // single instance
-    }
-
     public static ExecutionOptionsDataMapper getInstance() {
         return InstanceHolder.INSTANCE;
     }
 
-    public ReportExecutionRequestOptions transform(@NonNull String baseUrl,
-                                                   @NonNull String uri,
-                                                   @NonNull ExecutionConfiguration criteria,
-                                                   @Nullable Map<String, Set<String>> reportParameter) {
-        throw new UnsupportedOperationException();
+    public ReportExecutionRequestOptions transform(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionConfiguration criteria) {
+        ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
+
+        options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
+        options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
+
+        options.withFreshData(criteria.isFreshData());
+        options.withSaveDataSnapshot(criteria.isSaveSnapshot());
+        options.withInteractive(criteria.isInteractive());
+        options.withPages(criteria.getPages());
+        options.withParameters(criteria.getParams());
+
+        options.withAsync(true);
+        options.withBaseUrl(serverUrl);
+
+        return options;
+    }
+
+    static class Helper {
+        static String adaptFormat(ExecutionConfiguration.Format format) {
+            if (format == null) {
+                return null;
+            }
+            return format.toString();
+        }
+
+        static String adaptAttachmentPrefix(String attachmentsPrefix) {
+            if (attachmentsPrefix == null) {
+                return null;
+            }
+            try {
+                return URLEncoder.encode(attachmentsPrefix, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("This should not be possible", e);
+            }
+        }
     }
 }

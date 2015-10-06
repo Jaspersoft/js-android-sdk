@@ -26,8 +26,6 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,7 +62,8 @@ public class ExecutionRequestOptions {
     @Expose
     protected Map<String, Set<String>> parameters;
 
-    protected ExecutionRequestOptions() {}
+    protected ExecutionRequestOptions() {
+    }
 
     public static ExecutionRequestOptions create() {
         return new ExecutionRequestOptions();
@@ -101,53 +100,31 @@ public class ExecutionRequestOptions {
     }
 
     public ExecutionRequestOptions withAttachmentsPrefix(String attachmentsPrefix) {
-        if (attachmentsPrefix == null || attachmentsPrefix.length() == 0) {
-            throw new IllegalArgumentException("Attachment prefix should not be null or empty");
-        }
-        try {
-            this.attachmentsPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("This should not be possible", e);
-        }
+        this.attachmentsPrefix = attachmentsPrefix;
         return this;
     }
 
     public ExecutionRequestOptions withOutputFormat(String outputFormat) {
-        if (outputFormat == null || outputFormat.length() == 0) {
-            throw new IllegalArgumentException("Output format should not be null or empty");
-        }
         this.outputFormat = outputFormat;
         return this;
     }
 
     public ExecutionRequestOptions withPages(String pages) {
-        if (pages == null || pages.length() == 0) {
-            throw new IllegalArgumentException("Pages should not be null or empty");
-        }
         this.pages = pages;
         return this;
     }
 
     public ExecutionRequestOptions withTransformerKey(String transformerKey) {
-        if (transformerKey == null || transformerKey.length() == 0) {
-            throw new IllegalArgumentException("Transform key should not be null or empty");
-        }
         this.transformerKey = transformerKey;
         return this;
     }
 
     public ExecutionRequestOptions withAnchor(String anchor) {
-        if (anchor == null || anchor.length() == 0) {
-            throw new IllegalArgumentException("Anchor should not be null or empty");
-        }
         this.anchor = anchor;
         return this;
     }
 
     public ExecutionRequestOptions withBaseUrl(String baseUrl) {
-        if (baseUrl == null || baseUrl.length() == 0) {
-            throw new IllegalArgumentException("Base url should not be null or empty");
-        }
         this.baseUrl = baseUrl;
         return this;
     }

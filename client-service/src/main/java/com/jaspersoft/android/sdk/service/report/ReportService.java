@@ -32,9 +32,6 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.service.TokenProvider;
 import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -47,9 +44,9 @@ public class ReportService {
 
     @VisibleForTesting
     ReportService(String baseUrl,
-                         ReportExecutionRestApi.Factory executionApiFactory,
-                         ServerRestApi.Factory infoApiFactory,
-                         ExecutionOptionsDataMapper executionOptionsMapper) {
+                  ReportExecutionRestApi.Factory executionApiFactory,
+                  ServerRestApi.Factory infoApiFactory,
+                  ExecutionOptionsDataMapper executionOptionsMapper) {
         mExecutionApiFactory = executionApiFactory;
         mInfoApiFactory = infoApiFactory;
         mBaseUrl = baseUrl;
@@ -63,8 +60,8 @@ public class ReportService {
         return new ReportService(serverUrl, executionApiFactory, infoApiFactory, executionOptionsMapper);
     }
 
-    public ExecutionSession run(String reportUri, ExecutionConfiguration configuration, Map<String, Set<String>> reportParameter) {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transform(mBaseUrl, reportUri, configuration, reportParameter);
+    public ExecutionSession run(String reportUri, ExecutionConfiguration configuration) {
+        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transform(reportUri, mBaseUrl, configuration);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
         return new ExecutionSession(mExecutionApiFactory, details);
     }

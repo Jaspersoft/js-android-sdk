@@ -41,10 +41,4 @@ public class ReportExecutionRequestOptionsTest {
         mExpectedException.expect(IllegalArgumentException.class);
         ReportExecutionRequestOptions.newRequest(null);
     }
-
-    @Test
-    public void factoryMethodShouldNotAllowEmptyString() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest("");
-    }
 }
