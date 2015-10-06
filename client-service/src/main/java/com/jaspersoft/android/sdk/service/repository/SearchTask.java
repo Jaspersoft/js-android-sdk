@@ -29,14 +29,12 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse
 
 import java.util.Collection;
 
-import rx.Observable;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface SearchTask {
     @NonNull
-    Observable<Collection<ResourceLookupResponse>> nextLookup();
+    Collection<ResourceLookupResponse> nextLookup();
     boolean hasNext();
 }

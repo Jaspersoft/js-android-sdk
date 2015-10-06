@@ -30,14 +30,12 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
 
-import rx.Observable;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 interface SearchStrategy {
-    Observable<Collection<ResourceLookupResponse>> searchNext();
+    Collection<ResourceLookupResponse> searchNext();
     boolean hasNext();
 
     class Factory {

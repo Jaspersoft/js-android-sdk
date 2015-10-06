@@ -120,7 +120,7 @@ public class SpringAuthServiceBuilderTest {
     @Test
     public void serviceShouldThrowIfBuildWithNullRestApi() {
         mException.expect(IllegalStateException.class);
-        mException.expectMessage("Rest api should not be null. Either set it or call withDefaultApiProvider(url)");
+        mException.expectMessage("Rest api should not be null. Either set it or call useDefaultApi(url)");
 
         objectUnderTest.username("");
         objectUnderTest.password("");

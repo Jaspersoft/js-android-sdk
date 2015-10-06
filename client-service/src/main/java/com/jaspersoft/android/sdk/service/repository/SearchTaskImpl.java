@@ -33,10 +33,6 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse
 
 import java.util.Collection;
 
-import rx.Observable;
-import rx.functions.Func0;
-import rx.functions.Func1;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -59,13 +55,8 @@ final class SearchTaskImpl implements SearchTask {
 
     @NonNull
     @Override
-    public Observable<Collection<ResourceLookupResponse>> nextLookup() {
-        return defineSearchStrategy().flatMap(new Func1<SearchStrategy, Observable<Collection<ResourceLookupResponse>>>() {
-            @Override
-            public Observable<Collection<ResourceLookupResponse>> call(SearchStrategy searchStrategy) {
-                return searchStrategy.searchNext();
-            }
-        });
+    public Collection<ResourceLookupResponse> nextLookup() {
+        return defineSearchStrategy().searchNext();
     }
 
     @Override
@@ -80,26 +71,13 @@ final class SearchTaskImpl implements SearchTask {
         return true;
     }
 
-    private Observable<SearchStrategy> defineSearchStrategy() {
+    private SearchStrategy defineSearchStrategy() {
         if (strategy == null) {
-            return requestServerVersion().flatMap(new Func1<String, Observable<SearchStrategy>>() {
-                @Override
-                public Observable<SearchStrategy> call(String version) {
-                    strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
-                    return Observable.just(strategy);
-                }
-            });
-        }
-        return Observable.just(strategy);
-    }
+            String version = mInfoApiFactory.get().requestVersion();
+            strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
 
-    private Observable<String> requestServerVersion() {
-        return Observable.defer(new Func0<Observable<String>>() {
-            @Override
-            public Observable<String> call() {
-                String version = mInfoApiFactory.get().requestVersion();
-                return Observable.just(version);
-            }
-        });
+
+        }
+        return strategy;
     }
 }
