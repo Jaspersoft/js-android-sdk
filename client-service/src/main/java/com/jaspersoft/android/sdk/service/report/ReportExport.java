@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -23,38 +23,18 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionSession {
-    private final ReportExecutionRestApi.Factory mExecutionApiFactory;
+public final class ReportExport {
+    private final String mExecutionId;
     private final ReportExportRestApi.Factory mExportApiFactory;
-    private final String mId;
 
-    public ExecutionSession(
-            ReportExecutionRestApi.Factory executionApiFactory,
-            ReportExportRestApi.Factory exportApiFactory,
-            ReportExecutionDetailsResponse details) {
-        mExecutionApiFactory = executionApiFactory;
+    public ReportExport(String executionId, ReportExportRestApi.Factory exportApiFactory) {
+        mExecutionId = executionId;
         mExportApiFactory = exportApiFactory;
-        mId = details.getExecutionId();
-    }
-
-    public ReportExecutionDetailsResponse requestDetails() {
-        return mExecutionApiFactory.get().requestReportExecutionDetails(mId);
-    }
-
-    public ExecutionStatusResponse requestStatus() {
-        return mExecutionApiFactory.get().requestReportExecutionStatus(mId);
-    }
-
-    public ReportExport requestExport(ExecutionConfiguration configuration) {
-        return new ReportExport(mId, mExportApiFactory);
     }
 }

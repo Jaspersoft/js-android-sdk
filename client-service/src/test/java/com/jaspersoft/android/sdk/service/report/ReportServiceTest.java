@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
@@ -39,6 +40,9 @@ public class ReportServiceTest {
     ServerRestApi infoApi;
 
     @Mock
+    ReportExportRestApi.Factory mExportApiFactory;
+
+    @Mock
     ExecutionConfiguration configuration;
     @Mock
     ReportExecutionDetailsResponse details;
@@ -57,6 +61,7 @@ public class ReportServiceTest {
         mapper = spy(ExecutionOptionsDataMapper.getInstance());
         objectUnderTest = new ReportService("http:://localhost",
                 executionApiFactory,
+                mExportApiFactory,
                 infoApiFactory,
                 mapper);
     }

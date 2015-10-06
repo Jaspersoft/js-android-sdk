@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
@@ -38,6 +39,7 @@ import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
  */
 public class ReportService {
     private final ReportExecutionRestApi.Factory mExecutionApiFactory;
+    private final ReportExportRestApi.Factory mExportApiFactory;
     private final ServerRestApi.Factory mInfoApiFactory;
     private final String mBaseUrl;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
@@ -45,9 +47,11 @@ public class ReportService {
     @VisibleForTesting
     ReportService(String baseUrl,
                   ReportExecutionRestApi.Factory executionApiFactory,
+                  ReportExportRestApi.Factory exportApiFactory,
                   ServerRestApi.Factory infoApiFactory,
                   ExecutionOptionsDataMapper executionOptionsMapper) {
         mExecutionApiFactory = executionApiFactory;
+        mExportApiFactory = exportApiFactory;
         mInfoApiFactory = infoApiFactory;
         mBaseUrl = baseUrl;
         mExecutionOptionsMapper = executionOptionsMapper;
@@ -55,14 +59,15 @@ public class ReportService {
 
     public static ReportService create(String serverUrl, TokenProvider tokenProvider) {
         ReportOptionRestApiFactory executionApiFactory = new ReportOptionRestApiFactory(serverUrl, tokenProvider);
+        ReportExportRestApiFactory exportApiFactory = new ReportExportRestApiFactory(serverUrl, tokenProvider);
         ServerRestApiFactory infoApiFactory = new ServerRestApiFactory(serverUrl);
         ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.getInstance();
-        return new ReportService(serverUrl, executionApiFactory, infoApiFactory, executionOptionsMapper);
+        return new ReportService(serverUrl, executionApiFactory, exportApiFactory, infoApiFactory,  executionOptionsMapper);
     }
 
     public ExecutionSession run(String reportUri, ExecutionConfiguration configuration) {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transform(reportUri, mBaseUrl, configuration);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
-        return new ExecutionSession(mExecutionApiFactory, details);
+        return new ExecutionSession(mExecutionApiFactory, mExportApiFactory, details);
     }
 }
