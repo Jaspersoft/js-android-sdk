@@ -33,9 +33,6 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse
 import java.util.Collection;
 import java.util.Collections;
 
-import rx.Observable;
-import rx.functions.Func0;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -61,19 +58,15 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Observable<Collection<ResourceLookupResponse>> searchNext() {
-        return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
-            @Override
-            public Observable<Collection<ResourceLookupResponse>> call() {
-                if (mEndReached || mInitialCriteria.getLimit() == 0){
-                    return Observable.just(EMPTY_RESPONSE);
-                }
-                if (mInternalOffset == UNDEFINED) {
-                    defineInternalOffset();
-                }
-                return Observable.just(performLookup());
-            }
-        });
+    public Collection<ResourceLookupResponse> searchNext() {
+        if (mEndReached || mInitialCriteria.getLimit() == 0){
+            return EMPTY_RESPONSE;
+        }
+        if (mInternalOffset == UNDEFINED) {
+            defineInternalOffset();
+        }
+
+        return performLookup();
     }
 
     @Override

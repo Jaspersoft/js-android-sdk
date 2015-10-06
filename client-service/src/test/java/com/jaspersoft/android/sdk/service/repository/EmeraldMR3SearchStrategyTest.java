@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.observers.TestSubscriber;
-
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -64,7 +62,7 @@ public class EmeraldMR3SearchStrategyTest {
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
 
-        performSearch(strategy);
+        strategy.searchNext();
 
         Map<String, Object> params = new HashMap<>();
         params.put("forceFullPage", "true");
@@ -77,7 +75,7 @@ public class EmeraldMR3SearchStrategyTest {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(5).create();
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, searchCriteria);
 
-        performSearch(strategy);
+        strategy.searchNext();
 
         Map<String, Object> params = new HashMap<>();
         params.put("forceFullPage", "true");
@@ -92,10 +90,10 @@ public class EmeraldMR3SearchStrategyTest {
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, searchCriteria);
 
         when(mResponse.getNextOffset()).thenReturn(133);
-        performSearch(strategy);
+        strategy.searchNext();
 
         when(mResponse.getNextOffset()).thenReturn(233);
-        performSearch(strategy);
+        strategy.searchNext();
 
 
         Map<String, Object> params = new HashMap<>();
@@ -112,13 +110,12 @@ public class EmeraldMR3SearchStrategyTest {
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, NO_CRITERIA);
 
         when(mResponse.getNextOffset()).thenReturn(133);
-        performSearch(strategy);
+        strategy.searchNext();
 
         when(mResponse.getNextOffset()).thenReturn(0);
-        performSearch(strategy);
+        strategy.searchNext();
 
-        List<Collection<ResourceLookupResponse>> events = performSearch(strategy).getOnNextEvents();
-        Collection<ResourceLookupResponse> response = events.get(0);
+        Collection<ResourceLookupResponse> response = strategy.searchNext();
         assertThat(response, is(empty()));
         assertThat(strategy.hasNext(), is(false));
 
@@ -132,17 +129,9 @@ public class EmeraldMR3SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, userCriteria);
 
-        Collection<ResourceLookupResponse> result = strategy.searchNext().toBlocking().first();
+        Collection<ResourceLookupResponse> result = strategy.searchNext();
         assertThat(result, Matchers.is(Matchers.empty()));
 
         verifyZeroInteractions(mApi);
-    }
-
-    private TestSubscriber performSearch(EmeraldMR3SearchStrategy strategy) {
-        TestSubscriber<Collection<ResourceLookupResponse>> testSubscriber = new TestSubscriber<>();
-        strategy.searchNext().subscribe(testSubscriber);
-        testSubscriber.assertNoErrors();
-
-        return testSubscriber;
     }
 }

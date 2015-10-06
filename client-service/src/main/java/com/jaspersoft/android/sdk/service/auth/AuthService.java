@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.auth.Token;
 
-import rx.Observable;
 
 /**
  * @author Tom Koptel
@@ -36,5 +35,5 @@ import rx.Observable;
  */
 public interface AuthService {
     @NonNull
-    Observable<Token<?>> authenticate();
+    Token<?> authenticate();
 }

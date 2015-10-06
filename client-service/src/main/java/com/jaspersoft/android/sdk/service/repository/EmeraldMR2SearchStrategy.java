@@ -35,9 +35,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import rx.Observable;
-import rx.functions.Func0;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -60,21 +57,15 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Observable<Collection<ResourceLookupResponse>> searchNext() {
-        return Observable.defer(new Func0<Observable<Collection<ResourceLookupResponse>>>() {
-            @Override
-            public Observable<Collection<ResourceLookupResponse>> call() {
-                int limit = mInitialCriteria.getLimit();
-                int offset = mInitialCriteria.getOffset();
+    public Collection<ResourceLookupResponse> searchNext() {
+        int limit = mInitialCriteria.getLimit();
+        int offset = mInitialCriteria.getOffset();
 
-                if (mEndReached || limit == 0) {
-                    return Observable.just(EMPTY_RESPONSE);
-                }
-
-                calculateDisposition(offset);
-                return Observable.just(internalSearch(limit));
-            }
-        });
+        if (mEndReached || limit == 0) {
+            return EMPTY_RESPONSE;
+        }
+        calculateDisposition(offset);
+        return internalSearch(limit);
     }
 
     @Override

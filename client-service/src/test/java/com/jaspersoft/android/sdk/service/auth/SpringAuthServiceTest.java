@@ -82,7 +82,7 @@ public class SpringAuthServiceTest {
         when(mKey.getModulus()).thenReturn("m");
         when(mAlgorithm.encrypt(anyString(), anyString(), anyString())).thenReturn("hashed password");
 
-        objectUnderTest.authenticate().subscribe();
+        objectUnderTest.authenticate();
 
         verify(mRestApi, times(1)).authenticate("user", "hashed password", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
@@ -93,7 +93,7 @@ public class SpringAuthServiceTest {
     public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing() {
         when(mKey.isAvailable()).thenReturn(false);
 
-        objectUnderTest.authenticate().subscribe();
+        objectUnderTest.authenticate();
 
         verify(mRestApi, times(1)).authenticate("user", "1234", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();

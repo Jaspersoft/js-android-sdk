@@ -40,10 +40,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import rx.Observable;
-import rx.functions.Func0;
-import rx.functions.Func1;
-
 import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
 
 /**
@@ -80,26 +76,9 @@ public final class SpringAuthService implements AuthService {
 
     @NonNull
     @Override
-    public Observable<Token<?>> authenticate() {
-        return authenticationCall()
-                .flatMap(new Func1<AuthResponse, Observable<? extends Token<?>>>() {
-                    @Override
-                    public Observable<? extends Token<?>> call(AuthResponse authResponse) {
-                        Token<?> cookieToken = CookieToken.create(authResponse.getToken());
-                        return Observable.just(cookieToken);
-                    }
-                });
-    }
-
-    @NonNull
-    private Observable<AuthResponse> authenticationCall() {
-        return Observable.defer(new Func0<Observable<AuthResponse>>() {
-            @Override
-            public Observable<AuthResponse> call() {
-                AuthResponse response = invokeAuthentication();
-                return Observable.just(response);
-            }
-        });
+    public Token<?> authenticate() {
+        AuthResponse authResponse = invokeAuthentication();
+        return CookieToken.create(authResponse.getToken());
     }
 
     @NonNull

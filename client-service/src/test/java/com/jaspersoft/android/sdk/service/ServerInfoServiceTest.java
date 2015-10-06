@@ -42,7 +42,7 @@ public class ServerInfoServiceTest {
     public void requestInfoShouldProvideServerInfoDataObject() {
         when(mockApi.requestServerInfo()).thenReturn(mockResponse);
 
-        serviceUnderTest.requestServerInfo().subscribe();
+        serviceUnderTest.requestServerInfo();
 
         verify(mockTransformer, times(1)).transform(mockResponse);
         verify(mockApi, times(1)).requestServerInfo();

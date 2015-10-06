@@ -74,7 +74,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willAlignResponseToLimitIfAPIRespondsWithPartialNumber() throws Exception {
         when(mResponse.getResources()).thenReturn(FIVE_ITEMS);
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext().toBlocking().first();
+        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(10));
 
         Map<String, Object> params = new HashMap<>();
@@ -93,7 +93,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willRetry5timesIfApiReturnsNoElements()throws Exception {
         when(mResponse.getResources()).thenReturn(Collections.<ResourceLookupResponse>emptyList());
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext().toBlocking().first();
+        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
         assertThat(search10itemsStrategy.hasNext(), is(false));
 
         assertThat(result, is(empty()));
@@ -105,7 +105,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willReturnAsMuchElementsAsLeftIfEndReached()throws Exception {
         when(mResponse.getResources()).then(OnlyTwoItems.INSTANCE);
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext().toBlocking().first();
+        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(2));
 
         verify(mApiFactory, times(6)).get();
@@ -116,7 +116,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void forCustomOffsetShouldCalculateServerDisposition()throws Exception {
         when(mResponse.getResources()).thenReturn(FIVE_ITEMS);
 
-        search10itemsStrategyWithUserOffset5.searchNext().toBlocking().first();
+        search10itemsStrategyWithUserOffset5.searchNext();
 
         Map<String, Object> params1 = new HashMap<>();
         params1.put("limit", "5");
@@ -141,7 +141,7 @@ public class EmeraldMR2SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(mApiFactory, userCriteria);
 
-        Collection<ResourceLookupResponse> result = strategy.searchNext().toBlocking().first();
+        Collection<ResourceLookupResponse> result = strategy.searchNext();
         assertThat(result, is(empty()));
 
         verifyZeroInteractions(mApi);

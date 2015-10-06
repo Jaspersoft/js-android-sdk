@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +35,6 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.Collection;
-
-import rx.Observable;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -77,8 +72,7 @@ public class SearchTaskImplTest {
         when(mRepoApiFactory.get()).thenReturn(mRepoApi);
         when(mInfoApiFactory.get()).thenReturn(mInfoApi);
 
-        Observable<Collection<ResourceLookupResponse>> resultObservable = Observable.just(null);
-        when(mSearchStrategy.searchNext()).thenReturn(resultObservable);
+        when(mSearchStrategy.searchNext()).thenReturn(null);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
         PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
@@ -87,7 +81,7 @@ public class SearchTaskImplTest {
     @Test
     public void nextLookupShouldDefineSearchStrategy() {
         when(mInfoApi.requestVersion()).thenReturn("5.5");
-        objectUnderTest.nextLookup().toBlocking().first();
+        objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
         SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
@@ -101,8 +95,8 @@ public class SearchTaskImplTest {
     public void secondLookupShouldUseCachedStrategy() {
         when(mInfoApi.requestVersion()).thenReturn("5.5");
 
-        objectUnderTest.nextLookup().toBlocking().first();
-        objectUnderTest.nextLookup().toBlocking().first();
+        objectUnderTest.nextLookup();
+        objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
         SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
