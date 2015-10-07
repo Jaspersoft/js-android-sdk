@@ -27,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionConfiguration.class, ReportExecutionDetailsResponse.class, ExecutionOptionsDataMapper.class})
+@PrepareForTest({ExecutionCriteria.class, ReportExecutionDetailsResponse.class, ExecutionOptionsDataMapper.class})
 public class ReportServiceTest {
 
     @Mock
@@ -43,7 +43,7 @@ public class ReportServiceTest {
     ReportExportRestApi.Factory mExportApiFactory;
 
     @Mock
-    ExecutionConfiguration configuration;
+    ExecutionCriteria configuration;
     @Mock
     ReportExecutionDetailsResponse details;
 

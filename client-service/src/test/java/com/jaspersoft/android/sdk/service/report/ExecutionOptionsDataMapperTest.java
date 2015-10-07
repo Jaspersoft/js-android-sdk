@@ -25,14 +25,14 @@ public class ExecutionOptionsDataMapperTest {
     public static final Map<String, Set<String>> REPORT_PARAMS = Collections.emptyMap();
 
     private ExecutionOptionsDataMapper mapper;
-    private ExecutionConfiguration configuration;
+    private ExecutionCriteria configuration;
 
     @Before
     public void setUp() throws Exception {
         mapper = ExecutionOptionsDataMapper.getInstance();
 
-        configuration = ExecutionConfiguration.builder()
-                .format(ExecutionConfiguration.Format.HTML)
+        configuration = ExecutionCriteria.builder()
+                .format(ExecutionCriteria.Format.HTML)
                 .freshData(true)
                 .interactive(false)
                 .saveSnapshot(true)

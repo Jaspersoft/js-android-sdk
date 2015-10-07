@@ -33,7 +33,7 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionConfiguration {
+public final class ExecutionCriteria {
 
     private final boolean mFreshData;
     private final boolean mInteractive;
@@ -43,7 +43,7 @@ public final class ExecutionConfiguration {
     private final Map<String, Set<String>> mParams;
     private final String mAttachmentPrefix;
 
-    ExecutionConfiguration(Builder builder) {
+    ExecutionCriteria(Builder builder) {
         mFreshData = builder.freshData;
         mInteractive = builder.interactive;
         mSaveSnapshot = builder.saveSnapshot;
@@ -141,8 +141,8 @@ public final class ExecutionConfiguration {
             return this;
         }
 
-        public ExecutionConfiguration create() {
-            return new ExecutionConfiguration(this);
+        public ExecutionCriteria create() {
+            return new ExecutionCriteria(this);
         }
     }
 }

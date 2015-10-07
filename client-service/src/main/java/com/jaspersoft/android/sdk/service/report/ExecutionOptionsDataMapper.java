@@ -45,19 +45,19 @@ final class ExecutionOptionsDataMapper {
         return InstanceHolder.INSTANCE;
     }
 
-    public ReportExecutionRequestOptions transformReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionConfiguration configuration) {
+    public ReportExecutionRequestOptions transformReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionCriteria configuration) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
         adaptFields(serverUrl, configuration, options);
         return options;
     }
 
-    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull ExecutionConfiguration configuration) {
+    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull ExecutionCriteria configuration) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
         adaptFields(serverUrl, configuration, options);
         return options;
     }
 
-    private void adaptFields(@NonNull String serverUrl, @NonNull ExecutionConfiguration criteria, ExecutionRequestOptions options) {
+    private void adaptFields(@NonNull String serverUrl, @NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 
@@ -72,7 +72,7 @@ final class ExecutionOptionsDataMapper {
     }
 
     static class Helper {
-        static String adaptFormat(ExecutionConfiguration.Format format) {
+        static String adaptFormat(ExecutionCriteria.Format format) {
             if (format == null) {
                 return null;
             }

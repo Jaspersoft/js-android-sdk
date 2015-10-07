@@ -25,10 +25,10 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionConfiguration.class, ExecutionOptionsDataMapper.class, ReportExportExecutionResponse.class})
+@PrepareForTest({ExecutionCriteria.class, ExecutionOptionsDataMapper.class, ReportExportExecutionResponse.class})
 public class ReportExecutionTest {
     @Mock
-    ExecutionConfiguration configuration;
+    ExecutionCriteria configuration;
     @Mock
     ReportExportExecutionResponse mExecDetails;
 
