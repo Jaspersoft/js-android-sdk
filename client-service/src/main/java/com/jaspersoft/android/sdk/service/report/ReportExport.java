@@ -21,24 +21,27 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.execution;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionRequestOptionsTest {
-    @Rule
-    public final ExpectedException mExpectedException = ExpectedException.none();
+public final class ReportExport {
+    private final String mExecutionId;
+    private final ReportExportRestApi.Factory mExportApiFactory;
+    private final String mId;
 
-    @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest(null);
+    public ReportExport(String executionId, String exportId, ReportExportRestApi.Factory exportApiFactory) {
+        mId = exportId;
+        mExecutionId = executionId;
+        mExportApiFactory = exportApiFactory;
+    }
+
+    public ExportResourceResponse download() {
+        return mExportApiFactory.get().requestExportOutput(mExecutionId, mId);
     }
 }

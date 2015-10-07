@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,24 +21,30 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.execution;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
+import com.jaspersoft.android.sdk.service.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionRequestOptionsTest {
-    @Rule
-    public final ExpectedException mExpectedException = ExpectedException.none();
+public final class ReportOptionRestApiFactory implements ReportExecutionRestApi.Factory {
 
-    @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest(null);
+    private final TokenProvider mTokenProvider;
+    private final String mServerUrl;
+
+    ReportOptionRestApiFactory(String serverUrl, TokenProvider tokenProvider) {
+        mServerUrl = serverUrl;
+        mTokenProvider = tokenProvider;
+    }
+
+    @Override
+    public ReportExecutionRestApi get() {
+        return new ReportExecutionRestApi.Builder()
+                .baseUrl(mServerUrl)
+                .token(mTokenProvider.provideToken())
+                .build();
     }
 }

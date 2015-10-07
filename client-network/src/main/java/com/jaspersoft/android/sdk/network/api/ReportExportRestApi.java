@@ -55,6 +55,10 @@ public interface ReportExportRestApi {
     @WorkerThread
     ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
+    interface Factory {
+        ReportExportRestApi get();
+    }
+
     final class Builder extends GenericAuthBuilder<Builder, ReportExportRestApi> {
         @Override
         ReportExportRestApi createApi() {

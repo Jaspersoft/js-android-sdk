@@ -30,7 +30,7 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExecutionRequestOptions extends ExecutionRequestOptions {
+public class ReportExecutionRequestOptions extends ExecutionRequestOptions {
     @Expose
     private final String reportUnitUri;
 
@@ -39,9 +39,13 @@ public final class ReportExecutionRequestOptions extends ExecutionRequestOptions
     }
 
     public static ReportExecutionRequestOptions newRequest(String uri) {
-        if (uri == null || uri.length() == 0) {
+        if (uri == null) {
             throw new IllegalArgumentException("Uri should not be null");
         }
         return new ReportExecutionRequestOptions(uri);
+    }
+
+    public String getReportUnitUri() {
+        return reportUnitUri;
     }
 }
