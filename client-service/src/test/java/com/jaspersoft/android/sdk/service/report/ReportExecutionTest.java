@@ -71,7 +71,7 @@ public class ReportExecutionTest {
     public void testRequestExport() throws Exception {
         when(mExecDetails.getExportId()).thenReturn("export_id");
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExecDetails);
-        objectUnderTest.requestExport(exportCriteria);
+        objectUnderTest.export(exportCriteria);
 
         verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
         verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
