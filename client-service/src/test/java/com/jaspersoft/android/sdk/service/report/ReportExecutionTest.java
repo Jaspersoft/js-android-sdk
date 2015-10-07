@@ -26,7 +26,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ExecutionConfiguration.class, ExecutionOptionsDataMapper.class, ReportExportExecutionResponse.class})
-public class ExecutionSessionTest {
+public class ReportExecutionTest {
     @Mock
     ExecutionConfiguration configuration;
     @Mock
@@ -41,7 +41,7 @@ public class ExecutionSessionTest {
     @Mock
     ReportExecutionRestApi executionApi;
 
-    private ExecutionSession objectUnderTest;
+    private ReportExecution objectUnderTest;
     private ExecutionOptionsDataMapper mapper;
 
     @Before
@@ -52,7 +52,7 @@ public class ExecutionSessionTest {
         when(mExportApiFactory.get()).thenReturn(mExportRestApi);
 
         mapper = spy(ExecutionOptionsDataMapper.getInstance());
-        objectUnderTest = new ExecutionSession(
+        objectUnderTest = new ReportExecution(
                 "http:://localhost",
                 executionApiFactory,
                 mExportApiFactory,

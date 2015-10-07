@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 
@@ -34,7 +33,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionRes
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionSession {
+public final class ReportExecution {
     private final ReportExecutionRestApi.Factory mExecutionApiFactory;
     private final ReportExportRestApi.Factory mExportApiFactory;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
@@ -42,7 +41,7 @@ public final class ExecutionSession {
     private final String mBaseUrl;
     private final String mId;
 
-    ExecutionSession(
+    ReportExecution(
             String baseUrl,
             ReportExecutionRestApi.Factory executionApiFactory,
             ReportExportRestApi.Factory exportApiFactory,

@@ -71,7 +71,7 @@ public class ReportServiceTest {
         when(details.getExecutionId()).thenReturn("any_id");
         when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(details);
 
-        ExecutionSession session = objectUnderTest.run("/report/uri", configuration);
+        ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
         verify(mapper).transformReportOptions("/report/uri", "http:://localhost", configuration);
