@@ -58,10 +58,6 @@ public final class ExecutionSession {
         return mExecutionApiFactory.get().requestReportExecutionDetails(mId);
     }
 
-    public ExecutionStatusResponse requestStatus() {
-        return mExecutionApiFactory.get().requestReportExecutionStatus(mId);
-    }
-
     public ReportExport requestExport(ExecutionConfiguration configuration) {
         ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, configuration);
         ReportExportExecutionResponse details = mExportApiFactory.get().runExportExecution(mId, options);

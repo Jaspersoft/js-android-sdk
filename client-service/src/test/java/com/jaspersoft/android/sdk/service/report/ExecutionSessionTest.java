@@ -67,12 +67,6 @@ public class ExecutionSessionTest {
     }
 
     @Test
-    public void testRequestStatus() throws Exception {
-        objectUnderTest.requestStatus();
-        verify(executionApi).requestReportExecutionStatus("execution_id");
-    }
-
-    @Test
     public void testRequestExport() throws Exception {
         when(mExecDetails.getExportId()).thenReturn("export_id");
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExecDetails);
