@@ -44,9 +44,9 @@ dependencies {
         exclude group: 'org.hamcrest'
         exclude group: 'org.objenesis'
     }
-    testCompile('org.powermock:powermock-api-mockito:1.6.2') {
+    testCompile('org.powermock:powermock-api-mockito:1.6.3') {
         exclude group: 'org.mockito'
     }
-    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.3'
     testCompile 'org.robolectric:shadows-support-v4:3.0'
 }

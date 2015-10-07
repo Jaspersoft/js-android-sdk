@@ -45,19 +45,20 @@ final class ExecutionOptionsDataMapper {
         return InstanceHolder.INSTANCE;
     }
 
-    public ReportExecutionRequestOptions transformReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull ExecutionCriteria configuration) {
+    public ReportExecutionRequestOptions transformRunReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
-        adaptFields(serverUrl, configuration, options);
+        mapCommonCriterion(serverUrl, criteria, options);
+        options.withParameters(criteria.getParams());
         return options;
     }
 
-    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull ExecutionCriteria configuration) {
+    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull RunExportCriteria configuration) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
-        adaptFields(serverUrl, configuration, options);
+        mapCommonCriterion(serverUrl, configuration, options);
         return options;
     }
 
-    private void adaptFields(@NonNull String serverUrl, @NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
+    private void mapCommonCriterion(@NonNull String serverUrl, @NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 
@@ -65,7 +66,6 @@ final class ExecutionOptionsDataMapper {
         options.withSaveDataSnapshot(criteria.isSaveSnapshot());
         options.withInteractive(criteria.isInteractive());
         options.withPages(criteria.getPages());
-        options.withParameters(criteria.getParams());
 
         options.withAsync(true);
         options.withBaseUrl(serverUrl);

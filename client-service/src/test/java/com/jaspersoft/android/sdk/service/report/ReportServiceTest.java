@@ -27,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionCriteria.class, ReportExecutionDetailsResponse.class, ExecutionOptionsDataMapper.class})
+@PrepareForTest({ReportExecutionDetailsResponse.class, ExecutionOptionsDataMapper.class})
 public class ReportServiceTest {
 
     @Mock
@@ -43,7 +43,7 @@ public class ReportServiceTest {
     ReportExportRestApi.Factory mExportApiFactory;
 
     @Mock
-    ExecutionCriteria configuration;
+    RunReportCriteria configuration;
     @Mock
     ReportExecutionDetailsResponse details;
 
@@ -74,7 +74,7 @@ public class ReportServiceTest {
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
-        verify(mapper).transformReportOptions("/report/uri", "http:://localhost", configuration);
+        verify(mapper).transformRunReportOptions("/report/uri", "http:://localhost", configuration);
         verify(executionApi).runReportExecution(any(ReportExecutionRequestOptions.class));
     }
 

@@ -25,10 +25,11 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExecutionCriteria.class, ExecutionOptionsDataMapper.class, ReportExportExecutionResponse.class})
+@PrepareForTest({ExecutionOptionsDataMapper.class, ReportExportExecutionResponse.class})
 public class ReportExecutionTest {
+
     @Mock
-    ExecutionCriteria configuration;
+    RunExportCriteria exportCriteria;
     @Mock
     ReportExportExecutionResponse mExecDetails;
 
@@ -70,9 +71,9 @@ public class ReportExecutionTest {
     public void testRequestExport() throws Exception {
         when(mExecDetails.getExportId()).thenReturn("export_id");
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExecDetails);
-        objectUnderTest.requestExport(configuration);
+        objectUnderTest.requestExport(exportCriteria);
 
-        verify(mapper).transformExportOptions("http:://localhost", configuration);
+        verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
         verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
     }
 }

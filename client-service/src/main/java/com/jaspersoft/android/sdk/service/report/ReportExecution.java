@@ -57,8 +57,8 @@ public final class ReportExecution {
         return mExecutionApiFactory.get().requestReportExecutionDetails(mId);
     }
 
-    public ReportExport requestExport(ExecutionCriteria configuration) {
-        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, configuration);
+    public ReportExport requestExport(RunExportCriteria criteria) {
+        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
         ReportExportExecutionResponse details = mExportApiFactory.get().runExportExecution(mId, options);
         return new ReportExport(mId, details.getExportId(), mExportApiFactory);
     }

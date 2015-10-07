@@ -65,8 +65,8 @@ public class ReportService {
         return new ReportService(serverUrl, executionApiFactory, exportApiFactory, infoApiFactory,  executionOptionsMapper);
     }
 
-    public ReportExecution run(String reportUri, ExecutionCriteria configuration) {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformReportOptions(reportUri, mBaseUrl, configuration);
+    public ReportExecution run(String reportUri, RunReportCriteria criteria) {
+        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, mBaseUrl, criteria);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
         return new ReportExecution(
                 mBaseUrl,

@@ -33,12 +33,12 @@ import static org.hamcrest.Matchers.is;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ExecutionCriteriaTest {
+public class RunReportCriteriaTest {
     private ExecutionCriteria objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
-        objectUnderTest = ExecutionCriteria.builder().create();
+        objectUnderTest = RunReportCriteria.builder().create();
     }
 
     @Test

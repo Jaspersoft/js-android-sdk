@@ -25,13 +25,15 @@ public class ExecutionOptionsDataMapperTest {
     public static final Map<String, Set<String>> REPORT_PARAMS = Collections.emptyMap();
 
     private ExecutionOptionsDataMapper mapper;
-    private ExecutionCriteria configuration;
 
     @Before
     public void setUp() throws Exception {
         mapper = ExecutionOptionsDataMapper.getInstance();
+    }
 
-        configuration = ExecutionCriteria.builder()
+    @Test
+    public void testTransformReportOptions() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder()
                 .format(ExecutionCriteria.Format.HTML)
                 .freshData(true)
                 .interactive(false)
@@ -40,23 +42,23 @@ public class ExecutionOptionsDataMapperTest {
                 .params(REPORT_PARAMS)
                 .attachmentPrefix("./")
                 .create();
-    }
-
-    @Test
-    public void shouldMapExecConfigurationOnOptions() {
-
-    }
-
-    @Test
-    public void testTransformReportOptions() throws Exception {
-        ReportExecutionRequestOptions options = mapper.transformReportOptions(REPORT_URI, BASE_URL, configuration);
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, BASE_URL, criteria);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
+        assertThat(options.getParameters(), is(REPORT_PARAMS));
         assertOptions(options);
     }
 
     @Test
     public void testTransformExportOptions() throws Exception {
-        ExecutionRequestOptions options = mapper.transformExportOptions(BASE_URL, configuration);
+        RunExportCriteria criteria = RunExportCriteria.builder()
+                .format(ExecutionCriteria.Format.HTML)
+                .freshData(true)
+                .interactive(false)
+                .saveSnapshot(true)
+                .pages("1-100")
+                .attachmentPrefix("./")
+                .create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(BASE_URL, criteria);
         assertOptions(options);
     }
 
@@ -74,6 +76,5 @@ public class ExecutionOptionsDataMapperTest {
         assertThat(options.getAttachmentsPrefix(), is(".%2F"));
         assertThat(options.getOutputFormat(), is("HTML"));
         assertThat(options.getPages(), is("1-100"));
-        assertThat(options.getParameters(), is(REPORT_PARAMS));
     }
 }
