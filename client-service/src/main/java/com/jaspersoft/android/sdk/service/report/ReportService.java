@@ -33,6 +33,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.service.TokenProvider;
 import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -70,9 +72,10 @@ public class ReportService {
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
         return new ReportExecution(
                 mBaseUrl,
+                TimeUnit.SECONDS.toMillis(2),
                 mExecutionApiFactory,
                 mExportApiFactory,
                 mExecutionOptionsMapper,
-                details.getExecutionId());
+                details);
     }
 }

@@ -23,11 +23,19 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.service.exception.ExportCancelledException;
+import com.jaspersoft.android.sdk.service.exception.ExportFailedException;
 
 /**
  * @author Tom Koptel
@@ -39,27 +47,88 @@ public final class ReportExecution {
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
 
     private final String mBaseUrl;
-    private final String mId;
+    private final long mDelay;
+    private final ReportExecutionDetailsResponse mState;
 
+    @VisibleForTesting
     ReportExecution(
             String baseUrl,
+            long delay,
             ReportExecutionRestApi.Factory executionApiFactory,
             ReportExportRestApi.Factory exportApiFactory,
-            ExecutionOptionsDataMapper executionOptionsMapper, String executionId) {
+            ExecutionOptionsDataMapper executionOptionsMapper,
+            ReportExecutionDetailsResponse details) {
         mBaseUrl = baseUrl;
+        mDelay = delay;
         mExecutionApiFactory = executionApiFactory;
         mExportApiFactory = exportApiFactory;
         mExecutionOptionsMapper = executionOptionsMapper;
-        mId = executionId;
+        mState = details;
     }
 
     public ReportExecutionDetailsResponse requestDetails() {
-        return mExecutionApiFactory.get().requestReportExecutionDetails(mId);
+        return mExecutionApiFactory.get().requestReportExecutionDetails(mState.getExecutionId());
     }
 
     public ReportExport export(RunExportCriteria criteria) {
-        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
-        ReportExportExecutionResponse details = mExportApiFactory.get().runExportExecution(mId, options);
-        return new ReportExport(mId, details.getExportId(), mExportApiFactory);
+        final ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
+        ReportExportExecutionResponse exportDetails = mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
+
+        final String exportId = exportDetails.getExportId();
+        final String executionId = mState.getExecutionId();
+        final String reportUri = mState.getReportURI();
+
+        String status = exportDetails.getStatus();
+        //  execution, ready, cancelled, failed, queued
+        if (status.equals("cancelled")) {
+            throw new ExportCancelledException(reportUri);
+        }
+        if (status.equals("failed")) {
+            throw new ExportFailedException(reportUri);
+        }
+        if (status.equals("ready")) {
+            return createExport(exportId);
+        }
+
+        // status is "execution" or "queued"
+        while (!status.equals("ready")) {
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw new ExportFailedException(reportUri, ex);
+            }
+            ExecutionStatusResponse exportStatus = mExportApiFactory.get()
+                    .checkExportExecutionStatus(executionId, exportId);
+
+            status = exportStatus.getStatus();
+            if (status.equals("cancelled")) {
+                throw new ExportCancelledException(reportUri);
+            }
+            if (status.equals("failed")) {
+                throw new ExportFailedException(reportUri);
+            }
+        }
+
+        return createExport(exportId);
+    }
+
+    @NonNull
+    private ReportExport createExport(String exportId) {
+        ReportExecutionDetailsResponse currentDetails = requestDetails();
+        ExportExecution export = findExportExecution(currentDetails, exportId);
+        if (export == null) {
+            throw new ExportFailedException(mState.getReportURI());
+        }
+        return new ReportExport(mState, export, mExportApiFactory);
+    }
+
+    @Nullable
+    private ExportExecution findExportExecution(ReportExecutionDetailsResponse currentDetails, String exportId) {
+        for (ExportExecution export : currentDetails.getExports()) {
+            if (exportId.equals(export.getId())) {
+                return export;
+            }
+        }
+        return null;
     }
 }
