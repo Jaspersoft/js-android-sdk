@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.service.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExportCancelledException extends RuntimeException {
+public final class ExportCancelledException extends ExportException {
     public ExportCancelledException(String reportUri) {
         super(String.format("Export for report '%s' was cancelled", reportUri));
     }
