@@ -41,7 +41,7 @@ public final class ExecutionFailedException extends ExecutionException {
     }
 
     public static ExecutionFailedException forReport(String reportUri) {
-        return new ExecutionFailedException(String.format("Report '%s' failed on server side", reportUri));
+        return new ExecutionFailedException(String.format("Report execution '%s' failed on server side", reportUri));
     }
 
     public static ExecutionFailedException forReportExport(String reportUri, Throwable throwable) {

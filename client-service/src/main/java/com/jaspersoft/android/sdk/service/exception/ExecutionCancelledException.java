@@ -37,6 +37,6 @@ public final class ExecutionCancelledException extends ExecutionException {
     }
 
     public static ExecutionCancelledException forReport(String reportUri) {
-        return new ExecutionCancelledException(String.format("Report '%s' was cancelled", reportUri));
+        return new ExecutionCancelledException(String.format("Report execution '%s' was cancelled", reportUri));
     }
 }
