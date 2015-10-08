@@ -45,6 +45,7 @@ public class ExecutionOptionsDataMapperTest {
         ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, BASE_URL, criteria);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
         assertThat(options.getParameters(), is(REPORT_PARAMS));
+        assertThat(options.getAsync(), is(true));
         assertOptions(options);
     }
 
@@ -67,7 +68,6 @@ public class ExecutionOptionsDataMapperTest {
         assertThat(options.getSaveDataSnapshot(), is(true));
         assertThat(options.getInteractive(), is(false));
         assertThat(options.getSaveDataSnapshot(), is(true));
-        assertThat(options.getAsync(), is(true));
 
         assertThat(options.getAllowInlineScripts(), is(nullValue()));
         assertThat(options.getTransformerKey(), is(nullValue()));

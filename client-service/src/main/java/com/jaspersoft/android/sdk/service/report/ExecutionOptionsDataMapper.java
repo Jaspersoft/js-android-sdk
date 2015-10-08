@@ -48,6 +48,7 @@ final class ExecutionOptionsDataMapper {
     public ReportExecutionRequestOptions transformRunReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
         mapCommonCriterion(serverUrl, criteria, options);
+        options.withAsync(true);
         options.withParameters(criteria.getParams());
         return options;
     }
@@ -67,7 +68,6 @@ final class ExecutionOptionsDataMapper {
         options.withInteractive(criteria.isInteractive());
         options.withPages(criteria.getPages());
 
-        options.withAsync(true);
         options.withBaseUrl(serverUrl);
     }
 
