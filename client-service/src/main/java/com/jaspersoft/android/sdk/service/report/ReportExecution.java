@@ -34,8 +34,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExportCancelledException;
-import com.jaspersoft.android.sdk.service.exception.ExportFailedException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionCancelledException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionFailedException;
 
 /**
  * @author Tom Koptel
@@ -81,10 +81,10 @@ public final class ReportExecution {
         String status = exportDetails.getStatus();
         //  execution, ready, cancelled, failed, queued
         if (status.equals("cancelled")) {
-            throw new ExportCancelledException(reportUri);
+            throw ExecutionCancelledException.forReportExport(reportUri);
         }
         if (status.equals("failed")) {
-            throw new ExportFailedException(reportUri);
+            throw ExecutionFailedException.forReportExport(reportUri);
         }
         if (status.equals("ready")) {
             return createExport(exportId);
@@ -95,17 +95,17 @@ public final class ReportExecution {
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw new ExportFailedException(reportUri, ex);
+                throw ExecutionFailedException.forReportExport(reportUri, ex);
             }
             ExecutionStatusResponse exportStatus = mExportApiFactory.get()
                     .checkExportExecutionStatus(executionId, exportId);
 
             status = exportStatus.getStatus();
             if (status.equals("cancelled")) {
-                throw new ExportCancelledException(reportUri);
+                throw ExecutionCancelledException.forReportExport(reportUri);
             }
             if (status.equals("failed")) {
-                throw new ExportFailedException(reportUri);
+                throw ExecutionFailedException.forReportExport(reportUri);
             }
         }
 
@@ -117,7 +117,7 @@ public final class ReportExecution {
         ReportExecutionDetailsResponse currentDetails = requestDetails();
         ExportExecution export = findExportExecution(currentDetails, exportId);
         if (export == null) {
-            throw new ExportFailedException(mState.getReportURI());
+            throw ExecutionFailedException.forReportExport(mState.getReportURI());
         }
         return new ReportExport(mState, export, mExportApiFactory);
     }

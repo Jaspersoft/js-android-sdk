@@ -27,8 +27,16 @@ package com.jaspersoft.android.sdk.service.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExportCancelledException extends ExportException {
-    public ExportCancelledException(String reportUri) {
-        super(String.format("Export for report '%s' was cancelled", reportUri));
+public final class ExecutionCancelledException extends ExecutionException {
+    private ExecutionCancelledException(String message) {
+        super(message);
+    }
+
+    public static ExecutionCancelledException forReportExport(String reportUri) {
+        return new ExecutionCancelledException(String.format("Export for report '%s' was cancelled", reportUri));
+    }
+
+    public static ExecutionCancelledException forReport(String reportUri) {
+        return new ExecutionCancelledException(String.format("Report '%s' was cancelled", reportUri));
     }
 }

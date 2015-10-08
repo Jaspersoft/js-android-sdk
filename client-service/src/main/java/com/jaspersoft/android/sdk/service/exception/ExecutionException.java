@@ -1,5 +1,5 @@
 /*
- * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,12 +27,16 @@ package com.jaspersoft.android.sdk.service.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExportFailedException extends ExportException {
-    public ExportFailedException(String reportUri) {
-        super(String.format("Export for report '%s' failed on server side", reportUri));
+public abstract class ExecutionException extends RuntimeException {
+    public ExecutionException() {
+        super();
     }
 
-    public ExportFailedException(String reportUri, Throwable throwable) {
-        super(String.format("Export for report '%s' failed. Reason: %s", reportUri, throwable.getMessage()), throwable);
+    public ExecutionException(String detailMessage) {
+        super(detailMessage);
+    }
+
+    public ExecutionException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
     }
 }

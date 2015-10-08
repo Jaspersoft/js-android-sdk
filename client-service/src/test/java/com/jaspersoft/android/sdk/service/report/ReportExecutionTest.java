@@ -7,8 +7,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExportCancelledException;
-import com.jaspersoft.android.sdk.service.exception.ExportFailedException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionCancelledException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionFailedException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,6 +80,7 @@ public class ReportExecutionTest {
         when(executionApiFactory.get()).thenReturn(mExecutionApi);
         when(mExportApiFactory.get()).thenReturn(mExportRestApi);
         when(mExecDetails.getExecutionId()).thenReturn("execution_id");
+        when(mExecDetails.getReportURI()).thenReturn("/my/uri");
 
         mapper = spy(ExecutionOptionsDataMapper.getInstance());
 
@@ -121,7 +122,8 @@ public class ReportExecutionTest {
 
     @Test
     public void testRequestRunExportFailedCase() throws Exception {
-        mException.expect(ExportFailedException.class);
+        mException.expect(ExecutionFailedException.class);
+        mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         // export run request
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
@@ -136,7 +138,8 @@ public class ReportExecutionTest {
 
     @Test
     public void testRequestRunExportCancelledCase() throws Exception {
-        mException.expect(ExportCancelledException.class);
+        mException.expect(ExecutionCancelledException.class);
+        mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         // export run request
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
