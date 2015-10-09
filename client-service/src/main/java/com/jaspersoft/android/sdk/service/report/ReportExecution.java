@@ -78,20 +78,16 @@ public final class ReportExecution {
         final String executionId = mState.getExecutionId();
         final String reportUri = mState.getReportURI();
 
-        String status = exportDetails.getStatus();
-        //  execution, ready, cancelled, failed, queued
-        if (status.equals("cancelled")) {
-            throw ExecutionCancelledException.forReportExport(reportUri);
-        }
-        if (status.equals("failed")) {
-            throw ExecutionFailedException.forReportExport(reportUri);
-        }
-        if (status.equals("ready")) {
-            return createExport(exportId);
-        }
+        Status status = Status.wrap(exportDetails.getStatus());
 
         // status is "execution" or "queued"
-        while (!status.equals("ready")) {
+        while (!status.isReady()) {
+            if (status.isCancelled()) {
+                throw ExecutionCancelledException.forReportExport(reportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionFailedException.forReportExport(reportUri);
+            }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
@@ -100,13 +96,7 @@ public final class ReportExecution {
             ExecutionStatusResponse exportStatus = mExportApiFactory.get()
                     .checkExportExecutionStatus(executionId, exportId);
 
-            status = exportStatus.getStatus();
-            if (status.equals("cancelled")) {
-                throw ExecutionCancelledException.forReportExport(reportUri);
-            }
-            if (status.equals("failed")) {
-                throw ExecutionFailedException.forReportExport(reportUri);
-            }
+            status = Status.wrap(exportStatus.getStatus());
         }
 
         return createExport(exportId);
