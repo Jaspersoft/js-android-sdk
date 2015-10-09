@@ -116,12 +116,12 @@ public final class ReportExecution {
             status = Status.wrap(exportStatus.getStatus());
         }
 
-        return createExport(exportId);
+        ReportExecutionDetailsResponse currentDetails = requestDetails();
+        return createExport(currentDetails, exportId);
     }
 
     @NonNull
-    private ReportExport createExport(String exportId) {
-        ReportExecutionDetailsResponse currentDetails = requestDetails();
+    private ReportExport createExport(ReportExecutionDetailsResponse currentDetails, String exportId) {
         ExportExecution export = findExportExecution(currentDetails, exportId);
         if (export == null) {
             throw ExecutionException.exportFailed(mState.getReportURI());
