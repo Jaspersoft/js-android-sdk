@@ -16,8 +16,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -30,6 +28,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -88,18 +87,15 @@ public class ReportServiceTest {
 
     @Test
     public void testRunShouldCreateActiveSession() {
-        when(initDetails.getStatus()).thenReturn("execution");
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
-
-        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
-        when(statusDetails.getStatus()).thenReturn("ready");
+        mockRunReportExecution("execution");
+        mockRunReportExecution("ready");
 
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
         verify(mapper).transformRunReportOptions("/report/uri", "http:://localhost", configuration);
         verify(executionApi).runReportExecution(any(ReportExecutionRequestOptions.class));
+        verifyNoMoreInteractions(executionApi);
     }
 
     @Test
@@ -107,9 +103,7 @@ public class ReportServiceTest {
         mException.expect(ExecutionFailedException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(initDetails.getStatus()).thenReturn("failed");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
+        mockRunReportExecution("failed");
 
         objectUnderTest.run("/report/uri", configuration);
     }
@@ -119,12 +113,8 @@ public class ReportServiceTest {
         mException.expect(ExecutionFailedException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
-        when(initDetails.getStatus()).thenReturn("queued");
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
-
-        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
-        when(statusDetails.getStatus()).thenReturn("failed");
+        mockRunReportExecution("queued");
+        mockReportExecutionStatus("failed");
 
         objectUnderTest.run("/report/uri", configuration);
     }
@@ -134,9 +124,7 @@ public class ReportServiceTest {
         mException.expect(ExecutionCancelledException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(initDetails.getStatus()).thenReturn("cancelled");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
+        mockRunReportExecution("cancelled");
 
         objectUnderTest.run("/report/uri", configuration);
     }
@@ -146,38 +134,29 @@ public class ReportServiceTest {
         mException.expect(ExecutionCancelledException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
-        when(initDetails.getStatus()).thenReturn("queued");
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
-
-        when(statusDetails.getStatus()).thenReturn("cancelled");
-        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
+        mockRunReportExecution("queued");
+        mockReportExecutionStatus("cancelled");
 
         objectUnderTest.run("/report/uri", configuration);
     }
 
     @Test
     public void testRunShouldLoopUntilStatusExecution() {
-        when(initDetails.getStatus()).thenReturn("queued");
-        when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
-
-        when(statusDetails.getStatus()).then(new Answer<String>() {
-            private int count = 0;
-
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                if (count > 0) {
-                    return "execution";
-                } else {
-                    count++;
-                    return "queued";
-                }
-            }
-        });
-        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
+        mockRunReportExecution("queued");
+        mockReportExecutionStatus("queued", "execution");
 
         objectUnderTest.run("/report/uri", configuration);
         verify(executionApi, times(2)).requestReportExecutionStatus(eq("exec_id"));
+    }
+
+    private void mockReportExecutionStatus(String... statusChain) {
+        when(statusDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
+    }
+
+    private void mockRunReportExecution(String execution) {
+        when(initDetails.getStatus()).thenReturn(execution);
+        when(initDetails.getExecutionId()).thenReturn("exec_id");
+        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
     }
 }
