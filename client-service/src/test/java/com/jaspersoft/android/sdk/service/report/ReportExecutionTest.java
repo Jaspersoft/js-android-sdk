@@ -164,6 +164,16 @@ public class ReportExecutionTest {
         verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("execution_id"), eq("export_id"));
     }
 
+    @Test
+    public void ensureThatExportCancelledEventWillBeResolved() {
+        mockRunReportExecution("cancelled", "ready");
+        mockReportExecutionDetails();
+
+        objectUnderTest.export(exportCriteria);
+
+        verify(mExportRestApi, times(2)).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
+    }
+
     private void mockCheckExportExecStatus(String... statusChain) {
         when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
         when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);

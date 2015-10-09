@@ -71,6 +71,19 @@ public final class ReportExecution {
     }
 
     public ReportExport export(RunExportCriteria criteria) {
+        try {
+            return performExport(criteria);
+        } catch (ExecutionCancelledException ex) {
+            /**
+             * Cancelled by technical reason. User applied Jive(for e.g. have applied new filter).
+             * Cancelled when report execution finished. This event flags that we need rerun export.
+             */
+            return performExport(criteria);
+        }
+    }
+
+    @NonNull
+    private ReportExport performExport(RunExportCriteria criteria) {
         final ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
         ReportExportExecutionResponse exportDetails = mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
 
@@ -80,7 +93,6 @@ public final class ReportExecution {
 
         Status status = Status.wrap(exportDetails.getStatus());
 
-        // status is "execution" or "queued"
         while (!status.isReady()) {
             if (status.isCancelled()) {
                 throw ExecutionCancelledException.forReportExport(reportUri);
