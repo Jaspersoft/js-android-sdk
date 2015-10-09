@@ -121,7 +121,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testRequestRunExportFailedCase() throws Exception {
+    public void testRunThrowsFailedStatusImmediately() throws Exception {
         mException.expect(ExecutionFailedException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
@@ -131,13 +131,24 @@ public class ReportExecutionTest {
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
 
         objectUnderTest.export(exportCriteria);
-        verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
-        verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
-        verify(mExecutionApi).requestReportExecutionDetails(eq("execution_id"));
     }
 
     @Test
-    public void testRequestRunExportCancelledCase() throws Exception {
+    public void testRunShouldThrowFailedIfStatusFailed() {
+        mException.expect(ExecutionFailedException.class);
+        mException.expectMessage("Export for report '/my/uri' failed on server side");
+
+        when(mExportExecDetails.getExportId()).thenReturn("export_id");
+        when(mExportExecDetails.getStatus()).thenReturn("queued");
+        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+
+        when(mExecutionStatusResponse.getStatus()).thenReturn("failed");
+        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+        objectUnderTest.export(exportCriteria);
+    }
+
+    @Test
+    public void testRunThrowsCancelledStatusImmediately() throws Exception {
         mException.expect(ExecutionCancelledException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
@@ -147,9 +158,20 @@ public class ReportExecutionTest {
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
 
         objectUnderTest.export(exportCriteria);
-        verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
-        verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
-        verify(mExecutionApi).requestReportExecutionDetails(eq("execution_id"));
+    }
+
+    @Test
+    public void testRunShouldThrowCancelledIfStatusCancelled() {
+        mException.expect(ExecutionCancelledException.class);
+        mException.expectMessage("Export for report '/my/uri' was cancelled");
+
+        when(mExportExecDetails.getExportId()).thenReturn("export_id");
+        when(mExportExecDetails.getStatus()).thenReturn("queued");
+        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+
+        when(mExecutionStatusResponse.getStatus()).thenReturn("cancelled");
+        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+        objectUnderTest.export(exportCriteria);
     }
 
     @Test
