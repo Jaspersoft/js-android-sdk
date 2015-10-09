@@ -7,7 +7,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExecutionException;
+import com.jaspersoft.android.sdk.service.report.exception.ReportExportException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -110,7 +110,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunThrowsFailedStatusImmediately() throws Exception {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         // export run request
@@ -121,7 +121,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunShouldThrowFailedIfStatusFailed() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         mockRunReportExecution("queued");
@@ -132,7 +132,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         // export run request
@@ -143,7 +143,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunShouldThrowCancelledIfStatusCancelled() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         mockRunReportExecution("queued");

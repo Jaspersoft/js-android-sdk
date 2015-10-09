@@ -6,7 +6,7 @@ import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.exception.ExecutionException;
+import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -99,7 +99,7 @@ public class ReportServiceTest {
 
     @Test
     public void testRunThrowsFailedStatusImmediately() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
         mockRunReportExecution("failed");
@@ -109,7 +109,7 @@ public class ReportServiceTest {
 
     @Test
     public void testRunShouldThrowFailedIfStatusFailed() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
         mockRunReportExecution("queued");
@@ -120,7 +120,7 @@ public class ReportServiceTest {
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
         mockRunReportExecution("cancelled");
@@ -130,7 +130,7 @@ public class ReportServiceTest {
 
     @Test
     public void testRunShouldThrowCancelledIfStatusCancelled() {
-        mException.expect(ExecutionException.class);
+        mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
         mockRunReportExecution("queued");

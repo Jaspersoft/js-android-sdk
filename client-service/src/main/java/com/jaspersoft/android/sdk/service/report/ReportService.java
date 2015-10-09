@@ -23,6 +23,7 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
@@ -32,7 +33,6 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.TokenProvider;
-import com.jaspersoft.android.sdk.service.exception.ExecutionException;
 import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -78,6 +78,15 @@ public class ReportService {
     }
 
     public ReportExecution run(String reportUri, RunReportCriteria criteria) {
+        try {
+            return performRun(reportUri, criteria);
+        } catch (ExecutionException ex) {
+            throw ex.adaptToClientException();
+        }
+    }
+
+    @NonNull
+    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, mBaseUrl, criteria);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
 

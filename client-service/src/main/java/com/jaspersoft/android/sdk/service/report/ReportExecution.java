@@ -34,7 +34,6 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExecutionException;
 
 /**
  * @author Tom Koptel
@@ -78,9 +77,13 @@ public final class ReportExecution {
                  * Cancelled by technical reason. User applied Jive(for e.g. have applied new filter).
                  * Cancelled when report execution finished. This event flags that we need rerun export.
                  */
-                return performExport(criteria);
+                try {
+                    return performExport(criteria);
+                } catch (ExecutionException nestedEx) {
+                    throw nestedEx.adaptToClientException();
+                }
             }
-            throw ex;
+            throw ex.adaptToClientException();
         }
     }
 
