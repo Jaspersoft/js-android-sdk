@@ -92,7 +92,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRequestDetails() throws Exception {
-        objectUnderTest.requestDetails();
+        objectUnderTest.requestExecutionDetails();
         verify(mExecutionApi).requestReportExecutionDetails("execution_id");
     }
 

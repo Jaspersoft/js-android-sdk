@@ -64,10 +64,6 @@ public final class ReportExecution {
         mState = details;
     }
 
-    public ReportExecutionDetailsResponse requestDetails() {
-        return mExecutionApiFactory.get().requestReportExecutionDetails(mState.getExecutionId());
-    }
-
     public ReportExport export(RunExportCriteria criteria) {
         try {
             return performExport(criteria);
@@ -89,15 +85,24 @@ public final class ReportExecution {
 
     @NonNull
     private ReportExport performExport(RunExportCriteria criteria) {
-        final ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
-        ReportExportExecutionResponse exportDetails = mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
+        ReportExportExecutionResponse exportDetails = runExport(criteria);
+        waitForExportReadyStatus(exportDetails);
+        ReportExecutionDetailsResponse currentDetails = requestExecutionDetails();
 
+        return createExport(currentDetails, exportDetails);
+    }
+
+    @NonNull
+    private ReportExecutionDetailsResponse requestExecutionDetails() {
+        return mExecutionApiFactory.get().requestReportExecutionDetails(mState.getExecutionId());
+    }
+
+    private void waitForExportReadyStatus(ReportExportExecutionResponse exportDetails) {
         final String exportId = exportDetails.getExportId();
         final String executionId = mState.getExecutionId();
         final String reportUri = mState.getReportURI();
 
         Status status = Status.wrap(exportDetails.getStatus());
-
         while (!status.isReady()) {
             if (status.isCancelled()) {
                 throw ExecutionException.exportCancelled(reportUri);
@@ -115,14 +120,12 @@ public final class ReportExecution {
 
             status = Status.wrap(exportStatus.getStatus());
         }
-
-        ReportExecutionDetailsResponse currentDetails = requestDetails();
-        return createExport(currentDetails, exportId);
     }
 
     @NonNull
-    private ReportExport createExport(ReportExecutionDetailsResponse currentDetails, String exportId) {
-        ExportExecution export = findExportExecution(currentDetails, exportId);
+    private ReportExport createExport(ReportExecutionDetailsResponse currentDetails,
+                                      ReportExportExecutionResponse exportDetails) {
+        ExportExecution export = findExportExecution(currentDetails, exportDetails.getExportId());
         if (export == null) {
             throw ExecutionException.exportFailed(mState.getReportURI());
         }
@@ -137,5 +140,11 @@ public final class ReportExecution {
             }
         }
         return null;
+    }
+
+    @NonNull
+    private ReportExportExecutionResponse runExport(RunExportCriteria criteria) {
+        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
+        return mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
     }
 }
