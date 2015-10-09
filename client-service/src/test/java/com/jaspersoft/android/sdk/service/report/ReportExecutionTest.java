@@ -7,8 +7,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExecutionCancelledException;
-import com.jaspersoft.android.sdk.service.exception.ExecutionFailedException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -111,7 +110,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunThrowsFailedStatusImmediately() throws Exception {
-        mException.expect(ExecutionFailedException.class);
+        mException.expect(ExecutionException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         // export run request
@@ -122,7 +121,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunShouldThrowFailedIfStatusFailed() {
-        mException.expect(ExecutionFailedException.class);
+        mException.expect(ExecutionException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         mockRunReportExecution("queued");
@@ -133,7 +132,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
-        mException.expect(ExecutionCancelledException.class);
+        mException.expect(ExecutionException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         // export run request
@@ -144,7 +143,7 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunShouldThrowCancelledIfStatusCancelled() {
-        mException.expect(ExecutionCancelledException.class);
+        mException.expect(ExecutionException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         mockRunReportExecution("queued");

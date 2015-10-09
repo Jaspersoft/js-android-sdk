@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,16 +27,106 @@ package com.jaspersoft.android.sdk.service.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class ExecutionException extends RuntimeException {
-    public ExecutionException() {
-        super();
+public final class ExecutionException extends RuntimeException {
+    private final Kind mKind;
+
+    private ExecutionException(Kind kind, String message) {
+        super(message);
+        mKind = kind;
     }
 
-    public ExecutionException(String detailMessage) {
-        super(detailMessage);
+    private ExecutionException(Kind kind, String message, Throwable throwable) {
+        super(message, throwable);
+        mKind = kind;
     }
 
-    public ExecutionException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
+    public static ExecutionException reportFailed(String reportUri) {
+        return Kind.FAILED.report(reportUri);
+    }
+
+    public static ExecutionException reportFailed(String reportUri, Throwable throwable) {
+        return Kind.FAILED.report(reportUri, throwable);
+    }
+
+    public static ExecutionException exportFailed(String reportUri) {
+        return Kind.FAILED.export(reportUri);
+    }
+
+    public static ExecutionException exportFailed(String reportUri, Throwable throwable) {
+        return Kind.FAILED.export(reportUri, throwable);
+    }
+
+    public static ExecutionException reportCancelled(String reportUri) {
+        return Kind.CANCELLED.report(reportUri);
+    }
+
+    public static ExecutionException exportCancelled(String reportUri) {
+        return Kind.CANCELLED.export(reportUri);
+    }
+
+    public boolean isCancelled() {
+        return Kind.CANCELLED == mKind;
+    }
+
+    public boolean isFailed() {
+        return Kind.FAILED == mKind;
+    }
+
+    private enum Kind {
+        FAILED {
+            @Override
+            public ExecutionException report(String reportUri) {
+                String message = String.format("Report execution '%s' failed on server side", reportUri);
+                return new ExecutionException(this, message);
+            }
+
+            @Override
+            public ExecutionException report(String reportUri, Throwable throwable) {
+                String message = String.format("Export for report '%s' failed. Reason: %s", reportUri, throwable.getMessage());
+                return new ExecutionException(this, message, throwable);
+            }
+
+            @Override
+            public ExecutionException export(String reportUri) {
+                String message = String.format("Export for report '%s' failed on server side", reportUri);
+                return new ExecutionException(this, message);
+            }
+
+            @Override
+            public ExecutionException export(String reportUri, Throwable throwable) {
+                String message = String.format("Export for report '%s' failed. Reason: %s", reportUri, throwable.getMessage());
+                return new ExecutionException(this, message, throwable);
+            }
+        }, CANCELLED {
+            @Override
+            public ExecutionException report(String reportUri) {
+                String message = String.format("Report execution '%s' was cancelled", reportUri);
+                return new ExecutionException(this, message);
+            }
+
+            @Override
+            public ExecutionException report(String reportUri, Throwable throwable) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public ExecutionException export(String reportUri) {
+                String message = String.format("Export for report '%s' was cancelled", reportUri);
+                return new ExecutionException(this, message);
+            }
+
+            @Override
+            public ExecutionException export(String reportUri, Throwable throwable) {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+        public abstract ExecutionException report(String reportUri);
+
+        public abstract ExecutionException report(String reportUri, Throwable throwable);
+
+        public abstract ExecutionException export(String reportUri);
+
+        public abstract ExecutionException export(String reportUri, Throwable throwable);
     }
 }

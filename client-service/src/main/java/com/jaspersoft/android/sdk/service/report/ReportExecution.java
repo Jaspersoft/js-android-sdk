@@ -34,8 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
-import com.jaspersoft.android.sdk.service.exception.ExecutionCancelledException;
-import com.jaspersoft.android.sdk.service.exception.ExecutionFailedException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionException;
 
 /**
  * @author Tom Koptel
@@ -73,12 +72,15 @@ public final class ReportExecution {
     public ReportExport export(RunExportCriteria criteria) {
         try {
             return performExport(criteria);
-        } catch (ExecutionCancelledException ex) {
-            /**
-             * Cancelled by technical reason. User applied Jive(for e.g. have applied new filter).
-             * Cancelled when report execution finished. This event flags that we need rerun export.
-             */
-            return performExport(criteria);
+        } catch (ExecutionException ex) {
+            if (ex.isCancelled()) {
+                /**
+                 * Cancelled by technical reason. User applied Jive(for e.g. have applied new filter).
+                 * Cancelled when report execution finished. This event flags that we need rerun export.
+                 */
+                return performExport(criteria);
+            }
+            throw ex;
         }
     }
 
@@ -95,15 +97,15 @@ public final class ReportExecution {
 
         while (!status.isReady()) {
             if (status.isCancelled()) {
-                throw ExecutionCancelledException.forReportExport(reportUri);
+                throw ExecutionException.exportCancelled(reportUri);
             }
             if (status.isFailed()) {
-                throw ExecutionFailedException.forReportExport(reportUri);
+                throw ExecutionException.exportFailed(reportUri);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw ExecutionFailedException.forReportExport(reportUri, ex);
+                throw ExecutionException.exportFailed(reportUri, ex);
             }
             ExecutionStatusResponse exportStatus = mExportApiFactory.get()
                     .checkExportExecutionStatus(executionId, exportId);
@@ -119,7 +121,7 @@ public final class ReportExecution {
         ReportExecutionDetailsResponse currentDetails = requestDetails();
         ExportExecution export = findExportExecution(currentDetails, exportId);
         if (export == null) {
-            throw ExecutionFailedException.forReportExport(mState.getReportURI());
+            throw ExecutionException.exportFailed(mState.getReportURI());
         }
         return new ReportExport(mState, export, mExportApiFactory);
     }

@@ -32,8 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.TokenProvider;
-import com.jaspersoft.android.sdk.service.exception.ExecutionCancelledException;
-import com.jaspersoft.android.sdk.service.exception.ExecutionFailedException;
+import com.jaspersoft.android.sdk.service.exception.ExecutionException;
 import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -99,15 +98,15 @@ public class ReportService {
 
         while (!status.isReady() && !status.isExecution()) {
             if (status.isCancelled()) {
-                throw ExecutionCancelledException.forReport(reportUri);
+                throw ExecutionException.reportCancelled(reportUri);
             }
             if (status.isFailed()) {
-                throw ExecutionFailedException.forReport(reportUri);
+                throw ExecutionException.reportFailed(reportUri);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw ExecutionFailedException.forReport(reportUri, ex);
+                throw ExecutionException.reportFailed(reportUri, ex);
             }
             status = Status.wrap(requestStatus(executionId).getStatus());
         }
