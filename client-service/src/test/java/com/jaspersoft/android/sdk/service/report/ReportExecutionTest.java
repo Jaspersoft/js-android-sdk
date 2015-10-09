@@ -17,8 +17,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -101,17 +99,8 @@ public class ReportExecutionTest {
 
     @Test
     public void testRequestExportIdealCase() throws Exception {
-        // execution details request
-        Set<ExportExecution> exports = Collections.singleton(mExportExecution);
-        when(mExportExecution.getStatus()).thenReturn("ready");
-        when(mExportExecution.getId()).thenReturn("export_id");
-        when(mExecDetails.getExports()).thenReturn(exports);
-        when(mExecutionApi.requestReportExecutionDetails(anyString())).thenReturn(mExecDetails);
-
-        // export run request
-        when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("ready");
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        mockReportExecutionDetails();
+        mockRunReportExecution("ready");
 
         objectUnderTest.export(exportCriteria);
 
@@ -126,9 +115,7 @@ public class ReportExecutionTest {
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
         // export run request
-        when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("failed");
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        mockRunReportExecution("failed");
 
         objectUnderTest.export(exportCriteria);
     }
@@ -138,12 +125,9 @@ public class ReportExecutionTest {
         mException.expect(ExecutionFailedException.class);
         mException.expectMessage("Export for report '/my/uri' failed on server side");
 
-        when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("queued");
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        mockRunReportExecution("queued");
 
-        when(mExecutionStatusResponse.getStatus()).thenReturn("failed");
-        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+        mockCheckExportExecStatus("failed");
         objectUnderTest.export(exportCriteria);
     }
 
@@ -153,9 +137,7 @@ public class ReportExecutionTest {
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
         // export run request
-        when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("cancelled");
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        mockRunReportExecution("cancelled");
 
         objectUnderTest.export(exportCriteria);
     }
@@ -165,49 +147,39 @@ public class ReportExecutionTest {
         mException.expect(ExecutionCancelledException.class);
         mException.expectMessage("Export for report '/my/uri' was cancelled");
 
-        when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("queued");
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        mockRunReportExecution("queued");
+        mockCheckExportExecStatus("cancelled");
 
-        when(mExecutionStatusResponse.getStatus()).thenReturn("cancelled");
-        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
         objectUnderTest.export(exportCriteria);
     }
 
     @Test
     public void testRunReportPendingCase() throws Exception {
-        // export run request
+        mockRunReportExecution("queued");
+        mockCheckExportExecStatus("queued", "ready");
+        mockReportExecutionDetails();
+
+        objectUnderTest.export(exportCriteria);
+
+        verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("execution_id"), eq("export_id"));
+    }
+
+    private void mockCheckExportExecStatus(String... statusChain) {
+        when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
+        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+    }
+
+    private void mockRunReportExecution(String... statusChain) {
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).thenReturn("queued");
+        when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
         when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+    }
 
-        Answer<ExecutionStatusResponse> queueReadyAnswer = new Answer<ExecutionStatusResponse>() {
-            private int invocationCount = 0;
-            @Override
-            public ExecutionStatusResponse answer(InvocationOnMock invocation) throws Throwable {
-                if (invocationCount == 0) {
-                    when(mExecutionStatusResponse.getStatus()).thenReturn("queued");
-                    invocationCount++;
-                } else {
-                    when(mExecutionStatusResponse.getStatus()).thenReturn("ready");
-                }
-                return mExecutionStatusResponse;
-            }
-        };
-        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).then(queueReadyAnswer);
-
+    private void mockReportExecutionDetails() {
         Set<ExportExecution> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("ready");
         when(mExportExecution.getId()).thenReturn("export_id");
         when(mExecDetails.getExports()).thenReturn(exports);
         when(mExecutionApi.requestReportExecutionDetails(anyString())).thenReturn(mExecDetails);
-
-        objectUnderTest.export(exportCriteria);
-
-        verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
-        verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
-        verify(mExecutionApi).requestReportExecutionDetails(eq("execution_id"));
-
-        verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("execution_id"), eq("export_id"));
     }
 }
