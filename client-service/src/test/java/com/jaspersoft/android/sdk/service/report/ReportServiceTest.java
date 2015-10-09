@@ -119,7 +119,7 @@ public class ReportServiceTest {
         mException.expect(ExecutionFailedException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
-        when(initDetails.getStatus()).thenReturn("execution");
+        when(initDetails.getStatus()).thenReturn("queued");
         when(initDetails.getExecutionId()).thenReturn("exec_id");
         when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
 
@@ -146,7 +146,7 @@ public class ReportServiceTest {
         mException.expect(ExecutionCancelledException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
-        when(initDetails.getStatus()).thenReturn("execution");
+        when(initDetails.getStatus()).thenReturn("queued");
         when(initDetails.getExecutionId()).thenReturn("exec_id");
         when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
 
@@ -161,7 +161,6 @@ public class ReportServiceTest {
         when(initDetails.getStatus()).thenReturn("queued");
         when(initDetails.getExecutionId()).thenReturn("exec_id");
         when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
-
 
         when(statusDetails.getStatus()).then(new Answer<String>() {
             private int count = 0;

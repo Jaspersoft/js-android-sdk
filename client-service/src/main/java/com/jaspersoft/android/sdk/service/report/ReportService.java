@@ -81,32 +81,8 @@ public class ReportService {
     public ReportExecution run(String reportUri, RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, mBaseUrl, criteria);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
-        String executionStatus = details.getStatus();
 
-        if (executionStatus.equals("cancelled")) {
-            throw ExecutionCancelledException.forReport(reportUri);
-        }
-        if (executionStatus.equals("failed")) {
-            throw ExecutionFailedException.forReport(reportUri);
-        }
-
-        String executionId = details.getExecutionId();
-        executionStatus = requestDetails(executionId).getStatus();
-
-        while (!executionStatus.equals("ready") && !executionStatus.equals("execution")) {
-            try {
-                Thread.sleep(mDelay);
-            } catch (InterruptedException ex) {
-                throw ExecutionFailedException.forReport(reportUri, ex);
-            }
-            executionStatus = requestDetails(executionId).getStatus();
-            if (executionStatus.equals("cancelled")) {
-                throw ExecutionCancelledException.forReport(reportUri);
-            }
-            if (executionStatus.equals("failed")) {
-                throw ExecutionFailedException.forReport(reportUri);
-            }
-        }
+        waitForReportExecutionStart(reportUri, details);
 
         return new ReportExecution(
                 mBaseUrl,
@@ -117,7 +93,27 @@ public class ReportService {
                 details);
     }
 
-    private ExecutionStatusResponse requestDetails(String executionId) {
+    private void waitForReportExecutionStart(String reportUri, ReportExecutionDetailsResponse details) {
+        String executionId = details.getExecutionId();
+        Status status = Status.wrap(details.getStatus());
+
+        while (!status.isReady() && !status.isExecution()) {
+            if (status.isCancelled()) {
+                throw ExecutionCancelledException.forReport(reportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionFailedException.forReport(reportUri);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw ExecutionFailedException.forReport(reportUri, ex);
+            }
+            status = Status.wrap(requestStatus(executionId).getStatus());
+        }
+    }
+
+    private ExecutionStatusResponse requestStatus(String executionId) {
         return mExecutionApiFactory.get().requestReportExecutionStatus(executionId);
     }
 }
