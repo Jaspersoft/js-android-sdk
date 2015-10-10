@@ -23,15 +23,19 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.TokenProvider;
 import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -43,14 +47,17 @@ public class ReportService {
     private final ServerRestApi.Factory mInfoApiFactory;
     private final String mBaseUrl;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+    private final long mDelay;
 
     @VisibleForTesting
     ReportService(String baseUrl,
+                  long delay,
                   ReportExecutionRestApi.Factory executionApiFactory,
                   ReportExportRestApi.Factory exportApiFactory,
                   ServerRestApi.Factory infoApiFactory,
                   ExecutionOptionsDataMapper executionOptionsMapper) {
         mBaseUrl = baseUrl;
+        mDelay = delay;
         mExecutionApiFactory = executionApiFactory;
         mExportApiFactory = exportApiFactory;
         mInfoApiFactory = infoApiFactory;
@@ -62,17 +69,59 @@ public class ReportService {
         ReportExportRestApiFactory exportApiFactory = new ReportExportRestApiFactory(serverUrl, tokenProvider);
         ServerRestApiFactory infoApiFactory = new ServerRestApiFactory(serverUrl);
         ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.getInstance();
-        return new ReportService(serverUrl, executionApiFactory, exportApiFactory, infoApiFactory,  executionOptionsMapper);
+        return new ReportService(serverUrl,
+                TimeUnit.SECONDS.toMillis(1),
+                executionApiFactory,
+                exportApiFactory,
+                infoApiFactory,
+                executionOptionsMapper);
     }
 
     public ReportExecution run(String reportUri, RunReportCriteria criteria) {
+        try {
+            return performRun(reportUri, criteria);
+        } catch (ExecutionException ex) {
+            throw ex.adaptToClientException();
+        }
+    }
+
+    @NonNull
+    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, mBaseUrl, criteria);
         ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
+
+        waitForReportExecutionStart(reportUri, details);
+
         return new ReportExecution(
                 mBaseUrl,
+                TimeUnit.SECONDS.toMillis(2),
                 mExecutionApiFactory,
                 mExportApiFactory,
                 mExecutionOptionsMapper,
-                details.getExecutionId());
+                details);
+    }
+
+    private void waitForReportExecutionStart(String reportUri, ReportExecutionDetailsResponse details) {
+        String executionId = details.getExecutionId();
+        Status status = Status.wrap(details.getStatus());
+
+        while (!status.isReady() && !status.isExecution()) {
+            if (status.isCancelled()) {
+                throw ExecutionException.reportCancelled(reportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionException.reportFailed(reportUri);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw ExecutionException.reportFailed(reportUri, ex);
+            }
+            status = Status.wrap(requestStatus(executionId).getStatus());
+        }
+    }
+
+    private ExecutionStatusResponse requestStatus(String executionId) {
+        return mExecutionApiFactory.get().requestReportExecutionStatus(executionId);
     }
 }

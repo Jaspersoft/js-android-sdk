@@ -1,6 +1,8 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 
 import org.junit.Before;
@@ -21,7 +23,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExportResourceResponse.class})
+@PrepareForTest({ExportResourceResponse.class, ReportExecutionDetailsResponse.class, ExportExecution.class})
 public class ReportExportTest {
     @Mock
     ReportExportRestApi.Factory mExportApiFactory;
@@ -29,6 +31,10 @@ public class ReportExportTest {
     ReportExportRestApi mExportRestApi;
     @Mock
     ExportResourceResponse mExportResourceResponse;
+    @Mock
+    ReportExecutionDetailsResponse execDetails;
+    @Mock
+    ExportExecution exportDetails;
 
     private ReportExport objectUnderTest;
 
@@ -37,7 +43,9 @@ public class ReportExportTest {
         MockitoAnnotations.initMocks(this);
 
         when(mExportApiFactory.get()).thenReturn(mExportRestApi);
-        objectUnderTest = new ReportExport("report_execution_id", "export_id", mExportApiFactory);
+        when(execDetails.getExecutionId()).thenReturn("report_execution_id");
+        when(exportDetails.getId()).thenReturn("export_id");
+        objectUnderTest = new ReportExport(execDetails, exportDetails, mExportApiFactory);
     }
 
     @Test

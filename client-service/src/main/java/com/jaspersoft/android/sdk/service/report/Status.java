@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,35 +21,40 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.network.entity.export;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+package com.jaspersoft.android.sdk.service.report;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExportExecutionResponse {
-    @Expose
-    @SerializedName("id")
-    private String exportId;
-    @Expose
-    private String status;
-    @Expose
-    private ExecutionRequestOptions options;
+final class Status {
+    private final String mStatus;
 
-    public String getExportId() {
-        return exportId;
+    private Status(String status) {
+        mStatus = status;
     }
 
-    public ExecutionRequestOptions getOptions() {
-        return options;
+    public static Status wrap(String status) {
+        return new Status(status);
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isQueued() {
+        return mStatus.equals("queued");
+    }
+
+    public boolean isExecution() {
+        return mStatus.equals("execution");
+    }
+
+    public boolean isCancelled() {
+        return mStatus.equals("cancelled");
+    }
+
+    public boolean isFailed() {
+        return mStatus.equals("failed");
+    }
+
+    public boolean isReady() {
+        return mStatus.equals("ready");
     }
 }

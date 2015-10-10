@@ -23,9 +23,15 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 
@@ -39,27 +45,106 @@ public final class ReportExecution {
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
 
     private final String mBaseUrl;
-    private final String mId;
+    private final long mDelay;
+    private final ReportExecutionDetailsResponse mState;
 
+    @VisibleForTesting
     ReportExecution(
             String baseUrl,
+            long delay,
             ReportExecutionRestApi.Factory executionApiFactory,
             ReportExportRestApi.Factory exportApiFactory,
-            ExecutionOptionsDataMapper executionOptionsMapper, String executionId) {
+            ExecutionOptionsDataMapper executionOptionsMapper,
+            ReportExecutionDetailsResponse details) {
         mBaseUrl = baseUrl;
+        mDelay = delay;
         mExecutionApiFactory = executionApiFactory;
         mExportApiFactory = exportApiFactory;
         mExecutionOptionsMapper = executionOptionsMapper;
-        mId = executionId;
-    }
-
-    public ReportExecutionDetailsResponse requestDetails() {
-        return mExecutionApiFactory.get().requestReportExecutionDetails(mId);
+        mState = details;
     }
 
     public ReportExport export(RunExportCriteria criteria) {
+        try {
+            return performExport(criteria);
+        } catch (ExecutionException ex) {
+            if (ex.isCancelled()) {
+                /**
+                 * Cancelled by technical reason. User applied Jive(for e.g. have applied new filter).
+                 * Cancelled when report execution finished. This event flags that we need rerun export.
+                 */
+                try {
+                    return performExport(criteria);
+                } catch (ExecutionException nestedEx) {
+                    throw nestedEx.adaptToClientException();
+                }
+            }
+            throw ex.adaptToClientException();
+        }
+    }
+
+    @NonNull
+    private ReportExport performExport(RunExportCriteria criteria) {
+        ReportExportExecutionResponse exportDetails = runExport(criteria);
+        waitForExportReadyStatus(exportDetails);
+        ReportExecutionDetailsResponse currentDetails = requestExecutionDetails();
+
+        return createExport(currentDetails, exportDetails);
+    }
+
+    @NonNull
+    private ReportExecutionDetailsResponse requestExecutionDetails() {
+        return mExecutionApiFactory.get().requestReportExecutionDetails(mState.getExecutionId());
+    }
+
+    private void waitForExportReadyStatus(ReportExportExecutionResponse exportDetails) {
+        final String exportId = exportDetails.getExportId();
+        final String executionId = mState.getExecutionId();
+        final String reportUri = mState.getReportURI();
+
+        Status status = Status.wrap(exportDetails.getStatus());
+        while (!status.isReady()) {
+            if (status.isCancelled()) {
+                throw ExecutionException.exportCancelled(reportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionException.exportFailed(reportUri);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw ExecutionException.exportFailed(reportUri, ex);
+            }
+            ExecutionStatusResponse exportStatus = mExportApiFactory.get()
+                    .checkExportExecutionStatus(executionId, exportId);
+
+            status = Status.wrap(exportStatus.getStatus());
+        }
+    }
+
+    @NonNull
+    private ReportExport createExport(ReportExecutionDetailsResponse currentDetails,
+                                      ReportExportExecutionResponse exportDetails) {
+        ExportExecution export = findExportExecution(currentDetails, exportDetails.getExportId());
+        if (export == null) {
+            throw ExecutionException.exportFailed(mState.getReportURI());
+        }
+        return new ReportExport(mState, export, mExportApiFactory);
+    }
+
+    @Nullable
+    private ExportExecution findExportExecution(ReportExecutionDetailsResponse currentDetails, String exportId) {
+        for (ExportExecution export : currentDetails.getExports()) {
+            if (exportId.equals(export.getId())) {
+                return export;
+            }
+        }
+        return null;
+    }
+
+    @NonNull
+    private ReportExportExecutionResponse runExport(RunExportCriteria criteria) {
         ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
-        ReportExportExecutionResponse details = mExportApiFactory.get().runExportExecution(mId, options);
-        return new ReportExport(mId, details.getExportId(), mExportApiFactory);
+        return mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
     }
 }

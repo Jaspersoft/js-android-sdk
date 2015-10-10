@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,35 +21,34 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.export;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExportExecutionResponse {
-    @Expose
-    @SerializedName("id")
-    private String exportId;
-    @Expose
-    private String status;
-    @Expose
-    private ExecutionRequestOptions options;
+final class StatusChain implements Answer<String> {
+    private final String[] mChain;
+    private int invocationCount = 0;
 
-    public String getExportId() {
-        return exportId;
+    private StatusChain(String... chain) {
+        mChain = chain;
     }
 
-    public ExecutionRequestOptions getOptions() {
-        return options;
+    public static StatusChain of(String... statuses) {
+        return new StatusChain(statuses);
     }
 
-    public String getStatus() {
-        return status;
+    @Override
+    public String answer(InvocationOnMock invocation) throws Throwable {
+        int statusIndex = invocationCount;
+        if (statusIndex >= mChain.length) {
+            statusIndex = mChain.length - 1;
+        }
+        invocationCount++;
+        return mChain[statusIndex];
     }
 }

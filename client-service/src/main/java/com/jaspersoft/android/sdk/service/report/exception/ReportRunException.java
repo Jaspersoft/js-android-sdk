@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,35 +21,14 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
-package com.jaspersoft.android.sdk.network.entity.export;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+package com.jaspersoft.android.sdk.service.report.exception;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExportExecutionResponse {
-    @Expose
-    @SerializedName("id")
-    private String exportId;
-    @Expose
-    private String status;
-    @Expose
-    private ExecutionRequestOptions options;
-
-    public String getExportId() {
-        return exportId;
-    }
-
-    public ExecutionRequestOptions getOptions() {
-        return options;
-    }
-
-    public String getStatus() {
-        return status;
+public final class ReportRunException extends RuntimeException {
+    public ReportRunException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
     }
 }
