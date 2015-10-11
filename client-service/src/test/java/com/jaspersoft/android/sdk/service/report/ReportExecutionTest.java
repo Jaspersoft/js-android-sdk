@@ -91,12 +91,6 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testRequestDetails() throws Exception {
-        objectUnderTest.requestExecutionDetails();
-        verify(mExecutionApi).requestReportExecutionDetails("execution_id");
-    }
-
-    @Test
     public void testRequestExportIdealCase() throws Exception {
         mockReportExecutionDetails();
         mockRunReportExecution("ready");
