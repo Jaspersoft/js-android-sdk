@@ -22,11 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.execution;
+package com.jaspersoft.android.sdk.network.entity.export;
 
 import com.google.gson.annotations.Expose;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,20 +35,28 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
+import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportOutputResourceTest {
+public class ReportExportDescriptorResponseTest {
     @Test
     @Parameters({
-            "contentType",
-            "fileName",
+            "exportId",
+            "options",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportOutputResource.class.getDeclaredField(fieldName);
-        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
+        Field field = ReportExportExecutionResponse.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
+    }
+
+    @Test
+    public void exportIdFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
+        Field field = ReportExportExecutionResponse.class.getDeclaredField("exportId");
+        assertThat(field, hasSerializedName("id"));
     }
 }

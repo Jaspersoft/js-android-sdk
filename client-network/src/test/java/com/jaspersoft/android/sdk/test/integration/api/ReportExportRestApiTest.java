@@ -30,8 +30,8 @@ import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
@@ -85,22 +85,22 @@ public class ReportExportRestApiTest {
 
     @Test
     public void runExportRequestShouldReturnResult() {
-        ReportExecutionDetailsResponse exec = startExecution();
+        ReportExecutionDescriptor exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
         assertThat(execDetails.getExportId(), is(notNullValue()));
     }
 
     @Test
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
-        ReportExecutionDetailsResponse exec = startExecution();
+        ReportExecutionDescriptor exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExecutionStatusResponse response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
     @Test
     public void requestExportOutputShouldReturnResult() {
-        ReportExecutionDetailsResponse exec = startExecution();
+        ReportExecutionDescriptor exec = startExecution();
         ReportExportExecutionResponse execDetails = startExportExecution(exec);
         ExportResourceResponse output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
 
@@ -113,7 +113,7 @@ public class ReportExportRestApiTest {
      * Helper methods
      */
     @NonNull
-    private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
+    private ReportExportExecutionResponse startExportExecution(ReportExecutionDescriptor exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
@@ -121,7 +121,7 @@ public class ReportExportRestApiTest {
     }
 
     @NonNull
-    private ReportExecutionDetailsResponse startExecution() {
+    private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
         return mExecApi.runReportExecution(executionRequestOptions);
     }

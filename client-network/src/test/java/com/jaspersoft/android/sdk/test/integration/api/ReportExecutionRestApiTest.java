@@ -28,8 +28,8 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -81,7 +81,7 @@ public class ReportExecutionRestApiTest {
 
     @Test
     public void shouldStartReportExecution() {
-        ReportExecutionDetailsResponse response = startExecution();
+        ReportExecutionDescriptor response = startExecution();
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatus(), is(notNullValue()));
     }
@@ -91,25 +91,25 @@ public class ReportExecutionRestApiTest {
      */
     @Ignore
     public void shouldCancelReportExecution() throws InterruptedException {
-        ReportExecutionDetailsResponse response = startExecution();
+        ReportExecutionDescriptor response = startExecution();
         boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
     @Test
     public void shouldReturnReportExecutionDetails() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDetailsResponse response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
     @Test
     public void shouldCheckReportExecutionStatus() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
-        ExecutionStatusResponse response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -118,7 +118,7 @@ public class ReportExecutionRestApiTest {
      */
     @Ignore
     public void searchForExecutionShouldReturnResult() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
@@ -129,7 +129,7 @@ public class ReportExecutionRestApiTest {
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
         boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
         assertThat(success, is(true));
@@ -140,12 +140,12 @@ public class ReportExecutionRestApiTest {
      */
 
     @NonNull
-    private ReportExecutionDetailsResponse startExecution() {
+    private ReportExecutionDescriptor startExecution() {
         return startExecution(REPORT_URI1);
     }
 
     @NonNull
-    private ReportExecutionDetailsResponse startExecution(String uri) {
+    private ReportExecutionDescriptor startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
         return apiUnderTest.runReportExecution(executionRequestOptions);
     }

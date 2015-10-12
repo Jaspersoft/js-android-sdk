@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
@@ -44,15 +44,15 @@ public interface ReportExecutionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
+    ReportExecutionDescriptor runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
+    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String executionId);
 
     @NonNull
     @WorkerThread
-    ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+    ExecutionStatus requestReportExecutionStatus(@NonNull String executionId);
 
     @WorkerThread
     boolean cancelReportExecution(@NonNull String executionId);

@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,39 +26,48 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ExecutionStatusResponse {
-
+public final class ExportDescriptor {
     @Expose
-    private String value;
+    private String id;
+    @Expose
+    private String status;
+    @Expose
+    private ExecutionRequestOptions options;
+    @Expose
+    private OutputResourceDescriptor outputResource;
+    @Expose
+    private Set<AttachmentDescriptor> attachments = Collections.emptySet();
     @Expose
     private ErrorDescriptor errorDescriptor;
 
-    public ExecutionStatusResponse() {}
-
-    private ExecutionStatusResponse(String value) {
-        this.value = value;
-    }
-
-    public static ExecutionStatusResponse cancelledStatus() {
-        return new ExecutionStatusResponse("cancelled");
-    }
-
-    public String getStatus() {
-        return value;
+    public Set<AttachmentDescriptor> getAttachments() {
+        return attachments;
     }
 
     public ErrorDescriptor getErrorDescriptor() {
         return errorDescriptor;
     }
 
-    @Override
-    public String toString() {
-        return "ReportExecutionStatusResponse{" +
-                "value='" + value + '\'' +
-                '}';
+    public String getId() {
+        return id;
+    }
+
+    public ExecutionRequestOptions getOptions() {
+        return options;
+    }
+
+    public OutputResourceDescriptor getOutputResource() {
+        return outputResource;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

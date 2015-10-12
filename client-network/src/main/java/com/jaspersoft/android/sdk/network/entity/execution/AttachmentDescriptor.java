@@ -30,7 +30,7 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportOutputResource {
+public final class AttachmentDescriptor {
     @Expose
     private String contentType;
     @Expose
@@ -49,7 +49,7 @@ public final class ReportOutputResource {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReportOutputResource that = (ReportOutputResource) o;
+        AttachmentDescriptor that = (AttachmentDescriptor) o;
 
         if (contentType != null ? !contentType.equals(that.contentType) : that.contentType != null)
             return false;
@@ -66,7 +66,7 @@ public final class ReportOutputResource {
 
     @Override
     public String toString() {
-        return "ReportOutputResource{" +
+        return "AttachmentDescriptor{" +
                 "contentType='" + contentType + '\'' +
                 ", fileName='" + fileName + '\'' +
                 '}';

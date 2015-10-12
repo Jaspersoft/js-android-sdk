@@ -35,6 +35,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
+import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,17 +43,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ExportExecutionTest {
+public class ReportExecutionDescriptorTest {
     @Test
     @Parameters({
-            "id",
+            "reportURI",
+            "executionId",
             "status",
-            "outputResource",
-            "attachments",
+            "currentPage",
+            "totalPages",
+            "exports",
             "errorDescriptor",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ExportExecution.class.getDeclaredField(fieldName);
+        Field field = ReportExecutionDescriptor.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
+    }
+
+    @Test
+    public void executionIdFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
+        Field field = ReportExecutionDescriptor.class.getDeclaredField("executionId");
+        assertThat(field, hasSerializedName("requestId"));
     }
 }

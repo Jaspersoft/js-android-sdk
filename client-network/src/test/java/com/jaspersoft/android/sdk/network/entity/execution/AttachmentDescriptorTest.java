@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,33 +36,20 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
-import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportExecutionDetailsResponseTest {
+public class AttachmentDescriptorTest {
     @Test
     @Parameters({
-            "reportURI",
-            "executionId",
-            "status",
-            "currentPage",
-            "totalPages",
-            "exports",
-            "errorDescriptor",
+            "contentType",
+            "fileName",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportExecutionDetailsResponse.class.getDeclaredField(fieldName);
-        assertThat(field, hasAnnotation(Expose.class));
-    }
-
-    @Test
-    public void executionIdFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
-        Field field = ReportExecutionDetailsResponse.class.getDeclaredField("executionId");
-        assertThat(field, hasSerializedName("requestId"));
+        Field field = AttachmentDescriptor.class.getDeclaredField(fieldName);
+        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
     }
 }

@@ -28,7 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
@@ -45,7 +45,7 @@ public interface ReportExportRestApi {
 
     @NonNull
     @WorkerThread
-    ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    ExecutionStatus checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
     @WorkerThread

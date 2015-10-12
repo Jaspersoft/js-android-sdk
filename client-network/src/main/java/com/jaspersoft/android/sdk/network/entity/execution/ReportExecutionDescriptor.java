@@ -35,7 +35,7 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExecutionDetailsResponse {
+public final class ReportExecutionDescriptor {
     @Expose
     @SerializedName("requestId")
     private String executionId;
@@ -48,7 +48,7 @@ public final class ReportExecutionDetailsResponse {
     @Expose
     private int totalPages;
     @Expose
-    private Set<ExportExecution> exports = Collections.emptySet();
+    private Set<ExportDescriptor> exports = Collections.emptySet();
     @Expose
     private ErrorDescriptor errorDescriptor;
 
@@ -76,7 +76,7 @@ public final class ReportExecutionDetailsResponse {
         return errorDescriptor;
     }
 
-    public Set<ExportExecution> getExports() {
+    public Set<ExportDescriptor> getExports() {
         return exports;
     }
 

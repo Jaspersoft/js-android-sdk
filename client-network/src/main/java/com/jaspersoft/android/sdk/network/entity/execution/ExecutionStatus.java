@@ -26,30 +26,39 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.lang.reflect.Field;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
-import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(JUnitParamsRunner.class)
-public class ExecutionStatusResponseTest {
-    @Test
-    @Parameters({
-            "value",
-            "errorDescriptor",
-    })
-    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ExecutionStatusResponse.class.getDeclaredField(fieldName);
-        MatcherAssert.assertThat(field, hasAnnotation(Expose.class));
+public final class ExecutionStatus {
+
+    @Expose
+    private String value;
+    @Expose
+    private ErrorDescriptor errorDescriptor;
+
+    public ExecutionStatus() {}
+
+    private ExecutionStatus(String value) {
+        this.value = value;
+    }
+
+    public static ExecutionStatus cancelledStatus() {
+        return new ExecutionStatus("cancelled");
+    }
+
+    public String getStatus() {
+        return value;
+    }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
+    }
+
+    @Override
+    public String toString() {
+        return "ReportExecutionStatusResponse{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }
