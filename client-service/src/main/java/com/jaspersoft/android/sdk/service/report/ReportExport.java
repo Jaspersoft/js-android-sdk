@@ -23,6 +23,8 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
+import android.support.annotation.NonNull;
+
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
@@ -37,23 +39,27 @@ import java.util.Collection;
  */
 public final class ReportExport {
     private final ReportExportRestApi.Factory mExportApiFactory;
-    private final ReportExecutionDetailsResponse mExecutionDetails;
-    private final ExportExecution mExportDetails;
+    private final Collection<ReportAttachment> mAttachments;
+    private final String mExecutionId;
+    private final String mExportId;
 
-    ReportExport(ReportExecutionDetailsResponse executionDetails,
-                 ExportExecution exportDetails,
+    ReportExport(String executionId,
+                 String exportId,
+                 Collection<ReportAttachment> attachments,
                  ReportExportRestApi.Factory exportApiFactory) {
-        mExecutionDetails = executionDetails;
-        mExportDetails = exportDetails;
+        mExecutionId = executionId;
+        mExportId = exportId;
+        mAttachments = attachments;
         mExportApiFactory = exportApiFactory;
     }
 
-    public Collection<ReportOutputResource> getAttachments() {
-        return mExportDetails.getAttachments();
+    @NonNull
+    public Collection<ReportAttachment> getAttachments() {
+        return mAttachments;
     }
 
+    @NonNull
     public ExportResourceResponse download() {
-        return mExportApiFactory.get()
-                .requestExportOutput(mExecutionDetails.getExecutionId(), mExportDetails.getId());
+        return mExportApiFactory.get().requestExportOutput(mExecutionId, mExportId);
     }
 }

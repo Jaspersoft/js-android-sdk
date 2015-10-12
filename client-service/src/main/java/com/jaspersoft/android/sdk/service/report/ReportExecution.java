@@ -33,8 +33,13 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptio
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -140,7 +145,24 @@ public final class ReportExecution {
         if (export == null) {
             throw ExecutionException.exportFailed(mState.getReportURI());
         }
-        return new ReportExport(mState, export, mExportApiFactory);
+
+        String executionId = currentDetails.getExecutionId();
+        String exportId = exportDetails.getExportId();
+        Collection<ReportAttachment> attachments = adaptAttachments(export);
+        return new ReportExport(executionId, exportId, attachments, mExportApiFactory);
+    }
+
+    private Collection<ReportAttachment> adaptAttachments(ExportExecution export) {
+        String executionId = mState.getExecutionId();
+        String exportId = export.getId();
+        Set<ReportOutputResource> rawAttachments = export.getAttachments();
+        Collection<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
+        for (ReportOutputResource attachment : rawAttachments) {
+            ReportAttachment reportAttachment = new ReportAttachment(
+                    attachment.getFileName(), executionId, exportId, mExportApiFactory);
+            attachments.add(reportAttachment);
+        }
+        return attachments;
     }
 
     @Nullable
