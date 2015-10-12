@@ -35,16 +35,16 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 public final class ReportAttachment {
     private final ReportExportRestApi.Factory mExportApiFactory;
     private final String mFileName;
-    private final String mExportId;
     private final String mExecutionId;
+    private final String mExportId;
 
     ReportAttachment(String fileName,
                      String executionId,
                      String exportId,
                      ReportExportRestApi.Factory exportApiFactory) {
         mFileName = fileName;
-        mExportId = exportId;
         mExecutionId = executionId;
+        mExportId = exportId;
         mExportApiFactory = exportApiFactory;
     }
 

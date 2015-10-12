@@ -13,6 +13,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -45,7 +47,7 @@ public class ReportExportTest {
         when(mExportApiFactory.get()).thenReturn(mExportRestApi);
         when(execDetails.getExecutionId()).thenReturn("report_execution_id");
         when(exportDetails.getId()).thenReturn("export_id");
-        objectUnderTest = new ReportExport(execDetails, exportDetails, mExportApiFactory);
+        objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), mExportApiFactory);
     }
 
     @Test
