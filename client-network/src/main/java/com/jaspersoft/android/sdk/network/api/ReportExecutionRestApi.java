@@ -31,10 +31,9 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -58,7 +57,7 @@ public interface ReportExecutionRestApi {
     boolean cancelReportExecution(@NonNull String executionId);
 
     @WorkerThread
-    boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
+    boolean updateReportExecution(@NonNull String executionId, @NonNull Map<String, Set<String>> params);
 
     /**
      * TODO: API is broken requires investigation before release

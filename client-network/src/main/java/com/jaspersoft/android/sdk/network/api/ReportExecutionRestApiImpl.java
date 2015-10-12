@@ -31,10 +31,9 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import retrofit.Call;
 import retrofit.Response;
@@ -100,7 +99,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     }
 
     @Override
-    public boolean updateReportExecution(@Nullable String executionId, @Nullable Collection<ReportParameter> params) {
+    public boolean updateReportExecution(@Nullable String executionId, @Nullable Map<String, Set<String>> params) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(params, "Execution params id should not be null");
 
@@ -144,7 +143,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/parameters")
         Call<Object> updateReportExecution(@NonNull @Path(value = "executionId", encoded = true) String executionId,
-                                                           @NonNull @Body Collection<ReportParameter> params);
+                                                           @NonNull @Body Map<String,Set<String>> params);
 
         @NonNull
         @Headers("Accept: application/json")

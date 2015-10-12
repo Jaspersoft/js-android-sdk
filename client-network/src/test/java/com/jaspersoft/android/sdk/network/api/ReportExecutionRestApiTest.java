@@ -169,7 +169,7 @@ public class ReportExecutionRestApiTest {
     public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
         mWebMockRule.enqueue(create204Response());
 
-        boolean response = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_LIST);
+        boolean response = restApiUnderTest.updateReportExecution("any_id", Collections.EMPTY_MAP);
         assertThat(response, is(true));
     }
 

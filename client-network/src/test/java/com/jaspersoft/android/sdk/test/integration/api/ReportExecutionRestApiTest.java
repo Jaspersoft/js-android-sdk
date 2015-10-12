@@ -131,7 +131,7 @@ public class ReportExecutionRestApiTest {
     public void updateOfParametersForExecutionShouldReturnResult() {
         ReportExecutionDescriptor executionResponse = startExecution();
 
-        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_MAP);
         assertThat(success, is(true));
     }
 
