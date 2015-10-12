@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -42,26 +42,6 @@ public final class ReportOutputResource {
 
     public String getFileName() {
         return fileName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ReportOutputResource that = (ReportOutputResource) o;
-
-        if (contentType != null ? !contentType.equals(that.contentType) : that.contentType != null)
-            return false;
-        return !(fileName != null ? !fileName.equals(that.fileName) : that.fileName != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = contentType != null ? contentType.hashCode() : 0;
-        result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
-        return result;
     }
 
     @Override
