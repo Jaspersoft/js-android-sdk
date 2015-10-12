@@ -66,7 +66,7 @@ public final class ReportExecution {
     }
 
     @NonNull
-    public ReportMetadata awaitCompleteReport() {
+    public ReportMetadata waitForReportCompletion() {
         try {
             return performAwaitFoReport();
         } catch (ExecutionException ex) {

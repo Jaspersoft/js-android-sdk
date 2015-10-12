@@ -178,7 +178,7 @@ public class ReportExecutionTest {
         when(mExecDetails.getTotalPages()).thenReturn(100);
         mockReportExecutionDetails("ready");
 
-        ReportMetadata metadata = objectUnderTest.awaitCompleteReport();
+        ReportMetadata metadata = objectUnderTest.waitForReportCompletion();
         assertThat(metadata.getTotalPages(), is(100));
         assertThat(metadata.getUri(), is("/report/uri"));
 
@@ -190,7 +190,7 @@ public class ReportExecutionTest {
     public void testAwaitCompleteReportShouldLoopCalls() throws Exception {
         mockReportExecutionDetails("execution", "ready");
 
-        objectUnderTest.awaitCompleteReport();
+        objectUnderTest.waitForReportCompletion();
 
         verify(mExecutionApi, times(2)).requestReportExecutionDetails(anyString());
         verifyNoMoreInteractions(mExecutionApi);
@@ -203,7 +203,7 @@ public class ReportExecutionTest {
 
         mockReportExecutionDetails("execution", "cancelled");
 
-        objectUnderTest.awaitCompleteReport();
+        objectUnderTest.waitForReportCompletion();
     }
 
     @Test
@@ -213,7 +213,7 @@ public class ReportExecutionTest {
 
         mockReportExecutionDetails("execution", "failed");
 
-        objectUnderTest.awaitCompleteReport();
+        objectUnderTest.waitForReportCompletion();
     }
 
     private void mockCheckExportExecStatus(String... statusChain) {
