@@ -34,6 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusRespon
 import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 
 /**
  * @author Tom Koptel
@@ -64,6 +65,16 @@ public final class ReportExecution {
         mState = details;
     }
 
+    @NonNull
+    public ReportMetadata awaitCompleteReport() {
+        try {
+            return performAwaitFoReport();
+        } catch (ExecutionException ex) {
+            throw ex.adaptToClientException();
+        }
+    }
+
+    @NonNull
     public ReportExport export(RunExportCriteria criteria) {
         try {
             return performExport(criteria);
@@ -146,5 +157,38 @@ public final class ReportExecution {
     private ReportExportExecutionResponse runExport(RunExportCriteria criteria) {
         ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(mBaseUrl, criteria);
         return mExportApiFactory.get().runExportExecution(mState.getExecutionId(), options);
+    }
+
+
+    @NonNull
+    private ReportMetadata performAwaitFoReport() {
+        ReportExecutionDetailsResponse details = requestExecutionDetails();
+        ReportExecutionDetailsResponse completeDetails = waitForReportReadyStart(details);
+        return new ReportMetadata(completeDetails.getReportURI(),
+                completeDetails.getTotalPages());
+    }
+
+    @NonNull
+    private ReportExecutionDetailsResponse waitForReportReadyStart(final ReportExecutionDetailsResponse details) {
+        String reportUri = details.getReportURI();
+        Status status = Status.wrap(details.getStatus());
+
+        ReportExecutionDetailsResponse resultDetails = details;
+        while (!status.isReady()) {
+            if (status.isCancelled()) {
+                throw ExecutionException.reportCancelled(reportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionException.reportFailed(reportUri);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw ExecutionException.reportFailed(reportUri, ex);
+            }
+            resultDetails = requestExecutionDetails();
+            status = Status.wrap(details.getStatus());
+        }
+        return resultDetails;
     }
 }
