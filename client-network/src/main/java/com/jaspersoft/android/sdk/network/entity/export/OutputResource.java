@@ -24,39 +24,27 @@
 
 package com.jaspersoft.android.sdk.network.entity.export;
 
-import com.google.gson.annotations.Expose;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.lang.reflect.Field;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
-import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
-import static com.jaspersoft.android.sdk.test.matcher.HasSerializedName.hasSerializedName;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(JUnitParamsRunner.class)
-public class ReportExportDescriptorResponseTest {
-    @Test
-    @Parameters({
-            "exportId",
-            "options",
-    })
-    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportExportExecutionResponse.class.getDeclaredField(fieldName);
-        assertThat(field, hasAnnotation(Expose.class));
-    }
+public interface OutputResource {
+    String getMimeType();
 
-    @Test
-    public void exportIdFieldShouldHaveSerializedNameAnnotationForField() throws NoSuchFieldException {
-        Field field = ReportExportExecutionResponse.class.getDeclaredField("exportId");
-        assertThat(field, hasSerializedName("id"));
-    }
+    /**
+     * TODO ??? do we need this
+     * @return -1 whether content length undefined
+     */
+    long getLength();
+
+    /**
+     * Client responsible for closing stream
+     *
+     * @return raw stream of bytes of corresponding file
+     * @throws IOException
+     */
+    InputStream getStream() throws IOException;
 }

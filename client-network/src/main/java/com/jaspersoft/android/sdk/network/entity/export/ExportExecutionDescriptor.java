@@ -26,24 +26,38 @@ package com.jaspersoft.android.sdk.network.entity.export;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.execution.OutputResourceDescriptor;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExportExecutionResponse {
+public final class ExportExecutionDescriptor {
     @Expose
     @SerializedName("id")
     private String exportId;
     @Expose
-    private ExecutionRequestOptions options;
+    private String status;
+    @Expose
+    private OutputResourceDescriptor outputResource;
+    @Expose
+    private ErrorDescriptor errorDescriptor;
 
     public String getExportId() {
         return exportId;
     }
 
-    public ExecutionRequestOptions getOptions() {
-        return options;
+    public String getStatus() {
+        return status;
+    }
+
+    public OutputResourceDescriptor getOutputResource() {
+        return outputResource;
+    }
+
+    public ErrorDescriptor getErrorDescriptor() {
+        return errorDescriptor;
     }
 }

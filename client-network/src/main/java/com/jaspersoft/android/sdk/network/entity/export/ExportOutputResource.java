@@ -22,41 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
-
-import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
-import com.squareup.okhttp.ResponseBody;
-
-import java.io.IOException;
-import java.io.InputStream;
+package com.jaspersoft.android.sdk.network.entity.export;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class RetrofitExportInput implements ExportInput {
-    private final ResponseBody mResponse;
+public final class ExportOutputResource {
+    private final OutputResource mOutputResource;
+    private final boolean mFinal;
+    private final String mPages;
 
-    public RetrofitExportInput(ResponseBody input) {
-        mResponse = input;
+    private ExportOutputResource(OutputResource outputResource, String pages, boolean finalOutput) {
+        mOutputResource = outputResource;
+        mFinal = finalOutput;
+        mPages = pages;
+    }
+
+    public static ExportOutputResource create(OutputResource outputResource, String pages, boolean finalOutput) {
+        return new ExportOutputResource(outputResource, pages, finalOutput);
+    }
+
+    public OutputResource getOutputResource() {
+        return mOutputResource;
+    }
+
+    public boolean isFinal() {
+        return mFinal;
+    }
+
+    public String getPages() {
+        return mPages;
     }
 
     @Override
-    public String getMimeType() {
-        return mResponse.contentType().type();
-    }
-
-    @Override
-    public long getLength() {
-        try {
-            return mResponse.contentLength();
-        } catch (IOException e) {
-            return -1;
-        }
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        return mResponse.byteStream();
+    public String toString() {
+        return "ExportOutputResourceResponse{" +
+                ", mFinal=" + mFinal +
+                ", mPages='" + mPages + '\'' +
+                '}';
     }
 }

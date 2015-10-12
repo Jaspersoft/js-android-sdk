@@ -33,8 +33,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptio
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
@@ -86,14 +86,14 @@ public class ReportExportRestApiTest {
     @Test
     public void runExportRequestShouldReturnResult() {
         ReportExecutionDescriptor exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
         assertThat(execDetails.getExportId(), is(notNullValue()));
     }
 
     @Test
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDescriptor exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
         ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
@@ -101,10 +101,10 @@ public class ReportExportRestApiTest {
     @Test
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDescriptor exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExportResourceResponse output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
+        ExportOutputResource output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
 
-        assertThat(output.getExportInput(), is(notNullValue()));
+        assertThat(output.getOutputResource(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
         assertThat(output.isFinal(), is(false));
     }
@@ -113,7 +113,7 @@ public class ReportExportRestApiTest {
      * Helper methods
      */
     @NonNull
-    private ReportExportExecutionResponse startExportExecution(ReportExecutionDescriptor exec) {
+    private ExportExecutionDescriptor startExportExecution(ReportExecutionDescriptor exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");

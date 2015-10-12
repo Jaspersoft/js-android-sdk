@@ -49,9 +49,9 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ResponseBody.class})
-public class RetrofitExportInputTest {
+public class RetrofitOutputResourceTest {
 
-    private RetrofitExportInput objectUnderTest;
+    private RetrofitOutputResource objectUnderTest;
     private ResponseBody mTypedInput;
     @Mock
     private InputStream input;
@@ -60,7 +60,7 @@ public class RetrofitExportInputTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mTypedInput = PowerMockito.mock(ResponseBody.class);
-        objectUnderTest = new RetrofitExportInput(mTypedInput);
+        objectUnderTest = new RetrofitOutputResource(mTypedInput);
     }
 
     @Test
