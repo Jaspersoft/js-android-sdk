@@ -29,9 +29,9 @@ import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
-import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 
 /**
  * @author Tom Koptel

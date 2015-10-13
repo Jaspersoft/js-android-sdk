@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;

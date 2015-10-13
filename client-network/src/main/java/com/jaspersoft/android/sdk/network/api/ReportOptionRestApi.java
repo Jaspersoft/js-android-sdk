@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 
 import java.util.Map;
 import java.util.Set;
