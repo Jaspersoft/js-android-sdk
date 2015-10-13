@@ -41,7 +41,7 @@ public class ReportExportRestApiBuilderTest {
     private ReportExportRestApi.Builder builderUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

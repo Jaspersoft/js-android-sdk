@@ -66,7 +66,7 @@ public class ReportExportRestApiTest {
     TestResource mResource;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Before
     public void setup() {

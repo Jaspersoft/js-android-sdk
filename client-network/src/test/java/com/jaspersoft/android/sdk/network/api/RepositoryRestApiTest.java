@@ -67,7 +67,7 @@ public class RepositoryRestApiTest {
     private RepositoryRestApi restApiUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Before
     public void setup() {

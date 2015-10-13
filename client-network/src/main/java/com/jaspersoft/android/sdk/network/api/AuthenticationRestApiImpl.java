@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.google.gson.JsonSyntaxException;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
@@ -63,7 +64,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     @Override
-    public AuthResponse authenticate(@NonNull final String username,
+    public Token authenticate(@NonNull final String username,
                                      @NonNull final String password,
                                      final String organization,
                                      final Map<String, String> params) {
@@ -73,7 +74,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
             com.squareup.okhttp.Response response = call.execute();
             int statusCode = response.code();
             if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
-                return AuthResponseFactory.create(response);
+                return TokenFactory.create(response);
             } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
                 String location = response.headers().get("Location");
                 if (location == null) {
@@ -82,7 +83,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                 HttpUrl url = HttpUrl.parse(location);
                 String errorQueryParameter = url.queryParameter("error");
                 if (errorQueryParameter == null) {
-                    return AuthResponseFactory.create(response);
+                    return TokenFactory.create(response);
                 } else {
                     com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
                             .protocol(response.protocol())
@@ -106,10 +107,9 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     public EncryptionKey requestEncryptionMetadata() {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
-        AuthResponse anonymousResponse = AuthResponseFactory.create(response.raw());
-        String anonymousCookie = anonymousResponse.getToken();
+        Token anonymousToken = TokenFactory.create(response.raw());
 
-        mClient.interceptors().add(CookieAuthInterceptor.create(anonymousCookie));
+        mClient.interceptors().add(CookieAuthInterceptor.create(anonymousToken.get()));
         mRestAdapterBuilder.client(mClient);
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 

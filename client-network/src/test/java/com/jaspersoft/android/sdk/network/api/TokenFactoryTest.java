@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,45 +24,44 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.squareup.okhttp.Protocol;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import java.util.Iterator;
-import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class AuthResponseFactory {
-    private final List<String> mCookieParts;
+public class TokenFactoryTest {
 
-    AuthResponseFactory(List<String> parts) {
-        mCookieParts = parts;
+    private Request mRequest;
+
+    @Before
+    public void setup() {
+        mRequest = new Request.Builder()
+                .url("http://localhost")
+                .build();
     }
 
-    public static AuthResponse create(Response response) {
-        List<String> parts = response.headers().values("Set-Cookie");
-        AuthResponseFactory responseFactory = new AuthResponseFactory(parts);
-        return responseFactory.create();
-    }
+    @Test
+    public void shouldExtractTokenFromNetworkResponse() {
+        Response mockResponse = new Response.Builder()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie2")
+                .code(200)
+                .protocol(Protocol.HTTP_1_1)
+                .request(mRequest)
+                .build();
 
-    private AuthResponse create() {
-        String cookie = joinCookieParts().toString();
-        return AuthResponse.createSuccessResponse(cookie);
-    }
-
-    private StringBuilder joinCookieParts() {
-        StringBuilder stringBuilder = new StringBuilder();
-        Iterator<String> iterator = mCookieParts.iterator();
-        while (iterator.hasNext()) {
-            String cookie = iterator.next();
-            stringBuilder.append(cookie);
-            if (iterator.hasNext()) {
-                stringBuilder.append(";");
-            }
-        }
-        return stringBuilder;
+        Token response = TokenFactory.create(mockResponse);
+        assertThat(response.get(), is("cookie1;cookie2"));
     }
 }

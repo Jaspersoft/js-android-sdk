@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api.utils;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.auth.Token;
 
 /**
  * @author Tom Koptel
@@ -34,7 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 public final class TestAuthenticator {
 
     private final JrsMetadata mJrsMetadata;
-    private AuthResponse mAuthResponse;
+    private Token mToken;
 
     public TestAuthenticator(JrsMetadata jrsMetadata) {
         mJrsMetadata = jrsMetadata;
@@ -45,16 +45,16 @@ public final class TestAuthenticator {
     }
 
     public void authorize() {
-        if (mAuthResponse == null) {
+        if (mToken == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                     .baseUrl(mJrsMetadata.getServerUrl())
                     .build();
-            mAuthResponse = restApi
+            mToken = restApi
                     .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
         }
     }
 
     public String getCookie() {
-        return mAuthResponse.getToken();
+        return mToken.get();
     }
 }

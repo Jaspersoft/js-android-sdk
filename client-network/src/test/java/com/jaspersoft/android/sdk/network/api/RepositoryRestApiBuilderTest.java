@@ -41,7 +41,7 @@ public class RepositoryRestApiBuilderTest {
     private RepositoryRestApi.Builder builderUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

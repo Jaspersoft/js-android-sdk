@@ -56,7 +56,7 @@ abstract class GenericAuthBuilder<TargetBuilder, Api> {
     }
 
     @SuppressWarnings("unchecked")
-    public TargetBuilder token(Token<?> token) {
+    public TargetBuilder token(Token token) {
         mAuthBuilder.setToken(token);
         return (TargetBuilder) this;
     }

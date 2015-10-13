@@ -73,7 +73,7 @@ public class ReportExecutionRestApiTest {
     private ReportExecutionRestApi restApiUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Before
     public void setup() {

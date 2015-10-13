@@ -41,7 +41,7 @@ public class InputControlRestApiBuilderTest {
     private InputControlRestApi.Builder builderUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
