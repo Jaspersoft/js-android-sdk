@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -76,13 +76,13 @@ public final class SpringAuthService implements AuthService {
 
     @NonNull
     @Override
-    public Token<?> authenticate() {
-        AuthResponse authResponse = invokeAuthentication();
-        return CookieToken.create(authResponse.getToken());
+    public Token authenticate() {
+        Token authToken = invokeAuthentication();
+        return CookieToken.create(authToken);
     }
 
     @NonNull
-    private AuthResponse invokeAuthentication() {
+    private Token invokeAuthentication() {
         String password = mPassword;
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 

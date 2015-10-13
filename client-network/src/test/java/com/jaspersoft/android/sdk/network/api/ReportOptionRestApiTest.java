@@ -59,7 +59,7 @@ public class ReportOptionRestApiTest {
     private ReportOptionRestApi restApiUnderTest;
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     @Before
     public void setup() {

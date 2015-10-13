@@ -37,13 +37,13 @@ import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
  */
 final class AuthBuilder {
     private final AdapterBuilder mAdapterBuilder;
-    private Token<?> mToken;
+    private Token mToken;
 
     public AuthBuilder(AdapterBuilder adapterBuilder) {
         mAdapterBuilder = adapterBuilder;
     }
 
-    public AuthBuilder setToken(Token<?> token) {
+    public AuthBuilder setToken(Token token) {
         checkNotNull(token, "token == null");
         mToken = token;
         return this;

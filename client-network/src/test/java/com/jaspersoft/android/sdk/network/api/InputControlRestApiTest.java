@@ -26,7 +26,7 @@ public class InputControlRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
 
     @Mock
-    Token<?> mToken;
+    Token mToken;
 
     private InputControlRestApi restApiUnderTest;
 
