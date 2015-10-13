@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
@@ -82,16 +81,8 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldRequestDashboard() {
-        DashboardLookup dashboard = api.requestDashboardResource("/public/Samples/Dashboards/1._Supermart_Dashboard");
-        assertThat(dashboard, is(notNullValue()));
-        assertThat(dashboard.getFoundations(), is(not(empty())));
-    }
-
-    @Test
     public void shouldRequestRootFolder() {
         FolderLookup folder = api.requestFolderResource("/");
         assertThat(folder, is(notNullValue()));
     }
-
 }

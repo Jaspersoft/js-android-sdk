@@ -27,9 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
@@ -116,24 +114,6 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public DashboardLookup requestDashboardResource(@Nullable String resourceUri) {
-        checkNotNull(resourceUri, "Dashboard uri should not be null");
-
-        Call<DashboardLookup> call =  mRestApi.requestDashboardResource(resourceUri);
-        return CallWrapper.wrap(call).body();
-    }
-
-    @NonNull
-    @Override
-    public LegacyDashboardLookup requestLegacyDashboardResource(@Nullable String resourceUri) {
-        checkNotNull(resourceUri, "Legacy dashboard uri should not be null");
-
-        Call<LegacyDashboardLookup> call =  mRestApi.requestLegacyDashboardResource(resourceUri);
-        return CallWrapper.wrap(call).body();
-    }
-
-    @NonNull
-    @Override
     public FolderLookup requestFolderResource(@Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
 
@@ -153,18 +133,6 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<ReportLookup> requestReportResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
-
-        @NonNull
-        @Headers("Accept: application/repository.dashboard+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<DashboardLookup> requestDashboardResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
-
-        @NonNull
-        @Headers("Accept: application/repository.legacyDashboard+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<LegacyDashboardLookup> requestLegacyDashboardResource(
                 @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NonNull

@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 
 import java.util.Collection;

@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.network.entity.export;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.OutputResourceDescriptor;
 
 /**

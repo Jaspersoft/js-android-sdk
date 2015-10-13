@@ -27,9 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollection;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
@@ -41,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

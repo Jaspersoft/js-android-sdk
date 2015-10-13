@@ -28,9 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
@@ -48,14 +46,6 @@ public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
     ReportLookup requestReportResource(@NonNull String resourceUri);
-
-    @NonNull
-    @WorkerThread
-    DashboardLookup requestDashboardResource(@NonNull String resourceUri);
-
-    @NonNull
-    @WorkerThread
-    LegacyDashboardLookup requestLegacyDashboardResource(@NonNull String resourceUri);
 
     @NonNull
     @WorkerThread
