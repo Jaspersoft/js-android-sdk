@@ -36,20 +36,16 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportOptionResponse {
+public final class ReportOptionSet {
 
-    private ReportOptionResponse() {}
-
-    public static ReportOptionResponse empty() {
-        return new ReportOptionResponse();
-    }
+    private ReportOptionSet() {}
 
     @Expose
     @SerializedName("reportOptionsSummary")
     private Set<ReportOption> mOptions = Collections.emptySet();
 
     @NonNull
-    public Set<ReportOption> getOptions() {
+    public Set<ReportOption> get() {
         return mOptions;
     }
 }
