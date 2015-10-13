@@ -27,7 +27,7 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ServerInfoResponse {
+public final class ServerInfoData {
 
     @Expose
     private String dateFormatPattern;
@@ -87,7 +87,7 @@ public final class ServerInfoResponse {
 
     @Override
     public String toString() {
-        return "ServerInfoResponse{" +
+        return "ServerInfoData{" +
                 "build='" + build + '\'' +
                 ", dateFormatPattern='" + dateFormatPattern + '\'' +
                 ", datetimeFormatPattern='" + datetimeFormatPattern + '\'' +

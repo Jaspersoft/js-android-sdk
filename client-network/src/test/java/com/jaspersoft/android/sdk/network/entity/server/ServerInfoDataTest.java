@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ServerInfoResponseTest {
+public class ServerInfoDataTest {
     @Test
     @Parameters({
             "dateFormatPattern",
@@ -54,7 +54,7 @@ public class ServerInfoResponseTest {
             "features",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ServerInfoResponse.class.getDeclaredField(fieldName);
+        Field field = ServerInfoData.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }

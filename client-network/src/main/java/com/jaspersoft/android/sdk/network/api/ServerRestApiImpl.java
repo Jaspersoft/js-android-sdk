@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network.api;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
 import retrofit.Call;
 import retrofit.Retrofit;
@@ -47,8 +47,8 @@ final class ServerRestApiImpl implements ServerRestApi {
 
     @NonNull
     @Override
-    public ServerInfoResponse requestServerInfo() {
-        Call<ServerInfoResponse> call = mApi.requestServerInfo();
+    public ServerInfoData requestServerInfo() {
+        Call<ServerInfoData> call = mApi.requestServerInfo();
         return CallWrapper.wrap(call).body();
     }
 
@@ -110,7 +110,7 @@ final class ServerRestApiImpl implements ServerRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET(value = "rest_v2/serverInfo")
-        Call<ServerInfoResponse> requestServerInfo();
+        Call<ServerInfoData> requestServerInfo();
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/edition")
         Call<String> requestEdition();
