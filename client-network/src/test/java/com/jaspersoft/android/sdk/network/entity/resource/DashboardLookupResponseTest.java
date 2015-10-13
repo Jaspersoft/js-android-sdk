@@ -51,13 +51,13 @@ public class DashboardLookupResponseTest {
             "defaultFoundation",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = DashboardLookupResponse.class.getDeclaredField(fieldName);
+        Field field = DashboardLookup.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        DashboardLookupResponse response = new DashboardLookupResponse();
+        DashboardLookup response = new DashboardLookup();
         assertThat(response.getResourceType(), is("dashboard"));
     }
 }

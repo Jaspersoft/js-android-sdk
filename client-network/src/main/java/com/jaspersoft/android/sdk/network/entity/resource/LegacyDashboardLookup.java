@@ -28,7 +28,7 @@ package com.jaspersoft.android.sdk.network.entity.resource;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class LegacyDashboardLookupResponse extends ResourceLookupResponse {
+public final class LegacyDashboardLookup extends ResourceLookup {
 
     @Override
     public String getResourceType() {

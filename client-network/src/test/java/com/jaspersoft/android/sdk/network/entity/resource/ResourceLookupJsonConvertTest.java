@@ -36,32 +36,25 @@ import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ReportLookupResponseTest {
+public class ResourceLookupJsonConvertTest {
     @Test
     @Parameters({
-            "dataSource",
-            "jrxml",
-            "inputControlRenderingView",
-            "reportRenderingView",
-            "alwaysPromptControls",
-            "controlsLayout",
-            "resources",
+            "label",
+            "description",
+            "uri",
+            "resourceType",
+            "version",
+            "creationDate",
+            "updateDate",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportLookupResponse.class.getDeclaredField(fieldName);
+        Field field = ResourceLookup.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
-    }
-
-    @Test
-    public void shouldAlwaysReturnReportUnitUriAsType() {
-        ReportLookupResponse response = new ReportLookupResponse();
-        assertThat(response.getResourceType(), is("reportUnit"));
     }
 }

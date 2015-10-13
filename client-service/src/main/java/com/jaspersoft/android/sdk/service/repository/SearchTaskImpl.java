@@ -29,7 +29,7 @@ import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 
 import java.util.Collection;
 
@@ -55,7 +55,7 @@ final class SearchTaskImpl implements SearchTask {
 
     @NonNull
     @Override
-    public Collection<ResourceLookupResponse> nextLookup() {
+    public Collection<ResourceLookup> nextLookup() {
         return defineSearchStrategy().searchNext();
     }
 

@@ -26,8 +26,8 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,9 +54,9 @@ public class RepositoryServiceTest {
     ServerRestApi.Factory infoApi;
 
     @Mock
-    FolderLookupResponse mFolderResponse;
+    FolderLookup mFolderResponse;
     @Mock
-    ReportLookupResponse mReportResponse;
+    ReportLookup mReportResponse;
 
     private RepositoryService objectUnderTest;
 

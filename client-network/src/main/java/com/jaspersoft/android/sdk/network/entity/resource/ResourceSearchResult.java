@@ -34,29 +34,29 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceSearchResponse {
+public final class ResourceSearchResult {
 
     @Expose
     @SerializedName("resourceLookup")
-    private List<ResourceLookupResponse> mResources;
+    private List<ResourceLookup> mResources;
     private int mResultCount;
     private int mTotalCount;
     private int mStartIndex;
     private int mNextOffset;
 
-    private ResourceSearchResponse(List<ResourceLookupResponse> resources) {
+    private ResourceSearchResult(List<ResourceLookup> resources) {
         mResources = resources;
     }
 
-    public static ResourceSearchResponse empty() {
-        return new ResourceSearchResponse(Collections.<ResourceLookupResponse>emptyList());
+    public static ResourceSearchResult empty() {
+        return new ResourceSearchResult(Collections.<ResourceLookup>emptyList());
     }
 
     public int getNextOffset() {
         return mNextOffset;
     }
 
-    public List<ResourceLookupResponse> getResources() {
+    public List<ResourceLookup> getResources() {
         return mResources;
     }
 
@@ -74,7 +74,7 @@ public final class ResourceSearchResponse {
 
     @Override
     public String toString() {
-        return "ResourceSearchResponse{" +
+        return "ResourceSearchResult{" +
                 "mNextOffset=" + mNextOffset +
                 ", mResourcesCount=" + mResources.size() +
                 ", mResultCount=" + mResultCount +

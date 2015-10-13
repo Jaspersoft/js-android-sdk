@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,39 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.resource;
+package com.jaspersoft.android.sdk.network.entity.type;
 
-import com.google.gson.annotations.Expose;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.lang.reflect.Field;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
-import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-@RunWith(JUnitParamsRunner.class)
-public class ResourceLookupResponseJsonConvertTest {
-    @Test
-    @Parameters({
-            "label",
-            "description",
-            "uri",
-            "resourceType",
-            "version",
-            "creationDate",
-            "updateDate",
-    })
-    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ResourceLookupResponse.class.getDeclaredField(fieldName);
-        assertThat(field, hasAnnotation(Expose.class));
+final class ReportLookupTypeAdapterFactory extends CustomizedTypeAdapterFactory<ReportLookup> {
+    public ReportLookupTypeAdapterFactory() {
+        super(ReportLookup.class);
+    }
+
+    @Override
+    protected JsonElement afterRead(JsonElement deserialized) {
+        JsonObject jsonObject = deserialized.getAsJsonObject();
+        JsonObject resources = jsonObject.getAsJsonObject("resources");
+        if (resources != null) {
+            JsonArray resourceArray = resources.getAsJsonArray("resource");
+            jsonObject.remove("resources");
+            jsonObject.add("resources", resourceArray);
+        }
+        return jsonObject;
     }
 }

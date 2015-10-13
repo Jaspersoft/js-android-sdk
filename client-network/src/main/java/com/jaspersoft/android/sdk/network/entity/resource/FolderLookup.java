@@ -22,32 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.type;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
-
+package com.jaspersoft.android.sdk.network.entity.resource;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportLookupResponseTypeAdapterFactory extends CustomizedTypeAdapterFactory<ReportLookupResponse> {
-    public ReportLookupResponseTypeAdapterFactory() {
-        super(ReportLookupResponse.class);
-    }
+public class FolderLookup extends ResourceLookup {
+
+    public FolderLookup() {}
 
     @Override
-    protected JsonElement afterRead(JsonElement deserialized) {
-        JsonObject jsonObject = deserialized.getAsJsonObject();
-        JsonObject resources = jsonObject.getAsJsonObject("resources");
-        if (resources != null) {
-            JsonArray resourceArray = resources.getAsJsonArray("resource");
-            jsonObject.remove("resources");
-            jsonObject.add("resources", resourceArray);
-        }
-        return jsonObject;
+    public String getResourceType() {
+        return "folder";
     }
 }

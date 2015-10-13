@@ -33,45 +33,67 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class DashboardLookupResponse extends ResourceLookupResponse {
+public class ReportLookup extends ResourceLookup {
 
     @Expose
-    private List<DashboardFoundation> foundations;
+    private DataSource dataSource;
     @Expose
-    private List<DashboardResource> resources;
+    private JRXml jrxml;
     @Expose
-    private String defaultFoundation;
+    private String inputControlRenderingView;
+    @Expose
+    private String reportRenderingView;
+    @Expose
+    private boolean alwaysPromptControls;
+    @Expose
+    private String controlsLayout;
+    @Expose
+    private List<ReportResource> resources;
+
+    public ReportLookup() {}
 
     @Override
     public String getResourceType() {
-        return "dashboard";
+        return "reportUnit";
     }
 
-    public String getDefaultFoundation() {
-        return defaultFoundation;
+    public boolean isAlwaysPromptControls() {
+        return alwaysPromptControls;
     }
 
-    public List<DashboardFoundation> getFoundations() {
-        return foundations;
+    public String getControlsLayout() {
+        return controlsLayout;
     }
 
-    public List<DashboardResource> getResources() {
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public String getInputControlRenderingView() {
+        return inputControlRenderingView;
+    }
+
+    public JRXml getJrxml() {
+        return jrxml;
+    }
+
+    public String getReportRenderingView() {
+        return reportRenderingView;
+    }
+
+    public List<ReportResource> getResources() {
         return resources;
     }
 
     @Override
     public String toString() {
-        return "DashboardLookupResponse{" +
-                "creationDate='" + creationDate + '\'' +
-                ", label='" + label + '\'' +
-                ", description='" + description + '\'' +
-                ", uri='" + uri + '\'' +
-                ", resourceType='dashboard'" +
-                ", version=" + version +
-                ", permissionMask=" + permissionMask +
-                ", updateDate='" + updateDate + '\'' +
-                ", defaultFoundation='" + defaultFoundation + '\'' +
-                ", foundations=" + Arrays.toString(foundations.toArray()) +
+        return "ReportLookup{" +
+                "alwaysPromptControls=" + alwaysPromptControls +
+                ", dataSource=" + dataSource +
+                ", jrxml=" + jrxml +
+                ", inputControlRenderingView='" + inputControlRenderingView + '\'' +
+                ", reportRenderingView='" + reportRenderingView + '\'' +
+                ", controlsLayout='" + controlsLayout + '\'' +
                 ", resources=" + Arrays.toString(resources.toArray()) +
                 '}';
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright � 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,20 +24,44 @@
 
 package com.jaspersoft.android.sdk.network.entity.resource;
 
-import org.junit.Test;
+import com.google.gson.annotations.Expose;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.lang.reflect.Field;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
- * 
  * @author Tom Koptel
  * @since 2.0
  */
-public class FolderLookupResponseTest {
+@RunWith(JUnitParamsRunner.class)
+public class ReportLookupTest {
+    @Test
+    @Parameters({
+            "dataSource",
+            "jrxml",
+            "inputControlRenderingView",
+            "reportRenderingView",
+            "alwaysPromptControls",
+            "controlsLayout",
+            "resources",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ReportLookup.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
+    }
+
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        FolderLookup response = new FolderLookup();
-        assertThat(response.getResourceType(), is("folder"));
+        ReportLookup response = new ReportLookup();
+        assertThat(response.getResourceType(), is("reportUnit"));
     }
 }

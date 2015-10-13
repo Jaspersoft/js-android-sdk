@@ -30,7 +30,7 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ResourceLookupResponse {
+public class ResourceLookup {
 
     @Expose
     protected String label;
@@ -84,7 +84,7 @@ public class ResourceLookupResponse {
 
     @Override
     public String toString() {
-        return "ResourceLookupResponse{" +
+        return "ResourceLookup{" +
                 "creationDate='" + creationDate + '\'' +
                 ", label='" + label + '\'' +
                 ", description='" + description + '\'' +
