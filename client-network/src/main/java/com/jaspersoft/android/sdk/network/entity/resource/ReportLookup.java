@@ -26,9 +26,6 @@ package com.jaspersoft.android.sdk.network.entity.resource;
 
 import com.google.gson.annotations.Expose;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -36,19 +33,7 @@ import java.util.List;
 public class ReportLookup extends ResourceLookup {
 
     @Expose
-    private DataSource dataSource;
-    @Expose
-    private JRXml jrxml;
-    @Expose
-    private String inputControlRenderingView;
-    @Expose
-    private String reportRenderingView;
-    @Expose
     private boolean alwaysPromptControls;
-    @Expose
-    private String controlsLayout;
-    @Expose
-    private List<ReportResource> resources;
 
     public ReportLookup() {}
 
@@ -61,40 +46,10 @@ public class ReportLookup extends ResourceLookup {
         return alwaysPromptControls;
     }
 
-    public String getControlsLayout() {
-        return controlsLayout;
-    }
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public String getInputControlRenderingView() {
-        return inputControlRenderingView;
-    }
-
-    public JRXml getJrxml() {
-        return jrxml;
-    }
-
-    public String getReportRenderingView() {
-        return reportRenderingView;
-    }
-
-    public List<ReportResource> getResources() {
-        return resources;
-    }
-
     @Override
     public String toString() {
         return "ReportLookup{" +
                 "alwaysPromptControls=" + alwaysPromptControls +
-                ", dataSource=" + dataSource +
-                ", jrxml=" + jrxml +
-                ", inputControlRenderingView='" + inputControlRenderingView + '\'' +
-                ", reportRenderingView='" + reportRenderingView + '\'' +
-                ", controlsLayout='" + controlsLayout + '\'' +
-                ", resources=" + Arrays.toString(resources.toArray()) +
                 '}';
     }
 }
