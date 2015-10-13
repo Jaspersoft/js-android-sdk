@@ -140,14 +140,6 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForLegacyDashboardResourceShouldNotAcceptNullUri() {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Legacy dashboard uri should not be null");
-
-        restApiUnderTest.requestLegacyDashboardResource(null);
-    }
-
-    @Test
     public void requestForFolderResourceShouldNotAcceptNullUri() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Folder uri should not be null");
@@ -171,15 +163,6 @@ public class RepositoryRestApiTest {
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
         restApiUnderTest.requestReportResource("any_id");
-    }
-
-    @Test
-    public void requestLegacyDashboardResourceShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
-
-        mWebMockRule.enqueue(MockResponseFactory.create500());
-
-        restApiUnderTest.requestLegacyDashboardResource("any_id");
     }
 
     @Test
