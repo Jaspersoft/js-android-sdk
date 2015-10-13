@@ -27,17 +27,17 @@ package com.jaspersoft.android.sdk.network.entity.type;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class InputControlResponseTypeAdapterFactory extends CustomizedTypeAdapterFactory<InputControlResponse> {
+final class InputControlResponseTypeAdapterFactory extends CustomizedTypeAdapterFactory<InputControlCollection> {
     private static final String[] RULE_TYPES = {"dateTimeFormatValidationRule", "mandatoryValidationRule"};
 
     public InputControlResponseTypeAdapterFactory() {
-        super(InputControlResponse.class);
+        super(InputControlCollection.class);
     }
 
     @Override

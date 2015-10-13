@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.network.entity.control;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,13 +35,13 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class InputControlValueResponse {
+public final class InputControlCollection {
 
     @Expose
-    @SerializedName(value = "inputControlState")
-    private List<InputControlState> values = Collections.emptyList();
+    @SerializedName(value = "inputControl")
+    private List<InputControl> mValues = Collections.emptyList();
 
-    public List<InputControlState> getValues() {
-        return values;
+    public Collection<InputControl> get() {
+        return mValues;
     }
 }

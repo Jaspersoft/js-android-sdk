@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,11 +52,11 @@ public interface InputControlRestApi {
      */
     @NonNull
     @WorkerThread
-    InputControlResponse requestInputControls(@NonNull String reportUri, boolean excludeState);
+    Collection<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState);
 
     @NonNull
     @WorkerThread
-    InputControlValueResponse requestInputControlsInitialStates(@NonNull String reportUri,
+    Collection<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
                                                                 boolean freshData);
 
     /**
@@ -70,7 +70,7 @@ public interface InputControlRestApi {
      */
     @NonNull
     @WorkerThread
-    InputControlValueResponse requestInputControlsStates(@NonNull String reportUri,
+    Collection<InputControlState> requestInputControlsStates(@NonNull String reportUri,
                                                          @NonNull Map<String, Set<String>> controlsValues,
                                                          boolean freshData);
 
