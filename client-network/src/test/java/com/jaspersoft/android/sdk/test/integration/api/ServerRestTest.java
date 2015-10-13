@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.junit.Before;
@@ -55,7 +55,7 @@ public class ServerRestTest {
 
     @Test
     public void shouldRequestServerInfo() throws Exception {
-        ServerInfoResponse response = apiUnderTest.requestServerInfo();
+        ServerInfoData response = apiUnderTest.requestServerInfo();
         assertThat(response, is(notNullValue()));
     }
 

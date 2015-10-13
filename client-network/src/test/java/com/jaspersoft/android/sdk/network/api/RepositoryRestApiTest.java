@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -83,7 +83,7 @@ public class RepositoryRestApiTest {
     public void shouldReturnEmptyResponseForNoContentResponse() {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(null);
         assertThat(response.getResources(), is(empty()));
     }
 
@@ -94,7 +94,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Result-Count", "100");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(null);
         assertThat(response.getResultCount(), is(100));
     }
 
@@ -105,7 +105,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Total-Count", "1000");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(null);
         assertThat(response.getTotalCount(), is(1000));
     }
 
@@ -116,7 +116,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Start-Index", "5");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(null);
         assertThat(response.getStartIndex(), is(5));
     }
 
@@ -127,7 +127,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Next-Offset", "10");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResponse response = restApiUnderTest.searchResources(null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(null);
         assertThat(response.getNextOffset(), is(10));
     }
 

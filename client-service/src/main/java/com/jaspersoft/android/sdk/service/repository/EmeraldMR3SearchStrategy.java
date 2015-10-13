@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.Collections;
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
-    public static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
+    public static final Collection<ResourceLookup> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
     private final RepositoryRestApi.Factory mRepoFactory;
@@ -58,7 +58,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<ResourceLookupResponse> searchNext() {
+    public Collection<ResourceLookup> searchNext() {
         if (mEndReached || mInitialCriteria.getLimit() == 0){
             return EMPTY_RESPONSE;
         }
@@ -75,15 +75,15 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private Collection<ResourceLookupResponse> performLookup() {
+    private Collection<ResourceLookup> performLookup() {
         InternalCriteria newSearchCriteria = createNextCriteria();
-        ResourceSearchResponse result = performApiCall(newSearchCriteria);
+        ResourceSearchResult result = performApiCall(newSearchCriteria);
         updateInternalOffset(result);
         return result.getResources();
     }
 
     @NonNull
-    private ResourceSearchResponse performApiCall(InternalCriteria newSearchCriteria) {
+    private ResourceSearchResult performApiCall(InternalCriteria newSearchCriteria) {
         RepositoryRestApi api = mRepoFactory.get();
         return api.searchResources(newSearchCriteria.toMap());
     }
@@ -96,12 +96,12 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
                     .limit(mUserOffset)
                     .offset(0)
                     .create();
-            ResourceSearchResponse result = performApiCall(newCriteria);
+            ResourceSearchResult result = performApiCall(newCriteria);
             mInternalOffset = result.getNextOffset();
         }
     }
 
-    private void updateInternalOffset(ResourceSearchResponse result) {
+    private void updateInternalOffset(ResourceSearchResult result) {
         int nextOffset = result.getNextOffset();
 
         mEndReached = (nextOffset == 0);

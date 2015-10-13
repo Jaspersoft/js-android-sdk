@@ -3,7 +3,7 @@ package com.jaspersoft.android.sdk.service;
 import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
@@ -33,7 +33,7 @@ public final class ServerInfoService {
     }
 
     public ServerInfo requestServerInfo() {
-        ServerInfoResponse response = mRestApi.requestServerInfo();
+        ServerInfoData response = mRestApi.requestServerInfo();
         return mTransformer.transform(response);
     }
 }

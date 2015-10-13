@@ -36,7 +36,7 @@ import static org.hamcrest.core.Is.is;
 public class LegacyDashboardLookupResponseTest {
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        LegacyDashboardLookupResponse response = new LegacyDashboardLookupResponse();
+        LegacyDashboardLookup response = new LegacyDashboardLookup();
         assertThat(response.getResourceType(), is("legacyDashboard"));
     }
 }

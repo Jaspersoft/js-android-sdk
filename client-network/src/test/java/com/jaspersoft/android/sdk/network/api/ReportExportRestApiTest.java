@@ -26,8 +26,8 @@ package com.jaspersoft.android.sdk.network.api;
 
 import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -141,7 +141,7 @@ public class ReportExportRestApiTest {
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.getPages(), is("1-10"));
     }
 
@@ -152,7 +152,7 @@ public class ReportExportRestApiTest {
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportResourceResponse resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.isFinal(), is(true));
     }
 
@@ -162,7 +162,7 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ExportInput resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
+        OutputResource resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
         InputStream stream = resource.getStream();
         assertThat(stream, is(notNullValue()));
         stream.close();

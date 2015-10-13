@@ -28,7 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +41,7 @@ public interface ReportOptionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportOptionResponse requestReportOptionsList(@NonNull String reportUnitUri);
+    Set<ReportOption> requestReportOptionsList(@NonNull String reportUnitUri);
 
     @NonNull
     @WorkerThread

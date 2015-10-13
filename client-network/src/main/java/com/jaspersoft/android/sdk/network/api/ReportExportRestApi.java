@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 
 /**
  * @author Tom Koptel
@@ -41,19 +41,19 @@ public interface ReportExportRestApi {
 
     @NonNull
     @WorkerThread
-    ReportExportExecutionResponse runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    ExportExecutionDescriptor runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ExecutionStatusResponse checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    ExecutionStatus checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
     @WorkerThread
-    ExportResourceResponse requestExportOutput(@NonNull String executionId, @NonNull String exportId);
+    ExportOutputResource requestExportOutput(@NonNull String executionId, @NonNull String exportId);
 
     @NonNull
     @WorkerThread
-    ExportInput requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
+    OutputResource requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
 
     final class Builder extends GenericAuthBuilder<Builder, ReportExportRestApi> {
         @Override

@@ -1,7 +1,7 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ServerInfoResponse.class})
+@PrepareForTest({ServerInfoData.class})
 public class ServerInfoServiceTest {
 
     @Mock
@@ -28,7 +28,7 @@ public class ServerInfoServiceTest {
     @Mock
     ServerInfoTransformer mockTransformer;
     @Mock
-    ServerInfoResponse mockResponse;
+    ServerInfoData mockResponse;
 
     private ServerInfoService serviceUnderTest;
 

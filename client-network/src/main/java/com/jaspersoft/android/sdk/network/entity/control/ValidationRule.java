@@ -49,34 +49,4 @@ public final class ValidationRule {
     public String getValue() {
         return value;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ValidationRule that = (ValidationRule) o;
-
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
-        if (errorMessage != null ? !errorMessage.equals(that.errorMessage) : that.errorMessage != null)
-            return false;
-        return !(value != null ? !value.equals(that.value) : that.value != null);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (errorMessage != null ? errorMessage.hashCode() : 0);
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ValidationRule{" +
-                "errorMessage='" + errorMessage + '\'' +
-                ", type='" + type + '\'' +
-                ", value='" + value + '\'' +
-                '}';
-    }
 }
