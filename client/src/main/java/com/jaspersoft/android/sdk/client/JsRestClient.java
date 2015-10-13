@@ -1402,7 +1402,7 @@ public class JsRestClient {
                 .append(REST_REPORT_OPTIONS_URI)
                 .append("?label=")
                 .append(optionLabel)
-                .append("&overwrite")
+                .append("&overwrite=")
                 .append(overwrite);
 
         if (dataType == DataType.JSON) {
