@@ -42,7 +42,7 @@ import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.REPOR
  * @author Tom Koptel
  * @since 2.0
  */
-final class InternalCriteria {
+class InternalCriteria {
     private final int mLimit;
     private final int mOffset;
     private final int mResourceMask;

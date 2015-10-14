@@ -22,50 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.resource;
+package com.jaspersoft.android.sdk.service.data.repository;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public enum ResourceType {
-    folder,
-    reportUnit,
-    dashboard,
-    legacyDashboard,
-    file,
-    semanticLayerDataSource,
-    jndiJdbcDataSource,
-    unknown {
-        private String rawValue;
-
-        @Override
-        void setRawValue(String value) {
-            rawValue = value;
-        }
-
-        @Override
-        public String getRawValue() {
-            return rawValue;
-        }
-    };
-
-    static ResourceType parseRawValue(String rawValue) {
-        ResourceType type;
-        try {
-            type = ResourceType.valueOf(rawValue);
-        } catch (IllegalArgumentException ex) {
-            type = ResourceType.unknown;
-            type.setRawValue(rawValue);
-        }
-        return type;
+@RunWith(JUnitParamsRunner.class)
+public class DefaultTypeParserTest {
+    @Test
+    @Parameters({"folder", "reportUnit", "dashboard", "legacyDashboard", "file", "semanticLayerDataSource", "jndiJdbcDataSource"})
+    public void shouldProvideTypeForKnownResourceTypes(String type) {
+        ResourceType resourceType = ResourceType.valueOf(type);
+        assertThat(DefaultTypeParser.INSTANCE.parse(type), is(resourceType));
     }
 
-    void setRawValue(String value) {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getRawValue() {
-        return String.valueOf(this);
+    @Test
+    public void shouldReturnUnkownTypeForMissingMapping() {
+        ResourceType resourceType = DefaultTypeParser.INSTANCE.parse("someStrangeType");
+        assertThat(resourceType, is(notNullValue()));
+        assertThat(resourceType.getRawValue(), is("someStrangeType"));
     }
 }
