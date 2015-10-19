@@ -43,15 +43,15 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     private static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
     private static final int MAX_RETRY_COUNT = 5;
 
-    private final RepositoryRestApi.Factory mRepoFactory;
+    private final RepositoryRestApi mRepoFactoryRestApi;
     private final InternalCriteria mInitialCriteria;
 
     private int mServerDisposition;
     private List<ResourceLookupResponse> mBuffer = new LinkedList<>();
     private boolean mEndReached;
 
-    public EmeraldMR2SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, InternalCriteria criteria) {
-        mRepoFactory = repositoryApiFactory;
+    public EmeraldMR2SearchStrategy(RepositoryRestApi repositoryApiFactory, InternalCriteria criteria) {
+        mRepoFactoryRestApi = repositoryApiFactory;
         mInitialCriteria = criteria;
         mEndReached = false;
     }
@@ -114,7 +114,6 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
                 .offset(mServerDisposition)
                 .limit(limit)
                 .create();
-        RepositoryRestApi api = mRepoFactory.get();
-        return api.searchResources(nextCriteria.toMap());
+        return mRepoFactoryRestApi.searchResources(nextCriteria.toMap());
     }
 }

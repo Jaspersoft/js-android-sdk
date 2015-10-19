@@ -61,10 +61,6 @@ public interface RepositoryRestApi {
     @WorkerThread
     FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
 
-    interface Factory {
-        RepositoryRestApi get();
-    }
-
     final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
         @Override
         RepositoryRestApi createApi() {

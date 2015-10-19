@@ -41,15 +41,15 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     public static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
-    private final RepositoryRestApi.Factory mRepoFactory;
+    private final RepositoryRestApi mRepositoryRestApi;
     private final InternalCriteria mInitialCriteria;
 
     private int mUserOffset;
     private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
 
-    public EmeraldMR3SearchStrategy(RepositoryRestApi.Factory repositoryApiFactory, InternalCriteria criteria) {
-        mRepoFactory = repositoryApiFactory;
+    public EmeraldMR3SearchStrategy(RepositoryRestApi repositoryApiFactory, InternalCriteria criteria) {
+        mRepositoryRestApi = repositoryApiFactory;
         // Internally enabling 'forceFullPageFlag'
         mInitialCriteria = criteria.newBuilder()
                 .forceFullPage(true)
@@ -84,8 +84,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     @NonNull
     private ResourceSearchResponse performApiCall(InternalCriteria newSearchCriteria) {
-        RepositoryRestApi api = mRepoFactory.get();
-        return api.searchResources(newSearchCriteria.toMap());
+        return mRepositoryRestApi.searchResources(newSearchCriteria.toMap());
     }
 
     private void defineInternalOffset() {

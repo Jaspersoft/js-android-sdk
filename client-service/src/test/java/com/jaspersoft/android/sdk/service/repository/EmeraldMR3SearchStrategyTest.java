@@ -38,8 +38,6 @@ public class EmeraldMR3SearchStrategyTest {
     private static final InternalCriteria NO_CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    RepositoryRestApi.Factory mApiFactory;
-    @Mock
     RepositoryRestApi mApi;
     @Mock
     ResourceSearchResponse mResponse;
@@ -49,7 +47,6 @@ public class EmeraldMR3SearchStrategyTest {
         MockitoAnnotations.initMocks(this);
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
-        when(mApiFactory.get()).thenReturn(mApi);
 
         List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
         when(mResponse.getResources()).thenReturn(stubLookup);
@@ -58,7 +55,7 @@ public class EmeraldMR3SearchStrategyTest {
     @Test
     public void shouldMakeImmediateCallOnApiForUserOffsetZero() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
 
@@ -73,7 +70,7 @@ public class EmeraldMR3SearchStrategyTest {
     @Test
     public void makesAdditionalCallOnApiIfUserOffsetNotZero() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(5).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
 
         strategy.searchNext();
 
@@ -87,7 +84,7 @@ public class EmeraldMR3SearchStrategyTest {
     @Test
     public void secondSearchLookupShouldUseNextOffset() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.searchNext();
@@ -100,14 +97,13 @@ public class EmeraldMR3SearchStrategyTest {
         params.put("forceFullPage", "true");
         params.put("offset", "133");
 
-        verify(mApiFactory, times(2)).get();
         verify(mResponse, times(2)).getNextOffset();
         verify(mApi, times(1)).searchResources(params);
     }
 
     @Test
     public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() {
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, NO_CRITERIA);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, NO_CRITERIA);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.searchNext();
@@ -119,7 +115,6 @@ public class EmeraldMR3SearchStrategyTest {
         assertThat(response, is(empty()));
         assertThat(strategy.hasNext(), is(false));
 
-        verify(mApiFactory, times(2)).get();
         verify(mResponse, times(2)).getNextOffset();
         verify(mApi, times(2)).searchResources(anyMap());
     }
@@ -127,7 +122,7 @@ public class EmeraldMR3SearchStrategyTest {
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
-        SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApiFactory, userCriteria);
+        SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, userCriteria);
 
         Collection<ResourceLookupResponse> result = strategy.searchNext();
         assertThat(result, Matchers.is(Matchers.empty()));

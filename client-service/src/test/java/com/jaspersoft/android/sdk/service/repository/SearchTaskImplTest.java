@@ -53,10 +53,6 @@ public class SearchTaskImplTest {
     private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    RepositoryRestApi.Factory mRepoApiFactory;
-    @Mock
-    ServerRestApi.Factory mInfoApiFactory;
-    @Mock
     RepositoryRestApi mRepoApi;
     @Mock
     ServerRestApi mInfoApi;
@@ -68,14 +64,12 @@ public class SearchTaskImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApiFactory, mInfoApiFactory);
-        when(mRepoApiFactory.get()).thenReturn(mRepoApi);
-        when(mInfoApiFactory.get()).thenReturn(mInfoApi);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mInfoApi);
 
         when(mSearchStrategy.searchNext()).thenReturn(null);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
-        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
+        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
     }
 
     @Test
@@ -84,10 +78,9 @@ public class SearchTaskImplTest {
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApi), eq(CRITERIA));
 
         verify(mInfoApi, times(1)).requestVersion();
-        verify(mInfoApiFactory, times(1)).get();
         verify(mSearchStrategy, times(1)).searchNext();
     }
 
@@ -99,10 +92,9 @@ public class SearchTaskImplTest {
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApi), eq(CRITERIA));
 
         verify(mInfoApi, times(1)).requestVersion();
-        verify(mInfoApiFactory, times(1)).get();
         verify(mSearchStrategy, times(2)).searchNext();
     }
 }

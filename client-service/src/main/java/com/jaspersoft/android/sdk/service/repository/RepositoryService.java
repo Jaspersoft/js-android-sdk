@@ -32,16 +32,16 @@ import com.jaspersoft.android.sdk.network.api.ServerRestApi;
  * @since 2.0
  */
 public class RepositoryService {
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
+    private final RepositoryRestApi mRepositoryRestApi;
+    private final ServerRestApi mServerRestApi;
 
-    public RepositoryService(RepositoryRestApi.Factory repositoryApiFactory,
-                             ServerRestApi.Factory infoApiFactory) {
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
+    public RepositoryService(RepositoryRestApi repositoryRestApi,
+                             ServerRestApi infoApiFactory) {
+        mRepositoryRestApi = repositoryRestApi;
+        mServerRestApi = infoApiFactory;
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mServerRestApi);
     }
 }

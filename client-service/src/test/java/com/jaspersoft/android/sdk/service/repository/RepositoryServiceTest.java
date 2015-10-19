@@ -47,12 +47,9 @@ import static org.mockito.Mockito.when;
  */
 public class RepositoryServiceTest {
     @Mock
-    RepositoryRestApi.Factory repoApiFactory;
-    @Mock
     RepositoryRestApi repoApi;
     @Mock
-    ServerRestApi.Factory infoApi;
-
+    ServerRestApi infoApi;
     @Mock
     FolderLookupResponse mFolderResponse;
     @Mock
@@ -66,8 +63,7 @@ public class RepositoryServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(repoApiFactory.get()).thenReturn(repoApi);
-        objectUnderTest = new RepositoryService(repoApiFactory, infoApi);
+        objectUnderTest = new RepositoryService(repoApi, infoApi);
     }
 
     @Test

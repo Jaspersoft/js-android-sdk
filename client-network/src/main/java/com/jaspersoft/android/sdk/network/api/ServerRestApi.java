@@ -66,10 +66,6 @@ public interface ServerRestApi {
     @WorkerThread
     String requestExpiration();
 
-    interface Factory {
-        ServerRestApi get();
-    }
-
     final class Builder extends GenericBuilder<Builder, ServerRestApi> {
         @Override
         ServerRestApi createApi() {

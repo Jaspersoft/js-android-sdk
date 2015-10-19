@@ -40,14 +40,14 @@ interface SearchStrategy {
 
     class Factory {
         public static SearchStrategy get(String serverVersion,
-                                         RepositoryRestApi.Factory repositoryApiFactory,
+                                         RepositoryRestApi repositoryRestApi,
                                          InternalCriteria criteria) {
             ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
-                return new EmeraldMR2SearchStrategy(repositoryApiFactory, criteria);
+                return new EmeraldMR2SearchStrategy(repositoryRestApi, criteria);
             }
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
-                return new EmeraldMR3SearchStrategy(repositoryApiFactory, criteria);
+                return new EmeraldMR3SearchStrategy(repositoryRestApi, criteria);
             }
             throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + serverVersion);
         }

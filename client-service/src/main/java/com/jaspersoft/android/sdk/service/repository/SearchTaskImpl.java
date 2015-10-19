@@ -39,18 +39,18 @@ import java.util.Collection;
  */
 final class SearchTaskImpl implements SearchTask {
     private final InternalCriteria mCriteria;
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
+    private final RepositoryRestApi mRepositoryRestApi;
+    private final ServerRestApi mServerRestApi;
 
     @Nullable
     private SearchStrategy strategy;
 
     SearchTaskImpl(InternalCriteria criteria,
-                   RepositoryRestApi.Factory repositoryApiFactory,
-                   ServerRestApi.Factory infoApiFactory) {
+                   RepositoryRestApi repositoryRestApi,
+                   ServerRestApi serverRestApi) {
         mCriteria = criteria;
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
+        mRepositoryRestApi = repositoryRestApi;
+        mServerRestApi = serverRestApi;
     }
 
     @NonNull
@@ -73,10 +73,8 @@ final class SearchTaskImpl implements SearchTask {
 
     private SearchStrategy defineSearchStrategy() {
         if (strategy == null) {
-            String version = mInfoApiFactory.get().requestVersion();
-            strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
-
-
+            String version = mServerRestApi.requestVersion();
+            strategy = SearchStrategy.Factory.get(version, mRepositoryRestApi, mCriteria);
         }
         return strategy;
     }

@@ -40,8 +40,6 @@ import static org.mockito.Mockito.when;
 public class EmeraldMR2SearchStrategyTest {
 
     @Mock
-    RepositoryRestApi.Factory mApiFactory;
-    @Mock
     RepositoryRestApi mApi;
     @Mock
     ResourceSearchResponse mResponse;
@@ -58,16 +56,15 @@ public class EmeraldMR2SearchStrategyTest {
         MockitoAnnotations.initMocks(this);
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
-        when(mApiFactory.get()).thenReturn(mApi);
 
         List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
         when(mResponse.getResources()).thenReturn(stubLookup);
 
         InternalCriteria criteria = InternalCriteria.builder().limit(10).create();
-        search10itemsStrategy = new EmeraldMR2SearchStrategy(mApiFactory, criteria);
+        search10itemsStrategy = new EmeraldMR2SearchStrategy(mApi, criteria);
 
         InternalCriteria userCriteria = criteria.newBuilder().offset(5).create();
-        search10itemsStrategyWithUserOffset5 = new EmeraldMR2SearchStrategy(mApiFactory, userCriteria);
+        search10itemsStrategyWithUserOffset5 = new EmeraldMR2SearchStrategy(mApi, userCriteria);
     }
 
     @Test
@@ -85,8 +82,6 @@ public class EmeraldMR2SearchStrategyTest {
         params.put("limit", "10");
         params.put("offset", "10");
         verify(mApi).searchResources(params);
-
-        verify(mApiFactory, times(2)).get();
     }
 
     @Test
@@ -97,7 +92,6 @@ public class EmeraldMR2SearchStrategyTest {
         assertThat(search10itemsStrategy.hasNext(), is(false));
 
         assertThat(result, is(empty()));
-        verify(mApiFactory, times(6)).get();
         verify(mApi, times(6)).searchResources(anyMap());
     }
 
@@ -108,7 +102,6 @@ public class EmeraldMR2SearchStrategyTest {
         Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(2));
 
-        verify(mApiFactory, times(6)).get();
         verify(mApi, times(6)).searchResources(anyMap());
     }
 
@@ -139,7 +132,7 @@ public class EmeraldMR2SearchStrategyTest {
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
-        EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(mApiFactory, userCriteria);
+        EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(mApi, userCriteria);
 
         Collection<ResourceLookupResponse> result = strategy.searchNext();
         assertThat(result, is(empty()));

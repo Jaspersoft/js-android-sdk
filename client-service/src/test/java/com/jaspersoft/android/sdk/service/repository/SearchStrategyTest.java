@@ -47,7 +47,7 @@ public class SearchStrategyTest {
     private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    RepositoryRestApi.Factory mFactory;
+    RepositoryRestApi mRepoApi;
 
     @Before
     public void before() {
@@ -60,7 +60,7 @@ public class SearchStrategyTest {
             "5.5",
     })
     public void factoryCreatesEmeraldMR2Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mRepoApi, CRITERIA);
         assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
     }
 
@@ -70,7 +70,7 @@ public class SearchStrategyTest {
             "6.0.1",
     })
     public void factoryCreatesEmeraldMR3Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mRepoApi, CRITERIA);
         assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));
     }
 }
