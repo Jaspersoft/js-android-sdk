@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -38,7 +37,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
@@ -66,15 +64,12 @@ public class RepositoryRestApiTest {
 
     private RepositoryRestApi restApiUnderTest;
 
-    @Mock
-    Token<?> mToken;
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
         restApiUnderTest = new RepositoryRestApi.Builder()
-                .token(mToken)
+                .tokenProvider(FakeTokenProvider.get())
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

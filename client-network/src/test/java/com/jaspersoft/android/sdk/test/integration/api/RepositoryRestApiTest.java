@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,17 +50,14 @@ import static org.junit.Assert.assertThat;
 public class RepositoryRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
     private RepositoryRestApi api;
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (api == null) {
             api = new RepositoryRestApi.Builder()
-                    .token(CookieToken.create(cookie))
+                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();

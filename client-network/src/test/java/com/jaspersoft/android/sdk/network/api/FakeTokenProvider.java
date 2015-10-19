@@ -21,39 +21,27 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-
 package com.jaspersoft.android.sdk.network.api;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import android.support.annotation.NonNull;
 
-import java.io.IOException;
-
-import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
+import com.jaspersoft.android.sdk.network.api.auth.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class CookieAuthInterceptor implements Interceptor {
-    private final String mCookie;
+final class FakeTokenProvider implements TokenProvider {
 
-    CookieAuthInterceptor(String cookie) {
-        mCookie = cookie;
+    public static TokenProvider get() {
+        return new FakeTokenProvider();
     }
 
-    public static CookieAuthInterceptor create(String token) {
-        checkNotNull(token, "Token should not be null");
-        return new CookieAuthInterceptor(token);
-    }
-
+    @NonNull
     @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
-        Request compressedRequest = originalRequest.newBuilder()
-                .header("Cookie", mCookie)
-                .build();
-        return chain.proceed(compressedRequest);
+    public AbstractToken provideToken() {
+        return CookieToken.create("cookie");
     }
 }

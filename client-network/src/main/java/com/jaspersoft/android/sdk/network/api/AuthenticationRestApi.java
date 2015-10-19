@@ -28,7 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
@@ -42,7 +42,7 @@ import java.util.Map;
 public interface AuthenticationRestApi {
     @NonNull
     @WorkerThread
-    AuthResponse authenticate(@NonNull String username,
+    AbstractToken authenticate(@NonNull String username,
                               @NonNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);

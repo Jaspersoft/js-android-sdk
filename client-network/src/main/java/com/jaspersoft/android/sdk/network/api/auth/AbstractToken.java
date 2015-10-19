@@ -22,39 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api.utils;
-
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+package com.jaspersoft.android.sdk.network.api.auth;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestAuthenticator {
-
-    private final JrsMetadata mJrsMetadata;
-    private AuthResponse mAuthResponse;
-
-    public TestAuthenticator(JrsMetadata jrsMetadata) {
-        mJrsMetadata = jrsMetadata;
-    }
-
-    public static TestAuthenticator create(JrsMetadata metadata) {
-        return new TestAuthenticator(metadata);
-    }
-
-    public void authorize() {
-        if (mAuthResponse == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(mJrsMetadata.getServerUrl())
-                    .build();
-            mAuthResponse = restApi
-                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
-        }
-    }
-
-    public String getCookie() {
-        return mAuthResponse.getToken();
-    }
+public abstract class AbstractToken {
+    public abstract String get();
 }

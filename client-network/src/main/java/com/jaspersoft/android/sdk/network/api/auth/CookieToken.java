@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -28,7 +28,7 @@ package com.jaspersoft.android.sdk.network.api.auth;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class CookieToken implements Token<String> {
+public final class CookieToken extends AbstractToken {
     private final String mCookie;
 
     private CookieToken(String cookie) {
@@ -44,8 +44,4 @@ public final class CookieToken implements Token<String> {
         return mCookie;
     }
 
-    @Override
-    public void acceptPolicy(AuthPolicy policy) {
-        policy.applyCookieToken(this);
-    }
 }

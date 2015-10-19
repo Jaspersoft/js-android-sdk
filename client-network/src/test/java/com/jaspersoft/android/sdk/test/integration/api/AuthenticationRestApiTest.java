@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.TestLogger;
 
@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -65,7 +64,7 @@ public class AuthenticationRestApiTest {
         JSEncryptionAlgorithm generator = JSEncryptionAlgorithm.create(new BouncyCastleProvider());
         String cipher = generator.encrypt(key.getModulus(), key.getExponent(), "superuser");
 
-        AuthResponse authResponse = restApi.authenticate("superuser", cipher, null, null);
+        AbstractToken authResponse = restApi.authenticate("superuser", cipher, null, null);
         assertThat(authResponse, is(notNullValue()));
     }
 
@@ -75,7 +74,7 @@ public class AuthenticationRestApiTest {
                 .baseUrl(mobileDemo2)
                 .logger(TestLogger.get(this))
                 .build();
-        AuthResponse response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
-        assertThat(response.getToken(), is(notNullValue()));
+        AbstractToken response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
+        assertThat(response, is(notNullValue()));
     }
 }

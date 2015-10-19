@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
+import com.jaspersoft.android.sdk.network.api.auth.TokenProvider;
 
 import retrofit.Retrofit;
 
@@ -56,8 +56,8 @@ abstract class GenericAuthBuilder<TargetBuilder, Api> {
     }
 
     @SuppressWarnings("unchecked")
-    public TargetBuilder token(Token<?> token) {
-        mAuthBuilder.setToken(token);
+    public TargetBuilder tokenProvider(TokenProvider tokenProvider) {
+        mAuthBuilder.setTokenProvider(tokenProvider);
         return (TargetBuilder) this;
     }
 

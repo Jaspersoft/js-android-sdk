@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -34,7 +33,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
@@ -58,14 +56,11 @@ public class ReportOptionRestApiTest {
 
     private ReportOptionRestApi restApiUnderTest;
 
-    @Mock
-    Token<?> mToken;
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         restApiUnderTest = new ReportOptionRestApi.Builder()
-                .token(mToken)
+                .tokenProvider(FakeTokenProvider.get())
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

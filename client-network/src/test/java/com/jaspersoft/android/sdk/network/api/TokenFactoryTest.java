@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.squareup.okhttp.Protocol;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-public class AuthResponseFactoryTest {
+public class TokenFactoryTest {
 
     private Request mRequest;
 
@@ -60,7 +60,7 @@ public class AuthResponseFactoryTest {
                 .request(mRequest)
                 .build();
 
-        AuthResponse response = AuthResponseFactory.create(mockResponse);
-        assertThat(response.getToken(), is("cookie1;cookie2"));
+        AbstractToken token = TokenFactory.create(mockResponse);
+        assertThat(token.get(), is("cookie1;cookie2"));
     }
 }

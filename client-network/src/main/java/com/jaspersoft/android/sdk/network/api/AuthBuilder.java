@@ -24,8 +24,14 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
+import com.jaspersoft.android.sdk.network.api.auth.TokenProvider;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 
 import retrofit.Retrofit;
 
@@ -37,30 +43,52 @@ import static com.jaspersoft.android.sdk.network.api.Utils.checkNotNull;
  */
 final class AuthBuilder {
     private final AdapterBuilder mAdapterBuilder;
-    private Token<?> mToken;
+    private TokenProvider mTokenProvider;
 
     public AuthBuilder(AdapterBuilder adapterBuilder) {
         mAdapterBuilder = adapterBuilder;
     }
 
-    public AuthBuilder setToken(Token<?> token) {
-        checkNotNull(token, "token == null");
-        mToken = token;
+    public AuthBuilder setTokenProvider(TokenProvider tokenProvider) {
+        checkNotNull(tokenProvider, "tokenProvider == null");
+        mTokenProvider = tokenProvider;
         return this;
     }
 
     void ensureDefaults() {
-        if (mToken == null) {
-            throw new IllegalStateException("This API requires authentication token");
+        if (mTokenProvider == null) {
+            throw new IllegalStateException("This API requires authentication tokenProvider");
         }
     }
 
     Retrofit.Builder getAdapter() {
-        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
 
-        DefaultAuthPolicy authPolicy = new DefaultAuthPolicy(client);
-        mToken.acceptPolicy(authPolicy);
+        OkHttpClient client = mAdapterBuilder.clientBuilder.getClient();
+        client.interceptors().add(CookieAuthInterceptor.create(mTokenProvider));
 
         return mAdapterBuilder.getAdapter();
+    }
+
+    private static final class CookieAuthInterceptor implements Interceptor {
+        private final TokenProvider mTokenProvider;
+
+        CookieAuthInterceptor(TokenProvider tokenProvider) {
+            mTokenProvider = tokenProvider;
+        }
+
+        public static CookieAuthInterceptor create(TokenProvider tokenProvider) {
+            checkNotNull(tokenProvider, "Token should not be null");
+            return new CookieAuthInterceptor(tokenProvider);
+        }
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request originalRequest = chain.request();
+            AbstractToken token = mTokenProvider.provideToken();
+            Request compressedRequest = originalRequest.newBuilder()
+                    .header("Cookie", token.get())
+                    .build();
+            return chain.proceed(compressedRequest);
+        }
     }
 }

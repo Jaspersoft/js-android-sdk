@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,7 +24,8 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
+import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
+import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.squareup.okhttp.Response;
 
 import java.util.Iterator;
@@ -35,22 +36,22 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class AuthResponseFactory {
+final class TokenFactory {
     private final List<String> mCookieParts;
 
-    AuthResponseFactory(List<String> parts) {
+    TokenFactory(List<String> parts) {
         mCookieParts = parts;
     }
 
-    public static AuthResponse create(Response response) {
+    public static AbstractToken create(Response response) {
         List<String> parts = response.headers().values("Set-Cookie");
-        AuthResponseFactory responseFactory = new AuthResponseFactory(parts);
+        TokenFactory responseFactory = new TokenFactory(parts);
         return responseFactory.create();
     }
 
-    private AuthResponse create() {
+    private AbstractToken create() {
         String cookie = joinCookieParts().toString();
-        return AuthResponse.createSuccessResponse(cookie);
+        return CookieToken.create(cookie);
     }
 
     private StringBuilder joinCookieParts() {

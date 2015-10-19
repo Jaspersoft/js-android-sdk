@@ -1,6 +1,5 @@
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
@@ -8,7 +7,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
@@ -25,16 +23,12 @@ public class InputControlRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
-    @Mock
-    Token<?> mToken;
-
     private InputControlRestApi restApiUnderTest;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         restApiUnderTest = new InputControlRestApi.Builder()
-                .token(mToken)
+                .tokenProvider(FakeTokenProvider.get())
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }

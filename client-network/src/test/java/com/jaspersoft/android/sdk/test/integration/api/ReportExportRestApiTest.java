@@ -37,7 +37,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
 import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,16 +59,13 @@ public class ReportExportRestApiTest {
     ReportExportRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.create(cookie))
+                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -76,7 +73,7 @@ public class ReportExportRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExportRestApi.Builder()
-                    .token(CookieToken.create(cookie))
+                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();

@@ -22,18 +22,41 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.test.integration.api.utils;
 
 import android.support.annotation.NonNull;
 
+import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
-
+import com.jaspersoft.android.sdk.network.api.auth.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthService {
+public final class DummyTokenProvider implements TokenProvider {
+
+    private final JrsMetadata mJrsMetadata;
+    private AbstractToken mToken;
+
+    public DummyTokenProvider(JrsMetadata jrsMetadata) {
+        mJrsMetadata = jrsMetadata;
+    }
+
+    public static DummyTokenProvider create(JrsMetadata metadata) {
+        return new DummyTokenProvider(metadata);
+    }
+
     @NonNull
-    AbstractToken authenticate();
+    @Override
+    public AbstractToken provideToken() {
+        if (mToken == null) {
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                    .baseUrl(mJrsMetadata.getServerUrl())
+                    .build();
+            mToken = restApi
+                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
+        }
+        return mToken;
+    }
 }

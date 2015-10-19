@@ -22,32 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.server;
+package com.jaspersoft.android.sdk.network.api.auth;
+
+import android.support.annotation.NonNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class AuthResponse {
-    private final String mToken;
-
-
-    private AuthResponse(String token) {
-        mToken = token;
-    }
-
-    public static AuthResponse createSuccessResponse(String token) {
-        return new AuthResponse(token);
-    }
-
-    public String getToken() {
-        return mToken;
-    }
-
-    @Override
-    public String toString() {
-        return "AuthResponse{" +
-                "mToken='" + mToken + '\'' +
-                '}';
-    }
+public interface TokenProvider {
+    @NonNull
+    AbstractToken provideToken();
 }

@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
 import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
@@ -39,8 +38,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,15 +62,11 @@ public class ReportExportRestApiTest {
     @ResourceFile("json/root_folder.json")
     TestResource mResource;
 
-    @Mock
-    Token<?> mToken;
-
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
         restApiUnderTest = new ReportExportRestApi.Builder()
-                .token(mToken)
+                .tokenProvider(FakeTokenProvider.get())
                 .baseUrl(mWebMockRule.getRootUrl())
                 .build();
     }
