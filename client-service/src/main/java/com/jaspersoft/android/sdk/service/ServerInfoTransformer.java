@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
@@ -45,7 +45,7 @@ class ServerInfoTransformer {
         return InstanceHolder.INSTANCE;
     }
 
-    public ServerInfo transform(ServerInfoResponse response) {
+    public ServerInfo transform(ServerInfoData response) {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setBuild(response.getBuild());
         serverInfo.setDateFormatPattern(response.getDateFormatPattern());

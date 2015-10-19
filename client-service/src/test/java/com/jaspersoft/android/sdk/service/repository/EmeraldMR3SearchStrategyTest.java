@@ -1,8 +1,8 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -33,14 +33,14 @@ import static org.mockito.Mockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(ResourceSearchResponse.class)
+@PrepareForTest(ResourceSearchResult.class)
 public class EmeraldMR3SearchStrategyTest {
     private static final InternalCriteria NO_CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
     RepositoryRestApi mApi;
     @Mock
-    ResourceSearchResponse mResponse;
+    ResourceSearchResult mResponse;
 
     @Before
     public void setupMocks() {
@@ -48,7 +48,7 @@ public class EmeraldMR3SearchStrategyTest {
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
 
-        List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
+        List<ResourceLookup> stubLookup = Collections.singletonList(new ResourceLookup());
         when(mResponse.getResources()).thenReturn(stubLookup);
     }
 
@@ -111,7 +111,7 @@ public class EmeraldMR3SearchStrategyTest {
         when(mResponse.getNextOffset()).thenReturn(0);
         strategy.searchNext();
 
-        Collection<ResourceLookupResponse> response = strategy.searchNext();
+        Collection<ResourceLookup> response = strategy.searchNext();
         assertThat(response, is(empty()));
         assertThat(strategy.hasNext(), is(false));
 
@@ -124,7 +124,7 @@ public class EmeraldMR3SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, userCriteria);
 
-        Collection<ResourceLookupResponse> result = strategy.searchNext();
+        Collection<ResourceLookup> result = strategy.searchNext();
         assertThat(result, Matchers.is(Matchers.empty()));
 
         verifyZeroInteractions(mApi);

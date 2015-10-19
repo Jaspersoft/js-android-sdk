@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.squareup.okhttp.ResponseBody;
 
 import retrofit.Call;
@@ -58,28 +58,28 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ReportExportExecutionResponse runExportExecution(@Nullable String executionId,
+    public ExportExecutionDescriptor runExportExecution(@Nullable String executionId,
                                                             @Nullable ExecutionRequestOptions executionOptions) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(executionOptions, "Execution options should not be null");
 
-        Call<ReportExportExecutionResponse> call = mRestApi.runReportExportExecution(executionId, executionOptions);
+        Call<ExportExecutionDescriptor> call = mRestApi.runReportExportExecution(executionId, executionOptions);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public ExecutionStatusResponse checkExportExecutionStatus(@Nullable String executionId, @Nullable String exportId) {
+    public ExecutionStatus checkExportExecutionStatus(@Nullable String executionId, @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
-        Call<ExecutionStatusResponse> call = mRestApi.checkReportExportStatus(executionId, exportId);
+        Call<ExecutionStatus> call = mRestApi.checkReportExportStatus(executionId, exportId);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public ExportResourceResponse requestExportOutput(@Nullable String executionId, @Nullable String exportId) {
+    public ExportOutputResource requestExportOutput(@Nullable String executionId, @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
 
@@ -87,16 +87,16 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
         com.squareup.okhttp.Headers headers = rawResponse.headers();
 
-        RetrofitExportInput exportInput = new RetrofitExportInput(rawResponse.body());
+        RetrofitOutputResource exportInput = new RetrofitOutputResource(rawResponse.body());
         String pages = headers.get("report-pages");
         boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
 
-        return ExportResourceResponse.create(exportInput, pages, isFinal);
+        return ExportOutputResource.create(exportInput, pages, isFinal);
     }
 
     @NonNull
     @Override
-    public ExportInput requestExportAttachment(@Nullable String executionId, @Nullable String exportId, @Nullable String attachmentId) {
+    public OutputResource requestExportAttachment(@Nullable String executionId, @Nullable String exportId, @Nullable String attachmentId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
         checkNotNull(attachmentId, "Attachment id should not be null");
@@ -104,20 +104,20 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
         Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
         ResponseBody body = rawResponse.body();
-        return new RetrofitExportInput(body);
+        return new RetrofitOutputResource(body);
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/exports")
-        Call<ReportExportExecutionResponse> runReportExportExecution(@NonNull @Path("executionId") String executionId,
+        Call<ExportExecutionDescriptor> runReportExportExecution(@NonNull @Path("executionId") String executionId,
                                                                      @NonNull @Body ExecutionRequestOptions executionOptions);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
-        Call<ExecutionStatusResponse> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
+        Call<ExecutionStatus> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
                                                               @NonNull @Path("exportId") String exportId);
 
         /**

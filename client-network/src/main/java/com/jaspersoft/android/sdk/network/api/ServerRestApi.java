@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
 /**
  * @author Tom Koptel
@@ -37,7 +37,7 @@ public interface ServerRestApi {
 
     @NonNull
     @WorkerThread
-    ServerInfoResponse requestServerInfo();
+    ServerInfoData requestServerInfo();
     @NonNull
     @WorkerThread
     String requestBuild();

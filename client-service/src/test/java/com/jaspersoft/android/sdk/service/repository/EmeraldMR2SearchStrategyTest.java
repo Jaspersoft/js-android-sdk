@@ -1,8 +1,8 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,20 +36,20 @@ import static org.mockito.Mockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ResourceSearchResponse.class})
+@PrepareForTest({ResourceSearchResult.class})
 public class EmeraldMR2SearchStrategyTest {
 
     @Mock
     RepositoryRestApi mApi;
     @Mock
-    ResourceSearchResponse mResponse;
+    ResourceSearchResult mResponse;
 
     /**
      * Objects under test
      */
     private EmeraldMR2SearchStrategy search10itemsStrategy;
     private EmeraldMR2SearchStrategy search10itemsStrategyWithUserOffset5;
-    public static final List<ResourceLookupResponse> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
+    public static final List<ResourceLookup> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
 
     @Before
     public void setupMocks() {
@@ -57,7 +57,7 @@ public class EmeraldMR2SearchStrategyTest {
 
         when(mApi.searchResources(anyMap())).thenReturn(mResponse);
 
-        List<ResourceLookupResponse> stubLookup = Collections.singletonList(new ResourceLookupResponse());
+        List<ResourceLookup> stubLookup = Collections.singletonList(new ResourceLookup());
         when(mResponse.getResources()).thenReturn(stubLookup);
 
         InternalCriteria criteria = InternalCriteria.builder().limit(10).create();
@@ -71,7 +71,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willAlignResponseToLimitIfAPIRespondsWithPartialNumber() throws Exception {
         when(mResponse.getResources()).thenReturn(FIVE_ITEMS);
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
+        Collection<ResourceLookup> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(10));
 
         Map<String, Object> params = new HashMap<>();
@@ -86,9 +86,9 @@ public class EmeraldMR2SearchStrategyTest {
 
     @Test
     public void willRetry5timesIfApiReturnsNoElements()throws Exception {
-        when(mResponse.getResources()).thenReturn(Collections.<ResourceLookupResponse>emptyList());
+        when(mResponse.getResources()).thenReturn(Collections.<ResourceLookup>emptyList());
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
+        Collection<ResourceLookup> result = search10itemsStrategy.searchNext();
         assertThat(search10itemsStrategy.hasNext(), is(false));
 
         assertThat(result, is(empty()));
@@ -99,7 +99,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willReturnAsMuchElementsAsLeftIfEndReached()throws Exception {
         when(mResponse.getResources()).then(OnlyTwoItems.INSTANCE);
 
-        Collection<ResourceLookupResponse> result = search10itemsStrategy.searchNext();
+        Collection<ResourceLookup> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(2));
 
         verify(mApi, times(6)).searchResources(anyMap());
@@ -134,21 +134,21 @@ public class EmeraldMR2SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(mApi, userCriteria);
 
-        Collection<ResourceLookupResponse> result = strategy.searchNext();
+        Collection<ResourceLookup> result = strategy.searchNext();
         assertThat(result, is(empty()));
 
         verifyZeroInteractions(mApi);
     }
 
-    private static class OnlyTwoItems implements Answer<Collection<ResourceLookupResponse>> {
+    private static class OnlyTwoItems implements Answer<Collection<ResourceLookup>> {
         public static final OnlyTwoItems INSTANCE = new OnlyTwoItems();
 
-        private final List<ResourceLookupResponse> twoItems = Arrays.asList(null, null);
-        private final List<ResourceLookupResponse> zeroItems = Collections.emptyList();
+        private final List<ResourceLookup> twoItems = Arrays.asList(null, null);
+        private final List<ResourceLookup> zeroItems = Collections.emptyList();
 
         private int count = 0;
         @Override
-        public Collection<ResourceLookupResponse> answer(InvocationOnMock invocationOnMock) throws Throwable {
+        public Collection<ResourceLookup> answer(InvocationOnMock invocationOnMock) throws Throwable {
             if (count == 0) {
                 count++;
                 return twoItems;

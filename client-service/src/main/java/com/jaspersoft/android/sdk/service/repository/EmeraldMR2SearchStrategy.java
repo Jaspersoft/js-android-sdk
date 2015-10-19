@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,14 +40,14 @@ import java.util.List;
  * @since 2.0
  */
 final class EmeraldMR2SearchStrategy implements SearchStrategy {
-    private static final Collection<ResourceLookupResponse> EMPTY_RESPONSE = Collections.emptyList();
+    private static final Collection<ResourceLookup> EMPTY_RESPONSE = Collections.emptyList();
     private static final int MAX_RETRY_COUNT = 5;
 
     private final RepositoryRestApi mRepoFactoryRestApi;
     private final InternalCriteria mInitialCriteria;
 
     private int mServerDisposition;
-    private List<ResourceLookupResponse> mBuffer = new LinkedList<>();
+    private List<ResourceLookup> mBuffer = new LinkedList<>();
     private boolean mEndReached;
 
     public EmeraldMR2SearchStrategy(RepositoryRestApi repositoryApiFactory, InternalCriteria criteria) {
@@ -57,7 +57,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<ResourceLookupResponse> searchNext() {
+    public Collection<ResourceLookup> searchNext() {
         int limit = mInitialCriteria.getLimit();
         int offset = mInitialCriteria.getOffset();
 
@@ -81,10 +81,10 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private Collection<ResourceLookupResponse> internalSearch(int limit) {
+    private Collection<ResourceLookup> internalSearch(int limit) {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
-            ResourceSearchResponse response = performSearch(limit);
+            ResourceSearchResult response = performSearch(limit);
             mBuffer.addAll(response.getResources());
             mServerDisposition += limit;
 
@@ -103,13 +103,13 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         }
 
         int median = Math.min(limit, mBuffer.size());
-        Collection<ResourceLookupResponse> result = mBuffer.subList(0, median);
+        Collection<ResourceLookup> result = mBuffer.subList(0, median);
         mBuffer = mBuffer.subList(median, mBuffer.size());
         return result;
     }
 
     @NonNull
-    private ResourceSearchResponse performSearch(int limit) {
+    private ResourceSearchResult performSearch(int limit) {
         InternalCriteria nextCriteria = mInitialCriteria.newBuilder()
                 .offset(mServerDisposition)
                 .limit(limit)

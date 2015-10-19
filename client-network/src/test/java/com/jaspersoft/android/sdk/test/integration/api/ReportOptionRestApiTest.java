@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
@@ -76,7 +75,7 @@ public class ReportOptionRestApiTest {
 
     @Test
     public void shouldRequestReportOptionsList() {
-        ReportOptionResponse response = apiUnderTest.requestReportOptionsList(REPORT_URI);
+        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 

@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Collection;
  * @since 2.0
  */
 interface SearchStrategy {
-    Collection<ResourceLookupResponse> searchNext();
+    Collection<ResourceLookup> searchNext();
     boolean hasNext();
 
     class Factory {

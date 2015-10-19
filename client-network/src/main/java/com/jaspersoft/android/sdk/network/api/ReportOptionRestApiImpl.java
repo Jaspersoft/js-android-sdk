@@ -29,9 +29,10 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 import com.squareup.okhttp.Response;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,19 +62,20 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NonNull
     @Override
-    public ReportOptionResponse requestReportOptionsList(@Nullable String reportUnitUri) {
+    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
 
-        Call<ReportOptionResponse> call = mRestApi.requestReportOptionsList(reportUnitUri);
+        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri);
         try {
-            return CallWrapper.wrap(call).body();
+            ReportOptionSet options = CallWrapper.wrap(call).body();
+            return options.get();
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when there is no report options
              * API responds with plain/text message: 'No options found for {URI}'
              * As soon as there 2 options to reserve this we decide to swallow exception and return empty object
              */
-            return ReportOptionResponse.empty();
+            return Collections.emptySet();
         }
     }
 
@@ -117,7 +119,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitUri}/options")
-        Call<ReportOptionResponse> requestReportOptionsList(
+        Call<ReportOptionSet> requestReportOptionsList(
                 @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
 
         @NonNull

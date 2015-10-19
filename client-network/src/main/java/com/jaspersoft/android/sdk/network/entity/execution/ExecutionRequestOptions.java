@@ -28,7 +28,7 @@ import com.google.gson.annotations.Expose;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,7 +62,7 @@ public class ExecutionRequestOptions {
     @Expose
     protected String attachmentsPrefix;
     @Expose
-    protected ReportParameters parameters;
+    protected Map<String, Set<String>> parameters;
 
     protected ExecutionRequestOptions() {}
 
@@ -95,8 +95,8 @@ public class ExecutionRequestOptions {
         return this;
     }
 
-    public ExecutionRequestOptions withParameters(Set<ReportParameter> parameters) {
-        this.parameters = ReportParameters.wrap(parameters);
+    public ExecutionRequestOptions withParameters(Map<String, Set<String>> parameters) {
+        this.parameters = parameters;
         return this;
     }
 
@@ -185,8 +185,8 @@ public class ExecutionRequestOptions {
         return pages;
     }
 
-    public Set<ReportParameter> getParameters() {
-        return parameters.getReportParameters();
+    public Map<String, Set<String>> getParameters() {
+        return parameters;
     }
 
     public Boolean getSaveDataSnapshot() {

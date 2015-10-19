@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.entity.server.ServerInfoResponse;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
@@ -48,65 +48,65 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ServerInfoResponse.class})
+@PrepareForTest({ServerInfoData.class})
 public class ServerInfoTransformerTest {
 
-    ServerInfoResponse mServerInfoResponse;
+    ServerInfoData mServerInfoData;
 
     private ServerInfoTransformer transformerUnderTest;
 
     @Before
     public void setup() {
         transformerUnderTest = ServerInfoTransformer.getInstance();
-        mServerInfoResponse = PowerMockito.mock(ServerInfoResponse.class);
-        when(mServerInfoResponse.getBuild()).thenReturn("20150527_1447");
-        when(mServerInfoResponse.getDateFormatPattern()).thenReturn("yyyy-MM-dd");
-        when(mServerInfoResponse.getDatetimeFormatPattern()).thenReturn("yyyy-MM-dd'T'HH:mm:ss");
-        when(mServerInfoResponse.getVersion()).thenReturn("6.1");
-        when(mServerInfoResponse.getEdition()).thenReturn("PRO");
-        when(mServerInfoResponse.getEditionName()).thenReturn("Enterprise for AWS");
-        when(mServerInfoResponse.getFeatures()).thenReturn("Fusion");
+        mServerInfoData = PowerMockito.mock(ServerInfoData.class);
+        when(mServerInfoData.getBuild()).thenReturn("20150527_1447");
+        when(mServerInfoData.getDateFormatPattern()).thenReturn("yyyy-MM-dd");
+        when(mServerInfoData.getDatetimeFormatPattern()).thenReturn("yyyy-MM-dd'T'HH:mm:ss");
+        when(mServerInfoData.getVersion()).thenReturn("6.1");
+        when(mServerInfoData.getEdition()).thenReturn("PRO");
+        when(mServerInfoData.getEditionName()).thenReturn("Enterprise for AWS");
+        when(mServerInfoData.getFeatures()).thenReturn("Fusion");
     }
 
     @Test
     public void shouldTransformBuildProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getBuild(), is("20150527_1447"));
     }
 
     @Test
     public void shouldTransformDateFormatProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getDateFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd")));
     }
 
     @Test
     public void shouldTransformDateTimeFormatProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getDatetimeFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")));
     }
 
     @Test
     public void shouldTransformServerVersionProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getVersion(), is(ServerVersion.AMBER_MR2));
     }
 
     @Test
     public void shouldTransformServerEditionProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getEdition(), is(ServerEdition.PRO));
     }
 
     @Test
     public void shouldTransformServerEditionNameProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getEditionName(), is("Enterprise for AWS"));
     }
 
     @Test
     public void shouldTransformFeaturesProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoResponse);
+        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getFeatures().asSet(), contains("Fusion"));
     }
 
