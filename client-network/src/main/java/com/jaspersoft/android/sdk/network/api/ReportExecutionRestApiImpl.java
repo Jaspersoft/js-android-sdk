@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
@@ -63,47 +65,55 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) {
+    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions, @Nullable String token) {
         checkNotNull(executionOptions, "Execution options should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions);
+        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions, token);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId) {
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId, @Nullable String token) {
         checkNotNull(executionId, "Execution id should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId);
+        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId, token);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId) {
+    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId, @Nullable String token) {
         checkNotNull(executionId, "Execution id should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId);
+        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId, token);
         return CallWrapper.wrap(call).body();
     }
 
     @Override
-    public boolean cancelReportExecution(@Nullable String executionId) {
+    public boolean cancelReportExecution(@Nullable String executionId, @Nullable String token) {
         checkNotNull(executionId, "Execution id should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus());
+        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus(), token);
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status != 204;
     }
 
     @Override
-    public boolean updateReportExecution(@Nullable String executionId, @Nullable Map<String, Set<String>> params) {
+    public boolean updateReportExecution(@Nullable String executionId,
+                                         @Nullable Collection<Map<String, Set<String>>> params,
+                                         @Nullable String token) {
         checkNotNull(executionId, "Execution id should not be null");
-        checkNotNull(params, "Execution params id should not be null");
+        checkNotNull(params, "Execution params should not be null");
+        checkArgument(params.isEmpty(), "Execution params should not be empty");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<Object> call =  mRestApi.updateReportExecution(executionId, params);
+        Call<Object> call = mRestApi.updateReportExecution(executionId, params, token);
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status == 204;
@@ -111,11 +121,12 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params) {
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params, @Nullable String token) {
         checkNotNull(params, "Search params should not be null");
         checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params);
+        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params, token);
         ReportExecutionSearchResponse body = CallWrapper.wrap(call).body();
         if (body == null) {
             return ReportExecutionSearchResponse.empty();
@@ -127,32 +138,38 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions")
-        Call<ReportExecutionDescriptor> runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions);
+        Call<ReportExecutionDescriptor> runReportExecution(@NonNull @Body ReportExecutionRequestOptions executionOptions,
+                                                           @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}")
-        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NonNull @Path(value = "executionId", encoded = true) String executionId);
+        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NonNull @Path(value = "executionId", encoded = true) String executionId,
+                                                                      @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/status")
-        Call<ExecutionStatus> requestReportExecutionStatus(@NonNull @Path(value = "executionId", encoded = true) String executionId);
+        Call<ExecutionStatus> requestReportExecutionStatus(@NonNull @Path(value = "executionId", encoded = true) String executionId,
+                                                           @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/parameters")
         Call<Object> updateReportExecution(@NonNull @Path(value = "executionId", encoded = true) String executionId,
-                                                           @NonNull @Body Map<String,Set<String>> params);
+                                           @NonNull @Body Collection<Map<String, Set<String>>> params,
+                                           @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @PUT("rest_v2/reportExecutions/{executionId}/status")
         Call<Object> cancelReportExecution(@NonNull @Path(value = "executionId", encoded = true) String executionId,
-                                                           @NonNull @Body ExecutionStatus statusResponse);
+                                           @NonNull @Body ExecutionStatus statusResponse,
+                                           @Header("Cookie") String cookie);
 
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions")
-        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params);
+        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params,
+                                                                  @Header("Cookie") String cookie);
     }
 }

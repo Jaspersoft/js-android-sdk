@@ -64,7 +64,6 @@ public class ReportExportRestApiTest {
     public void setup() {
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -119,6 +118,6 @@ public class ReportExportRestApiTest {
     @NonNull
     private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        return mExecApi.runReportExecution(executionRequestOptions);
+        return mExecApi.runReportExecution(executionRequestOptions, mAuthenticator.token());
     }
 }

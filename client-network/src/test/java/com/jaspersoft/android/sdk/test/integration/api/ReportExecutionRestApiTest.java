@@ -40,9 +40,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -56,8 +60,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ReportExecutionRestApiTest {
 
-    private final String REPORT_URI1 = "/public/Samples/Reports/AllAccounts";
-    private final String REPORT_URI2 = "/public/Samples/Reports/ProfitDetailReport";
+    private final String REPORT_URI = "/public/Samples/Reports/ProfitDetailReport";
 
     ReportExecutionRestApi apiUnderTest;
 
@@ -68,7 +71,6 @@ public class ReportExecutionRestApiTest {
     public void setup() {
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExecutionRestApi.Builder()
-                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -85,10 +87,10 @@ public class ReportExecutionRestApiTest {
     /**
      * TODO: TEST IS FLAKY provide workaround
      */
-    @Ignore
+    @Test
     public void shouldCancelReportExecution() throws InterruptedException {
         ReportExecutionDescriptor response = startExecution();
-        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId());
+        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId(), mAuthenticator.token());
         assertThat(cancelled, is(true));
     }
 
@@ -97,7 +99,7 @@ public class ReportExecutionRestApiTest {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId(), mAuthenticator.token());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
@@ -105,7 +107,7 @@ public class ReportExecutionRestApiTest {
     public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionDescriptor executionResponse = startExecution();
 
-        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId(), mAuthenticator.token());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -119,15 +121,20 @@ public class ReportExecutionRestApiTest {
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(params);
+        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(params, mAuthenticator.token());
         assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() {
-        ReportExecutionDescriptor executionResponse = startExecution();
+        List<Map<String, Set<String>>> list = new ArrayList<>();
 
-        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_MAP);
+        Map<String, Set<String>> reportParameter = new HashMap<>();
+        reportParameter.put("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
+        list.add(reportParameter);
+
+        ReportExecutionDescriptor executionResponse = startExecution();
+        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), list, mAuthenticator.token());
         assertThat(success, is(true));
     }
 
@@ -136,12 +143,16 @@ public class ReportExecutionRestApiTest {
      */
     @NonNull
     private ReportExecutionDescriptor startExecution() {
-        return startExecution(REPORT_URI1);
+        return startExecution(REPORT_URI);
     }
 
     @NonNull
     private ReportExecutionDescriptor startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        return apiUnderTest.runReportExecution(executionRequestOptions);
+        Map<String, Set<String>> params = new HashMap<>();
+        params.put("ProductFamily", new HashSet<String>(Collections.singletonList("Food")));
+        executionRequestOptions.withParameters(params);
+
+        return apiUnderTest.runReportExecution(executionRequestOptions, mAuthenticator.token());
     }
 }

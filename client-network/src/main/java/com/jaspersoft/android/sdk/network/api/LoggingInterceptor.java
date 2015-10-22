@@ -58,8 +58,8 @@ final class LoggingInterceptor implements Interceptor {
         long t2 = System.nanoTime();
         String bodyString = response.body().string();
         logger.log(String.format("<-----------------------------------------------------Received response" +
-                        "%nUrl: %s%nTime spent: %.1fms%n%s%nBody: %s",
-                response.request().url(), (t2 - t1) / 1e6d, response.headers(), bodyString));
+                        "%nUrl: %s%nCode: %d%nTime spent: %.1fms%n%s%nBody: %s",
+                response.request().url(), response.code(), (t2 - t1) / 1e6d, response.headers(), bodyString));
 
         return response.newBuilder()
                 .body(ResponseBody.create(response.body().contentType(), bodyString))
