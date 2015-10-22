@@ -73,7 +73,7 @@ public final class SpringAuthService implements AuthService {
 
     @NonNull
     @Override
-    public AbstractToken authenticate() {
+    public String authenticate() {
         String password = mPassword;
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
@@ -82,8 +82,7 @@ public final class SpringAuthService implements AuthService {
         }
 
         Map<String, String> params = prepareOptionals();
-        String cookie = mRestApi.authenticate(mUsername, password, mOrganization, params);
-        return CookieToken.create(cookie);
+        return mRestApi.authenticate(mUsername, password, mOrganization, params);
     }
 
     private Map<String, String> prepareOptionals() {

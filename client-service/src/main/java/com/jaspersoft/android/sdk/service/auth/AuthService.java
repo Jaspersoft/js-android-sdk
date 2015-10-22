@@ -33,5 +33,5 @@ import android.support.annotation.NonNull;
  */
 public interface AuthService {
     @NonNull
-    AbstractToken authenticate();
+    String authenticate();
 }

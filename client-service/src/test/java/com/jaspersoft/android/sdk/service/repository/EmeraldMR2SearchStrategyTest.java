@@ -3,7 +3,6 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.auth.AbstractToken;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import org.junit.Before;
@@ -49,8 +48,6 @@ public class EmeraldMR2SearchStrategyTest {
     ResourceSearchResult mResponse;
     @Mock
     TokenProvider mTokenProvider;
-    @Mock
-    AbstractToken mAbstractToken;
     /**
      * Objects under test
      */
@@ -62,8 +59,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void setupMocks() {
         MockitoAnnotations.initMocks(this);
 
-        when(mTokenProvider.provideToken()).thenReturn(mAbstractToken);
-        when(mAbstractToken.get()).thenReturn("cookie");
+        when(mTokenProvider.provideToken()).thenReturn("cookie");
 
         when(mApi.searchResources(anyString(), anyMap())).thenReturn(mResponse);
 
