@@ -59,9 +59,9 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ExportExecutionDescriptor runExportExecution(@Nullable String executionId,
-                                                        @Nullable ExecutionRequestOptions executionOptions,
-                                                        @Nullable String token) {
+    public ExportExecutionDescriptor runExportExecution(@Nullable String token,
+                                                        @Nullable String executionId,
+                                                        @Nullable ExecutionRequestOptions executionOptions) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(executionOptions, "Execution options should not be null");
         checkNotNull(token, "Request token should not be null");
@@ -72,9 +72,9 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ExecutionStatus checkExportExecutionStatus(@Nullable String executionId,
-                                                      @Nullable String exportId,
-                                                      @Nullable String token) {
+    public ExecutionStatus checkExportExecutionStatus(@Nullable String token,
+                                                      @Nullable String executionId,
+                                                      @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
         checkNotNull(token, "Request token should not be null");
@@ -85,9 +85,9 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public ExportOutputResource requestExportOutput(@Nullable String executionId,
-                                                    @Nullable String exportId,
-                                                    @Nullable String token) {
+    public ExportOutputResource requestExportOutput(@Nullable String token,
+                                                    @Nullable String executionId,
+                                                    @Nullable String exportId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
         checkNotNull(token, "Request token should not be null");
@@ -105,10 +105,10 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NonNull
     @Override
-    public OutputResource requestExportAttachment(@Nullable String executionId,
+    public OutputResource requestExportAttachment(@Nullable String token,
+                                                  @Nullable String executionId,
                                                   @Nullable String exportId,
-                                                  @Nullable String attachmentId,
-                                                  @Nullable String token) {
+                                                  @Nullable String attachmentId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(exportId, "Export id should not be null");
         checkNotNull(attachmentId, "Attachment id should not be null");

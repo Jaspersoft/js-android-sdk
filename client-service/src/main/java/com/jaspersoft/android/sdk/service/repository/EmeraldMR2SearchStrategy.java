@@ -119,6 +119,6 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
                 .offset(mServerDisposition)
                 .limit(limit)
                 .create();
-        return mRepoFactoryRestApi.searchResources(nextCriteria.toMap(), mTokenProvider.provideToken().get());
+        return mRepoFactoryRestApi.searchResources(mTokenProvider.provideToken().get(), nextCriteria.toMap());
     }
 }

@@ -57,7 +57,7 @@ public class EmeraldMR3SearchStrategyTest {
         when(mTokenProvider.provideToken()).thenReturn(mAbstractToken);
         when(mAbstractToken.get()).thenReturn("cookie");
 
-        when(mApi.searchResources(anyMap(), anyString())).thenReturn(mResponse);
+        when(mApi.searchResources(anyString(), anyMap())).thenReturn(mResponse);
 
         List<ResourceLookup> stubLookup = Collections.singletonList(new ResourceLookup());
         when(mResponse.getResources()).thenReturn(stubLookup);
@@ -68,14 +68,14 @@ public class EmeraldMR3SearchStrategyTest {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mApi, mTokenProvider);
 
-        when(mApi.searchResources(anyMap(), anyString())).thenReturn(mResponse);
+        when(mApi.searchResources(anyString(), anyMap())).thenReturn(mResponse);
 
         strategy.searchNext();
 
         Map<String, Object> params = new HashMap<>();
         params.put("forceFullPage", "true");
 
-        verify(mApi, times(1)).searchResources(eq(params), eq("cookie"));
+        verify(mApi, times(1)).searchResources(eq("cookie"), eq(params));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class EmeraldMR3SearchStrategyTest {
         params.put("forceFullPage", "true");
         params.put("limit", "5");
 
-        verify(mApi, times(1)).searchResources(eq(params), eq("cookie"));
+        verify(mApi, times(1)).searchResources(eq("cookie"), eq(params));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class EmeraldMR3SearchStrategyTest {
         params.put("offset", "133");
 
         verify(mResponse, times(2)).getNextOffset();
-        verify(mApi).searchResources(eq(params), eq("cookie"));
+        verify(mApi).searchResources(eq("cookie"), eq(params));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class EmeraldMR3SearchStrategyTest {
         assertThat(strategy.hasNext(), is(false));
 
         verify(mResponse, times(2)).getNextOffset();
-        verify(mApi, times(2)).searchResources(anyMap(), eq("cookie"));
+        verify(mApi, times(2)).searchResources(eq("cookie"), anyMap());
     }
 
     @Test

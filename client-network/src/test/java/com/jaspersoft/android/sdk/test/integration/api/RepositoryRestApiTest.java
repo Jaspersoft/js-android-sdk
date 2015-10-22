@@ -63,21 +63,21 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestListOfResources() {
-        ResourceSearchResult resourceSearchResult = api.searchResources(null, mAuthenticator.token());
+        ResourceSearchResult resourceSearchResult = api.searchResources(mAuthenticator.token(), null);
         assertThat(resourceSearchResult, is(notNullValue()));
         assertThat(resourceSearchResult.getResources(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestReport() {
-        ReportLookup report = api.requestReportResource("/public/Samples/Reports/AllAccounts", mAuthenticator.token());
+        ReportLookup report = api.requestReportResource(mAuthenticator.token(), "/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
 
     @Test
     public void shouldRequestRootFolder() {
-        FolderLookup folder = api.requestFolderResource("/", mAuthenticator.token());
+        FolderLookup folder = api.requestFolderResource(mAuthenticator.token(), "/");
         assertThat(folder, is(notNullValue()));
     }
 }

@@ -44,30 +44,30 @@ public interface ReportExecutionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportExecutionDescriptor runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions, @NonNull String token);
+    ReportExecutionDescriptor runReportExecution(@NonNull String token, @NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String executionId, @NonNull String token);
+    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String token, @NonNull String executionId);
 
     @NonNull
     @WorkerThread
-    ExecutionStatus requestReportExecutionStatus(@NonNull String executionId, @NonNull String token);
+    ExecutionStatus requestReportExecutionStatus(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean cancelReportExecution(@NonNull String executionId, @NonNull String token);
+    boolean cancelReportExecution(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean updateReportExecution(@NonNull String executionId,
-                                  @NonNull Collection<Map<String, Set<String>>> params,
-                                  @NonNull String token);
+    boolean updateReportExecution(@NonNull String token,
+                                  @NonNull String executionId,
+                                  @NonNull Collection<Map<String, Set<String>>> params);
 
     /**
      * TODO: API is broken requires investigation before release
      */
     @NonNull
     @WorkerThread
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params, @NonNull String token);
+    ReportExecutionSearchResponse searchReportExecution(@NonNull String token, Map<String, String> params);
 
     final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override

@@ -65,7 +65,7 @@ public class EmeraldMR2SearchStrategyTest {
         when(mTokenProvider.provideToken()).thenReturn(mAbstractToken);
         when(mAbstractToken.get()).thenReturn("cookie");
 
-        when(mApi.searchResources(anyMap(), anyString())).thenReturn(mResponse);
+        when(mApi.searchResources(anyString(), anyMap())).thenReturn(mResponse);
 
         List<ResourceLookup> stubLookup = Collections.singletonList(new ResourceLookup());
         when(mResponse.getResources()).thenReturn(stubLookup);
@@ -86,56 +86,56 @@ public class EmeraldMR2SearchStrategyTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("limit", "10");
-        verify(mApi).searchResources(params, "cookie");
+        verify(mApi).searchResources("cookie", params);
 
         params = new HashMap<>();
         params.put("limit", "10");
         params.put("offset", "10");
-        verify(mApi).searchResources(params, "cookie");
+        verify(mApi).searchResources("cookie", params);
     }
 
     @Test
-    public void willRetry5timesIfApiReturnsNoElements()throws Exception {
+    public void willRetry5timesIfApiReturnsNoElements() throws Exception {
         when(mResponse.getResources()).thenReturn(Collections.<ResourceLookup>emptyList());
 
         Collection<ResourceLookup> result = search10itemsStrategy.searchNext();
         assertThat(search10itemsStrategy.hasNext(), is(false));
 
         assertThat(result, is(empty()));
-        verify(mApi, times(6)).searchResources(anyMap(), eq("cookie"));
+        verify(mApi, times(6)).searchResources( eq("cookie"), anyMap());
     }
 
     @Test
-    public void willReturnAsMuchElementsAsLeftIfEndReached()throws Exception {
+    public void willReturnAsMuchElementsAsLeftIfEndReached() throws Exception {
         when(mResponse.getResources()).then(OnlyTwoItems.INSTANCE);
 
         Collection<ResourceLookup> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(2));
 
-        verify(mApi, times(6)).searchResources(anyMap(), eq("cookie"));
+        verify(mApi, times(6)).searchResources( eq("cookie"), anyMap());
     }
 
     @Test
-    public void forCustomOffsetShouldCalculateServerDisposition()throws Exception {
+    public void forCustomOffsetShouldCalculateServerDisposition() throws Exception {
         when(mResponse.getResources()).thenReturn(FIVE_ITEMS);
 
         search10itemsStrategyWithUserOffset5.searchNext();
 
         Map<String, Object> params1 = new HashMap<>();
         params1.put("limit", "5");
-        verify(mApi).searchResources(params1, "cookie");
+        verify(mApi).searchResources("cookie", params1);
 
         Map<String, Object> params2 = new HashMap<>();
         params2.put("limit", "10");
         params2.put("offset", "5");
-        verify(mApi).searchResources(params2, "cookie");
+        verify(mApi).searchResources("cookie", params2);
 
         Map<String, Object> params3 = new HashMap<>();
         params3.put("limit", "10");
         params3.put("offset", "15");
-        verify(mApi).searchResources(params3, "cookie");
+        verify(mApi).searchResources("cookie", params3);
 
-        verify(mApi, times(3)).searchResources(anyMap(), eq("cookie"));
+        verify(mApi, times(3)).searchResources(eq("cookie"), anyMap());
         verifyNoMoreInteractions(mApi);
     }
 
@@ -157,6 +157,7 @@ public class EmeraldMR2SearchStrategyTest {
         private final List<ResourceLookup> zeroItems = Collections.emptyList();
 
         private int count = 0;
+
         @Override
         public Collection<ResourceLookup> answer(InvocationOnMock invocationOnMock) throws Throwable {
             if (count == 0) {

@@ -103,7 +103,7 @@ public class ReportExecutionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.runReportExecution(ReportExecutionRequestOptions.newRequest("/any/uri"), "cookie");
+        restApiUnderTest.runReportExecution("cookie", ReportExecutionRequestOptions.newRequest("/any/uri"));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution options should not be null");
 
-        restApiUnderTest.runReportExecution(null, "cookie");
+        restApiUnderTest.runReportExecution("cookie", null);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expectMessage("Request token should not be null");
 
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest("/uri");
-        restApiUnderTest.runReportExecution(options, null);
+        restApiUnderTest.runReportExecution(null, options);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionDetails(null, "cookie");
+        restApiUnderTest.requestReportExecutionDetails("cookie", null);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
-        restApiUnderTest.requestReportExecutionDetails("exec_id", null);
+        restApiUnderTest.requestReportExecutionDetails(null, "exec_id");
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestReportExecutionStatus(null, "cookie");
+        restApiUnderTest.requestReportExecutionStatus("cookie", null);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
-        restApiUnderTest.requestReportExecutionStatus("exec_id", null);
+        restApiUnderTest.requestReportExecutionStatus(null, "exec_id");
     }
 
     @Test
@@ -160,7 +160,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.cancelReportExecution(null, "cookie");
+        restApiUnderTest.cancelReportExecution("cookie", null);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
-        restApiUnderTest.cancelReportExecution("exec_id", null);
+        restApiUnderTest.cancelReportExecution(null, "exec_id");
     }
 
     @Test
@@ -176,7 +176,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution params should not be null");
 
-        restApiUnderTest.updateReportExecution("any_id", null, "cookie");
+        restApiUnderTest.updateReportExecution("cookie", "any_id", null);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Execution params should not be empty");
 
-        restApiUnderTest.updateReportExecution("any_id", Collections.<Map<String, Set<String>>>emptyList(), "cookie");
+        restApiUnderTest.updateReportExecution("cookie", "any_id", Collections.<Map<String, Set<String>>>emptyList());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class ReportExecutionRestApiTest {
         mWebMockRule.enqueue(response);
 
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest("/my/uri");
-        restApiUnderTest.runReportExecution(options, "cookie");
+        restApiUnderTest.runReportExecution("cookie", options);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions"));
@@ -207,7 +207,7 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody(reportExecutionDetailsResponse.asString());
         mWebMockRule.enqueue(response);
 
-        ReportExecutionDescriptor details = restApiUnderTest.requestReportExecutionDetails("exec_id", "cookie");
+        ReportExecutionDescriptor details = restApiUnderTest.requestReportExecutionDetails("cookie", "exec_id");
         assertThat(details, is(notNullValue()));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
@@ -221,7 +221,7 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody("{\"value\":\"execution\"}");
         mWebMockRule.enqueue(response);
 
-        ExecutionStatus status = restApiUnderTest.requestReportExecutionStatus("exec_id", "cookie");
+        ExecutionStatus status = restApiUnderTest.requestReportExecutionStatus("cookie", "exec_id");
         assertThat(status, is(notNullValue()));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
@@ -235,7 +235,7 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200();
         mWebMockRule.enqueue(response);
 
-        restApiUnderTest.cancelReportExecution("exec_id", "cookie");
+        restApiUnderTest.cancelReportExecution("cookie", "exec_id");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/status"));
@@ -249,7 +249,7 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create204();
         mWebMockRule.enqueue(response);
 
-        restApiUnderTest.updateReportExecution("exec_id", PARAMS, "cookie");
+        restApiUnderTest.updateReportExecution("cookie", "exec_id", PARAMS);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/parameters"));
@@ -262,7 +262,7 @@ public class ReportExecutionRestApiTest {
     public void responseShouldNotBeCancelledIfResponseIs204() {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id", "cookie");
+        boolean cancelled = restApiUnderTest.cancelReportExecution("cookie", "any_id");
 
         assertThat(cancelled, is(false));
     }
@@ -272,7 +272,7 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody(cancelledResponse.asString());
         mWebMockRule.enqueue(response);
 
-        boolean cancelled = restApiUnderTest.cancelReportExecution("any_id", "cookie");
+        boolean cancelled = restApiUnderTest.cancelReportExecution("cookie", "any_id");
 
         assertThat(cancelled, is(true));
     }
@@ -281,7 +281,7 @@ public class ReportExecutionRestApiTest {
     public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws IOException {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS, "cookie");
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution("cookie", SEARCH_PARAMS);
         assertThat(response.getItems(), is(empty()));
     }
 
@@ -291,14 +291,14 @@ public class ReportExecutionRestApiTest {
         mockResponse.setBody(searchExecutionResponse.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS, "cookie");
+        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution("cookie", SEARCH_PARAMS);
         assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
     public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
         mWebMockRule.enqueue(MockResponseFactory.create204());
-        boolean response = restApiUnderTest.updateReportExecution("any_id", PARAMS, "cookie");
+        boolean response = restApiUnderTest.updateReportExecution("cookie", "any_id", PARAMS);
         assertThat(response, is(true));
     }
 }

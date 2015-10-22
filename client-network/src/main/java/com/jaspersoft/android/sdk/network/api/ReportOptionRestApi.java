@@ -44,22 +44,21 @@ public interface ReportOptionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportOption createReportOption(@NonNull String reportUnitUri,
+    ReportOption createReportOption(@NonNull String token, @NonNull String reportUnitUri,
                                     @NonNull String optionLabel,
                                     @NonNull Map<String, Set<String>> controlsValues,
-                                    boolean overwrite,
-                                    @NonNull String token);
+                                    boolean overwrite);
 
     @WorkerThread
-    void updateReportOption(@NonNull String reportUnitUri,
+    void updateReportOption(@NonNull String token,
+                            @NonNull String reportUnitUri,
                             @NonNull String optionId,
-                            @NonNull Map<String, Set<String>> controlsValues,
-                            @NonNull String token);
+                            @NonNull Map<String, Set<String>> controlsValues);
 
     @WorkerThread
-    void deleteReportOption(@NonNull String reportUnitUri,
-                            @NonNull String optionId,
-                            @NonNull String token);
+    void deleteReportOption(@NonNull String token,
+                            @NonNull String reportUnitUri,
+                            @NonNull String optionId);
 
     final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
         @Override

@@ -88,7 +88,7 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId(), mAuthenticator.token());
+        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
@@ -96,7 +96,7 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExportOutputResource output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId(), mAuthenticator.token());
+        ExportOutputResource output = apiUnderTest.requestExportOutput(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
 
         assertThat(output.getOutputResource(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
@@ -111,12 +111,12 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return apiUnderTest.runExportExecution(exec.getExecutionId(), options, mAuthenticator.token());
+        return apiUnderTest.runExportExecution(mAuthenticator.token(), exec.getExecutionId(), options);
     }
 
     @NonNull
     private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        return mExecApi.runReportExecution(executionRequestOptions, mAuthenticator.token());
+        return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }
 }

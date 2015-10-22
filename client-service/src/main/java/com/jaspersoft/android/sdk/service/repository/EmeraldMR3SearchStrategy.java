@@ -89,7 +89,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     @NonNull
     private ResourceSearchResult performApiCall(InternalCriteria newSearchCriteria) {
-        return mRepositoryRestApi.searchResources(newSearchCriteria.toMap(), mTokenProvider.provideToken().get());
+        return mRepositoryRestApi.searchResources(mTokenProvider.provideToken().get(), newSearchCriteria.toMap());
     }
 
     private void defineInternalOffset() {

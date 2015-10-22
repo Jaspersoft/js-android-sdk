@@ -60,7 +60,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams, @Nullable String token) {
+    public ResourceSearchResult searchResources(@Nullable String token, @Nullable Map<String, Object> searchParams) {
         checkNotNull(token, "Request token should not be null");
 
         Iterable<?> types = null;
@@ -108,7 +108,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ReportLookup requestReportResource(@Nullable String resourceUri, @Nullable String token) {
+    public ReportLookup requestReportResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Report uri should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -118,11 +118,11 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public FolderLookup requestFolderResource(@Nullable String resourceUri, @Nullable String token) {
+    public FolderLookup requestFolderResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
         checkNotNull(token, "Request token should not be null");
 
-        Call<FolderLookup> call =  mRestApi.requestFolderResource(resourceUri, token);
+        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri, token);
         return CallWrapper.wrap(call).body();
     }
 

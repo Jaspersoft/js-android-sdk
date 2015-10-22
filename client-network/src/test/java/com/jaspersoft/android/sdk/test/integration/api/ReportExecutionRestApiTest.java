@@ -90,7 +90,7 @@ public class ReportExecutionRestApiTest {
     @Test
     public void shouldCancelReportExecution() throws InterruptedException {
         ReportExecutionDescriptor response = startExecution();
-        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId(), mAuthenticator.token());
+        boolean cancelled = apiUnderTest.cancelReportExecution(mAuthenticator.token(), response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
@@ -99,7 +99,7 @@ public class ReportExecutionRestApiTest {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId(), mAuthenticator.token());
+        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(mAuthenticator.token(), executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
@@ -107,7 +107,7 @@ public class ReportExecutionRestApiTest {
     public void shouldCheckReportExecutionStatus() throws IOException {
         ReportExecutionDescriptor executionResponse = startExecution();
 
-        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId(), mAuthenticator.token());
+        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(mAuthenticator.token(), executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -121,7 +121,7 @@ public class ReportExecutionRestApiTest {
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(params, mAuthenticator.token());
+        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(mAuthenticator.token(), params);
         assertThat(response.getItems(), is(not(empty())));
     }
 
@@ -134,7 +134,7 @@ public class ReportExecutionRestApiTest {
         list.add(reportParameter);
 
         ReportExecutionDescriptor executionResponse = startExecution();
-        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), list, mAuthenticator.token());
+        boolean success = apiUnderTest.updateReportExecution(mAuthenticator.token(), executionResponse.getExecutionId(), list);
         assertThat(success, is(true));
     }
 
@@ -153,6 +153,6 @@ public class ReportExecutionRestApiTest {
         params.put("ProductFamily", new HashSet<String>(Collections.singletonList("Food")));
         executionRequestOptions.withParameters(params);
 
-        return apiUnderTest.runReportExecution(executionRequestOptions, mAuthenticator.token());
+        return apiUnderTest.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }
 }

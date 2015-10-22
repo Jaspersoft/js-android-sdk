@@ -61,9 +61,9 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Collection<InputControl> requestInputControls(@Nullable String reportUri,
-                                                         boolean excludeState,
-                                                         @Nullable String token) {
+    public Collection<InputControl> requestInputControls(@Nullable String token,
+                                                         @Nullable String reportUri,
+                                                         boolean excludeState) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -75,9 +75,9 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
-                                                                           boolean freshData,
-                                                                           @Nullable String token) {
+    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String token,
+                                                                           @Nullable String reportUri,
+                                                                           boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -88,10 +88,10 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Collection<InputControlState> requestInputControlsStates(@Nullable String reportUri,
+    public Collection<InputControlState> requestInputControlsStates(@Nullable String token,
+                                                                    @Nullable String reportUri,
                                                                     @Nullable Map<String, Set<String>> controlsValues,
-                                                                    boolean freshData,
-                                                                    @Nullable String token) {
+                                                                    boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
         checkNotNull(token, "Request token should not be null");

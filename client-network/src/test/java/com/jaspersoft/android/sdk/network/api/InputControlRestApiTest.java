@@ -63,56 +63,56 @@ public class InputControlRestApiTest {
     public void requestInputControlsShouldNotAllowNullReportUri() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControls(null, false, "cookie");
+        restApiUnderTest.requestInputControls("cookie", null, false);
     }
 
     @Test
     public void requestInputControlsInitialStatesShouldNotAllowNullToken() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
-        restApiUnderTest.requestInputControlsInitialStates("/uri", false, null);
+        restApiUnderTest.requestInputControlsInitialStates(null, "/uri", false);
     }
 
     @Test
     public void requestInputControlsStatesShouldNotAllowNullReportUri() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControlsStates(null, Collections.EMPTY_MAP, true, "cookie");
+        restApiUnderTest.requestInputControlsStates("cookie", null, Collections.EMPTY_MAP, true);
     }
 
     @Test
     public void requestInputControlsStatesShouldNotAllowNullControlParams() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
-        restApiUnderTest.requestInputControlsStates("any_id", null, true, "cookie");
+        restApiUnderTest.requestInputControlsStates("cookie", "any_id", null, true);
     }
 
     @Test
     public void requestInputControlsStatesShouldNotAllowNullToken() {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
-        restApiUnderTest.requestInputControlsStates("any_id", Collections.EMPTY_MAP, true, null);
+        restApiUnderTest.requestInputControlsStates(null, "any_id", Collections.EMPTY_MAP, true);
     }
 
     @Test
     public void requestInputControlsShouldThrowRestErrorFor500() {
         mExpectedException.expect(RestError.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        restApiUnderTest.requestInputControls("any_id", true, "cookie");
+        restApiUnderTest.requestInputControls("cookie", "any_id", true);
     }
 
     @Test
     public void requestInputControlsInitialStatesShouldThrowRestErrorFor500() {
         mExpectedException.expect(RestError.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        restApiUnderTest.requestInputControlsInitialStates("any_id", true, "cookie");
+        restApiUnderTest.requestInputControlsInitialStates("cookie", "any_id", true);
     }
 
     @Test
     public void requestInputControlsStatesShouldThrowRestErrorFor500() {
         mExpectedException.expect(RestError.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        restApiUnderTest.requestInputControlsStates("any_id", Collections.EMPTY_MAP, true, "cookie");
+        restApiUnderTest.requestInputControlsStates("cookie", "any_id", Collections.EMPTY_MAP, true);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class InputControlRestApiTest {
                 .setBody(icsStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControlState> states = restApiUnderTest.requestInputControlsInitialStates("/my/uri", true, "cookie");
+        Collection<InputControlState> states = restApiUnderTest.requestInputControlsInitialStates("cookie", "/my/uri", true);
         assertThat(states, is(not(empty())));
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
@@ -140,7 +140,7 @@ public class InputControlRestApiTest {
                 .setBody(icsStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControlState> states = restApiUnderTest.requestInputControlsStates("/my/uri", parameters, true, "cookie");
+        Collection<InputControlState> states = restApiUnderTest.requestInputControlsStates("cookie", "/my/uri", parameters, true);
         assertThat(states, Matchers.is(not(Matchers.empty())));
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
@@ -154,7 +154,7 @@ public class InputControlRestApiTest {
                 .setBody(icsWithoutStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", true, "cookie");
+        Collection<InputControl> controls = restApiUnderTest.requestInputControls("cookie", "/my/uri", true);
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(nullValue()));
 
@@ -169,7 +169,7 @@ public class InputControlRestApiTest {
                 .setBody(icsWithStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", false, "cookie");
+        Collection<InputControl> controls = restApiUnderTest.requestInputControls("cookie", "/my/uri", false);
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(not(nullValue())));
 

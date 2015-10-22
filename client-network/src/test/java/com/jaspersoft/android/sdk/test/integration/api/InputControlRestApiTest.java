@@ -75,7 +75,7 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, false, mAuthenticator.token());
+        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, false);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -87,7 +87,7 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, true, mAuthenticator.token());
+        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, true);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -96,13 +96,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(REPORT_URI, true, mAuthenticator.token());
+        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(mAuthenticator.token(), REPORT_URI, true);
         assertThat(states, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshStatesForInputControls() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true, mAuthenticator.token());
+        Collection<InputControlState> states = mRestApi.requestInputControlsStates(mAuthenticator.token(), REPORT_URI, CONTROL_PARAMETERS, true);
         assertThat(states, is(not(empty())));
     }
 }

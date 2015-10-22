@@ -74,17 +74,17 @@ public class ReportOptionRestApiTest {
 
     @Test
     public void shouldRequestReportOptionsList() {
-        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(REPORT_URI, mAuthenticator.token());
+        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(mAuthenticator.token(), REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 
     @Test
     public void apiSupportsCrudForReportOption() {
-        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true, mAuthenticator.token());
+        ReportOption response = apiUnderTest.createReportOption(mAuthenticator.token(), REPORT_URI, "label", CONTROL_PARAMETERS, true);
         assertThat(response.getLabel(), is("label"));
 
-        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS, mAuthenticator.token());
+        apiUnderTest.updateReportOption(mAuthenticator.token(), REPORT_URI, response.getId(), CONTROL_PARAMETERS);
 
-        apiUnderTest.deleteReportOption(REPORT_URI, response.getId(), mAuthenticator.token());
+        apiUnderTest.deleteReportOption(mAuthenticator.token(), REPORT_URI, response.getId());
     }
 }

@@ -41,28 +41,28 @@ public interface ReportExportRestApi {
 
     @NonNull
     @WorkerThread
-    ExportExecutionDescriptor runExportExecution(@NonNull String executionId,
-                                                 @NonNull ExecutionRequestOptions executionOptions,
-                                                 @NonNull String token);
+    ExportExecutionDescriptor runExportExecution(@NonNull String token,
+                                                 @NonNull String executionId,
+                                                 @NonNull ExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ExecutionStatus checkExportExecutionStatus(@NonNull String executionId,
-                                               @NonNull String exportId,
-                                               @NonNull String token);
+    ExecutionStatus checkExportExecutionStatus(@NonNull String token,
+                                               @NonNull String executionId,
+                                               @NonNull String exportId);
 
     @NonNull
     @WorkerThread
-    ExportOutputResource requestExportOutput(@NonNull String executionId,
-                                             @NonNull String exportId,
-                                             @NonNull String token);
+    ExportOutputResource requestExportOutput(@NonNull String token,
+                                             @NonNull String executionId,
+                                             @NonNull String exportId);
 
     @NonNull
     @WorkerThread
-    OutputResource requestExportAttachment(@NonNull String executionId,
+    OutputResource requestExportAttachment(@NonNull String token,
+                                           @NonNull String executionId,
                                            @NonNull String exportId,
-                                           @NonNull String attachmentId,
-                                           @NonNull String token);
+                                           @NonNull String attachmentId);
 
     final class Builder extends GenericBuilder<Builder, ReportExportRestApi> {
         @Override

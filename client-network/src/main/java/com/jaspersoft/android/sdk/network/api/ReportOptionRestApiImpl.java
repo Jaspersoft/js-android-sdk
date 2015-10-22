@@ -63,8 +63,8 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NonNull
     @Override
-    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri,
-                                                      @Nullable String token) {
+    public Set<ReportOption> requestReportOptionsList(@Nullable String token,
+                                                      @Nullable String reportUnitUri) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -84,11 +84,11 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NonNull
     @Override
-    public ReportOption createReportOption(@Nullable String reportUnitUri,
+    public ReportOption createReportOption(@Nullable String token,
+                                           @Nullable String reportUnitUri,
                                            @Nullable String optionLabel,
                                            @Nullable Map<String, Set<String>> controlsValues,
-                                           boolean overwrite,
-                                           @Nullable String token) {
+                                           boolean overwrite) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionLabel, "Option label should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
@@ -99,10 +99,10 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     }
 
     @Override
-    public void updateReportOption(@Nullable String reportUnitUri,
+    public void updateReportOption(@Nullable String token,
+                                   @Nullable String reportUnitUri,
                                    @Nullable String optionId,
-                                   @Nullable Map<String, Set<String>> controlsValues,
-                                   @Nullable String token) {
+                                   @Nullable Map<String, Set<String>> controlsValues) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
@@ -113,9 +113,9 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     }
 
     @Override
-    public void deleteReportOption(@Nullable String reportUnitUri,
-                                   @Nullable String optionId,
-                                   @Nullable String token) {
+    public void deleteReportOption(@Nullable String token,
+                                   @Nullable String reportUnitUri,
+                                   @Nullable String optionId) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
         checkNotNull(token, "Request token should not be null");

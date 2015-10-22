@@ -65,7 +65,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions, @Nullable String token) {
+    public ReportExecutionDescriptor runReportExecution(@Nullable String token, @Nullable ReportExecutionRequestOptions executionOptions) {
         checkNotNull(executionOptions, "Execution options should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -75,7 +75,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId, @Nullable String token) {
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String token, @Nullable String executionId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -85,7 +85,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId, @Nullable String token) {
+    public ExecutionStatus requestReportExecutionStatus(@Nullable String token, @Nullable String executionId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -94,7 +94,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     }
 
     @Override
-    public boolean cancelReportExecution(@Nullable String executionId, @Nullable String token) {
+    public boolean cancelReportExecution(@Nullable String token, @Nullable String executionId) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(token, "Request token should not be null");
 
@@ -105,9 +105,9 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     }
 
     @Override
-    public boolean updateReportExecution(@Nullable String executionId,
-                                         @Nullable Collection<Map<String, Set<String>>> params,
-                                         @Nullable String token) {
+    public boolean updateReportExecution(@Nullable String token,
+                                         @Nullable String executionId,
+                                         @Nullable Collection<Map<String, Set<String>>> params) {
         checkNotNull(executionId, "Execution id should not be null");
         checkNotNull(params, "Execution params should not be null");
         checkArgument(params.isEmpty(), "Execution params should not be empty");
@@ -121,7 +121,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NonNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params, @Nullable String token) {
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable String token, @Nullable Map<String, String> params) {
         checkNotNull(params, "Search params should not be null");
         checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
         checkNotNull(token, "Request token should not be null");
