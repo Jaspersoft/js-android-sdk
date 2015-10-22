@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.squareup.okhttp.Protocol;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -60,7 +59,7 @@ public class TokenFactoryTest {
                 .request(mRequest)
                 .build();
 
-        AbstractToken token = TokenFactory.create(mockResponse);
-        assertThat(token.get(), is("cookie1;cookie2"));
+        String token = TokenFactory.create(mockResponse);
+        assertThat(token, is("cookie1;cookie2"));
     }
 }

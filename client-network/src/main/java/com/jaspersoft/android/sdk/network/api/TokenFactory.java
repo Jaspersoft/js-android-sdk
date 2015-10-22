@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.squareup.okhttp.Response;
 
 import java.util.Iterator;
@@ -43,15 +41,14 @@ final class TokenFactory {
         mCookieParts = parts;
     }
 
-    public static AbstractToken create(Response response) {
+    public static String create(Response response) {
         List<String> parts = response.headers().values("Set-Cookie");
         TokenFactory responseFactory = new TokenFactory(parts);
         return responseFactory.create();
     }
 
-    private AbstractToken create() {
-        String cookie = joinCookieParts().toString();
-        return CookieToken.create(cookie);
+    private String create() {
+        return joinCookieParts().toString();
     }
 
     private StringBuilder joinCookieParts() {

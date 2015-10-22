@@ -214,7 +214,7 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldSearchResources() throws Exception {
-        mWebMockRule.enqueue(MockResponseFactory.create200());
+        mWebMockRule.enqueue(MockResponseFactory.create204());
 
         Map<String, Object> params = new HashMap<>();
         params.put("limit", 100);
@@ -222,7 +222,7 @@ public class RepositoryRestApiTest {
         restApiUnderTest.searchResources(params, "cookie");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2"));
+        assertThat(request.getPath(), is("/rest_v2/resources?offset=100&limit=100"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
     }
 
@@ -242,7 +242,7 @@ public class RepositoryRestApiTest {
     public void shouldRequestFolderResource() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
-        restApiUnderTest.requestReportResource("/my/uri", "cookie");
+        restApiUnderTest.requestFolderResource("/my/uri", "cookie");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));

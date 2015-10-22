@@ -22,12 +22,26 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api.auth;
+package com.jaspersoft.android.sdk.service.auth;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class AbstractToken {
-    public abstract String get();
+public final class CookieToken extends AbstractToken {
+    private final String mCookie;
+
+    private CookieToken(String cookie) {
+        mCookie = cookie;
+    }
+
+    public static CookieToken create(String cookie) {
+        return new CookieToken(cookie);
+    }
+
+    @Override
+    public String get() {
+        return mCookie;
+    }
+
 }

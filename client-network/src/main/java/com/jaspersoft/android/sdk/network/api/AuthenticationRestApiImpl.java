@@ -27,12 +27,10 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 
 import com.google.gson.JsonSyntaxException;
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
@@ -43,6 +41,7 @@ import java.util.Set;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 
 /**
@@ -64,7 +63,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NonNull
     @Override
-    public AbstractToken authenticate(@NonNull final String username,
+    public String authenticate(@NonNull final String username,
                                      @NonNull final String password,
                                      final String organization,
                                      final Map<String, String> params) {
@@ -107,14 +106,12 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     public EncryptionKey requestEncryptionMetadata() {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
-        AbstractToken anonymousToken = TokenFactory.create(response.raw());
+        String anonymousToken = TokenFactory.create(response.raw());
 
-        mClient.interceptors().add(new CookieAuthInterceptor(anonymousToken));
-        mRestAdapterBuilder.client(mClient);
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 
         try {
-            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata()).body();
+            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata(anonymousToken)).body();
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when security option is disabled on JRS side.
@@ -157,23 +154,6 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
                 .build();
     }
 
-    private static final class CookieAuthInterceptor implements Interceptor {
-        private final AbstractToken mToken;
-
-        CookieAuthInterceptor(AbstractToken token) {
-            mToken = token;
-        }
-
-        @Override
-        public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            Request compressedRequest = originalRequest.newBuilder()
-                    .header("Cookie", mToken.get())
-                    .build();
-            return chain.proceed(compressedRequest);
-        }
-    }
-
     private interface RestApi {
         @NonNull
         @Headers("Accept: text/plain")
@@ -182,6 +162,6 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
         @NonNull
         @GET("GetEncryptionKey")
-        retrofit.Call<EncryptionKey> requestEncryptionMetadata();
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata(@NonNull @Header("Cookie") String cookie);
     }
 }

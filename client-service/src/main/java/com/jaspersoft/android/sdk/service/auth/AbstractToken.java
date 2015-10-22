@@ -22,15 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api.auth;
-
-import android.support.annotation.NonNull;
+package com.jaspersoft.android.sdk.service.auth;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenProvider {
-    @NonNull
-    AbstractToken provideToken();
+public abstract class AbstractToken {
+    public abstract String get();
 }

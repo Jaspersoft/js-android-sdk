@@ -2,7 +2,6 @@ package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import org.junit.Before;
@@ -39,8 +38,6 @@ public class SpringAuthServiceTest {
     @Mock
     AuthenticationRestApi mRestApi;
     @Mock
-    AbstractToken mToken;
-    @Mock
     JSEncryptionAlgorithm mAlgorithm;
     @Mock
     EncryptionKey mKey;
@@ -71,7 +68,7 @@ public class SpringAuthServiceTest {
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
-        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn(mToken);
+        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn("cookie");
     }
 
     @Test

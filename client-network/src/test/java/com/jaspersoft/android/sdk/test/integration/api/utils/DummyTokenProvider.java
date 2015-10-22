@@ -27,17 +27,15 @@ package com.jaspersoft.android.sdk.test.integration.api.utils;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
-import com.jaspersoft.android.sdk.network.api.auth.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class DummyTokenProvider implements TokenProvider {
+public final class DummyTokenProvider {
 
     private final JrsMetadata mJrsMetadata;
-    private AbstractToken mToken;
+    private String mToken;
 
     public DummyTokenProvider(JrsMetadata jrsMetadata) {
         mJrsMetadata = jrsMetadata;
@@ -48,8 +46,7 @@ public final class DummyTokenProvider implements TokenProvider {
     }
 
     @NonNull
-    @Override
-    public AbstractToken provideToken() {
+    public String provideToken() {
         if (mToken == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                     .baseUrl(mJrsMetadata.getServerUrl())
@@ -61,6 +58,6 @@ public final class DummyTokenProvider implements TokenProvider {
     }
 
     public String token() {
-        return provideToken().get();
+        return provideToken();
     }
 }

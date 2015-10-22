@@ -30,7 +30,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.api.auth.AbstractToken;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import java.util.HashMap;
@@ -83,7 +82,8 @@ public final class SpringAuthService implements AuthService {
         }
 
         Map<String, String> params = prepareOptionals();
-        return mRestApi.authenticate(mUsername, password, mOrganization, params);
+        String cookie = mRestApi.authenticate(mUsername, password, mOrganization, params);
+        return CookieToken.create(cookie);
     }
 
     private Map<String, String> prepareOptionals() {
