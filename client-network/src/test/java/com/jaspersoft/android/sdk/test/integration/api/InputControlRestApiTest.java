@@ -68,7 +68,6 @@ public class InputControlRestApiTest {
     @Before
     public void setup() {
         mRestApi = new InputControlRestApi.Builder()
-                .tokenProvider(mAuthenticator)
                 .baseUrl(mMetadata.getServerUrl())
                 .logger(TestLogger.get(this))
                 .build();
@@ -76,7 +75,7 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, false);
+        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, false, mAuthenticator.token());
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -88,7 +87,7 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, true);
+        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, true, mAuthenticator.token());
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -97,13 +96,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(REPORT_URI, true, mAuthenticator.token());
         assertThat(states, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshStatesForInputControls() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
+        Collection<InputControlState> states = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true, mAuthenticator.token());
         assertThat(states, is(not(empty())));
     }
 }

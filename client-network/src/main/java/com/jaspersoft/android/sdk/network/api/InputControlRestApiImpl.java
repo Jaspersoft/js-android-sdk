@@ -40,6 +40,7 @@ import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -60,20 +61,27 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public Collection<InputControl> requestInputControls(@Nullable String reportUri, boolean excludeState) {
+    public Collection<InputControl> requestInputControls(@Nullable String reportUri,
+                                                         boolean excludeState,
+                                                         @Nullable String token) {
         checkNotNull(reportUri, "Report URI should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
+        String state = (excludeState ? "state" : null);
+        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state, token);
         InputControlCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
 
     @NonNull
     @Override
-    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
+    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
+                                                                           boolean freshData,
+                                                                           @Nullable String token) {
         checkNotNull(reportUri, "Report URI should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData, token);
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
@@ -81,13 +89,15 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @NonNull
     @Override
     public Collection<InputControlState> requestInputControlsStates(@Nullable String reportUri,
-                                                                @Nullable Map<String, Set<String>> controlsValues,
-                                                                boolean freshData) {
+                                                                    @Nullable Map<String, Set<String>> controlsValues,
+                                                                    boolean freshData,
+                                                                    @Nullable String token) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
+        checkNotNull(token, "Request token should not be null");
 
         String ids = Utils.joinString(";", controlsValues.keySet());
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData, token);
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
@@ -98,14 +108,16 @@ final class InputControlRestApiImpl implements InputControlRestApi {
         @GET("rest_v2/reports{reportUnitURI}/inputControls")
         Call<InputControlCollection> requestInputControls(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("exclude") String state);
+                @Query("exclude") String state,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
         Call<InputControlStateCollection> requestInputControlsInitialValues(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("freshData") boolean freshData);
+                @Query("freshData") boolean freshData,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
@@ -114,6 +126,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @NonNull @Path(value = "controlsId", encoded = true) String ids,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
-                @Query("freshData") boolean freshData);
+                @Query("freshData") boolean freshData,
+                @Header("Cookie") String cookie);
     }
 }

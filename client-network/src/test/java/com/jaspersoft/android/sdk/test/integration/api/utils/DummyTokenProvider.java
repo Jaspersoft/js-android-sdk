@@ -59,4 +59,8 @@ public final class DummyTokenProvider implements TokenProvider {
         }
         return mToken;
     }
+
+    public String token() {
+        return provideToken().get();
+    }
 }

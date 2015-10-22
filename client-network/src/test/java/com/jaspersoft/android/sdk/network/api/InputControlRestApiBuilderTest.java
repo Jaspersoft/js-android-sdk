@@ -68,24 +68,6 @@ public class InputControlRestApiBuilderTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Base url should be supplied to work with JRS API");
 
-        builderUnderTest.tokenProvider(FakeTokenProvider.get());
         builderUnderTest.build();
-    }
-
-    @Test
-    public void builderShouldEnsureTokenNotNull() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This API requires authentication tokenProvider");
-
-        builderUnderTest.baseUrl("http://localhost");
-        builderUnderTest.build();
-    }
-
-    @Test
-    public void builderShouldAllowNullToken() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("tokenProvider == null");
-
-        builderUnderTest.tokenProvider(null);
     }
 }

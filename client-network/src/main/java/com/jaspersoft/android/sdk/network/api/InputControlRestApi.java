@@ -47,16 +47,20 @@ public interface InputControlRestApi {
      *
      * @param reportUri    uri of report
      * @param excludeState exclude field state which incorporates options values for control
+     * @param token        is a key API sends to authorize client
      * @return unmodifiable list of {@link InputControl}
      */
     @NonNull
     @WorkerThread
-    Collection<InputControl> requestInputControls(@NonNull String reportUri, boolean excludeState);
+    Collection<InputControl> requestInputControls(@NonNull String reportUri,
+                                                  boolean excludeState,
+                                                  @NonNull String token);
 
     @NonNull
     @WorkerThread
     Collection<InputControlState> requestInputControlsInitialStates(@NonNull String reportUri,
-                                                                boolean freshData);
+                                                                    boolean freshData,
+                                                                    @NonNull String token);
 
     /**
      * Provides values for specified controls. This API helpful to
@@ -70,10 +74,11 @@ public interface InputControlRestApi {
     @NonNull
     @WorkerThread
     Collection<InputControlState> requestInputControlsStates(@NonNull String reportUri,
-                                                         @NonNull Map<String, Set<String>> controlsValues,
-                                                         boolean freshData);
+                                                             @NonNull Map<String, Set<String>> controlsValues,
+                                                             boolean freshData,
+                                                             @NonNull String token);
 
-    final class Builder extends GenericAuthBuilder<Builder, InputControlRestApi> {
+    final class Builder extends GenericBuilder<Builder, InputControlRestApi> {
         @Override
         InputControlRestApi createApi() {
             return new InputControlRestApiImpl(getAdapter().build());
