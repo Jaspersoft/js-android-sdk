@@ -41,6 +41,7 @@ import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
@@ -62,10 +63,12 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NonNull
     @Override
-    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri) {
+    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri,
+                                                      @Nullable String token) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri);
+        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri, token);
         try {
             ReportOptionSet options = CallWrapper.wrap(call).body();
             return options.get();
@@ -82,36 +85,42 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     @NonNull
     @Override
     public ReportOption createReportOption(@Nullable String reportUnitUri,
-                                                       @Nullable String optionLabel,
-                                                       @Nullable Map<String, Set<String>> controlsValues,
-                                                       boolean overwrite) {
+                                           @Nullable String optionLabel,
+                                           @Nullable Map<String, Set<String>> controlsValues,
+                                           boolean overwrite,
+                                           @Nullable String token) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionLabel, "Option label should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite);
+        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite, token);
         return CallWrapper.wrap(call).body();
     }
 
     @Override
     public void updateReportOption(@Nullable String reportUnitUri,
-                                               @Nullable String optionId,
-                                               @Nullable Map<String, Set<String>> controlsValues) {
+                                   @Nullable String optionId,
+                                   @Nullable Map<String, Set<String>> controlsValues,
+                                   @Nullable String token) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues);
+        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues, token);
         CallWrapper.wrap(call).body();
     }
 
     @Override
     public void deleteReportOption(@Nullable String reportUnitUri,
-                                               @Nullable String optionId) {
+                                   @Nullable String optionId,
+                                   @Nullable String token) {
         checkNotNull(reportUnitUri, "Report uri should not be null");
         checkNotNull(optionId, "Option id should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId);
+        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId, token);
         CallWrapper.wrap(call).body();
     }
 
@@ -120,7 +129,8 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitUri}/options")
         Call<ReportOptionSet> requestReportOptionsList(
-                @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
+                @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
@@ -129,7 +139,8 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Query("label") String optionLabel,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
-                @Query("overwrite") boolean overwrite);
+                @Query("overwrite") boolean overwrite,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
@@ -137,13 +148,15 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         Call<com.squareup.okhttp.Response> updateReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
                 @NonNull @Path(value = "optionId", encoded = true) String optionId,
-                @NonNull @Body Map<String, Set<String>> controlsValues);
+                @NonNull @Body Map<String, Set<String>> controlsValues,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Call<com.squareup.okhttp.Response> deleteReportOption(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NonNull @Path(value = "optionId", encoded = true) String optionId);
+                @NonNull @Path(value = "optionId", encoded = true) String optionId,
+                @Header("Cookie") String cookie);
     }
 }

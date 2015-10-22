@@ -40,25 +40,28 @@ public interface ReportOptionRestApi {
 
     @NonNull
     @WorkerThread
-    Set<ReportOption> requestReportOptionsList(@NonNull String reportUnitUri);
+    Set<ReportOption> requestReportOptionsList(@NonNull String reportUnitUri, @NonNull String token);
 
     @NonNull
     @WorkerThread
     ReportOption createReportOption(@NonNull String reportUnitUri,
-                                                @NonNull String optionLabel,
-                                                @NonNull Map<String, Set<String>> controlsValues,
-                                                boolean overwrite);
+                                    @NonNull String optionLabel,
+                                    @NonNull Map<String, Set<String>> controlsValues,
+                                    boolean overwrite,
+                                    @NonNull String token);
 
     @WorkerThread
     void updateReportOption(@NonNull String reportUnitUri,
-                                        @NonNull String optionId,
-                                        @NonNull Map<String, Set<String>> controlsValues);
+                            @NonNull String optionId,
+                            @NonNull Map<String, Set<String>> controlsValues,
+                            @NonNull String token);
 
     @WorkerThread
     void deleteReportOption(@NonNull String reportUnitUri,
-                                        @NonNull String optionId);
+                            @NonNull String optionId,
+                            @NonNull String token);
 
-    final class Builder extends GenericAuthBuilder<Builder, ReportOptionRestApi> {
+    final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
         @Override
         ReportOptionRestApi createApi() {
             return new ReportOptionRestApiImpl(getAdapter().build());

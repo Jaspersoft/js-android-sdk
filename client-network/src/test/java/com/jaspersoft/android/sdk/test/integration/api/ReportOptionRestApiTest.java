@@ -67,7 +67,6 @@ public class ReportOptionRestApiTest {
         if (apiUnderTest == null) {
             apiUnderTest = new ReportOptionRestApi.Builder()
                     .logger(TestLogger.get(this))
-                    .tokenProvider(mAuthenticator)
                     .baseUrl(mMetadata.getServerUrl())
                     .build();
         }
@@ -75,17 +74,17 @@ public class ReportOptionRestApiTest {
 
     @Test
     public void shouldRequestReportOptionsList() {
-        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(REPORT_URI);
+        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(REPORT_URI, mAuthenticator.token());
         assertThat(response, is(not(nullValue())));
     }
 
     @Test
     public void apiSupportsCrudForReportOption() {
-        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
+        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true, mAuthenticator.token());
         assertThat(response.getLabel(), is("label"));
 
-        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
+        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS, mAuthenticator.token());
 
-        apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
+        apiUnderTest.deleteReportOption(REPORT_URI, response.getId(), mAuthenticator.token());
     }
 }
