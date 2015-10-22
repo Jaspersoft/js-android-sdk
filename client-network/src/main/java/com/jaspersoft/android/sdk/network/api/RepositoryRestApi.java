@@ -41,17 +41,17 @@ import java.util.Map;
 public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
-    ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams);
+    ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams, @NonNull String token);
 
     @NonNull
     @WorkerThread
-    ReportLookup requestReportResource(@NonNull String resourceUri);
+    ReportLookup requestReportResource(@NonNull String resourceUri, @NonNull String token);
 
     @NonNull
     @WorkerThread
-    FolderLookup requestFolderResource(@NonNull String resourceUri);
+    FolderLookup requestFolderResource(@NonNull String resourceUri, @NonNull String token);
 
-    final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
+    final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {
         @Override
         RepositoryRestApi createApi() {
             return new RepositoryRestApiImpl(getAdapter().build());

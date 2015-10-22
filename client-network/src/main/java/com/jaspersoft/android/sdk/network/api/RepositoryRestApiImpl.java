@@ -38,6 +38,7 @@ import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -59,25 +60,27 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams) {
+    public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams, @Nullable String token) {
+        checkNotNull(token, "Request token should not be null");
+
         Iterable<?> types = null;
         Call<ResourceSearchResult> call;
 
         if (searchParams == null) {
-            call = mRestApi.searchResources(null, null);
+            call = mRestApi.searchResources(null, null, token);
         } else {
             Map<String, Object> copy = new HashMap<>(searchParams);
             Object typeValues = copy.get("type");
             copy.remove("type");
 
             if (typeValues == null) {
-                throw new IllegalStateException("Found null for key 'type'. Ensure this to be not a null");
+                types = null;
             }
             if (typeValues instanceof Iterable<?>) {
                 types = (Iterable<?>) typeValues;
             }
 
-            call = mRestApi.searchResources(copy, types);
+            call = mRestApi.searchResources(copy, types, token);
         }
 
         Response<ResourceSearchResult> rawResponse = CallWrapper.wrap(call).response();
@@ -105,19 +108,21 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ReportLookup requestReportResource(@Nullable String resourceUri) {
+    public ReportLookup requestReportResource(@Nullable String resourceUri, @Nullable String token) {
         checkNotNull(resourceUri, "Report uri should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri);
+        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri, token);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public FolderLookup requestFolderResource(@Nullable String resourceUri) {
+    public FolderLookup requestFolderResource(@Nullable String resourceUri, @Nullable String token) {
         checkNotNull(resourceUri, "Folder uri should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<FolderLookup> call =  mRestApi.requestFolderResource(resourceUri);
+        Call<FolderLookup> call =  mRestApi.requestFolderResource(resourceUri, token);
         return CallWrapper.wrap(call).body();
     }
 
@@ -127,18 +132,21 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @GET("rest_v2/resources")
         Call<ResourceSearchResult> searchResources(
                 @Nullable @QueryMap Map<String, Object> searchParams,
-                @Nullable @Query("type") Iterable<?> types);
+                @Nullable @Query("type") Iterable<?> types,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<ReportLookup> requestReportResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/repository.folder+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<FolderLookup> requestFolderResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @Header("Cookie") String cookie);
     }
 }
