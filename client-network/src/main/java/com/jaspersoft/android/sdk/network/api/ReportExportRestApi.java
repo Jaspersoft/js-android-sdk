@@ -41,21 +41,30 @@ public interface ReportExportRestApi {
 
     @NonNull
     @WorkerThread
-    ExportExecutionDescriptor runExportExecution(@NonNull String executionId, @NonNull ExecutionRequestOptions executionOptions);
+    ExportExecutionDescriptor runExportExecution(@NonNull String executionId,
+                                                 @NonNull ExecutionRequestOptions executionOptions,
+                                                 @NonNull String token);
 
     @NonNull
     @WorkerThread
-    ExecutionStatus checkExportExecutionStatus(@NonNull String executionId, @NonNull String exportId);
+    ExecutionStatus checkExportExecutionStatus(@NonNull String executionId,
+                                               @NonNull String exportId,
+                                               @NonNull String token);
 
     @NonNull
     @WorkerThread
-    ExportOutputResource requestExportOutput(@NonNull String executionId, @NonNull String exportId);
+    ExportOutputResource requestExportOutput(@NonNull String executionId,
+                                             @NonNull String exportId,
+                                             @NonNull String token);
 
     @NonNull
     @WorkerThread
-    OutputResource requestExportAttachment(@NonNull String executionId, @NonNull String exportId, @NonNull String attachmentId);
+    OutputResource requestExportAttachment(@NonNull String executionId,
+                                           @NonNull String exportId,
+                                           @NonNull String attachmentId,
+                                           @NonNull String token);
 
-    final class Builder extends GenericAuthBuilder<Builder, ReportExportRestApi> {
+    final class Builder extends GenericBuilder<Builder, ReportExportRestApi> {
         @Override
         ReportExportRestApi createApi() {
             return new ReportExportRestApiImpl(getAdapter().build());
