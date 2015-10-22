@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,13 +46,17 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
 
     private final RepositoryRestApi mRepoFactoryRestApi;
     private final InternalCriteria mInitialCriteria;
+    private final TokenProvider mTokenProvider;
 
     private int mServerDisposition;
     private List<ResourceLookup> mBuffer = new LinkedList<>();
     private boolean mEndReached;
 
-    public EmeraldMR2SearchStrategy(RepositoryRestApi repositoryApiFactory, InternalCriteria criteria) {
+    public EmeraldMR2SearchStrategy(InternalCriteria criteria,
+                                    RepositoryRestApi repositoryApiFactory,
+                                    TokenProvider tokenProvider) {
         mRepoFactoryRestApi = repositoryApiFactory;
+        mTokenProvider = tokenProvider;
         mInitialCriteria = criteria;
         mEndReached = false;
     }
@@ -114,6 +119,6 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
                 .offset(mServerDisposition)
                 .limit(limit)
                 .create();
-        return mRepoFactoryRestApi.searchResources(nextCriteria.toMap());
+        return mRepoFactoryRestApi.searchResources(nextCriteria.toMap(), mTokenProvider.provideToken().get());
     }
 }

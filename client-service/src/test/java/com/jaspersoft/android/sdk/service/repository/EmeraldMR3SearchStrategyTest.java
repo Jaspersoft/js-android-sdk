@@ -3,6 +3,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.auth.AbstractToken;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -23,6 +25,8 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -41,12 +45,19 @@ public class EmeraldMR3SearchStrategyTest {
     RepositoryRestApi mApi;
     @Mock
     ResourceSearchResult mResponse;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    AbstractToken mAbstractToken;
 
     @Before
     public void setupMocks() {
         MockitoAnnotations.initMocks(this);
 
-        when(mApi.searchResources(anyMap())).thenReturn(mResponse);
+        when(mTokenProvider.provideToken()).thenReturn(mAbstractToken);
+        when(mAbstractToken.get()).thenReturn("cookie");
+
+        when(mApi.searchResources(anyMap(), anyString())).thenReturn(mResponse);
 
         List<ResourceLookup> stubLookup = Collections.singletonList(new ResourceLookup());
         when(mResponse.getResources()).thenReturn(stubLookup);
@@ -55,22 +66,22 @@ public class EmeraldMR3SearchStrategyTest {
     @Test
     public void shouldMakeImmediateCallOnApiForUserOffsetZero() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mApi, mTokenProvider);
 
-        when(mApi.searchResources(anyMap())).thenReturn(mResponse);
+        when(mApi.searchResources(anyMap(), anyString())).thenReturn(mResponse);
 
         strategy.searchNext();
 
         Map<String, Object> params = new HashMap<>();
         params.put("forceFullPage", "true");
 
-        verify(mApi, times(1)).searchResources(params);
+        verify(mApi, times(1)).searchResources(eq(params), eq("cookie"));
     }
 
     @Test
     public void makesAdditionalCallOnApiIfUserOffsetNotZero() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(5).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mApi, mTokenProvider);
 
         strategy.searchNext();
 
@@ -78,13 +89,13 @@ public class EmeraldMR3SearchStrategyTest {
         params.put("forceFullPage", "true");
         params.put("limit", "5");
 
-        verify(mApi, times(1)).searchResources(params);
+        verify(mApi, times(1)).searchResources(eq(params), eq("cookie"));
     }
 
     @Test
     public void secondSearchLookupShouldUseNextOffset() {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, searchCriteria);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mApi, mTokenProvider);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.searchNext();
@@ -98,12 +109,12 @@ public class EmeraldMR3SearchStrategyTest {
         params.put("offset", "133");
 
         verify(mResponse, times(2)).getNextOffset();
-        verify(mApi, times(1)).searchResources(params);
+        verify(mApi).searchResources(eq(params), eq("cookie"));
     }
 
     @Test
     public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() {
-        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, NO_CRITERIA);
+        EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(NO_CRITERIA, mApi, mTokenProvider);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.searchNext();
@@ -116,13 +127,13 @@ public class EmeraldMR3SearchStrategyTest {
         assertThat(strategy.hasNext(), is(false));
 
         verify(mResponse, times(2)).getNextOffset();
-        verify(mApi, times(2)).searchResources(anyMap());
+        verify(mApi, times(2)).searchResources(anyMap(), eq("cookie"));
     }
 
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
-        SearchStrategy strategy = new EmeraldMR3SearchStrategy(mApi, userCriteria);
+        SearchStrategy strategy = new EmeraldMR3SearchStrategy(userCriteria,  mApi, mTokenProvider);
 
         Collection<ResourceLookup> result = strategy.searchNext();
         assertThat(result, Matchers.is(Matchers.empty()));

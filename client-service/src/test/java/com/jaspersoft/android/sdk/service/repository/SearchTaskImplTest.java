@@ -25,7 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +39,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,46 +56,49 @@ public class SearchTaskImplTest {
     @Mock
     RepositoryRestApi mRepoApi;
     @Mock
-    ServerRestApi mInfoApi;
-    @Mock
     SearchStrategy mSearchStrategy;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    InfoProvider mInfoProvider;
 
     private SearchTaskImpl objectUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mInfoApi);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mTokenProvider, mInfoProvider);
 
         when(mSearchStrategy.searchNext()).thenReturn(null);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
-        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
+        PowerMockito.when(SearchStrategy.Factory.get(any(ServerVersion.class), any(InternalCriteria.class),
+                any(RepositoryRestApi.class), any(TokenProvider.class))).thenReturn(mSearchStrategy);
     }
 
     @Test
     public void nextLookupShouldDefineSearchStrategy() {
-        when(mInfoApi.requestVersion()).thenReturn("5.5");
+        when(mInfoProvider.provideVersion()).thenReturn(ServerVersion.EMERALD_MR2);
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApi), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq(ServerVersion.EMERALD_MR2), eq(CRITERIA), eq(mRepoApi), eq(mTokenProvider));
 
-        verify(mInfoApi, times(1)).requestVersion();
+        verify(mInfoProvider).provideVersion();
         verify(mSearchStrategy, times(1)).searchNext();
     }
 
     @Test
     public void secondLookupShouldUseCachedStrategy() {
-        when(mInfoApi.requestVersion()).thenReturn("5.5");
+        when(mInfoProvider.provideVersion()).thenReturn(ServerVersion.EMERALD_MR2);
 
         objectUnderTest.nextLookup();
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApi), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq(ServerVersion.EMERALD_MR2), eq(CRITERIA), eq(mRepoApi), eq(mTokenProvider));
 
-        verify(mInfoApi, times(1)).requestVersion();
+        verify(mInfoProvider).provideVersion();
         verify(mSearchStrategy, times(2)).searchNext();
     }
 }

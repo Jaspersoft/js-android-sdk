@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,13 +44,17 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     private final RepositoryRestApi mRepositoryRestApi;
     private final InternalCriteria mInitialCriteria;
+    private final TokenProvider mTokenProvider;
 
     private int mUserOffset;
     private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
 
-    public EmeraldMR3SearchStrategy(RepositoryRestApi repositoryApiFactory, InternalCriteria criteria) {
+    public EmeraldMR3SearchStrategy(InternalCriteria criteria,
+                                    RepositoryRestApi repositoryApiFactory,
+                                    TokenProvider tokenProvider) {
         mRepositoryRestApi = repositoryApiFactory;
+        mTokenProvider = tokenProvider;
         // Internally enabling 'forceFullPageFlag'
         mInitialCriteria = criteria.newBuilder()
                 .forceFullPage(true)
@@ -84,7 +89,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
 
     @NonNull
     private ResourceSearchResult performApiCall(InternalCriteria newSearchCriteria) {
-        return mRepositoryRestApi.searchResources(newSearchCriteria.toMap());
+        return mRepositoryRestApi.searchResources(newSearchCriteria.toMap(), mTokenProvider.provideToken().get());
     }
 
     private void defineInternalOffset() {

@@ -5,6 +5,7 @@ import android.support.annotation.VisibleForTesting;
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 /**
  * @author Tom Koptel
@@ -35,5 +36,10 @@ public final class ServerInfoService {
     public ServerInfo requestServerInfo() {
         ServerInfoData response = mRestApi.requestServerInfo();
         return mTransformer.transform(response);
+    }
+
+    public ServerVersion requestServerVersion() {
+        String version = mRestApi.requestVersion();
+        return ServerVersion.defaultParser().parse(version);
     }
 }

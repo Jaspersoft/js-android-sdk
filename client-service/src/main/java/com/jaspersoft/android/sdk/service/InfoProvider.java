@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 /**
  * Internal interface to abstract out server info generation strategy
@@ -34,7 +35,9 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
  * @author Tom Koptel
  * @since 2.0
  */
-interface InfoProvider {
+public interface InfoProvider {
     @NonNull
     ServerInfo provideInfo();
+    @NonNull
+    ServerVersion provideVersion();
 }

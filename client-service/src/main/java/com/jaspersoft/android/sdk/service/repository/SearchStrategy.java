@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
@@ -39,17 +40,14 @@ interface SearchStrategy {
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(String serverVersion,
-                                         RepositoryRestApi repositoryRestApi,
-                                         InternalCriteria criteria) {
-            ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
+        public static SearchStrategy get(ServerVersion version, InternalCriteria criteria, RepositoryRestApi repositoryRestApi, TokenProvider tokenProvider) {
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
-                return new EmeraldMR2SearchStrategy(repositoryRestApi, criteria);
+                return new EmeraldMR2SearchStrategy(criteria, repositoryRestApi, tokenProvider);
             }
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
-                return new EmeraldMR3SearchStrategy(repositoryRestApi, criteria);
+                return new EmeraldMR3SearchStrategy(criteria, repositoryRestApi, tokenProvider);
             }
-            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + serverVersion);
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.getRawValue());
         }
     }
 }
