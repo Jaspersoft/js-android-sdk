@@ -211,6 +211,58 @@ class InternalCriteria {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InternalCriteria criteria = (InternalCriteria) o;
+
+        if (mLimit != criteria.mLimit) return false;
+        if (mOffset != criteria.mOffset) return false;
+        if (mResourceMask != criteria.mResourceMask) return false;
+        if (mRecursive != null ? !mRecursive.equals(criteria.mRecursive) : criteria.mRecursive != null)
+            return false;
+        if (mForceFullPage != null ? !mForceFullPage.equals(criteria.mForceFullPage) : criteria.mForceFullPage != null)
+            return false;
+        if (mForceTotalCount != null ? !mForceTotalCount.equals(criteria.mForceTotalCount) : criteria.mForceTotalCount != null)
+            return false;
+        if (mQuery != null ? !mQuery.equals(criteria.mQuery) : criteria.mQuery != null)
+            return false;
+        if (mSortBy != null ? !mSortBy.equals(criteria.mSortBy) : criteria.mSortBy != null)
+            return false;
+        return !(mFolderUri != null ? !mFolderUri.equals(criteria.mFolderUri) : criteria.mFolderUri != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mLimit;
+        result = 31 * result + mOffset;
+        result = 31 * result + mResourceMask;
+        result = 31 * result + (mRecursive != null ? mRecursive.hashCode() : 0);
+        result = 31 * result + (mForceFullPage != null ? mForceFullPage.hashCode() : 0);
+        result = 31 * result + (mForceTotalCount != null ? mForceTotalCount.hashCode() : 0);
+        result = 31 * result + (mQuery != null ? mQuery.hashCode() : 0);
+        result = 31 * result + (mSortBy != null ? mSortBy.hashCode() : 0);
+        result = 31 * result + (mFolderUri != null ? mFolderUri.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "InternalCriteria{" +
+                "mFolderUri='" + mFolderUri + '\'' +
+                ", mLimit=" + mLimit +
+                ", mOffset=" + mOffset +
+                ", mResourceMask=" + mResourceMask +
+                ", mRecursive=" + mRecursive +
+                ", mForceFullPage=" + mForceFullPage +
+                ", mForceTotalCount=" + mForceTotalCount +
+                ", mQuery='" + mQuery + '\'' +
+                ", mSortBy='" + mSortBy + '\'' +
+                '}';
+    }
+
     public static class Builder {
         private int limit = DEFAULT_LIMIT;
         private int offset = DEFAULT_OFFSET;

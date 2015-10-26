@@ -27,9 +27,13 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 
 /**
  * @author Tom Koptel
@@ -37,17 +41,30 @@ import java.text.SimpleDateFormat;
  */
 final class SearchUseCase {
     private final RepositoryRestApi mRestApi;
-    private final SearchResultMapper mDataMapper;
+    private final TokenProvider mTokenProvider;
+    private final InfoProvider mInfoProvider;
+    private final GenericResourceMapper mDataMapper;
 
-    public SearchUseCase(RepositoryRestApi restApi, SearchResultMapper dataMapper) {
+    public SearchUseCase(
+            GenericResourceMapper dataMapper, RepositoryRestApi restApi,
+            TokenProvider tokenProvider, InfoProvider infoProvider) {
         mRestApi = restApi;
+        mTokenProvider = tokenProvider;
+        mInfoProvider = infoProvider;
         mDataMapper = dataMapper;
     }
 
     @NonNull
-    public SearchResult performSearch(@NonNull InternalCriteria criteria,
-                                      @NonNull SimpleDateFormat dateTimeFormat) {
-        ResourceSearchResult response = mRestApi.searchResources(criteria.toMap());
-        return mDataMapper.transform(response, dateTimeFormat);
+    public SearchResult performSearch(@NonNull InternalCriteria criteria) {
+        ResourceSearchResult response = mRestApi.searchResources(mTokenProvider.provideToken(), criteria.toMap());
+        SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
+
+        SearchResult searchResult = new SearchResult();
+        searchResult.setNextOffset(response.getNextOffset());
+
+        Collection<GenericResource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+        searchResult.setResources(resources);
+
+        return searchResult;
     }
 }

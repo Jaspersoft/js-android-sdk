@@ -28,10 +28,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
 
 import java.util.Collection;
 
@@ -60,7 +59,7 @@ final class SearchTaskImpl implements SearchTask {
 
     @NonNull
     @Override
-    public Collection<ResourceLookup> nextLookup() {
+    public Collection<GenericResource> nextLookup() {
         return defineSearchStrategy().searchNext();
     }
 
@@ -78,8 +77,7 @@ final class SearchTaskImpl implements SearchTask {
 
     private SearchStrategy defineSearchStrategy() {
         if (strategy == null) {
-            ServerVersion version = mInfoProvider.provideVersion();
-            strategy = SearchStrategy.Factory.get(version, mCriteria, mRepositoryRestApi, mTokenProvider);
+            strategy = SearchStrategy.Factory.get(mCriteria, mRepositoryRestApi, mInfoProvider, mTokenProvider);
         }
         return strategy;
     }

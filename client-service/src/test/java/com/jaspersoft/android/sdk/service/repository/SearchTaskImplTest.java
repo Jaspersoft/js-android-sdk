@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,33 +71,36 @@ public class SearchTaskImplTest {
         when(mSearchStrategy.searchNext()).thenReturn(null);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
-        PowerMockito.when(SearchStrategy.Factory.get(any(ServerVersion.class), any(InternalCriteria.class),
-                any(RepositoryRestApi.class), any(TokenProvider.class))).thenReturn(mSearchStrategy);
+
+
+        PowerMockito.when(
+                SearchStrategy.Factory.get(
+                        any(InternalCriteria.class),
+                        any(RepositoryRestApi.class),
+                        any(InfoProvider.class),
+                        any(TokenProvider.class)
+                )
+        ).thenReturn(mSearchStrategy);
     }
 
     @Test
     public void nextLookupShouldDefineSearchStrategy() {
-        when(mInfoProvider.provideVersion()).thenReturn(ServerVersion.EMERALD_MR2);
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq(ServerVersion.EMERALD_MR2), eq(CRITERIA), eq(mRepoApi), eq(mTokenProvider));
+        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
 
-        verify(mInfoProvider).provideVersion();
-        verify(mSearchStrategy, times(1)).searchNext();
+        verify(mSearchStrategy).searchNext();
     }
 
     @Test
     public void secondLookupShouldUseCachedStrategy() {
-        when(mInfoProvider.provideVersion()).thenReturn(ServerVersion.EMERALD_MR2);
-
         objectUnderTest.nextLookup();
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq(ServerVersion.EMERALD_MR2), eq(CRITERIA), eq(mRepoApi), eq(mTokenProvider));
+        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
 
-        verify(mInfoProvider).provideVersion();
         verify(mSearchStrategy, times(2)).searchNext();
     }
 }

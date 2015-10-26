@@ -3,6 +3,9 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
@@ -12,11 +15,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,12 +39,14 @@ public class SearchUseCaseTest {
     @Mock
     RepositoryRestApi mRepositoryRestApi;
     @Mock
-    SearchResultMapper mDataMapper;
+    GenericResourceMapper mDataMapper;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    InfoProvider mInfoProvider;
 
     @Mock
     ResourceLookup mResourceLookup;
-    @Mock
-    SearchResult mAdaptedSearchResult;
 
     @Mock
     InternalCriteria mCriteria;
@@ -50,18 +61,23 @@ public class SearchUseCaseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchUseCase(mRepositoryRestApi, mDataMapper);
+        objectUnderTest = new SearchUseCase(mDataMapper, mRepositoryRestApi, mTokenProvider, mInfoProvider);
     }
 
     @Test
     public void shouldProvideAndAdaptSearchResult() {
-        when(mRepositoryRestApi.searchResources(any(Map.class))).thenReturn(mResult);
-        when(mDataMapper.transform(any(ResourceSearchResult.class), any(SimpleDateFormat.class))).thenReturn(mAdaptedSearchResult);
+        when(mResult.getNextOffset()).thenReturn(100);
+        when(mRepositoryRestApi.searchResources(anyString(), any(Map.class))).thenReturn(mResult);
+        when(mInfoProvider.provideDateTimeFormat()).thenReturn(DATE_TIME_FORMAT);
 
-        SearchResult result = objectUnderTest.performSearch(mCriteria, DATE_TIME_FORMAT);
-        assertThat(result, is(mAdaptedSearchResult));
+        Collection<GenericResource> resources = new ArrayList<GenericResource>();
+        when(mDataMapper.transform(anyCollection(), any(SimpleDateFormat.class))).thenReturn(resources);
 
-        verify(mRepositoryRestApi).searchResources(any(Map.class));
-        verify(mDataMapper).transform(mResult, DATE_TIME_FORMAT);
+        SearchResult result = objectUnderTest.performSearch(mCriteria);
+        assertThat(result, is(not(nullValue())));
+        assertThat(result.getNextOffset(), is(100));
+        assertThat(result.getResources(), is(resources));
+
+        verify(mRepositoryRestApi).searchResources(anyString(), any(Map.class));
     }
 }

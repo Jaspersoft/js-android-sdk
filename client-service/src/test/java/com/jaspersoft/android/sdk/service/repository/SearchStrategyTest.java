@@ -40,6 +40,7 @@ import junitparams.Parameters;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
@@ -68,7 +69,9 @@ public class SearchStrategyTest {
     })
     public void factoryCreatesEmeraldMR2Strategy(String version) {
         ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(serverVersion, CRITERIA, mRepoApi, mTokenProvider);
+        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
     }
 
@@ -79,7 +82,9 @@ public class SearchStrategyTest {
     })
     public void factoryCreatesEmeraldMR3Strategy(String version) {
         ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(serverVersion, CRITERIA, mRepoApi, mTokenProvider);
+        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));
     }
 }
