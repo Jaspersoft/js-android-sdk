@@ -7,6 +7,8 @@ import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
+import java.text.SimpleDateFormat;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -41,5 +43,10 @@ public final class ServerInfoService {
     public ServerVersion requestServerVersion() {
         String version = mRestApi.requestVersion();
         return ServerVersion.defaultParser().parse(version);
+    }
+
+    public SimpleDateFormat requestServerDateTimeFormat() {
+        String dateTimeFormat = mRestApi.requestDateTimeFormatPattern();
+        return new SimpleDateFormat(dateTimeFormat);
     }
 }

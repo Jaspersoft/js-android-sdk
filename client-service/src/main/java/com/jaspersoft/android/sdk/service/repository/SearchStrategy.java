@@ -25,8 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
@@ -36,18 +37,26 @@ import java.util.Collection;
  * @since 2.0
  */
 interface SearchStrategy {
-    Collection<ResourceLookup> searchNext();
+    Collection<Resource> searchNext();
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(ServerVersion version, InternalCriteria criteria, RepositoryRestApi repositoryRestApi, TokenProvider tokenProvider) {
+        public static SearchStrategy get(InternalCriteria criteria,
+                                         RepositoryRestApi repositoryRestApi,
+                                         InfoProvider infoProvider,
+                                         TokenProvider tokenProvider) {
+            ServerVersion version = infoProvider.provideVersion();
+            ResourceMapper resourceMapper = new ResourceMapper();
+            SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
+
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
-                return new EmeraldMR2SearchStrategy(criteria, repositoryRestApi, tokenProvider);
+                return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
-                return new EmeraldMR3SearchStrategy(criteria, repositoryRestApi, tokenProvider);
+                return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
             throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.getRawValue());
         }
+
     }
 }
