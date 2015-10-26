@@ -46,13 +46,7 @@ import static org.hamcrest.core.Is.is;
 public class ReportLookupTest {
     @Test
     @Parameters({
-            "dataSource",
-            "jrxml",
-            "inputControlRenderingView",
-            "reportRenderingView",
             "alwaysPromptControls",
-            "controlsLayout",
-            "resources",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
         Field field = ReportLookup.class.getDeclaredField(fieldName);

@@ -25,13 +25,12 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,17 +48,13 @@ import static org.junit.Assert.assertThat;
 public class RepositoryRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
     private RepositoryRestApi api;
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (api == null) {
             api = new RepositoryRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -68,21 +63,21 @@ public class RepositoryRestApiTest {
 
     @Test
     public void shouldRequestListOfResources() {
-        ResourceSearchResult resourceSearchResult = api.searchResources(null);
+        ResourceSearchResult resourceSearchResult = api.searchResources(mAuthenticator.token(), null);
         assertThat(resourceSearchResult, is(notNullValue()));
         assertThat(resourceSearchResult.getResources(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestReport() {
-        ReportLookup report = api.requestReportResource("/public/Samples/Reports/AllAccounts");
+        ReportLookup report = api.requestReportResource(mAuthenticator.token(), "/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
 
     @Test
     public void shouldRequestRootFolder() {
-        FolderLookup folder = api.requestFolderResource("/");
+        FolderLookup folder = api.requestFolderResource(mAuthenticator.token(), "/");
         assertThat(folder, is(notNullValue()));
     }
 }

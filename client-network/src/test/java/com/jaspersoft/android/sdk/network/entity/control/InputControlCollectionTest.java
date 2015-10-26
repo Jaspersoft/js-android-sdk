@@ -2,15 +2,12 @@ package com.jaspersoft.android.sdk.network.entity.control;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import com.google.gson.reflect.TypeToken;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
@@ -82,9 +79,7 @@ public class InputControlCollectionTest {
         assertThat(rule.getType(), is("mandatoryValidationRule"));
     }
     private InputControl deserializeInputControl(String json) {
-        Type type = new TypeToken<Collection<InputControl>>() {
-        }.getType();
-        Collection<InputControl> response = mGson.fromJson(json, type);
-        return new ArrayList<>(response).get(0);
+        InputControlCollection response = mGson.fromJson(json, InputControlCollection.class);
+        return new ArrayList<>(response.get()).get(0);
     }
 }

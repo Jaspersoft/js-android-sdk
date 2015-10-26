@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.squareup.okhttp.Protocol;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -40,7 +38,7 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-public class TokenFactoryTest {
+public class CookieExtractorTest {
 
     private Request mRequest;
 
@@ -61,7 +59,7 @@ public class TokenFactoryTest {
                 .request(mRequest)
                 .build();
 
-        Token response = TokenFactory.create(mockResponse);
-        assertThat(response.get(), is("cookie1;cookie2"));
+        String token = CookieExtractor.extract(mockResponse);
+        assertThat(token, is("cookie1;cookie2"));
     }
 }

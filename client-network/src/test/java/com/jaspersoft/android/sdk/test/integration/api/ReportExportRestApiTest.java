@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
@@ -36,8 +35,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,16 +58,12 @@ public class ReportExportRestApiTest {
     ReportExportRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -76,7 +71,6 @@ public class ReportExportRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExportRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -94,7 +88,7 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
@@ -102,7 +96,7 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExportOutputResource output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
+        ExportOutputResource output = apiUnderTest.requestExportOutput(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
 
         assertThat(output.getOutputResource(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
@@ -117,12 +111,12 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return apiUnderTest.runExportExecution(exec.getExecutionId(), options);
+        return apiUnderTest.runExportExecution(mAuthenticator.token(), exec.getExecutionId(), options);
     }
 
     @NonNull
     private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        return mExecApi.runReportExecution(executionRequestOptions);
+        return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }
 }

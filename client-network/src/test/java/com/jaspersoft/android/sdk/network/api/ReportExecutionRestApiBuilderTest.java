@@ -24,14 +24,10 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 /**
  * @author Tom Koptel
@@ -40,15 +36,11 @@ import org.mockito.MockitoAnnotations;
 public class ReportExecutionRestApiBuilderTest {
     private ReportExecutionRestApi.Builder builderUnderTest;
 
-    @Mock
-    Token mToken;
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         builderUnderTest = new ReportExecutionRestApi.Builder();
     }
 
@@ -69,31 +61,5 @@ public class ReportExecutionRestApiBuilderTest {
     @Test
     public void builderShouldAllowNullLogLevel() {
         builderUnderTest.logger(null);
-    }
-
-    @Test
-    public void builderShouldEnsureBaseUrlNotNull() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Base url should be supplied to work with JRS API");
-
-        builderUnderTest.token(mToken);
-        builderUnderTest.build();
-    }
-
-    @Test
-    public void builderShouldEnsureTokenNotNull() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This API requires authentication token");
-
-        builderUnderTest.baseUrl("http://localhost");
-        builderUnderTest.build();
-    }
-
-    @Test
-    public void builderShouldAllowNullToken() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("token == null");
-
-        builderUnderTest.token(null);
     }
 }

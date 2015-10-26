@@ -22,32 +22,42 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.server;
+package com.jaspersoft.android.sdk.test.integration.api.utils;
+
+import android.support.annotation.NonNull;
+
+import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class AuthResponse {
-    private final String mToken;
+public final class DummyTokenProvider {
 
+    private final JrsMetadata mJrsMetadata;
+    private String mToken;
 
-    private AuthResponse(String token) {
-        mToken = token;
+    public DummyTokenProvider(JrsMetadata jrsMetadata) {
+        mJrsMetadata = jrsMetadata;
     }
 
-    public static AuthResponse createSuccessResponse(String token) {
-        return new AuthResponse(token);
+    public static DummyTokenProvider create(JrsMetadata metadata) {
+        return new DummyTokenProvider(metadata);
     }
 
-    public String getToken() {
+    @NonNull
+    public String provideToken() {
+        if (mToken == null) {
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                    .baseUrl(mJrsMetadata.getServerUrl())
+                    .build();
+            mToken = restApi
+                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
+        }
         return mToken;
     }
 
-    @Override
-    public String toString() {
-        return "AuthResponse{" +
-                "mToken='" + mToken + '\'' +
-                '}';
+    public String token() {
+        return provideToken();
     }
 }

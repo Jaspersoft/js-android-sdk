@@ -26,8 +26,6 @@ package com.jaspersoft.android.sdk.service.auth;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-
 
 /**
  * @author Tom Koptel
@@ -35,5 +33,5 @@ import com.jaspersoft.android.sdk.network.api.auth.Token;
  */
 public interface AuthService {
     @NonNull
-    Token authenticate();
+    String authenticate();
 }
