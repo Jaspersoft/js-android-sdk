@@ -29,6 +29,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 /**
  * Always make call on server
@@ -38,15 +39,23 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
  */
 final class GreedyInfoProvider implements InfoProvider {
     private final ServerInfoService mServerInfoService;
+    private final String mBaseUrl;
 
     @VisibleForTesting
-    GreedyInfoProvider(ServerInfoService serverInfoService) {
+    GreedyInfoProvider(ServerInfoService serverInfoService, String serverUrl) {
         mServerInfoService = serverInfoService;
+        mBaseUrl = serverUrl;
     }
 
     public static InfoProvider newInstance(String serverUrl) {
         ServerInfoService service = ServerInfoService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
+        return new GreedyInfoProvider(service, serverUrl);
+    }
+
+    @NonNull
+    @Override
+    public String getBaseUrl() {
+        return mBaseUrl;
     }
 
     @Override
@@ -54,5 +63,11 @@ final class GreedyInfoProvider implements InfoProvider {
     @WorkerThread
     public ServerInfo provideInfo() {
         return mServerInfoService.requestServerInfo();
+    }
+
+    @NonNull
+    @Override
+    public ServerVersion provideVersion() {
+        return mServerInfoService.requestServerVersion();
     }
 }

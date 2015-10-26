@@ -37,29 +37,27 @@ import java.net.URLEncoder;
  */
 final class ExecutionOptionsDataMapper {
 
-    private static class InstanceHolder {
-        private static ExecutionOptionsDataMapper INSTANCE = new ExecutionOptionsDataMapper();
+    private final String mBaseUrl;
+
+    public ExecutionOptionsDataMapper(String mBaseUrl) {
+        this.mBaseUrl = mBaseUrl;
     }
 
-    public static ExecutionOptionsDataMapper getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    public ReportExecutionRequestOptions transformRunReportOptions(@NonNull String reportUri, @NonNull String serverUrl, @NonNull RunReportCriteria criteria) {
+    public ReportExecutionRequestOptions transformRunReportOptions(@NonNull String reportUri, @NonNull RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
-        mapCommonCriterion(serverUrl, criteria, options);
+        mapCommonCriterion(criteria, options);
         options.withAsync(true);
         options.withParameters(criteria.getParams());
         return options;
     }
 
-    public ExecutionRequestOptions transformExportOptions(@NonNull String serverUrl, @NonNull RunExportCriteria configuration) {
+    public ExecutionRequestOptions transformExportOptions(@NonNull RunExportCriteria configuration) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
-        mapCommonCriterion(serverUrl, configuration, options);
+        mapCommonCriterion(configuration, options);
         return options;
     }
 
-    private void mapCommonCriterion(@NonNull String serverUrl, @NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
+    private void mapCommonCriterion(@NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 
@@ -68,7 +66,7 @@ final class ExecutionOptionsDataMapper {
         options.withInteractive(criteria.isInteractive());
         options.withPages(criteria.getPages());
 
-        options.withBaseUrl(serverUrl);
+        options.withBaseUrl(mBaseUrl);
     }
 
     static class Helper {

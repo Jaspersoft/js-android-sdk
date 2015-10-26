@@ -26,10 +26,8 @@ package com.jaspersoft.android.sdk.service.report;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportOutputResource;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import java.util.Collection;
 
@@ -38,19 +36,24 @@ import java.util.Collection;
  * @since 2.0
  */
 public final class ReportExport {
-    private final ReportExportRestApi.Factory mExportApiFactory;
     private final Collection<ReportAttachment> mAttachments;
     private final String mExecutionId;
     private final String mExportId;
 
+    private final ReportExportRestApi mExportApi;
+    private final TokenProvider mTokenProvider;
+
     ReportExport(String executionId,
                  String exportId,
                  Collection<ReportAttachment> attachments,
-                 ReportExportRestApi.Factory exportApiFactory) {
+                 TokenProvider tokenProvider,
+                 ReportExportRestApi exportApi) {
         mExecutionId = executionId;
         mExportId = exportId;
         mAttachments = attachments;
-        mExportApiFactory = exportApiFactory;
+
+        mTokenProvider = tokenProvider;
+        mExportApi = exportApi;
     }
 
     @NonNull
@@ -59,7 +62,7 @@ public final class ReportExport {
     }
 
     @NonNull
-    public ExportResourceResponse download() {
-        return mExportApiFactory.get().requestExportOutput(mExecutionId, mExportId);
+    public ExportOutputResource download() {
+        return mExportApi.requestExportOutput(mTokenProvider.provideToken(), mExecutionId, mExportId);
     }
 }

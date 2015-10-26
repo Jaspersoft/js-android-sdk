@@ -1,0 +1,48 @@
+{
+  "inputControl": [
+    {
+      "id": "sales_fact_ALL__store_sales_2013_1",
+      "type": "singleValueNumber",
+      "uri": "repo:/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment_files/sales_fact_ALL__store_sales_2013_1",
+      "label": "Store Sales 2013 is greater than",
+      "mandatory": false,
+      "readOnly": false,
+      "visible": true,
+      "masterDependencies": [],
+      "slaveDependencies": []
+    },
+    {
+      "id": "sales__product__low_fat_1",
+      "type": "multiSelectCheckbox",
+      "uri": "repo:/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment_files/sales__product__low_fat_1",
+      "label": "Low Fat",
+      "mandatory": false,
+      "readOnly": false,
+      "visible": true,
+      "masterDependencies": [],
+      "slaveDependencies": []
+    },
+    {
+      "id": "sales__product__recyclable_package_1",
+      "type": "multiSelectCheckbox",
+      "uri": "repo:/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment_files/sales__product__recyclable_package_1",
+      "label": "Recyclable Packaging",
+      "mandatory": false,
+      "readOnly": false,
+      "visible": true,
+      "masterDependencies": [],
+      "slaveDependencies": []
+    },
+    {
+      "id": "sales__product__product_name_1",
+      "type": "multiSelect",
+      "uri": "repo:/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment_files/sales__product__product_name_1",
+      "label": "Product Name",
+      "mandatory": false,
+      "readOnly": false,
+      "visible": true,
+      "masterDependencies": [],
+      "slaveDependencies": []
+    }
+  ]
+}

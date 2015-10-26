@@ -3,10 +3,11 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.report.exception.ReportExportException;
 import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
@@ -33,7 +34,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -42,35 +42,38 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
-        ExecutionStatusResponse.class,
-        ReportExecutionDetailsResponse.class,
-        ExportExecution.class,
+        ReportExecutionDescriptor.class,
         ExecutionOptionsDataMapper.class,
-        ReportExportExecutionResponse.class})
+        ExportExecutionDescriptor.class,
+        ExportDescriptor.class,
+        ExecutionStatus.class,
+        ExecutionOptionsDataMapper.class})
 public class ReportExecutionTest {
 
     @Mock
     RunExportCriteria exportCriteria;
     @Mock
-    ReportExportExecutionResponse mExportExecDetails;
+    ExportExecutionDescriptor mExportExecDetails;
     @Mock
-    ReportExecutionDetailsResponse mExecDetails;
+    ReportExecutionDescriptor mExecDetails;
     @Mock
-    ExportExecution mExportExecution;
+    ExportDescriptor mExportExecution;
     @Mock
-    ExecutionStatusResponse mExecutionStatusResponse;
+    ExecutionStatus mExecutionStatusResponse;
 
-    @Mock
-    ReportExportRestApi.Factory mExportApiFactory;
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    ReportExecutionRestApi.Factory executionApiFactory;
+    ReportExecutionRestApi mExecutionRestApi;
     @Mock
-    ReportExecutionRestApi mExecutionApi;
+    TokenProvider mTokenProvider;
+
+    @Mock
+    ExecutionOptionsDataMapper mapper;
+
 
     private ReportExecution objectUnderTest;
-    private ExecutionOptionsDataMapper mapper;
+
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
@@ -79,18 +82,15 @@ public class ReportExecutionTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(executionApiFactory.get()).thenReturn(mExecutionApi);
-        when(mExportApiFactory.get()).thenReturn(mExportRestApi);
+        when(mTokenProvider.provideToken()).thenReturn("cookie");
         when(mExecDetails.getExecutionId()).thenReturn("execution_id");
         when(mExecDetails.getReportURI()).thenReturn("/report/uri");
 
-        mapper = spy(ExecutionOptionsDataMapper.getInstance());
-
         objectUnderTest = new ReportExecution(
-                "http:://localhost",
                 TimeUnit.SECONDS.toMillis(0),
-                executionApiFactory,
-                mExportApiFactory,
+                mExecutionRestApi,
+                mExportRestApi,
+                mTokenProvider,
                 mapper,
                 mExecDetails);
     }
@@ -102,9 +102,9 @@ public class ReportExecutionTest {
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mapper).transformExportOptions("http:://localhost", exportCriteria);
-        verify(mExportRestApi).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
-        verify(mExecutionApi).requestReportExecutionDetails(eq("execution_id"));
+        verify(mapper).transformExportOptions(exportCriteria);
+        verify(mExportRestApi).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
+        verify(mExecutionRestApi).requestReportExecutionDetails(eq("cookie"), eq("execution_id"));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class ReportExecutionTest {
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("execution_id"), eq("export_id"));
+        verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("cookie"), eq("execution_id"), eq("export_id"));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class ReportExecutionTest {
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mExportRestApi, times(2)).runExportExecution(eq("execution_id"), any(ExecutionRequestOptions.class));
+        verify(mExportRestApi, times(2)).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
     }
 
     @Test
@@ -182,8 +182,8 @@ public class ReportExecutionTest {
         assertThat(metadata.getTotalPages(), is(100));
         assertThat(metadata.getUri(), is("/report/uri"));
 
-        verify(mExecutionApi).requestReportExecutionDetails(anyString());
-        verifyNoMoreInteractions(mExecutionApi);
+        verify(mExecutionRestApi).requestReportExecutionDetails(anyString(), anyString());
+        verifyNoMoreInteractions(mExecutionRestApi);
     }
 
     @Test
@@ -192,8 +192,8 @@ public class ReportExecutionTest {
 
         objectUnderTest.waitForReportCompletion();
 
-        verify(mExecutionApi, times(2)).requestReportExecutionDetails(anyString());
-        verifyNoMoreInteractions(mExecutionApi);
+        verify(mExecutionRestApi, times(2)).requestReportExecutionDetails(anyString(), anyString());
+        verifyNoMoreInteractions(mExecutionRestApi);
     }
 
     @Test
@@ -219,24 +219,24 @@ public class ReportExecutionTest {
     private void mockCheckExportExecStatus(String... statusChain) {
         ensureChain(statusChain);
         when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
-        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
 
     private void mockRunExportExecution(String... statusChain) {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
         when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
-        when(mExportRestApi.runExportExecution(anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
 
     private void mockReportExecutionDetails(String... statusChain) {
         ensureChain(statusChain);
-        Set<ExportExecution> exports = Collections.singleton(mExportExecution);
+        Set<ExportDescriptor> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
         when(mExecDetails.getExports()).thenReturn(exports);
         when(mExecDetails.getStatus()).then(StatusChain.of(statusChain));
-        when(mExecutionApi.requestReportExecutionDetails(anyString())).thenReturn(mExecDetails);
+        when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
     }
 
     private void ensureChain(String[] statusChain) {

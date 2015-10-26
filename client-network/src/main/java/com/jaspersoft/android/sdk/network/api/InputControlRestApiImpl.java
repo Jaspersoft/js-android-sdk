@@ -27,9 +27,12 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.network.entity.control.InputControlResponse;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlValueResponse;
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollection;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +40,7 @@ import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -57,57 +61,72 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NonNull
     @Override
-    public InputControlResponse requestInputControls(@Nullable String reportUri, boolean excludeState) {
+    public Collection<InputControl> requestInputControls(@Nullable String token,
+                                                         @Nullable String reportUri,
+                                                         boolean excludeState) {
         checkNotNull(reportUri, "Report URI should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<InputControlResponse> call = mRestApi.requestInputControls(reportUri, excludeState ? "state" : null);
-        return CallWrapper.wrap(call).body();
+        String state = (excludeState ? "state" : null);
+        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state, token);
+        InputControlCollection response = CallWrapper.wrap(call).body();
+        return response.get();
     }
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsInitialStates(@Nullable String reportUri, boolean freshData) {
+    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String token,
+                                                                           @Nullable String reportUri,
+                                                                           boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<InputControlValueResponse> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
-        return CallWrapper.wrap(call).body();
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData, token);
+        InputControlStateCollection response = CallWrapper.wrap(call).body();
+        return response.get();
     }
 
     @NonNull
     @Override
-    public InputControlValueResponse requestInputControlsStates(@Nullable String reportUri,
-                                                                @Nullable Map<String, Set<String>> controlsValues,
-                                                                boolean freshData) {
+    public Collection<InputControlState> requestInputControlsStates(@Nullable String token,
+                                                                    @Nullable String reportUri,
+                                                                    @Nullable Map<String, Set<String>> controlsValues,
+                                                                    boolean freshData) {
         checkNotNull(reportUri, "Report URI should not be null");
         checkNotNull(controlsValues, "Controls values should not be null");
+        checkNotNull(token, "Request token should not be null");
 
         String ids = Utils.joinString(";", controlsValues.keySet());
-        Call<InputControlValueResponse> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
-        return CallWrapper.wrap(call).body();
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData, token);
+        InputControlStateCollection response = CallWrapper.wrap(call).body();
+        return response.get();
     }
 
     private interface RestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls")
-        Call<InputControlResponse> requestInputControls(
+        Call<InputControlCollection> requestInputControls(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("exclude") String state);
+                @Query("exclude") String state,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
-        Call<InputControlValueResponse> requestInputControlsInitialValues(
+        Call<InputControlStateCollection> requestInputControlsInitialValues(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("freshData") boolean freshData);
+                @Query("freshData") boolean freshData,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
-        Call<InputControlValueResponse> requestInputControlsValues(
+        Call<InputControlStateCollection> requestInputControlsValues(
                 @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @NonNull @Path(value = "controlsId", encoded = true) String ids,
                 @NonNull @Body Map<String, Set<String>> controlsValues,
-                @Query("freshData") boolean freshData);
+                @Query("freshData") boolean freshData,
+                @Header("Cookie") String cookie);
     }
 }

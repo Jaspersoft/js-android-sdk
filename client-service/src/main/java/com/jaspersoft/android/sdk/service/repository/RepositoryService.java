@@ -25,23 +25,27 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class RepositoryService {
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
+    private final RepositoryRestApi mRepositoryRestApi;
+    private final TokenProvider mTokenProvider;
+    private final InfoProvider mInfoProvider;
 
-    public RepositoryService(RepositoryRestApi.Factory repositoryApiFactory,
-                             ServerRestApi.Factory infoApiFactory) {
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
+    public RepositoryService(RepositoryRestApi repositoryRestApi,
+                             TokenProvider tokenProvider,
+                             InfoProvider infoProvider) {
+        mRepositoryRestApi = repositoryRestApi;
+        mTokenProvider = tokenProvider;
+        mInfoProvider = infoProvider;
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryApiFactory, mInfoApiFactory);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mTokenProvider, mInfoProvider);
     }
 }

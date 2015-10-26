@@ -27,11 +27,9 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +38,7 @@ import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -61,33 +60,35 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ResourceSearchResponse searchResources(@Nullable Map<String, Object> searchParams) {
+    public ResourceSearchResult searchResources(@Nullable String token, @Nullable Map<String, Object> searchParams) {
+        checkNotNull(token, "Request token should not be null");
+
         Iterable<?> types = null;
-        Call<ResourceSearchResponse> call;
+        Call<ResourceSearchResult> call;
 
         if (searchParams == null) {
-            call = mRestApi.searchResources(null, null);
+            call = mRestApi.searchResources(null, null, token);
         } else {
             Map<String, Object> copy = new HashMap<>(searchParams);
             Object typeValues = copy.get("type");
             copy.remove("type");
 
             if (typeValues == null) {
-                throw new IllegalStateException("Found null for key 'type'. Ensure this to be not a null");
+                types = null;
             }
             if (typeValues instanceof Iterable<?>) {
                 types = (Iterable<?>) typeValues;
             }
 
-            call = mRestApi.searchResources(copy, types);
+            call = mRestApi.searchResources(copy, types, token);
         }
 
-        Response<ResourceSearchResponse> rawResponse = CallWrapper.wrap(call).response();
+        Response<ResourceSearchResult> rawResponse = CallWrapper.wrap(call).response();
 
         int status = rawResponse.code();
-        ResourceSearchResponse entity;
+        ResourceSearchResult entity;
         if (status == 204) {
-            entity = ResourceSearchResponse.empty();
+            entity = ResourceSearchResult.empty();
         } else {
             entity = rawResponse.body();
             com.squareup.okhttp.Headers headers = rawResponse.headers();
@@ -107,37 +108,21 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NonNull
     @Override
-    public ReportLookupResponse requestReportResource(@Nullable String resourceUri) {
+    public ReportLookup requestReportResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Report uri should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<ReportLookupResponse> call = mRestApi.requestReportResource(resourceUri);
+        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri, token);
         return CallWrapper.wrap(call).body();
     }
 
     @NonNull
     @Override
-    public DashboardLookupResponse requestDashboardResource(@Nullable String resourceUri) {
-        checkNotNull(resourceUri, "Dashboard uri should not be null");
-
-        Call<DashboardLookupResponse> call =  mRestApi.requestDashboardResource(resourceUri);
-        return CallWrapper.wrap(call).body();
-    }
-
-    @NonNull
-    @Override
-    public LegacyDashboardLookupResponse requestLegacyDashboardResource(@Nullable String resourceUri) {
-        checkNotNull(resourceUri, "Legacy dashboard uri should not be null");
-
-        Call<LegacyDashboardLookupResponse> call =  mRestApi.requestLegacyDashboardResource(resourceUri);
-        return CallWrapper.wrap(call).body();
-    }
-
-    @NonNull
-    @Override
-    public FolderLookupResponse requestFolderResource(@Nullable String resourceUri) {
+    public FolderLookup requestFolderResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
+        checkNotNull(token, "Request token should not be null");
 
-        Call<FolderLookupResponse> call =  mRestApi.requestFolderResource(resourceUri);
+        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri, token);
         return CallWrapper.wrap(call).body();
     }
 
@@ -145,32 +130,23 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @NonNull
         @Headers("Accept: application/json")
         @GET("rest_v2/resources")
-        Call<ResourceSearchResponse> searchResources(
+        Call<ResourceSearchResult> searchResources(
                 @Nullable @QueryMap Map<String, Object> searchParams,
-                @Nullable @Query("type") Iterable<?> types);
+                @Nullable @Query("type") Iterable<?> types,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
-        Call<ReportLookupResponse> requestReportResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
-
-        @NonNull
-        @Headers("Accept: application/repository.dashboard+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<DashboardLookupResponse> requestDashboardResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
-
-        @NonNull
-        @Headers("Accept: application/repository.legacyDashboard+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<LegacyDashboardLookupResponse> requestLegacyDashboardResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<ReportLookup> requestReportResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @Header("Cookie") String cookie);
 
         @NonNull
         @Headers("Accept: application/repository.folder+json")
         @GET("rest_v2/resources{resourceUri}")
-        Call<FolderLookupResponse> requestFolderResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        Call<FolderLookup> requestFolderResource(
+                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @Header("Cookie") String cookie);
     }
 }

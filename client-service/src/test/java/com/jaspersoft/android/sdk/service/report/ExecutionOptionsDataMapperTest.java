@@ -28,7 +28,7 @@ public class ExecutionOptionsDataMapperTest {
 
     @Before
     public void setUp() throws Exception {
-        mapper = ExecutionOptionsDataMapper.getInstance();
+        mapper = new ExecutionOptionsDataMapper(BASE_URL);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ExecutionOptionsDataMapperTest {
                 .params(REPORT_PARAMS)
                 .attachmentPrefix("./")
                 .create();
-        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, BASE_URL, criteria);
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, criteria);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
         assertThat(options.getParameters(), is(REPORT_PARAMS));
         assertThat(options.getAsync(), is(true));
@@ -59,7 +59,7 @@ public class ExecutionOptionsDataMapperTest {
                 .pages("1-100")
                 .attachmentPrefix("./")
                 .create();
-        ExecutionRequestOptions options = mapper.transformExportOptions(BASE_URL, criteria);
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria);
         assertOptions(options);
     }
 

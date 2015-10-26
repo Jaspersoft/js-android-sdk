@@ -62,8 +62,7 @@ public class ExecutionRequestOptions {
     @Expose
     protected Map<String, Set<String>> parameters;
 
-    protected ExecutionRequestOptions() {
-    }
+    protected ExecutionRequestOptions() {}
 
     public static ExecutionRequestOptions create() {
         return new ExecutionRequestOptions();

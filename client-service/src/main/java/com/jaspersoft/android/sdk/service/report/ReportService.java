@@ -28,12 +28,11 @@ import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.TokenProvider;
-import com.jaspersoft.android.sdk.service.server.ServerRestApiFactory;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,38 +41,41 @@ import java.util.concurrent.TimeUnit;
  * @since 2.0
  */
 public class ReportService {
-    private final ReportExecutionRestApi.Factory mExecutionApiFactory;
-    private final ReportExportRestApi.Factory mExportApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
-    private final String mBaseUrl;
+    private final ReportExecutionRestApi mExecutionApi;
+    private final ReportExportRestApi mExportApi;
+    private final TokenProvider mTokenProvider;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
     private final long mDelay;
 
     @VisibleForTesting
-    ReportService(String baseUrl,
+    ReportService(
                   long delay,
-                  ReportExecutionRestApi.Factory executionApiFactory,
-                  ReportExportRestApi.Factory exportApiFactory,
-                  ServerRestApi.Factory infoApiFactory,
+                  ReportExecutionRestApi executionApi,
+                  ReportExportRestApi exportApi,
+                  TokenProvider tokenProvider,
                   ExecutionOptionsDataMapper executionOptionsMapper) {
-        mBaseUrl = baseUrl;
         mDelay = delay;
-        mExecutionApiFactory = executionApiFactory;
-        mExportApiFactory = exportApiFactory;
-        mInfoApiFactory = infoApiFactory;
+        mExecutionApi = executionApi;
+        mExportApi = exportApi;
+        mTokenProvider = tokenProvider;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
-    public static ReportService create(String serverUrl, TokenProvider tokenProvider) {
-        ReportOptionRestApiFactory executionApiFactory = new ReportOptionRestApiFactory(serverUrl, tokenProvider);
-        ReportExportRestApiFactory exportApiFactory = new ReportExportRestApiFactory(serverUrl, tokenProvider);
-        ServerRestApiFactory infoApiFactory = new ServerRestApiFactory(serverUrl);
-        ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.getInstance();
-        return new ReportService(serverUrl,
+    public static ReportService create(TokenProvider tokenProvider, InfoProvider infoProvider) {
+        String baseUrl = infoProvider.getBaseUrl();
+        ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
+                .baseUrl(baseUrl)
+                .build();
+        ReportExportRestApi exportApi = new ReportExportRestApi.Builder()
+                .baseUrl(baseUrl)
+                .build();
+        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(baseUrl);
+
+        return new ReportService(
                 TimeUnit.SECONDS.toMillis(1),
-                executionApiFactory,
-                exportApiFactory,
-                infoApiFactory,
+                executionApi,
+                exportApi,
+                tokenProvider,
                 executionOptionsMapper);
     }
 
@@ -87,21 +89,21 @@ public class ReportService {
 
     @NonNull
     private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, mBaseUrl, criteria);
-        ReportExecutionDetailsResponse details = mExecutionApiFactory.get().runReportExecution(options);
+        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
+        ReportExecutionDescriptor details = mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
 
         waitForReportExecutionStart(reportUri, details);
 
         return new ReportExecution(
-                mBaseUrl,
                 TimeUnit.SECONDS.toMillis(2),
-                mExecutionApiFactory,
-                mExportApiFactory,
+                mExecutionApi,
+                mExportApi,
+                mTokenProvider,
                 mExecutionOptionsMapper,
                 details);
     }
 
-    private void waitForReportExecutionStart(String reportUri, ReportExecutionDetailsResponse details) {
+    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) {
         String executionId = details.getExecutionId();
         Status status = Status.wrap(details.getStatus());
 
@@ -121,7 +123,7 @@ public class ReportService {
         }
     }
 
-    private ExecutionStatusResponse requestStatus(String executionId) {
-        return mExecutionApiFactory.get().requestReportExecutionStatus(executionId);
+    private ExecutionStatus requestStatus(String executionId) {
+        return mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
     }
 }

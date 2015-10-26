@@ -103,10 +103,4 @@ public class ExecutionRequestOptionsTest {
         Method method = requestUnderTest.getClass().getMethod(methodName, String.class);
         method.invoke("");
     }
-
-    @Test
-    public void shouldWithAttachmentsPrefixShouldEncodePrefix() {
-        String prefix = requestUnderTest.withAttachmentsPrefix("./").getAttachmentsPrefix();
-        assertThat(prefix, is(".%2F"));
-    }
 }

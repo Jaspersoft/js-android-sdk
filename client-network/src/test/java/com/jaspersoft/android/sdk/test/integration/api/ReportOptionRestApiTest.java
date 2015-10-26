@@ -25,12 +25,10 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.ReportOptionRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,12 +50,12 @@ import static org.hamcrest.core.IsNot.not;
 public class ReportOptionRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
     private ReportOptionRestApi apiUnderTest;
-
 
     private static final String REPORT_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
     public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
+
     static {
         Set<String> values = new HashSet<>();
         values.add("19");
@@ -66,13 +64,9 @@ public class ReportOptionRestApiTest {
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (apiUnderTest == null) {
             apiUnderTest = new ReportOptionRestApi.Builder()
                     .logger(TestLogger.get(this))
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .build();
         }
@@ -80,17 +74,17 @@ public class ReportOptionRestApiTest {
 
     @Test
     public void shouldRequestReportOptionsList() {
-        ReportOptionResponse response = apiUnderTest.requestReportOptionsList(REPORT_URI);
+        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(mAuthenticator.token(), REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 
     @Test
     public void apiSupportsCrudForReportOption() {
-        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
+        ReportOption response = apiUnderTest.createReportOption(mAuthenticator.token(), REPORT_URI, "label", CONTROL_PARAMETERS, true);
         assertThat(response.getLabel(), is("label"));
 
-        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
+        apiUnderTest.updateReportOption(mAuthenticator.token(), REPORT_URI, response.getId(), CONTROL_PARAMETERS);
 
-        apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
+        apiUnderTest.deleteReportOption(mAuthenticator.token(), REPORT_URI, response.getId());
     }
 }

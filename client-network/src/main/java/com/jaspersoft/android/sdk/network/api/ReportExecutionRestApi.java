@@ -27,14 +27,14 @@ package com.jaspersoft.android.sdk.network.api;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportParameter;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -44,34 +44,32 @@ public interface ReportExecutionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportExecutionDetailsResponse runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
+    ReportExecutionDescriptor runReportExecution(@NonNull String token, @NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ReportExecutionDetailsResponse requestReportExecutionDetails(@NonNull String executionId);
+    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String token, @NonNull String executionId);
 
     @NonNull
     @WorkerThread
-    ExecutionStatusResponse requestReportExecutionStatus(@NonNull String executionId);
+    ExecutionStatus requestReportExecutionStatus(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean cancelReportExecution(@NonNull String executionId);
+    boolean cancelReportExecution(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean updateReportExecution(@NonNull String executionId, @NonNull Collection<ReportParameter> params);
+    boolean updateReportExecution(@NonNull String token,
+                                  @NonNull String executionId,
+                                  @NonNull Collection<Map<String, Set<String>>> params);
 
     /**
      * TODO: API is broken requires investigation before release
      */
     @NonNull
     @WorkerThread
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
+    ReportExecutionSearchResponse searchReportExecution(@NonNull String token, Map<String, String> params);
 
-    interface Factory {
-        ReportExecutionRestApi get();
-    }
-
-    final class Builder extends GenericAuthBuilder<Builder, ReportExecutionRestApi> {
+    final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override
         ReportExecutionRestApi createApi() {
             return new ReportExecutionRestApiImpl(getAdapter().build());

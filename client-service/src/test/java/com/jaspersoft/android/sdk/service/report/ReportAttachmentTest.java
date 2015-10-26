@@ -1,10 +1,8 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportExecution;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ExportInput;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +14,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -28,14 +26,14 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @since 2.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExportInput.class})
+@PrepareForTest({OutputResource.class})
 public class ReportAttachmentTest {
-    @Mock
-    ReportExportRestApi.Factory mExportApiFactory;
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    ExportInput input;
+    TokenProvider mTokenProvider;
+    @Mock
+    OutputResource input;
 
     private ReportAttachment objectUnderTest;
 
@@ -43,19 +41,18 @@ public class ReportAttachmentTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(mExportApiFactory.get()).thenReturn(mExportRestApi);
-
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mExportApiFactory);
+        when(mTokenProvider.provideToken()).thenReturn("cookie");
+        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mTokenProvider, mExportRestApi);
     }
 
     @Test
     public void testDownload() throws Exception {
-        when(mExportRestApi.requestExportAttachment(anyString(), anyString(), anyString())).thenReturn(input);
+        when(mExportRestApi.requestExportAttachment(anyString(), anyString(), anyString(), anyString())).thenReturn(input);
 
-        ExportInput result = objectUnderTest.download();
+        OutputResource result = objectUnderTest.download();
         assertThat(result, is(notNullValue()));
 
-        verify(mExportRestApi).requestExportAttachment(eq("exec_id"), eq("export_id"), eq("1.jpg"));
+        verify(mExportRestApi).requestExportAttachment(eq("cookie"), eq("exec_id"), eq("export_id"), eq("1.jpg"));
         verifyNoMoreInteractions(mExportRestApi);
     }
 }

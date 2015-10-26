@@ -25,7 +25,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookupResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 
 import java.util.Collection;
 
@@ -35,6 +35,6 @@ import java.util.Collection;
  */
 public interface SearchTask {
     @NonNull
-    Collection<ResourceLookupResponse> nextLookup();
+    Collection<ResourceLookup> nextLookup();
     boolean hasNext();
 }

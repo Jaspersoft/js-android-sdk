@@ -2,10 +2,10 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
 
 import org.junit.Before;
@@ -24,11 +24,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -37,51 +37,44 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
-        ExecutionStatusResponse.class,
-        ReportExecutionDetailsResponse.class,
+        ExecutionStatus.class,
+        ReportExecutionDescriptor.class,
         ExecutionOptionsDataMapper.class})
 public class ReportServiceTest {
 
     @Mock
-    ReportExecutionRestApi.Factory executionApiFactory;
-    @Mock
     ReportExecutionRestApi executionApi;
     @Mock
-    ServerRestApi.Factory infoApiFactory;
+    ReportExportRestApi exportApi;
     @Mock
-    ServerRestApi infoApi;
-
-    @Mock
-    ReportExportRestApi.Factory mExportApiFactory;
+    TokenProvider mTokenProvider;
 
     @Mock
     RunReportCriteria configuration;
     @Mock
-    ReportExecutionDetailsResponse initDetails;
+    ReportExecutionDescriptor initDetails;
     @Mock
-    ExecutionStatusResponse statusDetails;
+    ExecutionStatus statusDetails;
 
     ReportService objectUnderTest;
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
 
-    private ExecutionOptionsDataMapper mapper;
+    @Mock
+    ExecutionOptionsDataMapper mapper;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
-        when(executionApiFactory.get()).thenReturn(executionApi);
-        when(infoApiFactory.get()).thenReturn(infoApi);
-
-        mapper = spy(ExecutionOptionsDataMapper.getInstance());
-        objectUnderTest = new ReportService("http:://localhost",
+        objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),
-                executionApiFactory,
-                mExportApiFactory,
-                infoApiFactory,
-                mapper);
+                executionApi,
+                exportApi,
+                mTokenProvider,
+                mapper
+                );
+
     }
 
     @Test
@@ -92,8 +85,8 @@ public class ReportServiceTest {
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
-        verify(mapper).transformRunReportOptions("/report/uri", "http:://localhost", configuration);
-        verify(executionApi).runReportExecution(any(ReportExecutionRequestOptions.class));
+        verify(mapper).transformRunReportOptions("/report/uri", configuration);
+        verify(executionApi).runReportExecution(anyString(), any(ReportExecutionRequestOptions.class));
         verifyNoMoreInteractions(executionApi);
     }
 
@@ -145,17 +138,17 @@ public class ReportServiceTest {
         mockReportExecutionStatus("queued", "execution");
 
         objectUnderTest.run("/report/uri", configuration);
-        verify(executionApi, times(2)).requestReportExecutionStatus(eq("exec_id"));
+        verify(executionApi, times(2)).requestReportExecutionStatus(anyString(), eq("exec_id"));
     }
 
     private void mockReportExecutionStatus(String... statusChain) {
         when(statusDetails.getStatus()).then(StatusChain.of(statusChain));
-        when(executionApi.requestReportExecutionStatus(any(String.class))).thenReturn(statusDetails);
+        when(executionApi.requestReportExecutionStatus(anyString(), anyString())).thenReturn(statusDetails);
     }
 
     private void mockRunReportExecution(String execution) {
         when(initDetails.getStatus()).thenReturn(execution);
         when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
+        when(executionApi.runReportExecution(anyString(), any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
     }
 }

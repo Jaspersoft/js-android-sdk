@@ -27,23 +27,26 @@ package com.jaspersoft.android.sdk.test.integration.api;
 import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -57,22 +60,17 @@ import static org.junit.Assert.assertThat;
  */
 public class ReportExecutionRestApiTest {
 
-    private final String REPORT_URI1 = "/public/Samples/Reports/AllAccounts";
-    private final String REPORT_URI2 = "/public/Samples/Reports/ProfitDetailReport";
+    private final String REPORT_URI = "/public/Samples/Reports/ProfitDetailReport";
 
     ReportExecutionRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -81,7 +79,7 @@ public class ReportExecutionRestApiTest {
 
     @Test
     public void shouldStartReportExecution() {
-        ReportExecutionDetailsResponse response = startExecution();
+        ReportExecutionDescriptor response = startExecution();
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatus(), is(notNullValue()));
     }
@@ -91,25 +89,25 @@ public class ReportExecutionRestApiTest {
      */
     @Ignore
     public void shouldCancelReportExecution() throws InterruptedException {
-        ReportExecutionDetailsResponse response = startExecution();
-        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId());
+        ReportExecutionDescriptor response = startExecution();
+        boolean cancelled = apiUnderTest.cancelReportExecution(mAuthenticator.token(), response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
     @Test
     public void shouldReturnReportExecutionDetails() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDetailsResponse response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
+        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(mAuthenticator.token(), executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
     @Test
     public void shouldCheckReportExecutionStatus() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
-        ExecutionStatusResponse response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
+        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(mAuthenticator.token(), executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -118,36 +116,43 @@ public class ReportExecutionRestApiTest {
      */
     @Ignore
     public void searchForExecutionShouldReturnResult() throws IOException {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        ReportExecutionDescriptor executionResponse = startExecution();
 
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(params);
+        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(mAuthenticator.token(), params);
         assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() {
-        ReportExecutionDetailsResponse executionResponse = startExecution();
+        List<Map<String, Set<String>>> list = new ArrayList<>();
 
-        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(), Collections.EMPTY_LIST);
+        Map<String, Set<String>> reportParameter = new HashMap<>();
+        reportParameter.put("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
+        list.add(reportParameter);
+
+        ReportExecutionDescriptor executionResponse = startExecution();
+        boolean success = apiUnderTest.updateReportExecution(mAuthenticator.token(), executionResponse.getExecutionId(), list);
         assertThat(success, is(true));
     }
 
     /**
      * Helper methods
      */
-
     @NonNull
-    private ReportExecutionDetailsResponse startExecution() {
-        return startExecution(REPORT_URI1);
+    private ReportExecutionDescriptor startExecution() {
+        return startExecution(REPORT_URI);
     }
 
     @NonNull
-    private ReportExecutionDetailsResponse startExecution(String uri) {
+    private ReportExecutionDescriptor startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        return apiUnderTest.runReportExecution(executionRequestOptions);
-    }
+        Map<String, Set<String>> params = new HashMap<>();
+        params.put("ProductFamily", new HashSet<String>(Collections.singletonList("Food")));
+        executionRequestOptions.withParameters(params);
 
+        return apiUnderTest.runReportExecution(mAuthenticator.token(), executionRequestOptions);
+    }
 }

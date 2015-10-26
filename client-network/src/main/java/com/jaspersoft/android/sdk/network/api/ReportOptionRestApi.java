@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionResponse;
 
 import java.util.Map;
 import java.util.Set;
@@ -41,25 +40,27 @@ public interface ReportOptionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportOptionResponse requestReportOptionsList(@NonNull String reportUnitUri);
+    Set<ReportOption> requestReportOptionsList(@NonNull String reportUnitUri, @NonNull String token);
 
     @NonNull
     @WorkerThread
-    ReportOption createReportOption(@NonNull String reportUnitUri,
-                                                @NonNull String optionLabel,
-                                                @NonNull Map<String, Set<String>> controlsValues,
-                                                boolean overwrite);
+    ReportOption createReportOption(@NonNull String token, @NonNull String reportUnitUri,
+                                    @NonNull String optionLabel,
+                                    @NonNull Map<String, Set<String>> controlsValues,
+                                    boolean overwrite);
 
     @WorkerThread
-    void updateReportOption(@NonNull String reportUnitUri,
-                                        @NonNull String optionId,
-                                        @NonNull Map<String, Set<String>> controlsValues);
+    void updateReportOption(@NonNull String token,
+                            @NonNull String reportUnitUri,
+                            @NonNull String optionId,
+                            @NonNull Map<String, Set<String>> controlsValues);
 
     @WorkerThread
-    void deleteReportOption(@NonNull String reportUnitUri,
-                                        @NonNull String optionId);
+    void deleteReportOption(@NonNull String token,
+                            @NonNull String reportUnitUri,
+                            @NonNull String optionId);
 
-    final class Builder extends GenericAuthBuilder<Builder, ReportOptionRestApi> {
+    final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
         @Override
         ReportOptionRestApi createApi() {
             return new ReportOptionRestApiImpl(getAdapter().build());

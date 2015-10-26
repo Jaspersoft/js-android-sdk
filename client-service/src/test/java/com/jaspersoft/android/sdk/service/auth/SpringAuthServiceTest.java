@@ -2,7 +2,6 @@ package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import org.junit.Before;
@@ -32,15 +31,12 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
         Locale.class,
-        AuthResponse.class,
         EncryptionKey.class,
         JSEncryptionAlgorithm.class,
 })
 public class SpringAuthServiceTest {
     @Mock
     AuthenticationRestApi mRestApi;
-    @Mock
-    AuthResponse mAuthResponse;
     @Mock
     JSEncryptionAlgorithm mAlgorithm;
     @Mock
@@ -72,7 +68,7 @@ public class SpringAuthServiceTest {
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
-        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn(mAuthResponse);
+        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn("cookie");
     }
 
     @Test

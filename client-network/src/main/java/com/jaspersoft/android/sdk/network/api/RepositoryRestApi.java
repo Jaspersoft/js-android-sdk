@@ -28,11 +28,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.jaspersoft.android.sdk.network.entity.resource.DashboardLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.LegacyDashboardLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookupResponse;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 
 import java.util.Map;
 
@@ -43,29 +41,17 @@ import java.util.Map;
 public interface RepositoryRestApi {
     @NonNull
     @WorkerThread
-    ResourceSearchResponse searchResources(@Nullable Map<String, Object> searchParams);
+    ResourceSearchResult searchResources(@NonNull String token, @Nullable Map<String, Object> searchParams);
 
     @NonNull
     @WorkerThread
-    ReportLookupResponse requestReportResource(@NonNull String resourceUri);
+    ReportLookup requestReportResource( @NonNull String token, @NonNull String resourceUri);
 
     @NonNull
     @WorkerThread
-    DashboardLookupResponse requestDashboardResource(@NonNull String resourceUri);
+    FolderLookup requestFolderResource(@NonNull String token, @NonNull String resourceUri);
 
-    @NonNull
-    @WorkerThread
-    LegacyDashboardLookupResponse requestLegacyDashboardResource(@NonNull String resourceUri);
-
-    @NonNull
-    @WorkerThread
-    FolderLookupResponse requestFolderResource(@NonNull String resourceUri);
-
-    interface Factory {
-        RepositoryRestApi get();
-    }
-
-    final class Builder extends GenericAuthBuilder<Builder, RepositoryRestApi> {
+    final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {
         @Override
         RepositoryRestApi createApi() {
             return new RepositoryRestApiImpl(getAdapter().build());

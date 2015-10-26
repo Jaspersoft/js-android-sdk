@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -75,8 +74,8 @@ public class AuthenticationRestApiTest {
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        AuthResponse response = mRestApi.authenticate("joeuser", "joeuser", null, null);
-        assertThat(response.getToken(), is(notNullValue()));
+        String response = mRestApi.authenticate("joeuser", "joeuser", null, null);
+        assertThat(response, is(notNullValue()));
     }
 
     @Test

@@ -28,16 +28,15 @@ import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatusResponse;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDetailsResponse;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.export.ExportResourceResponse;
-import com.jaspersoft.android.sdk.network.entity.export.ReportExportExecutionResponse;
+import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,16 +58,12 @@ public class ReportExportRestApiTest {
     ReportExportRestApi apiUnderTest;
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
-
         if (mExecApi == null) {
             mExecApi = new ReportExecutionRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -76,7 +71,6 @@ public class ReportExportRestApiTest {
 
         if (apiUnderTest == null) {
             apiUnderTest = new ReportExportRestApi.Builder()
-                    .token(CookieToken.create(cookie))
                     .baseUrl(mMetadata.getServerUrl())
                     .logger(TestLogger.get(this))
                     .build();
@@ -85,26 +79,26 @@ public class ReportExportRestApiTest {
 
     @Test
     public void runExportRequestShouldReturnResult() {
-        ReportExecutionDetailsResponse exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
+        ReportExecutionDescriptor exec = startExecution();
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
         assertThat(execDetails.getExportId(), is(notNullValue()));
     }
 
     @Test
     public void checkExportRequestStatusShouldReturnResult() throws IOException {
-        ReportExecutionDetailsResponse exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExecutionStatusResponse response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
+        ReportExecutionDescriptor exec = startExecution();
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
+        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
     @Test
     public void requestExportOutputShouldReturnResult() {
-        ReportExecutionDetailsResponse exec = startExecution();
-        ReportExportExecutionResponse execDetails = startExportExecution(exec);
-        ExportResourceResponse output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
+        ReportExecutionDescriptor exec = startExecution();
+        ExportExecutionDescriptor execDetails = startExportExecution(exec);
+        ExportOutputResource output = apiUnderTest.requestExportOutput(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
 
-        assertThat(output.getExportInput(), is(notNullValue()));
+        assertThat(output.getOutputResource(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
         assertThat(output.isFinal(), is(false));
     }
@@ -113,16 +107,16 @@ public class ReportExportRestApiTest {
      * Helper methods
      */
     @NonNull
-    private ReportExportExecutionResponse startExportExecution(ReportExecutionDetailsResponse exec) {
+    private ExportExecutionDescriptor startExportExecution(ReportExecutionDescriptor exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return apiUnderTest.runExportExecution(exec.getExecutionId(), options);
+        return apiUnderTest.runExportExecution(mAuthenticator.token(), exec.getExecutionId(), options);
     }
 
     @NonNull
-    private ReportExecutionDetailsResponse startExecution() {
+    private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        return mExecApi.runReportExecution(executionRequestOptions);
+        return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }
 }

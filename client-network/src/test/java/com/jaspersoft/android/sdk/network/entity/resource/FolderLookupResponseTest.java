@@ -37,7 +37,7 @@ import static org.hamcrest.core.Is.is;
 public class FolderLookupResponseTest {
     @Test
     public void shouldAlwaysReturnReportUnitUriAsType() {
-        FolderLookupResponse response = new FolderLookupResponse();
+        FolderLookup response = new FolderLookup();
         assertThat(response.getResourceType(), is("folder"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -30,9 +30,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import java.util.HashMap;
@@ -76,13 +73,7 @@ public final class SpringAuthService implements AuthService {
 
     @NonNull
     @Override
-    public Token<?> authenticate() {
-        AuthResponse authResponse = invokeAuthentication();
-        return CookieToken.create(authResponse.getToken());
-    }
-
-    @NonNull
-    private AuthResponse invokeAuthentication() {
+    public String authenticate() {
         String password = mPassword;
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 

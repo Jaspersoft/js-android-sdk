@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,8 +26,6 @@ package com.jaspersoft.android.sdk.service.auth;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-
 
 /**
  * @author Tom Koptel
@@ -35,5 +33,5 @@ import com.jaspersoft.android.sdk.network.api.auth.Token;
  */
 public interface AuthService {
     @NonNull
-    Token<?> authenticate();
+    String authenticate();
 }
