@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,30 +44,32 @@ public interface ReportExecutionRestApi {
 
     @NonNull
     @WorkerThread
-    ReportExecutionDescriptor runReportExecution(@NonNull ReportExecutionRequestOptions executionOptions);
+    ReportExecutionDescriptor runReportExecution(@NonNull String token, @NonNull ReportExecutionRequestOptions executionOptions);
 
     @NonNull
     @WorkerThread
-    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String executionId);
+    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String token, @NonNull String executionId);
 
     @NonNull
     @WorkerThread
-    ExecutionStatus requestReportExecutionStatus(@NonNull String executionId);
+    ExecutionStatus requestReportExecutionStatus(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean cancelReportExecution(@NonNull String executionId);
+    boolean cancelReportExecution(@NonNull String token, @NonNull String executionId);
 
     @WorkerThread
-    boolean updateReportExecution(@NonNull String executionId, @NonNull Map<String, Set<String>> params);
+    boolean updateReportExecution(@NonNull String token,
+                                  @NonNull String executionId,
+                                  @NonNull Collection<Map<String, Set<String>>> params);
 
     /**
      * TODO: API is broken requires investigation before release
      */
     @NonNull
     @WorkerThread
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params);
+    ReportExecutionSearchResponse searchReportExecution(@NonNull String token, Map<String, String> params);
 
-    final class Builder extends GenericAuthBuilder<Builder, ReportExecutionRestApi> {
+    final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override
         ReportExecutionRestApi createApi() {
             return new ReportExecutionRestApiImpl(getAdapter().build());

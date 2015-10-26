@@ -30,9 +30,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import java.util.HashMap;
@@ -76,13 +73,7 @@ public final class SpringAuthService implements AuthService {
 
     @NonNull
     @Override
-    public Token authenticate() {
-        Token authToken = invokeAuthentication();
-        return CookieToken.create(authToken);
-    }
-
-    @NonNull
-    private Token invokeAuthentication() {
+    public String authenticate() {
         String password = mPassword;
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
