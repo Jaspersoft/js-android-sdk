@@ -25,7 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
@@ -35,21 +37,26 @@ import java.util.Collection;
  * @since 2.0
  */
 interface SearchStrategy {
-    Collection<ResourceLookup> searchNext();
+    Collection<GenericResource> searchNext();
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(String serverVersion,
-                                         RepositoryRestApi.Factory repositoryApiFactory,
-                                         InternalCriteria criteria) {
-            ServerVersion version = ServerVersion.defaultParser().parse(serverVersion);
+        public static SearchStrategy get(InternalCriteria criteria,
+                                         RepositoryRestApi repositoryRestApi,
+                                         InfoProvider infoProvider,
+                                         TokenProvider tokenProvider) {
+            ServerVersion version = infoProvider.provideVersion();
+            GenericResourceMapper resourceMapper = new GenericResourceMapper();
+            SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
+
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
-                return new EmeraldMR2SearchStrategy(repositoryApiFactory, criteria);
+                return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
             if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
-                return new EmeraldMR3SearchStrategy(repositoryApiFactory, criteria);
+                return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
-            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + serverVersion);
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.getRawValue());
         }
+
     }
 }

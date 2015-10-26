@@ -25,6 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +40,7 @@ import junitparams.Parameters;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Tom Koptel
@@ -47,7 +51,11 @@ public class SearchStrategyTest {
     private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    RepositoryRestApi.Factory mFactory;
+    RepositoryRestApi mRepoApi;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    InfoProvider mInfoProvider;
 
     @Before
     public void before() {
@@ -60,7 +68,10 @@ public class SearchStrategyTest {
             "5.5",
     })
     public void factoryCreatesEmeraldMR2Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
+        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
     }
 
@@ -70,7 +81,10 @@ public class SearchStrategyTest {
             "6.0.1",
     })
     public void factoryCreatesEmeraldMR3Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(version, mFactory, CRITERIA);
+        ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
+        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));
     }
 }

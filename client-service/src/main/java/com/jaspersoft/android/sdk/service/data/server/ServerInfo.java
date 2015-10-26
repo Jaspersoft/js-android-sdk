@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ServerInfo {
+public class ServerInfo {
     private SimpleDateFormat dateFormatPattern;
     private SimpleDateFormat datetimeFormatPattern;
     private ServerVersion version;

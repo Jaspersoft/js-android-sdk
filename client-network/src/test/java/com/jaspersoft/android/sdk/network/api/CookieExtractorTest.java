@@ -22,32 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.entity.server;
+package com.jaspersoft.android.sdk.network.api;
+
+import com.squareup.okhttp.Protocol;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class AuthResponse {
-    private final String mToken;
+public class CookieExtractorTest {
 
+    private Request mRequest;
 
-    private AuthResponse(String token) {
-        mToken = token;
+    @Before
+    public void setup() {
+        mRequest = new Request.Builder()
+                .url("http://localhost")
+                .build();
     }
 
-    public static AuthResponse createSuccessResponse(String token) {
-        return new AuthResponse(token);
-    }
+    @Test
+    public void shouldExtractTokenFromNetworkResponse() {
+        Response mockResponse = new Response.Builder()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie2")
+                .code(200)
+                .protocol(Protocol.HTTP_1_1)
+                .request(mRequest)
+                .build();
 
-    public String getToken() {
-        return mToken;
-    }
-
-    @Override
-    public String toString() {
-        return "AuthResponse{" +
-                "mToken='" + mToken + '\'' +
-                '}';
+        String token = CookieExtractor.extract(mockResponse);
+        assertThat(token, is("cookie1;cookie2"));
     }
 }

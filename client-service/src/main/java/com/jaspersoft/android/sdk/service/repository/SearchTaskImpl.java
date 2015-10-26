@@ -28,8 +28,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
 
 import java.util.Collection;
 
@@ -39,23 +40,26 @@ import java.util.Collection;
  */
 final class SearchTaskImpl implements SearchTask {
     private final InternalCriteria mCriteria;
-    private final RepositoryRestApi.Factory mRepositoryApiFactory;
-    private final ServerRestApi.Factory mInfoApiFactory;
+    private final RepositoryRestApi mRepositoryRestApi;
+    private final TokenProvider mTokenProvider;
+    private final InfoProvider mInfoProvider;
 
     @Nullable
     private SearchStrategy strategy;
 
     SearchTaskImpl(InternalCriteria criteria,
-                   RepositoryRestApi.Factory repositoryApiFactory,
-                   ServerRestApi.Factory infoApiFactory) {
+                   RepositoryRestApi repositoryRestApi,
+                   TokenProvider tokenProvider,
+                   InfoProvider infoProvider) {
         mCriteria = criteria;
-        mRepositoryApiFactory = repositoryApiFactory;
-        mInfoApiFactory = infoApiFactory;
+        mRepositoryRestApi = repositoryRestApi;
+        mTokenProvider = tokenProvider;
+        mInfoProvider = infoProvider;
     }
 
     @NonNull
     @Override
-    public Collection<ResourceLookup> nextLookup() {
+    public Collection<GenericResource> nextLookup() {
         return defineSearchStrategy().searchNext();
     }
 
@@ -73,10 +77,7 @@ final class SearchTaskImpl implements SearchTask {
 
     private SearchStrategy defineSearchStrategy() {
         if (strategy == null) {
-            String version = mInfoApiFactory.get().requestVersion();
-            strategy = SearchStrategy.Factory.get(version, mRepositoryApiFactory, mCriteria);
-
-
+            strategy = SearchStrategy.Factory.get(mCriteria, mRepositoryRestApi, mInfoProvider, mTokenProvider);
         }
         return strategy;
     }

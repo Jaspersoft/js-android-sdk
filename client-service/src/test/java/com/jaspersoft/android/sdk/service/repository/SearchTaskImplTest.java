@@ -25,7 +25,8 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,56 +53,54 @@ public class SearchTaskImplTest {
     private static final InternalCriteria CRITERIA = InternalCriteria.from(SearchCriteria.none());
 
     @Mock
-    RepositoryRestApi.Factory mRepoApiFactory;
-    @Mock
-    ServerRestApi.Factory mInfoApiFactory;
-    @Mock
     RepositoryRestApi mRepoApi;
     @Mock
-    ServerRestApi mInfoApi;
-    @Mock
     SearchStrategy mSearchStrategy;
+    @Mock
+    TokenProvider mTokenProvider;
+    @Mock
+    InfoProvider mInfoProvider;
 
     private SearchTaskImpl objectUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApiFactory, mInfoApiFactory);
-        when(mRepoApiFactory.get()).thenReturn(mRepoApi);
-        when(mInfoApiFactory.get()).thenReturn(mInfoApi);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mTokenProvider, mInfoProvider);
 
         when(mSearchStrategy.searchNext()).thenReturn(null);
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
-        PowerMockito.when(SearchStrategy.Factory.get(anyString(), any(RepositoryRestApi.Factory.class), any(InternalCriteria.class))).thenReturn(mSearchStrategy);
+
+
+        PowerMockito.when(
+                SearchStrategy.Factory.get(
+                        any(InternalCriteria.class),
+                        any(RepositoryRestApi.class),
+                        any(InfoProvider.class),
+                        any(TokenProvider.class)
+                )
+        ).thenReturn(mSearchStrategy);
     }
 
     @Test
     public void nextLookupShouldDefineSearchStrategy() {
-        when(mInfoApi.requestVersion()).thenReturn("5.5");
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
 
-        verify(mInfoApi, times(1)).requestVersion();
-        verify(mInfoApiFactory, times(1)).get();
-        verify(mSearchStrategy, times(1)).searchNext();
+        verify(mSearchStrategy).searchNext();
     }
 
     @Test
     public void secondLookupShouldUseCachedStrategy() {
-        when(mInfoApi.requestVersion()).thenReturn("5.5");
-
         objectUnderTest.nextLookup();
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq("5.5"), eq(mRepoApiFactory), eq(CRITERIA));
+        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
 
-        verify(mInfoApi, times(1)).requestVersion();
-        verify(mInfoApiFactory, times(1)).get();
         verify(mSearchStrategy, times(2)).searchNext();
     }
 }

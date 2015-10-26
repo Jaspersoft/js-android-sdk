@@ -22,34 +22,42 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api.auth;
+package com.jaspersoft.android.sdk.test.integration.api.utils;
+
+import android.support.annotation.NonNull;
+
+import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class CookieToken implements Token {
-    private final String mCookie;
+public final class DummyTokenProvider {
 
-    private CookieToken(String cookie) {
-        mCookie = cookie;
+    private final JrsMetadata mJrsMetadata;
+    private String mToken;
+
+    public DummyTokenProvider(JrsMetadata jrsMetadata) {
+        mJrsMetadata = jrsMetadata;
     }
 
-    public static CookieToken create(String cookie) {
-        return new CookieToken(cookie);
+    public static DummyTokenProvider create(JrsMetadata metadata) {
+        return new DummyTokenProvider(metadata);
     }
 
-    public static CookieToken create(Token token) {
-        return new CookieToken(token.get());
+    @NonNull
+    public String provideToken() {
+        if (mToken == null) {
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                    .baseUrl(mJrsMetadata.getServerUrl())
+                    .build();
+            mToken = restApi
+                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
+        }
+        return mToken;
     }
 
-    @Override
-    public String get() {
-        return mCookie;
-    }
-
-    @Override
-    public void acceptPolicy(AuthPolicy policy) {
-        policy.applyCookieToken(this);
+    public String token() {
+        return provideToken();
     }
 }

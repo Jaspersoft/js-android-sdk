@@ -22,39 +22,47 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api.utils;
-
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.Token;
+package com.jaspersoft.android.sdk.service.data.repository;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class TestAuthenticator {
+public enum ResourceType {
+    folder,
+    reportUnit,
+    dashboard,
+    legacyDashboard,
+    file,
+    semanticLayerDataSource,
+    jndiJdbcDataSource,
+    unknown {
+        private String rawValue;
 
-    private final JrsMetadata mJrsMetadata;
-    private Token mToken;
-
-    public TestAuthenticator(JrsMetadata jrsMetadata) {
-        mJrsMetadata = jrsMetadata;
-    }
-
-    public static TestAuthenticator create(JrsMetadata metadata) {
-        return new TestAuthenticator(metadata);
-    }
-
-    public void authorize() {
-        if (mToken == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(mJrsMetadata.getServerUrl())
-                    .build();
-            mToken = restApi
-                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
+        @Override
+        void setRawValue(String value) {
+            rawValue = value;
         }
+
+        @Override
+        public String getRawValue() {
+            return rawValue;
+        }
+    };
+
+    public static Parser defaultParser() {
+        return DefaultTypeParser.INSTANCE;
     }
 
-    public String getCookie() {
-        return mToken.get();
+    void setRawValue(String value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getRawValue() {
+        return String.valueOf(this);
+    }
+
+    public interface Parser {
+        ResourceType parse(String rawVersion);
     }
 }

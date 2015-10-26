@@ -22,46 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network.api;
+package com.jaspersoft.android.sdk.service.data.repository;
 
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
-import com.squareup.okhttp.Protocol;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class TokenFactoryTest {
-
-    private Request mRequest;
-
-    @Before
-    public void setup() {
-        mRequest = new Request.Builder()
-                .url("http://localhost")
-                .build();
+@RunWith(JUnitParamsRunner.class)
+public class DefaultTypeParserTest {
+    @Test
+    @Parameters({"folder", "reportUnit", "dashboard", "legacyDashboard", "file", "semanticLayerDataSource", "jndiJdbcDataSource"})
+    public void shouldProvideTypeForKnownResourceTypes(String type) {
+        ResourceType resourceType = ResourceType.valueOf(type);
+        assertThat(DefaultTypeParser.INSTANCE.parse(type), is(resourceType));
     }
 
     @Test
-    public void shouldExtractTokenFromNetworkResponse() {
-        Response mockResponse = new Response.Builder()
-                .addHeader("Set-Cookie", "cookie1")
-                .addHeader("Set-Cookie", "cookie2")
-                .code(200)
-                .protocol(Protocol.HTTP_1_1)
-                .request(mRequest)
-                .build();
-
-        Token response = TokenFactory.create(mockResponse);
-        assertThat(response.get(), is("cookie1;cookie2"));
+    public void shouldReturnUnkownTypeForMissingMapping() {
+        ResourceType resourceType = DefaultTypeParser.INSTANCE.parse("someStrangeType");
+        assertThat(resourceType, is(notNullValue()));
+        assertThat(resourceType.getRawValue(), is("someStrangeType"));
     }
 }

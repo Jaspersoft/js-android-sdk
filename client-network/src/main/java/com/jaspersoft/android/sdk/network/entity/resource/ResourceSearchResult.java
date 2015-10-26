@@ -34,7 +34,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceSearchResult {
+public class ResourceSearchResult {
 
     @Expose
     @SerializedName("resourceLookup")
