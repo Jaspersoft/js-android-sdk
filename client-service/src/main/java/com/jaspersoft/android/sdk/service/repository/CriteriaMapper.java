@@ -53,15 +53,19 @@ final class CriteriaMapper {
         if (criteria.getLimit() != DEFAULT_LIMIT) {
             params.put("limit", String.valueOf(criteria.getLimit()));
         }
+
         if (criteria.getOffset() != DEFAULT_OFFSET) {
             params.put("offset", String.valueOf(criteria.getOffset()));
         }
+
         if (criteria.getRecursive() != null) {
             params.put("recursive", String.valueOf(criteria.getRecursive()));
         }
+
         if (criteria.getForceFullPage() != null) {
             params.put("forceFullPage", String.valueOf(criteria.getForceFullPage()));
         }
+
         if (criteria.getForceTotalCount() != null) {
             params.put("forceTotalCount", String.valueOf(criteria.getForceTotalCount()));
         }
@@ -70,19 +74,25 @@ final class CriteriaMapper {
         if (query != null && query.length() > 0) {
             params.put("q", query);
         }
+
         if (criteria.getSortBy() != null) {
             params.put("sortBy", criteria.getSortBy());
         }
+
         if (criteria.getFolderUri() != null) {
             params.put("folderUri", criteria.getFolderUri());
         }
 
-        populateTypes(criteria, params);
+        Set<String> types = populateTypes(criteria);
+        if (!types.isEmpty()) {
+
+            params.put("type", types);
+        }
 
         return params;
     }
 
-    private static void populateTypes(InternalCriteria criteria, Map<String, Object> params) {
+    private static Set<String> populateTypes(InternalCriteria criteria) {
         Set<String> types = new HashSet<>();
 
         int resourceMask = criteria.getResourceMask();
@@ -102,8 +112,6 @@ final class CriteriaMapper {
             types.add("legacyDashboard");
         }
 
-        if (!types.isEmpty()) {
-            params.put("type", types);
-        }
+        return types;
     }
 }
