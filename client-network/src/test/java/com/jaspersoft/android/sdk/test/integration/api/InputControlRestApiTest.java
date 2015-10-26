@@ -25,12 +25,11 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-import com.jaspersoft.android.sdk.test.integration.api.utils.TestAuthenticator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +55,7 @@ import static org.hamcrest.core.IsNot.not;
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final TestAuthenticator mAuthenticator = TestAuthenticator.create(mMetadata);
+    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
     private InputControlRestApi mRestApi;
     public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
 
@@ -68,10 +67,7 @@ public class InputControlRestApiTest {
 
     @Before
     public void setup() {
-        mAuthenticator.authorize();
-        String cookie = mAuthenticator.getCookie();
         mRestApi = new InputControlRestApi.Builder()
-                .token(CookieToken.create(cookie))
                 .baseUrl(mMetadata.getServerUrl())
                 .logger(TestLogger.get(this))
                 .build();
@@ -79,7 +75,7 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideInputControlsList() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, false);
+        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, false);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -91,7 +87,7 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() {
-        Collection<InputControl> controls = mRestApi.requestInputControls(REPORT_URI, true);
+        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, true);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -100,13 +96,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(REPORT_URI, true);
+        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(mAuthenticator.token(), REPORT_URI, true);
         assertThat(states, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshStatesForInputControls() {
-        Collection<InputControlState> states = mRestApi.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
+        Collection<InputControlState> states = mRestApi.requestInputControlsStates(mAuthenticator.token(), REPORT_URI, CONTROL_PARAMETERS, true);
         assertThat(states, is(not(empty())));
     }
 }

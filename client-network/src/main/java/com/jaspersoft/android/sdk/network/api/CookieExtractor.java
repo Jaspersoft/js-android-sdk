@@ -24,9 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.jaspersoft.android.sdk.network.api.auth.CookieToken;
-import com.jaspersoft.android.sdk.network.api.auth.Token;
-import com.jaspersoft.android.sdk.network.entity.server.AuthResponse;
 import com.squareup.okhttp.Response;
 
 import java.util.Iterator;
@@ -37,27 +34,18 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class TokenFactory {
-    private final List<String> mCookieParts;
-
-    TokenFactory(List<String> parts) {
-        mCookieParts = parts;
+final class CookieExtractor {
+    private CookieExtractor() {
     }
 
-    public static Token create(Response response) {
+    public static String extract(Response response) {
         List<String> parts = response.headers().values("Set-Cookie");
-        TokenFactory responseFactory = new TokenFactory(parts);
-        return responseFactory.create();
+        return joinCookieParts(parts).toString();
     }
 
-    private Token create() {
-        String cookie = joinCookieParts().toString();
-        return CookieToken.create(cookie);
-    }
-
-    private StringBuilder joinCookieParts() {
+    private static StringBuilder joinCookieParts(List<String> parts) {
         StringBuilder stringBuilder = new StringBuilder();
-        Iterator<String> iterator = mCookieParts.iterator();
+        Iterator<String> iterator = parts.iterator();
         while (iterator.hasNext()) {
             String cookie = iterator.next();
             stringBuilder.append(cookie);

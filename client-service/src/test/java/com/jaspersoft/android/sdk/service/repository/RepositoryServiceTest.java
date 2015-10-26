@@ -25,9 +25,8 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.service.InfoProvider;
+import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +38,6 @@ import org.mockito.MockitoAnnotations;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Tom Koptel
@@ -47,16 +45,11 @@ import static org.mockito.Mockito.when;
  */
 public class RepositoryServiceTest {
     @Mock
-    RepositoryRestApi.Factory repoApiFactory;
-    @Mock
     RepositoryRestApi repoApi;
     @Mock
-    ServerRestApi.Factory infoApi;
-
+    TokenProvider mTokenProvider;
     @Mock
-    FolderLookup mFolderResponse;
-    @Mock
-    ReportLookup mReportResponse;
+    InfoProvider mInfoProvider;
 
     private RepositoryService objectUnderTest;
 
@@ -66,8 +59,7 @@ public class RepositoryServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(repoApiFactory.get()).thenReturn(repoApi);
-        objectUnderTest = new RepositoryService(repoApiFactory, infoApi);
+        objectUnderTest = new RepositoryService(repoApi, mTokenProvider, mInfoProvider);
     }
 
     @Test
