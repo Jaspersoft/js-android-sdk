@@ -26,17 +26,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.ALL;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DASHBOARD;
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_LIMIT;
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_OFFSET;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.LEGACY_DASHBOARD;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.REPORT;
 
 /**
  * @author Tom Koptel
@@ -152,63 +143,6 @@ class InternalCriteria {
         builder.offset(mOffset);
 
         return builder;
-    }
-
-    @NonNull
-    public Map<String, Object> toMap() {
-        Map<String, Object> params = new HashMap<>();
-
-        if (mLimit != DEFAULT_LIMIT) {
-            params.put("limit", String.valueOf(mLimit));
-        }
-        if (mOffset != DEFAULT_OFFSET) {
-            params.put("offset", String.valueOf(mOffset));
-        }
-        if (mRecursive != null) {
-            params.put("recursive", String.valueOf(mRecursive));
-        }
-        if (mForceFullPage != null) {
-            params.put("forceFullPage", String.valueOf(mForceFullPage));
-        }
-        if (mForceTotalCount != null) {
-            params.put("forceTotalCount", String.valueOf(mForceTotalCount));
-        }
-        if (mQuery != null && mQuery.length() > 0) {
-            params.put("q", mQuery);
-        }
-        if (mSortBy != null) {
-            params.put("sortBy", mSortBy);
-        }
-        if (mFolderUri != null) {
-            params.put("folderUri", mFolderUri);
-        }
-
-        populateTypes(params);
-        return params;
-    }
-
-    private void populateTypes(Map<String, Object> params) {
-        Set<String> types = new HashSet<>();
-
-        boolean includeReport =
-                (mResourceMask & REPORT) == REPORT || (mResourceMask & ALL) == ALL;
-        if (includeReport) {
-            types.add("reportUnit");
-        }
-        boolean includeDashboard =
-                (mResourceMask & DASHBOARD) == DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeDashboard) {
-            types.add("dashboard");
-        }
-        boolean includeLegacyDashboard =
-                (mResourceMask & LEGACY_DASHBOARD) == LEGACY_DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeLegacyDashboard) {
-            types.add("legacyDashboard");
-        }
-
-        if (!types.isEmpty()) {
-            params.put("type", types);
-        }
     }
 
     @Override

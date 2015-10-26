@@ -56,7 +56,7 @@ final class SearchUseCase {
 
     @NonNull
     public SearchResult performSearch(@NonNull InternalCriteria criteria) {
-        ResourceSearchResult response = mRestApi.searchResources(mTokenProvider.provideToken(), criteria.toMap());
+        ResourceSearchResult response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
         SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
 
         SearchResult searchResult = new SearchResult();
