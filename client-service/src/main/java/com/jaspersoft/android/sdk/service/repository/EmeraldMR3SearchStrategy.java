@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.Collections;
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
-    public static final Collection<GenericResource> EMPTY_RESPONSE = Collections.emptyList();
+    public static final Collection<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
     private final InternalCriteria mInitialCriteria;
@@ -58,7 +58,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<GenericResource> searchNext() {
+    public Collection<Resource> searchNext() {
         if (mEndReached || mInitialCriteria.getLimit() == 0){
             return EMPTY_RESPONSE;
         }
@@ -75,7 +75,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private Collection<GenericResource> performLookup() {
+    private Collection<Resource> performLookup() {
         InternalCriteria newSearchCriteria = createNextCriteria();
         SearchResult result = performApiCall(newSearchCriteria);
         updateInternalOffset(result);

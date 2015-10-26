@@ -5,7 +5,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
@@ -39,7 +39,7 @@ public class SearchUseCaseTest {
     @Mock
     RepositoryRestApi mRepositoryRestApi;
     @Mock
-    GenericResourceMapper mDataMapper;
+    ResourceMapper mDataMapper;
     @Mock
     TokenProvider mTokenProvider;
     @Mock
@@ -70,7 +70,7 @@ public class SearchUseCaseTest {
         when(mRepositoryRestApi.searchResources(anyString(), any(Map.class))).thenReturn(mResult);
         when(mInfoProvider.provideDateTimeFormat()).thenReturn(DATE_TIME_FORMAT);
 
-        Collection<GenericResource> resources = new ArrayList<GenericResource>();
+        Collection<Resource> resources = new ArrayList<Resource>();
         when(mDataMapper.transform(anyCollection(), any(SimpleDateFormat.class))).thenReturn(resources);
 
         SearchResult result = objectUnderTest.performSearch(mCriteria);

@@ -30,14 +30,14 @@ import java.util.Collection;
  * @since 2.0
  */
 public class SearchResult {
-    private Collection<GenericResource> mResources;
+    private Collection<Resource> mResources;
     private int mNextOffset;
 
-    public Collection<GenericResource> getResources() {
+    public Collection<Resource> getResources() {
         return mResources;
     }
 
-    public void setResources(Collection<GenericResource> resources) {
+    public void setResources(Collection<Resource> resources) {
         mResources = resources;
     }
 

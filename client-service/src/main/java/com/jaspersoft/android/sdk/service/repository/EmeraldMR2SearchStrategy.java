@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import java.util.Collection;
@@ -39,13 +39,13 @@ import java.util.List;
  * @since 2.0
  */
 final class EmeraldMR2SearchStrategy implements SearchStrategy {
-    private static final Collection<GenericResource> EMPTY_RESPONSE = Collections.emptyList();
+    private static final Collection<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private static final int MAX_RETRY_COUNT = 5;
 
     private final InternalCriteria mInitialCriteria;
     private final SearchUseCase mSearchUserCase;
 
-    private List<GenericResource> mBuffer = new LinkedList<>();
+    private List<Resource> mBuffer = new LinkedList<>();
     private int mServerDisposition;
     private boolean mEndReached;
 
@@ -58,7 +58,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<GenericResource> searchNext() {
+    public Collection<Resource> searchNext() {
         int limit = mInitialCriteria.getLimit();
         int offset = mInitialCriteria.getOffset();
 
@@ -82,7 +82,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private Collection<GenericResource> internalSearch(int limit) {
+    private Collection<Resource> internalSearch(int limit) {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
             SearchResult response = performSearch(limit);
@@ -104,7 +104,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         }
 
         int median = Math.min(limit, mBuffer.size());
-        Collection<GenericResource> result = mBuffer.subList(0, median);
+        Collection<Resource> result = mBuffer.subList(0, median);
         mBuffer = mBuffer.subList(median, mBuffer.size());
         return result;
     }

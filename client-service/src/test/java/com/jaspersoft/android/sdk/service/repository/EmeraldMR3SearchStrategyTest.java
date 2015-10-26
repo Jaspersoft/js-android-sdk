@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import org.hamcrest.Matchers;
@@ -45,7 +45,7 @@ public class EmeraldMR3SearchStrategyTest {
 
         when(mSearchUseCase.performSearch(any(InternalCriteria.class))).thenReturn(mResponse);
 
-        List<GenericResource> stubLookup = Collections.singletonList(null);
+        List<Resource> stubLookup = Collections.singletonList(null);
         when(mResponse.getResources()).thenReturn(stubLookup);
     }
 
@@ -109,7 +109,7 @@ public class EmeraldMR3SearchStrategyTest {
         when(mResponse.getNextOffset()).thenReturn(0);
         strategy.searchNext();
 
-        Collection<GenericResource> response = strategy.searchNext();
+        Collection<Resource> response = strategy.searchNext();
         assertThat(response, is(empty()));
         assertThat(strategy.hasNext(), is(false));
 
@@ -122,7 +122,7 @@ public class EmeraldMR3SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         SearchStrategy strategy = new EmeraldMR3SearchStrategy(userCriteria, mSearchUseCase);
 
-        Collection<GenericResource> result = strategy.searchNext();
+        Collection<Resource> result = strategy.searchNext();
         assertThat(result, Matchers.is(Matchers.empty()));
 
         verifyZeroInteractions(mSearchUseCase);

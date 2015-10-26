@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class EmeraldMR2SearchStrategyTest {
      */
     private EmeraldMR2SearchStrategy search10itemsStrategy;
     private EmeraldMR2SearchStrategy search10itemsStrategyWithUserOffset5;
-    public static final List<GenericResource> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
+    public static final List<Resource> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
 
     @Before
     public void setupMocks() {
@@ -65,7 +65,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willAlignResponseToLimitIfAPIRespondsWithPartialNumber() throws Exception {
         when(mResponse.getResources()).thenReturn(FIVE_ITEMS);
 
-        Collection<GenericResource> result = search10itemsStrategy.searchNext();
+        Collection<Resource> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(10));
 
         InternalCriteria criteria1 = InternalCriteria.builder().limit(10).create();
@@ -78,9 +78,9 @@ public class EmeraldMR2SearchStrategyTest {
 
     @Test
     public void willRetry5timesIfApiReturnsNoElements() throws Exception {
-        when(mResponse.getResources()).thenReturn(Collections.<GenericResource>emptyList());
+        when(mResponse.getResources()).thenReturn(Collections.<Resource>emptyList());
 
-        Collection<GenericResource> result = search10itemsStrategy.searchNext();
+        Collection<Resource> result = search10itemsStrategy.searchNext();
         assertThat(search10itemsStrategy.hasNext(), is(false));
 
         assertThat(result, is(empty()));
@@ -91,7 +91,7 @@ public class EmeraldMR2SearchStrategyTest {
     public void willReturnAsMuchElementsAsLeftIfEndReached() throws Exception {
         when(mResponse.getResources()).then(OnlyTwoItems.INSTANCE);
 
-        Collection<GenericResource> result = search10itemsStrategy.searchNext();
+        Collection<Resource> result = search10itemsStrategy.searchNext();
         assertThat(result.size(), is(2));
 
         verify(mSearchUseCase, times(6)).performSearch(Matchers.any(InternalCriteria.class));
@@ -126,22 +126,22 @@ public class EmeraldMR2SearchStrategyTest {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(userCriteria, mSearchUseCase);
 
-        Collection<GenericResource> result = strategy.searchNext();
+        Collection<Resource> result = strategy.searchNext();
         assertThat(result, is(empty()));
 
         verifyZeroInteractions(mSearchUseCase);
     }
 
-    private static class OnlyTwoItems implements Answer<Collection<GenericResource>> {
+    private static class OnlyTwoItems implements Answer<Collection<Resource>> {
         public static final OnlyTwoItems INSTANCE = new OnlyTwoItems();
 
-        private final List<GenericResource> twoItems = Arrays.asList(null, null);
-        private final List<GenericResource> zeroItems = Collections.emptyList();
+        private final List<Resource> twoItems = Arrays.asList(null, null);
+        private final List<Resource> zeroItems = Collections.emptyList();
 
         private int count = 0;
 
         @Override
-        public Collection<GenericResource> answer(InvocationOnMock invocationOnMock) throws Throwable {
+        public Collection<Resource> answer(InvocationOnMock invocationOnMock) throws Throwable {
             if (count == 0) {
                 count++;
                 return twoItems;

@@ -29,7 +29,7 @@ import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import java.text.SimpleDateFormat;
@@ -43,10 +43,10 @@ final class SearchUseCase {
     private final RepositoryRestApi mRestApi;
     private final TokenProvider mTokenProvider;
     private final InfoProvider mInfoProvider;
-    private final GenericResourceMapper mDataMapper;
+    private final ResourceMapper mDataMapper;
 
     public SearchUseCase(
-            GenericResourceMapper dataMapper, RepositoryRestApi restApi,
+            ResourceMapper dataMapper, RepositoryRestApi restApi,
             TokenProvider tokenProvider, InfoProvider infoProvider) {
         mRestApi = restApi;
         mTokenProvider = tokenProvider;
@@ -62,7 +62,7 @@ final class SearchUseCase {
         SearchResult searchResult = new SearchResult();
         searchResult.setNextOffset(response.getNextOffset());
 
-        Collection<GenericResource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+        Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
         searchResult.setResources(resources);
 
         return searchResult;

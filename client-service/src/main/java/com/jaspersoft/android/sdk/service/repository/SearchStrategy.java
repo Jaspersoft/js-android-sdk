@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.repository.GenericResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.Collection;
  * @since 2.0
  */
 interface SearchStrategy {
-    Collection<GenericResource> searchNext();
+    Collection<Resource> searchNext();
     boolean hasNext();
 
     class Factory {
@@ -46,7 +46,7 @@ interface SearchStrategy {
                                          InfoProvider infoProvider,
                                          TokenProvider tokenProvider) {
             ServerVersion version = infoProvider.provideVersion();
-            GenericResourceMapper resourceMapper = new GenericResourceMapper();
+            ResourceMapper resourceMapper = new ResourceMapper();
             SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
 
             if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
