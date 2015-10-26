@@ -26,10 +26,8 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,22 +37,19 @@ import java.util.Collections;
  * @since 2.0
  */
 final class EmeraldMR3SearchStrategy implements SearchStrategy {
-    public static final Collection<ResourceLookup> EMPTY_RESPONSE = Collections.emptyList();
+    public static final Collection<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
-    private final RepositoryRestApi mRepositoryRestApi;
     private final InternalCriteria mInitialCriteria;
-    private final TokenProvider mTokenProvider;
+    private final SearchUseCase mSearchUseCase;
 
     private int mUserOffset;
     private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
 
-    public EmeraldMR3SearchStrategy(InternalCriteria criteria,
-                                    RepositoryRestApi repositoryApiFactory,
-                                    TokenProvider tokenProvider) {
-        mRepositoryRestApi = repositoryApiFactory;
-        mTokenProvider = tokenProvider;
+    public EmeraldMR3SearchStrategy(InternalCriteria criteria, SearchUseCase searchUseCase) {
+        mSearchUseCase = searchUseCase;
+
         // Internally enabling 'forceFullPageFlag'
         mInitialCriteria = criteria.newBuilder()
                 .forceFullPage(true)
@@ -63,7 +58,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<ResourceLookup> searchNext() {
+    public Collection<Resource> searchNext() {
         if (mEndReached || mInitialCriteria.getLimit() == 0){
             return EMPTY_RESPONSE;
         }
@@ -80,16 +75,16 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NonNull
-    private Collection<ResourceLookup> performLookup() {
+    private Collection<Resource> performLookup() {
         InternalCriteria newSearchCriteria = createNextCriteria();
-        ResourceSearchResult result = performApiCall(newSearchCriteria);
+        SearchResult result = performApiCall(newSearchCriteria);
         updateInternalOffset(result);
         return result.getResources();
     }
 
     @NonNull
-    private ResourceSearchResult performApiCall(InternalCriteria newSearchCriteria) {
-        return mRepositoryRestApi.searchResources(mTokenProvider.provideToken(), newSearchCriteria.toMap());
+    private SearchResult performApiCall(InternalCriteria newSearchCriteria) {
+        return mSearchUseCase.performSearch(newSearchCriteria);
     }
 
     private void defineInternalOffset() {
@@ -100,12 +95,12 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
                     .limit(mUserOffset)
                     .offset(0)
                     .create();
-            ResourceSearchResult result = performApiCall(newCriteria);
+            SearchResult result = performApiCall(newCriteria);
             mInternalOffset = result.getNextOffset();
         }
     }
 
-    private void updateInternalOffset(ResourceSearchResult result) {
+    private void updateInternalOffset(SearchResult result) {
         int nextOffset = result.getNextOffset();
 
         mEndReached = (nextOffset == 0);

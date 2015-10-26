@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -22,22 +22,47 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.resource;
-
-import java.net.URI;
-import java.util.Date;
+package com.jaspersoft.android.sdk.service.data.repository;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ResourceLookup {
-    private String label;
-    private String description;
-    private URI uri;
-    private ResourceType resourceType;
-    private int version;
-    private int permissionMask;
-    private Date creationDate;
-    private Date updateDate;
+public enum ResourceType {
+    folder,
+    reportUnit,
+    dashboard,
+    legacyDashboard,
+    file,
+    semanticLayerDataSource,
+    jndiJdbcDataSource,
+    unknown {
+        private String rawValue;
+
+        @Override
+        void setRawValue(String value) {
+            rawValue = value;
+        }
+
+        @Override
+        public String getRawValue() {
+            return rawValue;
+        }
+    };
+
+    public static Parser defaultParser() {
+        return DefaultTypeParser.INSTANCE;
+    }
+
+    void setRawValue(String value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getRawValue() {
+        return String.valueOf(this);
+    }
+
+    public interface Parser {
+        ResourceType parse(String rawVersion);
+    }
 }

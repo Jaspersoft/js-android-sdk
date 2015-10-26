@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -29,6 +29,8 @@ import android.support.annotation.NonNull;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Internal interface to abstract out server info generation strategy
  *
@@ -40,4 +42,6 @@ public interface InfoProvider {
     ServerInfo provideInfo();
     @NonNull
     ServerVersion provideVersion();
+    @NonNull
+    SimpleDateFormat provideDateTimeFormat();
 }

@@ -26,23 +26,14 @@ package com.jaspersoft.android.sdk.service.repository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.ALL;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DASHBOARD;
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_LIMIT;
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_OFFSET;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.LEGACY_DASHBOARD;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.REPORT;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class InternalCriteria {
+class InternalCriteria {
     private final int mLimit;
     private final int mOffset;
     private final int mResourceMask;
@@ -154,61 +145,56 @@ final class InternalCriteria {
         return builder;
     }
 
-    @NonNull
-    public Map<String, Object> toMap() {
-        Map<String, Object> params = new HashMap<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (mLimit != DEFAULT_LIMIT) {
-            params.put("limit", String.valueOf(mLimit));
-        }
-        if (mOffset != DEFAULT_OFFSET) {
-            params.put("offset", String.valueOf(mOffset));
-        }
-        if (mRecursive != null) {
-            params.put("recursive", String.valueOf(mRecursive));
-        }
-        if (mForceFullPage != null) {
-            params.put("forceFullPage", String.valueOf(mForceFullPage));
-        }
-        if (mForceTotalCount != null) {
-            params.put("forceTotalCount", String.valueOf(mForceTotalCount));
-        }
-        if (mQuery != null && mQuery.length() > 0) {
-            params.put("q", mQuery);
-        }
-        if (mSortBy != null) {
-            params.put("sortBy", mSortBy);
-        }
-        if (mFolderUri != null) {
-            params.put("folderUri", mFolderUri);
-        }
+        InternalCriteria criteria = (InternalCriteria) o;
 
-        populateTypes(params);
-        return params;
+        if (mLimit != criteria.mLimit) return false;
+        if (mOffset != criteria.mOffset) return false;
+        if (mResourceMask != criteria.mResourceMask) return false;
+        if (mRecursive != null ? !mRecursive.equals(criteria.mRecursive) : criteria.mRecursive != null)
+            return false;
+        if (mForceFullPage != null ? !mForceFullPage.equals(criteria.mForceFullPage) : criteria.mForceFullPage != null)
+            return false;
+        if (mForceTotalCount != null ? !mForceTotalCount.equals(criteria.mForceTotalCount) : criteria.mForceTotalCount != null)
+            return false;
+        if (mQuery != null ? !mQuery.equals(criteria.mQuery) : criteria.mQuery != null)
+            return false;
+        if (mSortBy != null ? !mSortBy.equals(criteria.mSortBy) : criteria.mSortBy != null)
+            return false;
+        return !(mFolderUri != null ? !mFolderUri.equals(criteria.mFolderUri) : criteria.mFolderUri != null);
     }
 
-    private void populateTypes(Map<String, Object> params) {
-        Set<String> types = new HashSet<>();
+    @Override
+    public int hashCode() {
+        int result = mLimit;
+        result = 31 * result + mOffset;
+        result = 31 * result + mResourceMask;
+        result = 31 * result + (mRecursive != null ? mRecursive.hashCode() : 0);
+        result = 31 * result + (mForceFullPage != null ? mForceFullPage.hashCode() : 0);
+        result = 31 * result + (mForceTotalCount != null ? mForceTotalCount.hashCode() : 0);
+        result = 31 * result + (mQuery != null ? mQuery.hashCode() : 0);
+        result = 31 * result + (mSortBy != null ? mSortBy.hashCode() : 0);
+        result = 31 * result + (mFolderUri != null ? mFolderUri.hashCode() : 0);
+        return result;
+    }
 
-        boolean includeReport =
-                (mResourceMask & REPORT) == REPORT || (mResourceMask & ALL) == ALL;
-        if (includeReport) {
-            types.add("reportUnit");
-        }
-        boolean includeDashboard =
-                (mResourceMask & DASHBOARD) == DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeDashboard) {
-            types.add("dashboard");
-        }
-        boolean includeLegacyDashboard =
-                (mResourceMask & LEGACY_DASHBOARD) == LEGACY_DASHBOARD || (mResourceMask & ALL) == ALL;
-        if (includeLegacyDashboard) {
-            types.add("legacyDashboard");
-        }
-
-        if (!types.isEmpty()) {
-            params.put("type", types);
-        }
+    @Override
+    public String toString() {
+        return "InternalCriteria{" +
+                "mFolderUri='" + mFolderUri + '\'' +
+                ", mLimit=" + mLimit +
+                ", mOffset=" + mOffset +
+                ", mResourceMask=" + mResourceMask +
+                ", mRecursive=" + mRecursive +
+                ", mForceFullPage=" + mForceFullPage +
+                ", mForceTotalCount=" + mForceTotalCount +
+                ", mQuery='" + mQuery + '\'' +
+                ", mSortBy='" + mSortBy + '\'' +
+                '}';
     }
 
     public static class Builder {

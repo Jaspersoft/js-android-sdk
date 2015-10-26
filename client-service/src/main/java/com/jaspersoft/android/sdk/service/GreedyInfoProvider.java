@@ -31,6 +31,8 @@ import android.support.annotation.WorkerThread;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Always make call on server
  *
@@ -61,5 +63,11 @@ final class GreedyInfoProvider implements InfoProvider {
     @Override
     public ServerVersion provideVersion() {
         return mServerInfoService.requestServerVersion();
+    }
+
+    @NonNull
+    @Override
+    public SimpleDateFormat provideDateTimeFormat() {
+        return mServerInfoService.requestServerDateTimeFormat();
     }
 }
