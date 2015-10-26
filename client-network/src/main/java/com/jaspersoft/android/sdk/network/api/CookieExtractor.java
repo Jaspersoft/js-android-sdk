@@ -24,42 +24,35 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import com.squareup.okhttp.Protocol;
-import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Iterator;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class TokenFactoryTest {
-
-    private Request mRequest;
-
-    @Before
-    public void setup() {
-        mRequest = new Request.Builder()
-                .url("http://localhost")
-                .build();
+final class CookieExtractor {
+    private CookieExtractor() {
     }
 
-    @Test
-    public void shouldExtractTokenFromNetworkResponse() {
-        Response mockResponse = new Response.Builder()
-                .addHeader("Set-Cookie", "cookie1")
-                .addHeader("Set-Cookie", "cookie2")
-                .code(200)
-                .protocol(Protocol.HTTP_1_1)
-                .request(mRequest)
-                .build();
+    public static String extract(Response response) {
+        List<String> parts = response.headers().values("Set-Cookie");
+        return joinCookieParts(parts).toString();
+    }
 
-        String token = TokenFactory.create(mockResponse);
-        assertThat(token, is("cookie1;cookie2"));
+    private static StringBuilder joinCookieParts(List<String> parts) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Iterator<String> iterator = parts.iterator();
+        while (iterator.hasNext()) {
+            String cookie = iterator.next();
+            stringBuilder.append(cookie);
+            if (iterator.hasNext()) {
+                stringBuilder.append(";");
+            }
+        }
+        return stringBuilder;
     }
 }
