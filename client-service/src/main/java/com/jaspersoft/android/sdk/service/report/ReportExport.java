@@ -25,7 +25,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
+import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 
 import java.util.Collection;
 
@@ -55,7 +55,7 @@ public final class ReportExport {
     }
 
     @NonNull
-    public ExportOutputResource download() {
+    public ReportOutput download() {
         return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }
 }

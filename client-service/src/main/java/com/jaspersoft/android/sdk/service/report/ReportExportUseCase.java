@@ -33,6 +33,8 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 
 /**
  * @author Tom Koptel
@@ -64,14 +66,16 @@ final class ReportExportUseCase {
     }
 
     @NonNull
-    public ExportOutputResource requestExportOutput(String executionId, String exportId) {
-        return mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
+    public ReportOutput requestExportOutput(String executionId, String exportId) {
+        ExportOutputResource result = mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
+        return OutputDataMapper.transform(result);
     }
 
     @NonNull
-    public OutputResource requestExportAttachmentOutput(String executionId, String exportId, String fileName) {
-        return mExportApi.requestExportAttachment(
+    public ResourceOutput requestExportAttachmentOutput(String executionId, String exportId, String fileName) {
+        OutputResource result = mExportApi.requestExportAttachment(
                 mTokenProvider.provideToken(),
                 executionId, exportId, fileName);
+        return OutputDataMapper.transform(result);
     }
 }
