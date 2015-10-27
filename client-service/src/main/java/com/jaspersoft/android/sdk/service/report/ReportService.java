@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportService {
+public final class ReportService {
 
     private final ReportExecutionUseCase mExecutionUseCase;
     private final ReportExportUseCase mExportUseCase;
