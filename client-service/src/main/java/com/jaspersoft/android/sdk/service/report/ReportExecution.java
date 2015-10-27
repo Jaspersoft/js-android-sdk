@@ -24,18 +24,11 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -49,6 +42,7 @@ public final class ReportExecution {
 
     private final String mExecutionId;
     private final String mReportUri;
+    private final ExportFactory mExportFactory;
 
     @VisibleForTesting
     ReportExecution(long delay,
@@ -61,6 +55,8 @@ public final class ReportExecution {
 
         mExecutionId = state.getExecutionId();
         mReportUri = state.getReportURI();
+
+        mExportFactory = new ExportFactory(exportUseCase, mExecutionId, mReportUri);
     }
 
     @NonNull
@@ -93,13 +89,20 @@ public final class ReportExecution {
     }
 
     @NonNull
+    private ReportMetadata performAwaitFoReport() {
+        ReportExecutionDescriptor details = requestExecutionDetails();
+        ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
+        return new ReportMetadata(mReportUri,
+                completeDetails.getTotalPages());
+    }
+
+    @NonNull
     private ReportExport performExport(RunExportCriteria criteria) {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
         waitForExportReadyStatus(exportDetails);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
-        return createExport(currentDetails, exportDetails);
+        return mExportFactory.create(currentDetails, exportDetails);
     }
-
 
     private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) {
         final String exportId = exportDetails.getExportId();
@@ -123,56 +126,6 @@ public final class ReportExecution {
     }
 
     @NonNull
-    private ReportExport createExport(ReportExecutionDescriptor currentDetails,
-                                      ExportExecutionDescriptor exportDetails) {
-        ExportDescriptor export = findExportDescriptor(currentDetails, exportDetails.getExportId());
-        if (export == null) {
-            throw ExecutionException.exportFailed(mReportUri);
-        }
-
-        String executionId = currentDetails.getExecutionId();
-        String exportId = exportDetails.getExportId();
-        Collection<ReportAttachment> attachments = adaptAttachments(export);
-        return new ReportExport(executionId, exportId, attachments, mExportUseCase);
-    }
-
-    @NonNull
-    private Collection<ReportAttachment> adaptAttachments(ExportDescriptor export) {
-        String exportId = export.getId();
-        Set<AttachmentDescriptor> rawAttachments = export.getAttachments();
-        Collection<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
-        for (AttachmentDescriptor attachment : rawAttachments) {
-            ReportAttachment reportAttachment = new ReportAttachment(
-                    attachment.getFileName(), mExecutionId, exportId, mExportUseCase);
-            attachments.add(reportAttachment);
-        }
-        return attachments;
-    }
-
-    @Nullable
-    private ExportDescriptor findExportDescriptor(ReportExecutionDescriptor currentDetails, String exportId) {
-        for (ExportDescriptor export : currentDetails.getExports()) {
-            if (exportId.equals(export.getId())) {
-                return export;
-            }
-        }
-        return null;
-    }
-
-    @NonNull
-    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
-        return mExportUseCase.runExport(mExecutionId, criteria);
-    }
-
-    @NonNull
-    private ReportMetadata performAwaitFoReport() {
-        ReportExecutionDescriptor details = requestExecutionDetails();
-        ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
-        return new ReportMetadata(mReportUri,
-                completeDetails.getTotalPages());
-    }
-
-    @NonNull
     private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) {
         Status status = Status.wrap(details.getStatus());
 
@@ -193,6 +146,11 @@ public final class ReportExecution {
             status = Status.wrap(details.getStatus());
         }
         return resultDetails;
+    }
+
+    @NonNull
+    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
+        return mExportUseCase.runExport(mExecutionId, criteria);
     }
 
     @NonNull
