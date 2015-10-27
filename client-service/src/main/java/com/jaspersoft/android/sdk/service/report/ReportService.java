@@ -90,10 +90,11 @@ public final class ReportService {
         waitForReportExecutionStart(reportUri, details);
 
         return new ReportExecution(
-                TimeUnit.SECONDS.toMillis(2),
+                mDelay,
                 mExecutionUseCase,
                 mExportUseCase,
-                details);
+                details.getExecutionId(),
+                details.getReportURI());
     }
 
     private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) {

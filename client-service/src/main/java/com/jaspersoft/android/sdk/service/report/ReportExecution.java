@@ -48,13 +48,14 @@ public final class ReportExecution {
     ReportExecution(long delay,
                     ReportExecutionUseCase executionUseCase,
                     ReportExportUseCase exportUseCase,
-                    ReportExecutionDescriptor state) {
+                    String executionId,
+                    String reportUri) {
         mDelay = delay;
         mExecutionUseCase = executionUseCase;
         mExportUseCase = exportUseCase;
 
-        mExecutionId = state.getExecutionId();
-        mReportUri = state.getReportURI();
+        mExecutionId = executionId;
+        mReportUri = reportUri;
 
         mExportFactory = new ExportFactory(exportUseCase, mExecutionId, mReportUri);
     }
