@@ -31,7 +31,9 @@ public class ReportExportTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), mTokenProvider, mExportRestApi);
+        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), exportUseCase);
     }
 
     @Test

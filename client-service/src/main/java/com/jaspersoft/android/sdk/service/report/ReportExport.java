@@ -25,9 +25,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
 import java.util.Collection;
 
@@ -39,21 +37,16 @@ public final class ReportExport {
     private final Collection<ReportAttachment> mAttachments;
     private final String mExecutionId;
     private final String mExportId;
-
-    private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
+    private final ReportExportUseCase mExportUseCase;
 
     ReportExport(String executionId,
                  String exportId,
                  Collection<ReportAttachment> attachments,
-                 TokenProvider tokenProvider,
-                 ReportExportRestApi exportApi) {
+                 ReportExportUseCase exportUseCase) {
         mExecutionId = executionId;
         mExportId = exportId;
         mAttachments = attachments;
-
-        mTokenProvider = tokenProvider;
-        mExportApi = exportApi;
+        mExportUseCase = exportUseCase;
     }
 
     @NonNull
@@ -63,6 +56,6 @@ public final class ReportExport {
 
     @NonNull
     public ExportOutputResource download() {
-        return mExportApi.requestExportOutput(mTokenProvider.provideToken(), mExecutionId, mExportId);
+        return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }
 }

@@ -40,9 +40,11 @@ public class ReportAttachmentTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
         when(mTokenProvider.provideToken()).thenReturn("cookie");
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mTokenProvider, mExportRestApi);
+
+        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", exportUseCase);
     }
 
     @Test
