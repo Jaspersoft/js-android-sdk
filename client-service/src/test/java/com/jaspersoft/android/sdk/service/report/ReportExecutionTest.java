@@ -68,10 +68,6 @@ public class ReportExecutionTest {
     @Mock
     TokenProvider mTokenProvider;
 
-    @Mock
-    ExecutionOptionsDataMapper mapper;
-
-
     private ReportExecution objectUnderTest;
 
 
@@ -86,13 +82,15 @@ public class ReportExecutionTest {
         when(mExecDetails.getExecutionId()).thenReturn("execution_id");
         when(mExecDetails.getReportURI()).thenReturn("/report/uri");
 
+        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/report/uri");
+        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(mExecutionRestApi, mTokenProvider, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
         objectUnderTest = new ReportExecution(
                 TimeUnit.SECONDS.toMillis(0),
-                mExecutionRestApi,
-                mExportRestApi,
-                mTokenProvider,
-                mapper,
-                mExecDetails);
+                reportExecutionUseCase,
+                exportUseCase,
+                "execution_id",
+                "/report/uri");
     }
 
     @Test
@@ -102,7 +100,6 @@ public class ReportExecutionTest {
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mapper).transformExportOptions(exportCriteria);
         verify(mExportRestApi).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
         verify(mExecutionRestApi).requestReportExecutionDetails(eq("cookie"), eq("execution_id"));
     }
@@ -174,7 +171,6 @@ public class ReportExecutionTest {
 
     @Test
     public void testAwaitCompleteReport() throws Exception {
-        when(mExecDetails.getReportURI()).thenReturn("/report/uri");
         when(mExecDetails.getTotalPages()).thenReturn(100);
         mockReportExecutionDetails("ready");
 

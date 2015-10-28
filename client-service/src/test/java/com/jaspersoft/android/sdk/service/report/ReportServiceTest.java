@@ -61,20 +61,18 @@ public class ReportServiceTest {
     @Rule
     public ExpectedException mException = ExpectedException.none();
 
-    @Mock
-    ExecutionOptionsDataMapper mapper;
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
+        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, mTokenProvider, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, mTokenProvider, executionOptionsDataMapper);
+
         objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),
-                executionApi,
-                exportApi,
-                mTokenProvider,
-                mapper
-                );
-
+                reportExecutionUseCase,
+                exportUseCase);
     }
 
     @Test
@@ -85,7 +83,6 @@ public class ReportServiceTest {
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
-        verify(mapper).transformRunReportOptions("/report/uri", configuration);
         verify(executionApi).runReportExecution(anyString(), any(ReportExecutionRequestOptions.class));
         verifyNoMoreInteractions(executionApi);
     }

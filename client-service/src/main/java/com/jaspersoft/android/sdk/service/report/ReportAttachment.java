@@ -25,9 +25,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
 
-import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 
 /**
  * @author Tom Koptel
@@ -38,26 +36,21 @@ public final class ReportAttachment {
     private final String mExecutionId;
     private final String mExportId;
 
-    private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
+    private final ReportExportUseCase mExportUseCase;
 
     ReportAttachment(String fileName,
                      String executionId,
                      String exportId,
-                     TokenProvider tokenProvider,
-                     ReportExportRestApi exportApi) {
+                     ReportExportUseCase exportUseCase) {
         mFileName = fileName;
         mExecutionId = executionId;
         mExportId = exportId;
-
-        mTokenProvider = tokenProvider;
-        mExportApi = exportApi;
+        mExportUseCase = exportUseCase;
     }
 
     @NonNull
-    public OutputResource download() {
-        return mExportApi.requestExportAttachment(
-                mTokenProvider.provideToken(),
+    public ResourceOutput download() {
+        return mExportUseCase.requestExportAttachmentOutput(
                 mExecutionId, mExportId, mFileName);
     }
 }

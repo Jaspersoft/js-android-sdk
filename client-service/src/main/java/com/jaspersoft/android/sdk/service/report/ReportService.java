@@ -28,9 +28,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
@@ -40,25 +38,20 @@ import java.util.concurrent.TimeUnit;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportService {
-    private final ReportExecutionRestApi mExecutionApi;
-    private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
-    private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+public final class ReportService {
+
+    private final ReportExecutionUseCase mExecutionUseCase;
+    private final ReportExportUseCase mExportUseCase;
     private final long mDelay;
 
     @VisibleForTesting
     ReportService(
-                  long delay,
-                  ReportExecutionRestApi executionApi,
-                  ReportExportRestApi exportApi,
-                  TokenProvider tokenProvider,
-                  ExecutionOptionsDataMapper executionOptionsMapper) {
+            long delay,
+            ReportExecutionUseCase executionUseCase,
+            ReportExportUseCase exportUseCase) {
         mDelay = delay;
-        mExecutionApi = executionApi;
-        mExportApi = exportApi;
-        mTokenProvider = tokenProvider;
-        mExecutionOptionsMapper = executionOptionsMapper;
+        mExecutionUseCase = executionUseCase;
+        mExportUseCase = exportUseCase;
     }
 
     public static ReportService create(TokenProvider tokenProvider, InfoProvider infoProvider) {
@@ -71,12 +64,15 @@ public class ReportService {
                 .build();
         ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(baseUrl);
 
+        ReportExecutionUseCase reportExecutionUseCase =
+                new ReportExecutionUseCase(executionApi, tokenProvider, executionOptionsMapper);
+        ReportExportUseCase reportExportUseCase =
+                new ReportExportUseCase(exportApi, tokenProvider, executionOptionsMapper);
+
         return new ReportService(
                 TimeUnit.SECONDS.toMillis(1),
-                executionApi,
-                exportApi,
-                tokenProvider,
-                executionOptionsMapper);
+                reportExecutionUseCase,
+                reportExportUseCase);
     }
 
     public ReportExecution run(String reportUri, RunReportCriteria criteria) {
@@ -89,18 +85,16 @@ public class ReportService {
 
     @NonNull
     private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
-        ReportExecutionDescriptor details = mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
+        ReportExecutionDescriptor details = mExecutionUseCase.runReportExecution(reportUri, criteria);
 
         waitForReportExecutionStart(reportUri, details);
 
         return new ReportExecution(
-                TimeUnit.SECONDS.toMillis(2),
-                mExecutionApi,
-                mExportApi,
-                mTokenProvider,
-                mExecutionOptionsMapper,
-                details);
+                mDelay,
+                mExecutionUseCase,
+                mExportUseCase,
+                details.getExecutionId(),
+                details.getReportURI());
     }
 
     private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) {
@@ -119,11 +113,7 @@ public class ReportService {
             } catch (InterruptedException ex) {
                 throw ExecutionException.reportFailed(reportUri, ex);
             }
-            status = Status.wrap(requestStatus(executionId).getStatus());
+            status = mExecutionUseCase.requestStatus(executionId);
         }
-    }
-
-    private ExecutionStatus requestStatus(String executionId) {
-        return mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
     }
 }

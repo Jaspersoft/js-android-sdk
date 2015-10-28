@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,16 +41,18 @@ public class ReportAttachmentTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
         when(mTokenProvider.provideToken()).thenReturn("cookie");
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mTokenProvider, mExportRestApi);
+
+        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", exportUseCase);
     }
 
     @Test
     public void testDownload() throws Exception {
         when(mExportRestApi.requestExportAttachment(anyString(), anyString(), anyString(), anyString())).thenReturn(input);
 
-        OutputResource result = objectUnderTest.download();
+        ResourceOutput result = objectUnderTest.download();
         assertThat(result, is(notNullValue()));
 
         verify(mExportRestApi).requestExportAttachment(eq("cookie"), eq("exec_id"), eq("export_id"), eq("1.jpg"));

@@ -24,22 +24,11 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
-import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -47,26 +36,29 @@ import java.util.Set;
  */
 public final class ReportExecution {
     private final long mDelay;
-    private final ReportExecutionRestApi mExecutionApi;
-    private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
-    private final ReportExecutionDescriptor mState;
-    private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
 
-    public ReportExecution(long delay,
-                           ReportExecutionRestApi executionApi,
-                           ReportExportRestApi exportApi,
-                           TokenProvider tokenProvider,
-                           ExecutionOptionsDataMapper executionOptionsMapper,
-                           ReportExecutionDescriptor state) {
+    private final ReportExecutionUseCase mExecutionUseCase;
+    private final ReportExportUseCase mExportUseCase;
+
+    private final String mExecutionId;
+    private final String mReportUri;
+    private final ExportFactory mExportFactory;
+
+    @VisibleForTesting
+    ReportExecution(long delay,
+                    ReportExecutionUseCase executionUseCase,
+                    ReportExportUseCase exportUseCase,
+                    String executionId,
+                    String reportUri) {
         mDelay = delay;
-        mExecutionApi = executionApi;
-        mExportApi = exportApi;
-        mTokenProvider = tokenProvider;
-        mExecutionOptionsMapper = executionOptionsMapper;
-        mState = state;
-    }
+        mExecutionUseCase = executionUseCase;
+        mExportUseCase = exportUseCase;
 
+        mExecutionId = executionId;
+        mReportUri = reportUri;
+
+        mExportFactory = new ExportFactory(exportUseCase, mExecutionId, mReportUri);
+    }
 
     @NonNull
     public ReportMetadata waitForReportCompletion() {
@@ -98,116 +90,72 @@ public final class ReportExecution {
     }
 
     @NonNull
-    private ReportExport performExport(RunExportCriteria criteria) {
-        ExportExecutionDescriptor exportDetails = runExport(criteria);
-        waitForExportReadyStatus(exportDetails);
-        ReportExecutionDescriptor currentDetails = requestExecutionDetails();
-
-        return createExport(currentDetails, exportDetails);
-    }
-
-    @NonNull
-    private ReportExecutionDescriptor requestExecutionDetails() {
-        return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), mState.getExecutionId());
-    }
-
-    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) {
-        final String exportId = exportDetails.getExportId();
-        final String executionId = mState.getExecutionId();
-        final String reportUri = mState.getReportURI();
-
-        Status status = Status.wrap(exportDetails.getStatus());
-        while (!status.isReady()) {
-            if (status.isCancelled()) {
-                throw ExecutionException.exportCancelled(reportUri);
-            }
-            if (status.isFailed()) {
-                throw ExecutionException.exportFailed(reportUri);
-            }
-            try {
-                Thread.sleep(mDelay);
-            } catch (InterruptedException ex) {
-                throw ExecutionException.exportFailed(reportUri, ex);
-            }
-            ExecutionStatus exportStatus = mExportApi
-                    .checkExportExecutionStatus(mTokenProvider.provideToken(), executionId, exportId);
-
-            status = Status.wrap(exportStatus.getStatus());
-        }
-    }
-
-    @NonNull
-    private ReportExport createExport(ReportExecutionDescriptor currentDetails,
-                                      ExportExecutionDescriptor exportDetails) {
-        ExportDescriptor export = findExportDescriptor(currentDetails, exportDetails.getExportId());
-        if (export == null) {
-            throw ExecutionException.exportFailed(mState.getReportURI());
-        }
-
-        String executionId = currentDetails.getExecutionId();
-        String exportId = exportDetails.getExportId();
-        Collection<ReportAttachment> attachments = adaptAttachments(export);
-        return new ReportExport(executionId, exportId, attachments, mTokenProvider, mExportApi);
-    }
-
-    private Collection<ReportAttachment> adaptAttachments(ExportDescriptor export) {
-        String executionId = mState.getExecutionId();
-        String exportId = export.getId();
-        Set<AttachmentDescriptor> rawAttachments = export.getAttachments();
-        Collection<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
-        for (AttachmentDescriptor attachment : rawAttachments) {
-            ReportAttachment reportAttachment = new ReportAttachment(
-                    attachment.getFileName(), executionId, exportId, mTokenProvider, mExportApi);
-            attachments.add(reportAttachment);
-        }
-        return attachments;
-    }
-
-    @Nullable
-    private ExportDescriptor findExportDescriptor(ReportExecutionDescriptor currentDetails, String exportId) {
-        for (ExportDescriptor export : currentDetails.getExports()) {
-            if (exportId.equals(export.getId())) {
-                return export;
-            }
-        }
-        return null;
-    }
-
-    @NonNull
-    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
-        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
-        return mExportApi.runExportExecution(mTokenProvider.provideToken(), mState.getExecutionId(), options);
-    }
-
-    @NonNull
     private ReportMetadata performAwaitFoReport() {
         ReportExecutionDescriptor details = requestExecutionDetails();
         ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
-        return new ReportMetadata(completeDetails.getReportURI(),
+        return new ReportMetadata(mReportUri,
                 completeDetails.getTotalPages());
     }
 
     @NonNull
+    private ReportExport performExport(RunExportCriteria criteria) {
+        ExportExecutionDescriptor exportDetails = runExport(criteria);
+        waitForExportReadyStatus(exportDetails);
+        ReportExecutionDescriptor currentDetails = requestExecutionDetails();
+        return mExportFactory.create(currentDetails, exportDetails);
+    }
+
+    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) {
+        final String exportId = exportDetails.getExportId();
+
+        Status status = Status.wrap(exportDetails.getStatus());
+        while (!status.isReady()) {
+            if (status.isCancelled()) {
+                throw ExecutionException.exportCancelled(mReportUri);
+            }
+            if (status.isFailed()) {
+                throw ExecutionException.exportFailed(mReportUri);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw ExecutionException.exportFailed(mReportUri, ex);
+            }
+
+            status = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
+        }
+    }
+
+    @NonNull
     private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) {
-        String reportUri = details.getReportURI();
         Status status = Status.wrap(details.getStatus());
 
         ReportExecutionDescriptor resultDetails = details;
         while (!status.isReady()) {
             if (status.isCancelled()) {
-                throw ExecutionException.reportCancelled(reportUri);
+                throw ExecutionException.reportCancelled(mReportUri);
             }
             if (status.isFailed()) {
-                throw ExecutionException.reportFailed(reportUri);
+                throw ExecutionException.reportFailed(mReportUri);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw ExecutionException.reportFailed(reportUri, ex);
+                throw ExecutionException.reportFailed(mReportUri, ex);
             }
             resultDetails = requestExecutionDetails();
             status = Status.wrap(details.getStatus());
         }
         return resultDetails;
+    }
+
+    @NonNull
+    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
+        return mExportUseCase.runExport(mExecutionId, criteria);
+    }
+
+    @NonNull
+    private ReportExecutionDescriptor requestExecutionDetails() {
+        return mExecutionUseCase.requestExecutionDetails(mExecutionId);
     }
 }

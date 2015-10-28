@@ -28,7 +28,7 @@ package com.jaspersoft.android.sdk.service.data.report;
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportMetadata {
+public final class ReportMetadata {
     private final String uri;
     private final int totalPages;
 
