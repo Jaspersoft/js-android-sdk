@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 
@@ -45,8 +46,8 @@ final class OutputDataMapper {
             }
 
             @Override
-            public String getPages() {
-                return outputResource.getPages();
+            public PageRange getPages() {
+                return new PageRange(outputResource.getPages());
             }
 
             @Override

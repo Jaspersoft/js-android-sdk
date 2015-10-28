@@ -28,7 +28,38 @@ package com.jaspersoft.android.sdk.service.data.report;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ReportOutput extends ResourceOutput {
-    boolean isFinal();
-    PageRange getPages();
+public final class PageRange {
+    private final int mLowerBound;
+    private final int mUpperBound;
+
+    public PageRange(String rawRange) {
+        mLowerBound = parseLowerBound(rawRange);
+        mUpperBound = parseUpperBound(rawRange);
+    }
+
+    public int getLowerBound() {
+        return mLowerBound;
+    }
+
+    public int getUpperBound() {
+        return mUpperBound;
+    }
+
+    public boolean isRange() {
+        return mUpperBound != Integer.MAX_VALUE;
+    }
+
+    private int parseLowerBound(String rawRange) {
+        String[] split = rawRange.split("-");
+        return Integer.parseInt(split[0]);
+    }
+
+    private int parseUpperBound(String rawRange) {
+        String[] split = rawRange.split("-");
+        if (split.length == 1) {
+            return Integer.MAX_VALUE;
+        }
+
+        return Integer.parseInt(split[1]);
+    }
 }
