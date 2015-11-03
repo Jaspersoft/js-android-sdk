@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,24 +21,46 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.execution;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionRequestOptionsTest {
-    @Rule
-    public final ExpectedException mExpectedException = ExpectedException.none();
+public class StatusTest {
+    @Test
+    public void testStatusShouldBeQueued() {
+        Status status = Status.wrap("queued");
+        assertThat(status.isQueued(), is(true));
+    }
 
     @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest(null);
+    public void testStatusShouldBeExecution() {
+        Status status = Status.wrap("execution");
+        assertThat(status.isExecution(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeCancelled() {
+        Status status = Status.wrap("cancelled");
+        assertThat(status.isCancelled(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeFailed() {
+        Status status = Status.wrap("failed");
+        assertThat(status.isFailed(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeReady() {
+        Status status = Status.wrap("ready");
+        assertThat(status.isReady(), is(true));
     }
 }

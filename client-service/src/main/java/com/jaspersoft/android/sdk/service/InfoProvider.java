@@ -39,6 +39,8 @@ import java.text.SimpleDateFormat;
  */
 public interface InfoProvider {
     @NonNull
+    String getBaseUrl();
+    @NonNull
     ServerInfo provideInfo();
     @NonNull
     ServerVersion provideVersion();

@@ -21,24 +21,41 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.execution;
+import android.support.annotation.NonNull;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
+
+import java.util.Collection;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionRequestOptionsTest {
-    @Rule
-    public final ExpectedException mExpectedException = ExpectedException.none();
+public final class ReportExport {
+    private final Collection<ReportAttachment> mAttachments;
+    private final String mExecutionId;
+    private final String mExportId;
+    private final ReportExportUseCase mExportUseCase;
 
-    @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest(null);
+    ReportExport(String executionId,
+                 String exportId,
+                 Collection<ReportAttachment> attachments,
+                 ReportExportUseCase exportUseCase) {
+        mExecutionId = executionId;
+        mExportId = exportId;
+        mAttachments = attachments;
+        mExportUseCase = exportUseCase;
+    }
+
+    @NonNull
+    public Collection<ReportAttachment> getAttachments() {
+        return mAttachments;
+    }
+
+    @NonNull
+    public ReportOutput download() {
+        return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }
 }

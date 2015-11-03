@@ -1,5 +1,5 @@
 /*
- * Copyright Â© 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -21,24 +21,34 @@
  * along with Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+package com.jaspersoft.android.sdk.service.report;
 
-package com.jaspersoft.android.sdk.network.entity.execution;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class ReportExecutionRequestOptionsTest {
-    @Rule
-    public final ExpectedException mExpectedException = ExpectedException.none();
+final class StatusChain implements Answer<String> {
+    private final String[] mChain;
+    private int invocationCount = 0;
 
-    @Test
-    public void factoryMethodShouldNotAllowNull() {
-        mExpectedException.expect(IllegalArgumentException.class);
-        ReportExecutionRequestOptions.newRequest(null);
+    private StatusChain(String... chain) {
+        mChain = chain;
+    }
+
+    public static StatusChain of(String... statuses) {
+        return new StatusChain(statuses);
+    }
+
+    @Override
+    public String answer(InvocationOnMock invocation) throws Throwable {
+        int statusIndex = invocationCount;
+        if (statusIndex >= mChain.length) {
+            statusIndex = mChain.length - 1;
+        }
+        invocationCount++;
+        return mChain[statusIndex];
     }
 }

@@ -222,7 +222,7 @@ public class RepositoryRestApiTest {
         restApiUnderTest.searchResources("cookie", params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/resources?offset=100&limit=100"));
+        assertThat(request.getPath(), is("/rest_v2/resources?limit=100&offset=100"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
     }
 

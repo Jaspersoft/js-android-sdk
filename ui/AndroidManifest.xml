@@ -23,7 +23,7 @@
     <http://www.gnu.org/licenses/lgpl>.
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
     package="com.jaspersoft.android.sdk.ui">
 
     <application />

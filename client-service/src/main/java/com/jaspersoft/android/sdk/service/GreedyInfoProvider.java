@@ -41,15 +41,23 @@ import java.text.SimpleDateFormat;
  */
 final class GreedyInfoProvider implements InfoProvider {
     private final ServerInfoService mServerInfoService;
+    private final String mBaseUrl;
 
     @VisibleForTesting
-    GreedyInfoProvider(ServerInfoService serverInfoService) {
+    GreedyInfoProvider(ServerInfoService serverInfoService, String serverUrl) {
         mServerInfoService = serverInfoService;
+        mBaseUrl = serverUrl;
     }
 
     public static InfoProvider newInstance(String serverUrl) {
         ServerInfoService service = ServerInfoService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service);
+        return new GreedyInfoProvider(service, serverUrl);
+    }
+
+    @NonNull
+    @Override
+    public String getBaseUrl() {
+        return mBaseUrl;
     }
 
     @Override

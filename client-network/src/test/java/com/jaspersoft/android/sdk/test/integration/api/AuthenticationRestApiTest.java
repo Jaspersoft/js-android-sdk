@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
@@ -52,7 +53,7 @@ public class AuthenticationRestApiTest {
         FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
     }
 
-    @Test
+    @Ignore
     public void shouldEncryptWithPassword() throws Exception {
         AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                 .baseUrl("http://192.168.88.55:8085/jasperserver-pro-61/")
