@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    compile project(':js-android-sdk-client-network')
+    compile project(':js-android-sdk-client')
     compile 'com.intellij:annotations:12.0'
 
     testCompile('pl.pragmatists:JUnitParams:1.0.4') {
