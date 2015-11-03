@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
@@ -33,36 +31,34 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface ReportExportRestApi {
 
-    @NonNull
-    @WorkerThread
-    ExportExecutionDescriptor runExportExecution(@NonNull String token,
-                                                 @NonNull String executionId,
-                                                 @NonNull ExecutionRequestOptions executionOptions);
+    @NotNull
+    ExportExecutionDescriptor runExportExecution(@NotNull String token,
+                                                 @NotNull String executionId,
+                                                 @NotNull ExecutionRequestOptions executionOptions);
 
-    @NonNull
-    @WorkerThread
-    ExecutionStatus checkExportExecutionStatus(@NonNull String token,
-                                               @NonNull String executionId,
-                                               @NonNull String exportId);
+    @NotNull
+    ExecutionStatus checkExportExecutionStatus(@NotNull String token,
+                                               @NotNull String executionId,
+                                               @NotNull String exportId);
 
-    @NonNull
-    @WorkerThread
-    ExportOutputResource requestExportOutput(@NonNull String token,
-                                             @NonNull String executionId,
-                                             @NonNull String exportId);
+    @NotNull
+    ExportOutputResource requestExportOutput(@NotNull String token,
+                                             @NotNull String executionId,
+                                             @NotNull String exportId);
 
-    @NonNull
-    @WorkerThread
-    OutputResource requestExportAttachment(@NonNull String token,
-                                           @NonNull String executionId,
-                                           @NonNull String exportId,
-                                           @NonNull String attachmentId);
+    @NotNull
+    OutputResource requestExportAttachment(@NotNull String token,
+                                           @NotNull String executionId,
+                                           @NotNull String exportId,
+                                           @NotNull String attachmentId);
 
     final class Builder extends GenericBuilder<Builder, ReportExportRestApi> {
         @Override

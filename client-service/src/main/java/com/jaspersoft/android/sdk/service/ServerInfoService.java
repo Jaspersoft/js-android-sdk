@@ -1,11 +1,11 @@
 package com.jaspersoft.android.sdk.service;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.jaspersoft.android.sdk.network.api.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import org.jetbrains.annotations.TestOnly;
 
 import java.text.SimpleDateFormat;
 
@@ -17,7 +17,7 @@ public final class ServerInfoService {
     private final ServerRestApi mRestApi;
     private final ServerInfoTransformer mTransformer;
 
-    @VisibleForTesting
+    @TestOnly
     ServerInfoService(ServerRestApi restApi, ServerInfoTransformer transformer) {
         mRestApi = restApi;
         mTransformer = transformer;

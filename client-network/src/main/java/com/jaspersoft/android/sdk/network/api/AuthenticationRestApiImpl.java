@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.Call;
@@ -33,6 +31,8 @@ import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Map;
@@ -61,12 +61,12 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         mRestAdapterBuilder = retrofit;
     }
 
-    @NonNull
+    @NotNull
     @Override
-    public String authenticate(@NonNull final String username,
-                                     @NonNull final String password,
-                                     final String organization,
-                                     final Map<String, String> params) {
+    public String authenticate(@NotNull final String username,
+                               @NotNull final String password,
+                               final String organization,
+                               final Map<String, String> params) {
         Request request = createAuthRequest(username, password, organization, params);
         Call call = mClient.newCall(request);
         try {
@@ -101,7 +101,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
         }
     }
 
-    @NonNull
+    @NotNull
     @Override
     public EncryptionKey requestEncryptionMetadata() {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
@@ -123,8 +123,8 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     }
 
     private Request createAuthRequest(
-            @NonNull final String username,
-            @NonNull final String password,
+            @NotNull final String username,
+            @NotNull final String password,
             final String organization,
             final Map<String, String> params) {
 
@@ -155,13 +155,13 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     }
 
     private interface RestApi {
-        @NonNull
+        @NotNull
         @Headers("Accept: text/plain")
         @GET("rest_v2/serverInfo/edition")
         retrofit.Call<String> requestAnonymousCookie();
 
-        @NonNull
+        @NotNull
         @GET("GetEncryptionKey")
-        retrofit.Call<EncryptionKey> requestEncryptionMetadata(@NonNull @Header("Cookie") String cookie);
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata(@NotNull @Header("Cookie") String cookie);
     }
 }

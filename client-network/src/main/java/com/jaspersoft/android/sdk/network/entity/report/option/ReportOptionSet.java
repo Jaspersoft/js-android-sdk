@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,10 +24,10 @@
 
 package com.jaspersoft.android.sdk.network.entity.report.option;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Set;
@@ -44,7 +44,7 @@ public final class ReportOptionSet {
     @SerializedName("reportOptionsSummary")
     private Set<ReportOption> mOptions = Collections.emptySet();
 
-    @NonNull
+    @NotNull
     public Set<ReportOption> get() {
         return mOptions;
     }

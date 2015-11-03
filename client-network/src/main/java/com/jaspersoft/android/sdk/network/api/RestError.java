@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.network.api;
 
 
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -77,7 +77,6 @@ public final class RestError extends RuntimeException {
         return response.message();
     }
 
-    @Nullable
     public String errorBody() {
         return Utils.bodyToString(response.body());
     }

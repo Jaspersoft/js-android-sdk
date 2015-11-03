@@ -24,14 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import android.support.annotation.NonNull;
-
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface AuthService {
-    @NonNull
+    @NotNull
     String authenticate();
 }

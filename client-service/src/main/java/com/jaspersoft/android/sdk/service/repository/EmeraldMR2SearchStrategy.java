@@ -24,10 +24,11 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -81,7 +82,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         }
     }
 
-    @NonNull
+    @NotNull
     private Collection<Resource> internalSearch(int limit) {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
@@ -109,7 +110,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         return result;
     }
 
-    @NonNull
+    @NotNull
     private SearchResult performSearch(int limit) {
         InternalCriteria nextCriteria = mInitialCriteria.newBuilder()
                 .offset(mServerDisposition)

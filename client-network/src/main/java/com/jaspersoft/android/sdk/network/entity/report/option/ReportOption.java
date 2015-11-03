@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -24,9 +24,9 @@
 
 package com.jaspersoft.android.sdk.network.entity.report.option;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.Expose;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -41,17 +41,17 @@ public final class ReportOption {
     @Expose
     private String label;
 
-    @NonNull
+    @NotNull
     public String getId() {
         return id;
     }
 
-    @NonNull
+    @NotNull
     public String getLabel() {
         return label;
     }
 
-    @NonNull
+    @NotNull
     public String getUri() {
         return uri;
     }

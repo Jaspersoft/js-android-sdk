@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 import com.squareup.okhttp.Response;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -61,7 +61,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         mRestApi = retrofit.create(RestApi.class);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public Set<ReportOption> requestReportOptionsList(@Nullable String token,
                                                       @Nullable String reportUnitUri) {
@@ -82,7 +82,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         }
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ReportOption createReportOption(@Nullable String token,
                                            @Nullable String reportUnitUri,
@@ -125,38 +125,38 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     }
 
     private interface RestApi {
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitUri}/options")
         Call<ReportOptionSet> requestReportOptionsList(
-                @NonNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri,
+                @NotNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri,
                 @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reports{reportUnitURI}/options")
         Call<ReportOption> createReportOption(
-                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NonNull @Query("label") String optionLabel,
-                @NonNull @Body Map<String, Set<String>> controlsValues,
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Query("label") String optionLabel,
+                @NotNull @Body Map<String, Set<String>> controlsValues,
                 @Query("overwrite") boolean overwrite,
                 @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @PUT("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Call<com.squareup.okhttp.Response> updateReportOption(
-                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NonNull @Path(value = "optionId", encoded = true) String optionId,
-                @NonNull @Body Map<String, Set<String>> controlsValues,
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Path(value = "optionId", encoded = true) String optionId,
+                @NotNull @Body Map<String, Set<String>> controlsValues,
                 @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
         Call<com.squareup.okhttp.Response> deleteReportOption(
-                @NonNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NonNull @Path(value = "optionId", encoded = true) String optionId,
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Path(value = "optionId", encoded = true) String optionId,
                 @Header("Cookie") String cookie);
     }
 }

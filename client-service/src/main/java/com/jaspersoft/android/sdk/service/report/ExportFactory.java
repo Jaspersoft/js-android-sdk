@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ final class ExportFactory {
         mReportUri = reportUri;
     }
 
-    @NonNull
+    @NotNull
     public ReportExport create(ReportExecutionDescriptor executionDetails,
                                ExportExecutionDescriptor exportExecutionDetails) {
         String exportId = exportExecutionDetails.getExportId();
@@ -64,7 +64,7 @@ final class ExportFactory {
         return new ReportExport(mExecutionId, exportId, attachments, mExportUseCase);
     }
 
-    @NonNull
+    @NotNull
     private Collection<ReportAttachment> adaptAttachments(ExportDescriptor export) {
         String exportId = export.getId();
         Set<AttachmentDescriptor> rawAttachments = export.getAttachments();

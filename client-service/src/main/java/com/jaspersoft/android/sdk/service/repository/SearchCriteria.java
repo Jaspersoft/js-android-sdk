@@ -24,8 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.jaspersoft.android.sdk.service.Preconditions.checkArgument;
 
@@ -61,12 +61,12 @@ public final class SearchCriteria {
         mFolderUri = builder.folderUri;
     }
 
-    @NonNull
+    @NotNull
     public static SearchCriteria.Builder builder() {
         return new SearchCriteria.Builder();
     }
 
-    @NonNull
+    @NotNull
     public static SearchCriteria none() {
         return builder().create();
     }

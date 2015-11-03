@@ -24,10 +24,9 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -35,35 +34,34 @@ import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
  */
 public interface ServerRestApi {
 
-    @NonNull
-    @WorkerThread
+    @NotNull
     ServerInfoData requestServerInfo();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestBuild();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestDateFormatPattern();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestDateTimeFormatPattern();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestEdition();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestEditionName();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestVersion();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestFeatures();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestLicenseType();
-    @NonNull
-    @WorkerThread
+
+    @NotNull
     String requestExpiration();
 
     final class Builder extends GenericBuilder<Builder, ServerRestApi> {

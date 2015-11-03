@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -52,16 +52,15 @@ public final class SpringAuthService implements AuthService {
     private final Locale mLocale;
     private final TimeZone mTimeZone;
 
-    @VisibleForTesting
+    @TestOnly
     SpringAuthService(
-            @NonNull JSEncryptionAlgorithm generator,
-            @NonNull AuthenticationRestApi restApi,
-            @NonNull String username,
-            @NonNull String password,
-            @NonNull String organization,
-            @NonNull Locale locale,
-            @NonNull TimeZone timeZone
-            ) {
+            @NotNull JSEncryptionAlgorithm generator,
+            @NotNull AuthenticationRestApi restApi,
+            @NotNull String username,
+            @NotNull String password,
+            @NotNull String organization,
+            @NotNull Locale locale,
+            @NotNull TimeZone timeZone) {
         mEncryptionAlgorithm = generator;
         mRestApi = restApi;
         mUsername = username;
@@ -71,7 +70,7 @@ public final class SpringAuthService implements AuthService {
         mTimeZone = timeZone;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String authenticate() {
         String password = mPassword;
@@ -99,7 +98,7 @@ public final class SpringAuthService implements AuthService {
         return params;
     }
 
-    @NonNull
+    @NotNull
     private String encryptPassword(String password, EncryptionKey key) {
         return mEncryptionAlgorithm.encrypt(key.getModulus(), key.getExponent(), password);
     }
@@ -114,17 +113,17 @@ public final class SpringAuthService implements AuthService {
         private Locale mLocale;
         private TimeZone mTimeZone;
 
-        public Builder username(@NonNull String username) {
+        public Builder username(@NotNull String username) {
             mUsername = checkNotNull(username, "username == null");
             return this;
         }
 
-        public Builder password(@NonNull String password) {
+        public Builder password(@NotNull String password) {
             mPassword = checkNotNull(password, "password == null");
             return this;
         }
 
-        public Builder restApi(@NonNull AuthenticationRestApi restApi) {
+        public Builder restApi(@NotNull AuthenticationRestApi restApi) {
             mRestApi = checkNotNull(restApi, "restApi == null");
             return this;
         }
@@ -134,12 +133,12 @@ public final class SpringAuthService implements AuthService {
             return this;
         }
 
-        public Builder timeZone(@NonNull TimeZone timeZone) {
+        public Builder timeZone(@NotNull TimeZone timeZone) {
             mTimeZone = checkNotNull(timeZone, "timeZone == null");
             return this;
         }
 
-        public Builder locale(@NonNull Locale locale) {
+        public Builder locale(@NotNull Locale locale) {
             mLocale = checkNotNull(locale, "locale == null");
             return this;
         }
@@ -147,14 +146,14 @@ public final class SpringAuthService implements AuthService {
         /**
          * TODO experimental API consider before release
          */
-        public Builder withDefaultApiProvider(@NonNull String serverUrl) {
+        public Builder withDefaultApiProvider(@NotNull String serverUrl) {
             mRestApi = new AuthenticationRestApi.Builder()
                     .baseUrl(serverUrl)
                     .build();
             return this;
         }
 
-        @NonNull
+        @NotNull
         public SpringAuthService build() {
             ensureValidState();
             ensureDefaults();

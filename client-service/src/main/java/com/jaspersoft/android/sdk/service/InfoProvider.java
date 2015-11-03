@@ -24,10 +24,10 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 
@@ -38,12 +38,12 @@ import java.text.SimpleDateFormat;
  * @since 2.0
  */
 public interface InfoProvider {
-    @NonNull
+    @NotNull
     String getBaseUrl();
-    @NonNull
+    @NotNull
     ServerInfo provideInfo();
-    @NonNull
+    @NotNull
     ServerVersion provideVersion();
-    @NonNull
+    @NotNull
     SimpleDateFormat provideDateTimeFormat();
 }

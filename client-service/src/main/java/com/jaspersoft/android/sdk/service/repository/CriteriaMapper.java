@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ final class CriteriaMapper {
     private CriteriaMapper() {
     }
 
-    @NonNull
+    @NotNull
     public static Map<String, Object> map(InternalCriteria criteria) {
         Map<String, Object> params = new HashMap<>();
 

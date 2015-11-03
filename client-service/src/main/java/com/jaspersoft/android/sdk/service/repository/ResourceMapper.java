@@ -23,12 +23,13 @@
  */
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +43,7 @@ import java.util.LinkedList;
  */
 class ResourceMapper {
 
-    @NonNull
+    @NotNull
     public Collection<Resource> transform(Collection<ResourceLookup> resources, SimpleDateFormat dateTimeFormat) {
         Collection<Resource> result = new LinkedList<>();
         for (ResourceLookup lookup : resources) {
@@ -53,7 +54,7 @@ class ResourceMapper {
         return result;
     }
 
-    @NonNull
+    @NotNull
     public Resource transform(ResourceLookup lookup, SimpleDateFormat dateTimeFormat) {
         Resource resource = new Resource();
         resource.setCreationDate(toDate(lookup.getCreationDate(), dateTimeFormat));
@@ -73,7 +74,7 @@ class ResourceMapper {
         }
     }
 
-    @NonNull
+    @NotNull
     private ResourceType toType(String resourceType) {
         return ResourceType.defaultParser().parse(String.valueOf(resourceType));
     }

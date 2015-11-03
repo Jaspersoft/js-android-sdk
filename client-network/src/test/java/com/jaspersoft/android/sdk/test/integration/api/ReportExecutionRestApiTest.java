@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
@@ -35,6 +33,7 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -141,12 +140,12 @@ public class ReportExecutionRestApiTest {
     /**
      * Helper methods
      */
-    @NonNull
+    @NotNull
     private ReportExecutionDescriptor startExecution() {
         return startExecution(REPORT_URI);
     }
 
-    @NonNull
+    @NotNull
     private ReportExecutionDescriptor startExecution(String uri) {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
         Map<String, Set<String>> params = new HashMap<>();

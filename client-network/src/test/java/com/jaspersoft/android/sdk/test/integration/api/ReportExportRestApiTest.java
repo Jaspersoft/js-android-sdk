@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -38,6 +36,7 @@ import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,7 +105,7 @@ public class ReportExportRestApiTest {
     /**
      * Helper methods
      */
-    @NonNull
+    @NotNull
     private ExportExecutionDescriptor startExportExecution(ReportExecutionDescriptor exec) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
@@ -114,7 +113,7 @@ public class ReportExportRestApiTest {
         return apiUnderTest.runExportExecution(mAuthenticator.token(), exec.getExecutionId(), options);
     }
 
-    @NonNull
+    @NotNull
     private ReportExecutionDescriptor startExecution() {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
         return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);

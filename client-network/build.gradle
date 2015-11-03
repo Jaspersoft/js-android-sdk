@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:22.2.0'
+    compile 'com.intellij:annotations:12.0'
 
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'

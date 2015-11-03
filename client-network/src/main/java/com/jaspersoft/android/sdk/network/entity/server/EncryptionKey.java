@@ -24,10 +24,10 @@
 
 package com.jaspersoft.android.sdk.network.entity.server;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -49,17 +49,17 @@ public final class EncryptionKey {
     private EncryptionKey() {
     }
 
-    @NonNull
+    @NotNull
     public String getExponent() {
         return exponent;
     }
 
-    @NonNull
+    @NotNull
     public int getMaxdigits() {
         return maxdigits;
     }
 
-    @NonNull
+    @NotNull
     public String getModulus() {
         return modulus;
     }
