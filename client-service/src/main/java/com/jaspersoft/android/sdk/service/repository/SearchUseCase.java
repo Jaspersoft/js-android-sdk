@@ -23,14 +23,14 @@
  */
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -54,8 +54,8 @@ final class SearchUseCase {
         mDataMapper = dataMapper;
     }
 
-    @NonNull
-    public SearchResult performSearch(@NonNull InternalCriteria criteria) {
+    @NotNull
+    public SearchResult performSearch(@NotNull InternalCriteria criteria) {
         ResourceSearchResult response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
         SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
 

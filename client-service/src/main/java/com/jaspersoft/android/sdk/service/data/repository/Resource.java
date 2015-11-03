@@ -23,8 +23,9 @@
  */
 package com.jaspersoft.android.sdk.service.data.repository;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -60,30 +61,30 @@ public class Resource {
         mUpdateDate = updateDate;
     }
 
-    @NonNull
+    @NotNull
     public ResourceType getResourceType() {
         return mResourceType;
     }
 
-    public void setResourceType(@NonNull ResourceType resourceType) {
+    public void setResourceType(@NotNull ResourceType resourceType) {
         mResourceType = resourceType;
     }
 
-    @NonNull
+    @NotNull
     public String getLabel() {
         return mLabel;
     }
 
-    public void setLabel(@NonNull String label) {
+    public void setLabel(@NotNull String label) {
         mLabel = label;
     }
 
-    @NonNull
+    @NotNull
     public String getDescription() {
         return mDescription;
     }
 
-    public void setDescription(@NonNull String description) {
+    public void setDescription(@NotNull String description) {
         mDescription = description;
     }
 }

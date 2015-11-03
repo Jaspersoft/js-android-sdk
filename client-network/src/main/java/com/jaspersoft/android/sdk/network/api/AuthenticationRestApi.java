@@ -24,13 +24,12 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -39,15 +38,13 @@ import java.util.Map;
  * @since 2.0
  */
 public interface AuthenticationRestApi {
-    @NonNull
-    @WorkerThread
-    String authenticate(@NonNull String username,
-                              @NonNull String password,
+    @NotNull
+    String authenticate(@NotNull String username,
+                              @NotNull String password,
                               @Nullable String organization,
                               @Nullable Map<String, String> params);
 
-    @NonNull
-    @WorkerThread
+    @NotNull
     EncryptionKey requestEncryptionMetadata();
 
     final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {

@@ -23,9 +23,9 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -48,7 +48,7 @@ public final class ReportAttachment {
         mExportUseCase = exportUseCase;
     }
 
-    @NonNull
+    @NotNull
     public ResourceOutput download() {
         return mExportUseCase.requestExportAttachmentOutput(
                 mExecutionId, mExportId, mFileName);

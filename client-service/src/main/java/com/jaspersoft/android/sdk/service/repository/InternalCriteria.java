@@ -23,8 +23,8 @@
  */
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_LIMIT;
 import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_OFFSET;
@@ -56,12 +56,12 @@ class InternalCriteria {
         mFolderUri = builder.folderUri;
     }
 
-    @NonNull
+    @NotNull
     public static InternalCriteria.Builder builder() {
         return new InternalCriteria.Builder();
     }
 
-    @NonNull
+    @NotNull
     public static InternalCriteria from(SearchCriteria criteria) {
         return InternalCriteria.builder()
                 .limit(criteria.getLimit())
@@ -115,7 +115,7 @@ class InternalCriteria {
         return mSortBy;
     }
 
-    @NonNull
+    @NotNull
     public InternalCriteria.Builder newBuilder() {
         InternalCriteria.Builder builder = builder();
 

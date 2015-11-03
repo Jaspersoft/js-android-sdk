@@ -23,12 +23,13 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
@@ -44,7 +45,7 @@ public final class ReportExecution {
     private final String mReportUri;
     private final ExportFactory mExportFactory;
 
-    @VisibleForTesting
+    @TestOnly
     ReportExecution(long delay,
                     ReportExecutionUseCase executionUseCase,
                     ReportExportUseCase exportUseCase,
@@ -60,7 +61,7 @@ public final class ReportExecution {
         mExportFactory = new ExportFactory(exportUseCase, mExecutionId, mReportUri);
     }
 
-    @NonNull
+    @NotNull
     public ReportMetadata waitForReportCompletion() {
         try {
             return performAwaitFoReport();
@@ -69,7 +70,7 @@ public final class ReportExecution {
         }
     }
 
-    @NonNull
+    @NotNull
     public ReportExport export(RunExportCriteria criteria) {
         try {
             return performExport(criteria);
@@ -89,7 +90,7 @@ public final class ReportExecution {
         }
     }
 
-    @NonNull
+    @NotNull
     private ReportMetadata performAwaitFoReport() {
         ReportExecutionDescriptor details = requestExecutionDetails();
         ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
@@ -97,7 +98,7 @@ public final class ReportExecution {
                 completeDetails.getTotalPages());
     }
 
-    @NonNull
+    @NotNull
     private ReportExport performExport(RunExportCriteria criteria) {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
         waitForExportReadyStatus(exportDetails);
@@ -126,7 +127,7 @@ public final class ReportExecution {
         }
     }
 
-    @NonNull
+    @NotNull
     private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) {
         Status status = Status.wrap(details.getStatus());
 
@@ -149,12 +150,12 @@ public final class ReportExecution {
         return resultDetails;
     }
 
-    @NonNull
+    @NotNull
     private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
         return mExportUseCase.runExport(mExecutionId, criteria);
     }
 
-    @NonNull
+    @NotNull
     private ReportExecutionDescriptor requestExecutionDetails() {
         return mExecutionUseCase.requestExecutionDetails(mExecutionId);
     }

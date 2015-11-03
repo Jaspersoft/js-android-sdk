@@ -23,9 +23,9 @@
  */
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ import java.util.Collection;
  * @since 2.0
  */
 public interface SearchTask {
-    @NonNull
+    @NotNull
     Collection<Resource> nextLookup();
     boolean hasNext();
 }

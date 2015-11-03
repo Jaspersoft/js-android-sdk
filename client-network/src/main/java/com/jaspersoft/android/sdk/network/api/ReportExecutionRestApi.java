@@ -24,13 +24,12 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,32 +41,26 @@ import java.util.Set;
  */
 public interface ReportExecutionRestApi {
 
-    @NonNull
-    @WorkerThread
-    ReportExecutionDescriptor runReportExecution(@NonNull String token, @NonNull ReportExecutionRequestOptions executionOptions);
+    @NotNull
+    ReportExecutionDescriptor runReportExecution(@NotNull String token, @NotNull ReportExecutionRequestOptions executionOptions);
 
-    @NonNull
-    @WorkerThread
-    ReportExecutionDescriptor requestReportExecutionDetails(@NonNull String token, @NonNull String executionId);
+    @NotNull
+    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String token, @NotNull String executionId);
 
-    @NonNull
-    @WorkerThread
-    ExecutionStatus requestReportExecutionStatus(@NonNull String token, @NonNull String executionId);
+    @NotNull
+    ExecutionStatus requestReportExecutionStatus(@NotNull String token, @NotNull String executionId);
 
-    @WorkerThread
-    boolean cancelReportExecution(@NonNull String token, @NonNull String executionId);
+    boolean cancelReportExecution(@NotNull String token, @NotNull String executionId);
 
-    @WorkerThread
-    boolean updateReportExecution(@NonNull String token,
-                                  @NonNull String executionId,
-                                  @NonNull Collection<Map<String, Set<String>>> params);
+    boolean updateReportExecution(@NotNull String token,
+                                  @NotNull String executionId,
+                                  @NotNull Collection<Map<String, Set<String>>> params);
 
     /**
      * TODO: API is broken requires investigation before release
      */
-    @NonNull
-    @WorkerThread
-    ReportExecutionSearchResponse searchReportExecution(@NonNull String token, Map<String, String> params);
+    @NotNull
+    ReportExecutionSearchResponse searchReportExecution(@NotNull String token, Map<String, String> params);
 
     final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override

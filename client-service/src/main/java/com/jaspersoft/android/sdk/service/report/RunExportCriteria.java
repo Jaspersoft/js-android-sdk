@@ -23,8 +23,8 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
@@ -35,7 +35,7 @@ public class RunExportCriteria extends ExecutionCriteria {
         super(freshData, interactive, saveSnapshot, format, pages, attachmentPrefix);
     }
 
-    @NonNull
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }

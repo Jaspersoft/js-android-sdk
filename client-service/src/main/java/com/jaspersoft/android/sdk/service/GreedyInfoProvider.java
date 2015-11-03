@@ -24,12 +24,11 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.text.SimpleDateFormat;
 
@@ -43,7 +42,7 @@ final class GreedyInfoProvider implements InfoProvider {
     private final ServerInfoService mServerInfoService;
     private final String mBaseUrl;
 
-    @VisibleForTesting
+    @TestOnly
     GreedyInfoProvider(ServerInfoService serverInfoService, String serverUrl) {
         mServerInfoService = serverInfoService;
         mBaseUrl = serverUrl;
@@ -54,26 +53,25 @@ final class GreedyInfoProvider implements InfoProvider {
         return new GreedyInfoProvider(service, serverUrl);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String getBaseUrl() {
         return mBaseUrl;
     }
 
     @Override
-    @NonNull
-    @WorkerThread
+    @NotNull
     public ServerInfo provideInfo() {
         return mServerInfoService.requestServerInfo();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ServerVersion provideVersion() {
         return mServerInfoService.requestServerVersion();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public SimpleDateFormat provideDateTimeFormat() {
         return mServerInfoService.requestServerDateTimeFormat();

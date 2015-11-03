@@ -24,15 +24,15 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.squareup.okhttp.ResponseBody;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import retrofit.Call;
 import retrofit.Response;
@@ -57,7 +57,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         mRestApi = restAdapter.create(RestApi.class);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ExportExecutionDescriptor runExportExecution(@Nullable String token,
                                                         @Nullable String executionId,
@@ -70,7 +70,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         return CallWrapper.wrap(call).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ExecutionStatus checkExportExecutionStatus(@Nullable String token,
                                                       @Nullable String executionId,
@@ -83,7 +83,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         return CallWrapper.wrap(call).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ExportOutputResource requestExportOutput(@Nullable String token,
                                                     @Nullable String executionId,
@@ -103,7 +103,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         return ExportOutputResource.create(exportInput, pages, isFinal);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public OutputResource requestExportAttachment(@Nullable String token,
                                                   @Nullable String executionId,
@@ -121,34 +121,34 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
     }
 
     private interface RestApi {
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/exports")
-        Call<ExportExecutionDescriptor> runReportExportExecution(@NonNull @Path("executionId") String executionId,
-                                                                 @NonNull @Body ExecutionRequestOptions executionOptions,
+        Call<ExportExecutionDescriptor> runReportExportExecution(@NotNull @Path("executionId") String executionId,
+                                                                 @NotNull @Body ExecutionRequestOptions executionOptions,
                                                                  @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
-        Call<ExecutionStatus> checkReportExportStatus(@NonNull @Path("executionId") String executionId,
-                                                      @NonNull @Path("exportId") String exportId,
+        Call<ExecutionStatus> checkReportExportStatus(@NotNull @Path("executionId") String executionId,
+                                                      @NotNull @Path("exportId") String exportId,
                                                       @Header("Cookie") String cookie);
 
         /**
          * 'suppressContentDisposition' used due to security implications this header has
          */
-        @NonNull
+        @NotNull
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
-        Call<ResponseBody> requestReportExportOutput(@NonNull @Path("executionId") String executionId,
-                                                     @NonNull @Path("exportId") String exportId,
+        Call<ResponseBody> requestReportExportOutput(@NotNull @Path("executionId") String executionId,
+                                                     @NotNull @Path("exportId") String exportId,
                                                      @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
-        Call<ResponseBody> requestReportExportAttachmentOutput(@NonNull @Path("executionId") String executionId,
-                                                               @NonNull @Path("exportId") String exportId,
-                                                               @NonNull @Path("attachmentId") String attachmentId,
+        Call<ResponseBody> requestReportExportAttachmentOutput(@NotNull @Path("executionId") String executionId,
+                                                               @NotNull @Path("exportId") String exportId,
+                                                               @NotNull @Path("attachmentId") String attachmentId,
                                                                @Header("Cookie") String cookie);
     }
 }

@@ -24,11 +24,10 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -50,16 +49,14 @@ public interface InputControlRestApi {
      * @param excludeState exclude field state which incorporates options values for control
      * @return unmodifiable list of {@link InputControl}
      */
-    @NonNull
-    @WorkerThread
-    Collection<InputControl> requestInputControls(@NonNull String token,
-                                                  @NonNull String reportUri,
+    @NotNull
+    Collection<InputControl> requestInputControls(@NotNull String token,
+                                                  @NotNull String reportUri,
                                                   boolean excludeState);
 
-    @NonNull
-    @WorkerThread
-    Collection<InputControlState> requestInputControlsInitialStates(@NonNull String token,
-                                                                    @NonNull String reportUri,
+    @NotNull
+    Collection<InputControlState> requestInputControlsInitialStates(@NotNull String token,
+                                                                    @NotNull String reportUri,
                                                                     boolean freshData);
 
     /**
@@ -71,11 +68,10 @@ public interface InputControlRestApi {
      * @param freshData      whether data should be retrieved from cache or not
      * @return unmodifiable list of {@link InputControlState}
      */
-    @NonNull
-    @WorkerThread
-    Collection<InputControlState> requestInputControlsStates(@NonNull String token,
-                                                             @NonNull String reportUri,
-                                                             @NonNull Map<String, Set<String>> controlsValues,
+    @NotNull
+    Collection<InputControlState> requestInputControlsStates(@NotNull String token,
+                                                             @NotNull String reportUri,
+                                                             @NotNull Map<String, Set<String>> controlsValues,
                                                              boolean freshData);
 
     final class Builder extends GenericBuilder<Builder, InputControlRestApi> {

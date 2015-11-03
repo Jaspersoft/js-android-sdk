@@ -23,9 +23,9 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -49,12 +49,12 @@ public final class ReportExport {
         mExportUseCase = exportUseCase;
     }
 
-    @NonNull
+    @NotNull
     public Collection<ReportAttachment> getAttachments() {
         return mAttachments;
     }
 
-    @NonNull
+    @NotNull
     public ReportOutput download() {
         return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }

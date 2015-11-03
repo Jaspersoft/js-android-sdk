@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -57,7 +57,7 @@ final class SearchTaskImpl implements SearchTask {
         mInfoProvider = infoProvider;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public Collection<Resource> nextLookup() {
         return defineSearchStrategy().searchNext();

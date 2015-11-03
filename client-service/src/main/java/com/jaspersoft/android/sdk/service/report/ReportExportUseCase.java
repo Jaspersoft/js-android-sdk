@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
@@ -35,6 +33,8 @@ import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -52,26 +52,26 @@ final class ReportExportUseCase {
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
-    @NonNull
+    @NotNull
     public ExportExecutionDescriptor runExport(String executionId, RunExportCriteria criteria) {
         ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
         return mExportApi.runExportExecution(mTokenProvider.provideToken(), executionId, options);
     }
 
-    @NonNull
+    @NotNull
     public Status checkExportExecutionStatus(String executionId, String exportId) {
         ExecutionStatus exportStatus = mExportApi
                 .checkExportExecutionStatus(mTokenProvider.provideToken(), executionId, exportId);
         return Status.wrap(exportStatus.getStatus());
     }
 
-    @NonNull
+    @NotNull
     public ReportOutput requestExportOutput(String executionId, String exportId) {
         ExportOutputResource result = mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
         return OutputDataMapper.transform(result);
     }
 
-    @NonNull
+    @NotNull
     public ResourceOutput requestExportAttachmentOutput(String executionId, String exportId, String fileName) {
         OutputResource result = mExportApi.requestExportAttachment(
                 mTokenProvider.provideToken(),

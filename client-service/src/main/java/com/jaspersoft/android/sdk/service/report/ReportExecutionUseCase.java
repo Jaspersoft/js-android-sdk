@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -49,19 +49,19 @@ final class ReportExecutionUseCase {
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
-    @NonNull
+    @NotNull
     public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
         return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
     }
 
-    @NonNull
+    @NotNull
     public Status requestStatus(String executionId) {
         ExecutionStatus executionStatus = mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
         return Status.wrap(executionStatus.getStatus());
     }
 
-    @NonNull
+    @NotNull
     public ReportExecutionDescriptor requestExecutionDetails(String executionId) {
         return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
     }

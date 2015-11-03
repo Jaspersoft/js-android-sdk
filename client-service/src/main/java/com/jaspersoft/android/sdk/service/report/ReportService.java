@@ -23,14 +23,14 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-
 import com.jaspersoft.android.sdk.network.api.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +44,7 @@ public final class ReportService {
     private final ReportExportUseCase mExportUseCase;
     private final long mDelay;
 
-    @VisibleForTesting
+    @TestOnly
     ReportService(
             long delay,
             ReportExecutionUseCase executionUseCase,
@@ -83,7 +83,7 @@ public final class ReportService {
         }
     }
 
-    @NonNull
+    @NotNull
     private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
         ReportExecutionDescriptor details = mExecutionUseCase.runReportExecution(reportUri, criteria);
 

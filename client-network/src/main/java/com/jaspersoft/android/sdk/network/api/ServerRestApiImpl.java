@@ -24,9 +24,9 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+
+import org.jetbrains.annotations.NotNull;
 
 import retrofit.Call;
 import retrofit.Retrofit;
@@ -45,69 +45,69 @@ final class ServerRestApiImpl implements ServerRestApi {
         mApi = retrofit.create(RestApi.class);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ServerInfoData requestServerInfo() {
         Call<ServerInfoData> call = mApi.requestServerInfo();
         return CallWrapper.wrap(call).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestEdition() {
         return CallWrapper.wrap(mApi.requestEdition()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestVersion() {
         return CallWrapper.wrap(mApi.requestVersion()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestBuild() {
         return CallWrapper.wrap(mApi.requestBuild()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestFeatures() {
         return CallWrapper.wrap(mApi.requestFeatures()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestEditionName() {
         return CallWrapper.wrap(mApi.requestEditionName()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestLicenseType() {
         return CallWrapper.wrap(mApi.requestLicenseType()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestExpiration() {
         return CallWrapper.wrap(mApi.requestExpiration()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestDateFormatPattern() {
         return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String requestDateTimeFormatPattern() {
         return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
     }
 
     private interface RestApi {
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @GET(value = "rest_v2/serverInfo")
         Call<ServerInfoData> requestServerInfo();

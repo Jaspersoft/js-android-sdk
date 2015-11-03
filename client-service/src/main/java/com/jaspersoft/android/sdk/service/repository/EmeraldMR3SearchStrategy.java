@@ -24,10 +24,10 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +74,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         return !mEndReached;
     }
 
-    @NonNull
+    @NotNull
     private Collection<Resource> performLookup() {
         InternalCriteria newSearchCriteria = createNextCriteria();
         SearchResult result = performApiCall(newSearchCriteria);
@@ -82,7 +82,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         return result.getResources();
     }
 
-    @NonNull
+    @NotNull
     private SearchResult performApiCall(InternalCriteria newSearchCriteria) {
         return mSearchUseCase.performSearch(newSearchCriteria);
     }
@@ -109,7 +109,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
         }
     }
 
-    @NonNull
+    @NotNull
     private InternalCriteria createNextCriteria() {
         InternalCriteria.Builder newCriteriaBuilder = mInitialCriteria.newBuilder();
         newCriteriaBuilder.offset(mInternalOffset);

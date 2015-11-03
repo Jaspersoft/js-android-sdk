@@ -24,10 +24,9 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
-
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,27 +37,23 @@ import java.util.Set;
  */
 public interface ReportOptionRestApi {
 
-    @NonNull
-    @WorkerThread
-    Set<ReportOption> requestReportOptionsList(@NonNull String reportUnitUri, @NonNull String token);
+    @NotNull
+    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri, @NotNull String token);
 
-    @NonNull
-    @WorkerThread
-    ReportOption createReportOption(@NonNull String token, @NonNull String reportUnitUri,
-                                    @NonNull String optionLabel,
-                                    @NonNull Map<String, Set<String>> controlsValues,
+    @NotNull
+    ReportOption createReportOption(@NotNull String token, @NotNull String reportUnitUri,
+                                    @NotNull String optionLabel,
+                                    @NotNull Map<String, Set<String>> controlsValues,
                                     boolean overwrite);
 
-    @WorkerThread
-    void updateReportOption(@NonNull String token,
-                            @NonNull String reportUnitUri,
-                            @NonNull String optionId,
-                            @NonNull Map<String, Set<String>> controlsValues);
+    void updateReportOption(@NotNull String token,
+                            @NotNull String reportUnitUri,
+                            @NotNull String optionId,
+                            @NotNull Map<String, Set<String>> controlsValues);
 
-    @WorkerThread
-    void deleteReportOption(@NonNull String token,
-                            @NonNull String reportUnitUri,
-                            @NonNull String optionId);
+    void deleteReportOption(@NotNull String token,
+                            @NotNull String reportUnitUri,
+                            @NotNull String optionId);
 
     final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
         @Override

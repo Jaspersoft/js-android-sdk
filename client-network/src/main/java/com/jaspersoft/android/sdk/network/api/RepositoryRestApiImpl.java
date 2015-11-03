@@ -24,12 +24,12 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         mRestApi = restAdapter.create(RestApi.class);
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ResourceSearchResult searchResources(@Nullable String token, @Nullable Map<String, Object> searchParams) {
         checkNotNull(token, "Request token should not be null");
@@ -106,7 +106,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         return entity;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public ReportLookup requestReportResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Report uri should not be null");
@@ -116,7 +116,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         return CallWrapper.wrap(call).body();
     }
 
-    @NonNull
+    @NotNull
     @Override
     public FolderLookup requestFolderResource(@Nullable String token, @Nullable String resourceUri) {
         checkNotNull(resourceUri, "Folder uri should not be null");
@@ -127,7 +127,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
     }
 
     private interface RestApi {
-        @NonNull
+        @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/resources")
         Call<ResourceSearchResult> searchResources(
@@ -135,18 +135,18 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
                 @Nullable @Query("type") Iterable<?> types,
                 @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<ReportLookup> requestReportResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri,
                 @Header("Cookie") String cookie);
 
-        @NonNull
+        @NotNull
         @Headers("Accept: application/repository.folder+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<FolderLookup> requestFolderResource(
-                @NonNull @Path(value = "resourceUri", encoded = true) String resourceUri,
+                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri,
                 @Header("Cookie") String cookie);
     }
 }

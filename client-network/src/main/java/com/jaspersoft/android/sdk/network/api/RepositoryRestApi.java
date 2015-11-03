@@ -24,13 +24,13 @@
 
 package com.jaspersoft.android.sdk.network.api;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -39,17 +39,14 @@ import java.util.Map;
  * @since 2.0
  */
 public interface RepositoryRestApi {
-    @NonNull
-    @WorkerThread
-    ResourceSearchResult searchResources(@NonNull String token, @Nullable Map<String, Object> searchParams);
+    @NotNull
+    ResourceSearchResult searchResources(@NotNull String token, @Nullable Map<String, Object> searchParams);
 
-    @NonNull
-    @WorkerThread
-    ReportLookup requestReportResource( @NonNull String token, @NonNull String resourceUri);
+    @NotNull
+    ReportLookup requestReportResource( @NotNull String token, @NotNull String resourceUri);
 
-    @NonNull
-    @WorkerThread
-    FolderLookup requestFolderResource(@NonNull String token, @NonNull String resourceUri);
+    @NotNull
+    FolderLookup requestFolderResource(@NotNull String token, @NotNull String resourceUri);
 
     final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {
         @Override

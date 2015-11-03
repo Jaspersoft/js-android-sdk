@@ -24,9 +24,9 @@
 
 package com.jaspersoft.android.sdk.test.integration.api.utils;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
@@ -45,7 +45,7 @@ public final class DummyTokenProvider {
         return new DummyTokenProvider(metadata);
     }
 
-    @NonNull
+    @NotNull
     public String provideToken() {
         if (mToken == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()

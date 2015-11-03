@@ -23,10 +23,10 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -43,7 +43,7 @@ final class ExecutionOptionsDataMapper {
         this.mBaseUrl = mBaseUrl;
     }
 
-    public ReportExecutionRequestOptions transformRunReportOptions(@NonNull String reportUri, @NonNull RunReportCriteria criteria) {
+    public ReportExecutionRequestOptions transformRunReportOptions(@NotNull String reportUri, @NotNull RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
         mapCommonCriterion(criteria, options);
         options.withAsync(true);
@@ -51,13 +51,13 @@ final class ExecutionOptionsDataMapper {
         return options;
     }
 
-    public ExecutionRequestOptions transformExportOptions(@NonNull RunExportCriteria configuration) {
+    public ExecutionRequestOptions transformExportOptions(@NotNull RunExportCriteria configuration) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
         mapCommonCriterion(configuration, options);
         return options;
     }
 
-    private void mapCommonCriterion(@NonNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
+    private void mapCommonCriterion(@NotNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 

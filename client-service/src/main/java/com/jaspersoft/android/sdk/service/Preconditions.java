@@ -16,7 +16,8 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import android.support.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Kevin Bourrillion

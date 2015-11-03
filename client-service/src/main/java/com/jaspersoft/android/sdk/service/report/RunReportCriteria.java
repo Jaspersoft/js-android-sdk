@@ -23,8 +23,8 @@
  */
 package com.jaspersoft.android.sdk.service.report;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +48,7 @@ public class RunReportCriteria extends ExecutionCriteria {
         mParams = params;
     }
 
-    @NonNull
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
