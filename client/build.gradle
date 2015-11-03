@@ -34,3 +34,5 @@ dependencies {
     // In order to test on JVM side we need stock BouncyCastle provider
     testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
 }
+
+apply from: '../scripts/release-artifact.gradle'
