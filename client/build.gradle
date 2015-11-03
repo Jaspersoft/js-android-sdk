@@ -1,5 +1,4 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'java'
 
 description = 'js-android-sdk-client'
 version = clientModuleVersion
@@ -10,78 +9,30 @@ ext {
     PUBLISH_VERSION = clientModuleVersion
 }
 
-android {
-    compileSdkVersion androidCompileSdkVersion
-    buildToolsVersion androidBuildToolsVersion
-
-    defaultConfig {
-        minSdkVersion androidMinSdkVersion
-        targetSdkVersion androidTargetSdkVersion
-        versionCode clientModuleVersionCode
-        versionName version
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-        encoding 'ISO-8859-1'
-    }
-    packagingOptions {
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-    }
-    lintOptions {
-        abortOnError false
-    }
-
-    buildTypes {
-        debug {
-            minifyEnabled false
-        }
-    }
-}
-
 dependencies {
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile('com.squareup.retrofit:converter-simplexml:1.9.0') {
-        transitive = false
-    }
+    compile 'com.intellij:annotations:12.0'
 
-    compile 'com.android.support:support-annotations:22.2.0'
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'com.octo.android.robospice:robospice:1.4.14'
-    compile 'com.octo.android.robospice:robospice-spring-android:1.4.14'
-    compile('org.simpleframework:simple-xml:2.7') {
-        exclude group: 'stax', module: 'stax'
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'xpp3', module: 'xpp3'
-    }
-    // Junit
-    testCompile('junit:junit:4.12') {
-        exclude group: 'org.hamcrest'
-    }
-    // JunitParams
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
+
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.madgag.spongycastle:prov:1.52.0.0'
+
     testCompile('pl.pragmatists:JUnitParams:1.0.4') {
         exclude group: 'org.hamcrest'
     }
-    // Hamcrest Matchers for Junit
     testCompile 'org.hamcrest:hamcrest-integration:1.3'
-    // Mockito
-    testCompile "org.mockito:mockito-core:1.10.19"
-    // Robolectric + Support v4
-    testCompile('org.robolectric:shadows-support-v4:3.0-rc3') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    testCompile('org.mockito:mockito-core:1.10.19') {
+        exclude group: 'org.hamcrest'
+        exclude group: 'org.objenesis'
     }
-    testCompile 'org.robolectric:shadows-httpclient:3.0-rc3'
-
-    testCompile('com.squareup.okhttp:mockwebserver:2.1.0') {
-        transitive = false
+    testCompile('org.powermock:powermock-api-mockito:1.6.2') {
+        exclude group: 'org.mockito'
     }
-
+    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    // In order to test on JVM side we need stock BouncyCastle provider
+    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
 }
 
-apply from: '../scripts/android-release-aar.gradle'
+apply from: '../scripts/release-artifact.gradle'

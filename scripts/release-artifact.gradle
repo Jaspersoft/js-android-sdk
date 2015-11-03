@@ -1,0 +1,51 @@
+apply plugin: 'maven'
+
+def groupId = project.PUBLISH_GROUP_ID
+def artifactId = project.PUBLISH_ARTIFACT_ID
+def version = project.PUBLISH_VERSION
+
+def localReleaseDest = "${buildDir}/release/${version}"
+
+task clientJavadocs(type: Javadoc) {
+    source = sourceSets.main.java.srcDirs
+    options.encoding = 'ISO-8859-1'
+}
+
+task clientJavadocsJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from clientJavadocs.destinationDir
+}
+
+task clientSourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = groupId
+        pom.artifactId = artifactId
+        pom.version = version
+        // Add other pom properties here if you want (developer details / licenses)
+        repository(url: "file://${localReleaseDest}")
+    }
+}
+
+task zipRelease(type: Zip) {
+    from localReleaseDest
+    destinationDir buildDir
+    archiveName "release-${version}.zip"
+}
+
+task generateRelease << {
+    println "Release ${version} can be found at ${localReleaseDest}/"
+    println "Release ${version} zipped can be found ${buildDir}/release-${version}.zip"
+}
+
+generateRelease.dependsOn(uploadArchives)
+generateRelease.dependsOn(zipRelease)
+
+artifacts {
+    archives clientSourcesJar
+    archives clientJavadocsJar
+}
