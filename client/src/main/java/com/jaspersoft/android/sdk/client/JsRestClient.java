@@ -1,28 +1,30 @@
 /*
- * Copyright (C) 2012-2014 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
- * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
  * the following license terms apply:
  *
- * This program is part of Jaspersoft Mobile SDK for Android.
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
  *
- * Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Jaspersoft Mobile SDK for Android. If not, see
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
 package com.jaspersoft.android.sdk.client;
+
+import android.net.Uri;
 
 import com.jaspersoft.android.sdk.client.oxm.ReportDescriptor;
 import com.jaspersoft.android.sdk.client.oxm.ResourceDescriptor;
@@ -43,6 +45,8 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportParameter;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportParametersList;
 import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
+import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
+import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
@@ -79,6 +83,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -101,6 +106,7 @@ public class JsRestClient {
     public static final String REST_RESOURCE_URI = "/resource";
     public static final String REST_RESOURCES_URI = "/resources";
     public static final String REST_REPORT_URI = "/report";
+    public static final String REST_REPORT_OPTIONS_URI = "/options";
     public static final String REST_REPORTS_URI = "/reports";
     public static final String REST_INPUT_CONTROLS_URI = "/inputControls";
     public static final String REST_VALUES_URI = "/values";
@@ -146,7 +152,7 @@ public class JsRestClient {
 
     public JsRestClient(RestTemplate restTemplate,
                         SimpleClientHttpRequestFactory factory) {
-       this(restTemplate, factory, DataType.XML);
+        this(restTemplate, factory, DataType.XML);
     }
 
     private JsRestClient(Builder builder) {
@@ -824,7 +830,7 @@ public class JsRestClient {
      * Sends request with porpose to fetch current export datum.
      *
      * @param executionId Identifies current id of running report.
-     * @param request we delegate to the restTemplate.
+     * @param request     we delegate to the restTemplate.
      * @return response with all exports datum associated with request.
      * @throws RestClientException
      */
@@ -879,7 +885,7 @@ public class JsRestClient {
     /**
      * Sends request for the current running export for the status check.
      *
-     * @param executionId Identifies current id of running report.
+     * @param executionId  Identifies current id of running report.
      * @param exportOutput Identifier which refers to current requested export.
      * @return response which expose current export status.
      */
@@ -890,7 +896,7 @@ public class JsRestClient {
     /**
      * Generates link for requesting report execution status.
      *
-     * @param executionId Identifies current id of running report.
+     * @param executionId  Identifies current id of running report.
      * @param exportOutput Identifier which refers to current requested export.
      * @return "{server url}/rest_v2/reportExecutions/{executionId}/exports/{exportOutput}/status"
      */
@@ -1100,7 +1106,7 @@ public class JsRestClient {
 
     /**
      * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
-     *
+     * <p/>
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1131,7 +1137,7 @@ public class JsRestClient {
 
     /**
      * Deprecated due to the invalid selectedValues argument. Starting from 1.10 we are ignoring it.
-     *
+     * <p/>
      * Gets the list of input controls with specified IDs for the report with specified URI
      * and according to selected values.
      *
@@ -1212,8 +1218,14 @@ public class JsRestClient {
         Object request = null;
         if (dataType == DataType.JSON) {
             Map<String, Set<String>> map = new HashMap<String, Set<String>>();
-            for (ReportParameter reportParameter : selectedValues) {
-                map.put(reportParameter.getName(), reportParameter.getValues());
+            if (selectedValues.isEmpty()) {
+                for (String controlId : controlsIds) {
+                    map.put(controlId, Collections.<String>emptySet());
+                }
+            } else {
+                for (ReportParameter reportParameter : selectedValues) {
+                    map.put(reportParameter.getName(), reportParameter.getValues());
+                }
             }
             request = map;
         } else if (dataType == DataType.XML) {
@@ -1330,13 +1342,127 @@ public class JsRestClient {
     /**
      * Returns thumbnail image or encoded image of the requested URI
      *
-     * @param resourceUri Uri of resource
+     * @param resourceUri    Uri of resource
      * @param defaultAllowed If true, a placeholder thumbnail will be provided when no thumbnail is available (default: false)
      * @return {serverUrl}/rest_v2/thumbnails/{resourceUri}?defaultAllowed={allowedFlag}
      */
     public String generateThumbNailUri(String resourceUri, boolean defaultAllowed) {
         return jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_THUMBNAILS
                 + resourceUri + "?defaultAllowed=" + Boolean.toString(defaultAllowed);
+    }
+
+    //---------------------------------------------------------------------
+    // Report options API
+    //---------------------------------------------------------------------
+
+    /**
+     * List all available report options for particular resources.
+     *
+     * @param reportUnitUri uri of report
+     * @return response that wraps report options collection
+     */
+    public ReportOptionResponse getReportOptionsList(String reportUnitUri) {
+        String uri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
+
+        try {
+            return restTemplate.getForObject(uri, ReportOptionResponse.class);
+        } catch (Exception ex) {
+            Class<?> target = ex.getClass();
+            /**
+             * This possible when there is no report options
+             * API responds with plain/text message: 'No options found for {URI}'
+             * As soon as there 2 options to resolve this we decide to swallow exception and return empty object
+             */
+            if (HttpMessageNotReadableException.class.isAssignableFrom(target)) {
+                return new ReportOptionResponse();
+            } else {
+                // all other errors rethrow
+                throw ex;
+            }
+        }
+    }
+
+    /**
+     * Creates new report option.
+     *
+     * @param reportUnitUri  uri of report we are going to use for new option
+     * @param optionLabel    name of report option we are going to create
+     * @param controlsValues report parameters associated wtith report
+     * @param overwrite      override values, if such report option exist
+     * @return newly created report option
+     */
+    public ReportOption createReportOption(String reportUnitUri, String optionLabel,
+                                           Map<String, Set<String>> controlsValues,
+                                           boolean overwrite) {
+        StringBuilder base = new StringBuilder()
+                .append(jsServerProfile.getServerUrl())
+                .append(REST_SERVICES_V2_URI)
+                .append(REST_REPORTS_URI)
+                .append(reportUnitUri)
+                .append(REST_REPORT_OPTIONS_URI)
+                .append("?label=")
+                .append(optionLabel)
+                .append("&overwrite=")
+                .append(overwrite);
+
+        if (dataType == DataType.JSON) {
+            return restTemplate.postForObject(base.toString(), controlsValues, ReportOption.class);
+        } else if (dataType == DataType.XML) {
+            ReportParametersList list = ReportParamsAdapter.INSTANCE.adapt(controlsValues);
+            return restTemplate.postForObject(base.toString(), list, ReportOption.class);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Updating of report options with corresponding data set
+     *
+     * @param reportUnitUri  uri of report we are going to use for particular option
+     * @param optionId       id of report option we are going to update
+     * @param controlsValues new values we are going to pass
+     */
+    public void updateReportOption(String reportUnitUri, String optionId, Map<String, Set<String>> controlsValues) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
+        Uri uri = Uri.parse(base)
+                .buildUpon()
+                .appendPath(optionId)
+                .build();
+
+        if (dataType == DataType.JSON) {
+            restTemplate.put(uri.toString(), controlsValues);
+        } else if (dataType == DataType.XML) {
+            ReportParametersList list = ReportParamsAdapter.INSTANCE.adapt(controlsValues);
+            restTemplate.put(uri.toString(), list);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * API to delete report option
+     *
+     * @param reportUnitUri uri of report we are going to use for particular option
+     * @param optionId      id of report option we are going to delete
+     */
+    public void deleteReportOption(String reportUnitUri, String optionId) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportUnitUri + REST_REPORT_OPTIONS_URI;
+        Uri uri = Uri.parse(base)
+                .buildUpon()
+                .appendPath(optionId)
+                .build();
+        restTemplate.delete(URI.create(uri.toString()));
+    }
+
+    /**
+     * API to list control states associated with corresponding report option
+     *
+     * @param reportOptionUri uri of report option
+     * @return the list of the input controls states
+     */
+    public InputControlStatesList getReportOptionsValues(String reportOptionUri) {
+        String base = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORTS_URI + reportOptionUri + REST_INPUT_CONTROLS_URI + REST_VALUES_URI;
+        return restTemplate.getForObject(base, InputControlStatesList.class);
     }
 
     //---------------------------------------------------------------------
