@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.api.ReportOptionRestApi;
+import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;

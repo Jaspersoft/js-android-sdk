@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api.utils;
 
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 
 import org.jetbrains.annotations.NotNull;
 

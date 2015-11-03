@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.api.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.service.InfoProvider;

@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.api.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;

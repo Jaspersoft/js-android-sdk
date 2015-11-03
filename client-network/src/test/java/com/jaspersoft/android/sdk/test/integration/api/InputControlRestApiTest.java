@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.api.InputControlRestApi;
+import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.test.TestLogger;

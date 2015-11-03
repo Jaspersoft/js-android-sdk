@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test;
 
-import com.jaspersoft.android.sdk.network.api.RestApiLog;
+import com.jaspersoft.android.sdk.network.RestApiLog;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

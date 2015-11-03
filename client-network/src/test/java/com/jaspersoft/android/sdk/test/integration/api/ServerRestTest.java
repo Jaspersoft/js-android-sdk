@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
-import com.jaspersoft.android.sdk.network.api.ServerRestApi;
+import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.test.TestLogger;
 

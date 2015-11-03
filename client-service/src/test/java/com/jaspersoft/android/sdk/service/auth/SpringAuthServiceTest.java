@@ -1,7 +1,7 @@
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.api.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.api.JSEncryptionAlgorithm;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import org.junit.Before;
