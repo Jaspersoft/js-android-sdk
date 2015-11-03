@@ -28,6 +28,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 
 import java.util.EnumMap;

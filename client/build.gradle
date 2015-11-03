@@ -67,6 +67,12 @@ android {
 }
 
 dependencies {
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile('com.squareup.retrofit:converter-simplexml:1.9.0') {
+        transitive = false
+    }
+
     compile 'com.android.support:support-annotations:22.2.0'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
@@ -95,6 +101,11 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
     testCompile 'org.robolectric:shadows-httpclient:3.0-rc3'
+
+    testCompile('com.squareup.okhttp:mockwebserver:2.1.0') {
+        transitive = false
+    }
+
 }
 
 apply from: '../scripts/android-release-aar.gradle'

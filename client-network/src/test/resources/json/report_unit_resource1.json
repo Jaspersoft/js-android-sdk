@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "permissionMask": 2,
+  "creationDate": "2015-06-05T07:21:20",
+  "updateDate": "2014-04-17T17:07:12",
+  "label": "05. Accounts Report",
+  "description": "Basic interactive Table Component report with Bookmarks Panel",
+  "uri": "/public/Samples/Reports/AllAccounts",
+  "dataSource": {
+    "dataSourceReference": {
+      "uri": "/public/Samples/Data_Sources/JServerJNDIDS"
+    }
+  },
+  "jrxml": {
+    "jrxmlFileReference": {
+      "uri": "/public/Samples/Reports/AllAccounts_files/main_jrxml"
+    }
+  },
+  "inputControlRenderingView": "",
+  "reportRenderingView": "",
+  "alwaysPromptControls": true,
+  "controlsLayout": "popupScreen",
+  "resources": {"resource": [{"name": "SampleReportsStyles.jrtx","file": {"fileReference": {"uri": "/public/Samples/Resources/Extras/SampleReportStyles.jrtx"}}}]}
+}

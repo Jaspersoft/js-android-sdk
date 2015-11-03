@@ -41,30 +41,30 @@ import java.util.List;
  */
 public class ExecutionRequest {
     public static final String DEFAULT_ATTACHMENT_PREFIX = "/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/";
-    public static final String MARKUP_TYPE_EMBEDDABLE  = "embeddable";
-    public static final String MARKUP_TYPE_FULL  = "full";
+    public static final String MARKUP_TYPE_EMBEDDABLE = "embeddable";
+    public static final String MARKUP_TYPE_FULL = "full";
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected String reportUnitUri;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected String markupType;
 
-    @Element(required=false)
+    @Element(required = false)
     protected String baseUrl;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean async;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean freshData;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean saveDataSnapshot;
 
     @Expose
@@ -72,26 +72,26 @@ public class ExecutionRequest {
     protected String outputFormat;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean interactive;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean ignorePagination;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected Boolean allowInlineScripts;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected String pages;
 
     @Expose
-    @Element(required=false)
+    @Element(required = false)
     protected String attachmentsPrefix;
 
-    @ElementList(required=false)
+    @ElementList(required = false)
     protected List<ReportParameter> parameters = new ArrayList<ReportParameter>();
 
     @Expose
@@ -106,8 +106,6 @@ public class ExecutionRequest {
         try {
             this.attachmentsPrefix = URLEncoder.encode(attachmentsPrefix, "UTF-8");
         } catch (UnsupportedEncodingException exception) {
-            this.attachmentsPrefix = attachmentsPrefix;
-        } catch (NullPointerException exception) {
             this.attachmentsPrefix = attachmentsPrefix;
         }
     }
