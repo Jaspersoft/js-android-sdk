@@ -21,6 +21,7 @@
  * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
+
 package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
