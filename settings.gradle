@@ -1,2 +1,4 @@
 include ':js-android-sdk-client'
+include ':js-android-sdk-core'
 project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
+project(':js-android-sdk-core').projectDir = "$rootDir/core" as File
