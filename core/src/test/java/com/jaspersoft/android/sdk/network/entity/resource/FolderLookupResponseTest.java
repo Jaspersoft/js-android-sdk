@@ -22,39 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
-    }
-    dependencies {
-    }
-}
+package com.jaspersoft.android.sdk.network.entity.resource;
 
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
+import org.junit.Test;
 
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+/**
+ * 
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class FolderLookupResponseTest {
+    @Test
+    public void shouldAlwaysReturnReportUnitUriAsType() {
+        FolderLookup response = new FolderLookup();
+        assertThat(response.getResourceType(), is("folder"));
     }
 }
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

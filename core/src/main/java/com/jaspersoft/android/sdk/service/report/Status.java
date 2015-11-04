@@ -22,39 +22,40 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.service.report;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+final class Status {
+    private final String mStatus;
+
+    private Status(String status) {
+        mStatus = status;
     }
-    dependencies {
+
+    public static Status wrap(String status) {
+        return new Status(status);
+    }
+
+    public boolean isQueued() {
+        return mStatus.equals("queued");
+    }
+
+    public boolean isExecution() {
+        return mStatus.equals("execution");
+    }
+
+    public boolean isCancelled() {
+        return mStatus.equals("cancelled");
+    }
+
+    public boolean isFailed() {
+        return mStatus.equals("failed");
+    }
+
+    public boolean isReady() {
+        return mStatus.equals("ready");
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

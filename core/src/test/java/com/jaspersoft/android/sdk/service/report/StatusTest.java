@@ -22,39 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.service.report;
+
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class StatusTest {
+    @Test
+    public void testStatusShouldBeQueued() {
+        Status status = Status.wrap("queued");
+        assertThat(status.isQueued(), is(true));
     }
-    dependencies {
+
+    @Test
+    public void testStatusShouldBeExecution() {
+        Status status = Status.wrap("execution");
+        assertThat(status.isExecution(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeCancelled() {
+        Status status = Status.wrap("cancelled");
+        assertThat(status.isCancelled(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeFailed() {
+        Status status = Status.wrap("failed");
+        assertThat(status.isFailed(), is(true));
+    }
+
+    @Test
+    public void testStatusShouldBeReady() {
+        Status status = Status.wrap("ready");
+        assertThat(status.isReady(), is(true));
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

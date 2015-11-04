@@ -22,39 +22,35 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
-    }
-    dependencies {
+package com.jaspersoft.android.sdk.network.entity.execution;
+
+import com.google.gson.annotations.Expose;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.lang.reflect.Field;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+@RunWith(JUnitParamsRunner.class)
+public class ErrorDescriptorTest {
+    @Test
+    @Parameters({
+            "errorCode",
+            "message",
+            "parameters",
+    })
+    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
+        Field field = ErrorDescriptor.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

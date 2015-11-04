@@ -22,39 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.service.data.repository;
+
+import java.util.Collection;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class SearchResult {
+    private Collection<Resource> mResources;
+    private int mNextOffset;
+
+    public Collection<Resource> getResources() {
+        return mResources;
     }
-    dependencies {
+
+    public void setResources(Collection<Resource> resources) {
+        mResources = resources;
+    }
+
+    public int getNextOffset() {
+        return mNextOffset;
+    }
+
+    public void setNextOffset(int nextOffset) {
+        mNextOffset = nextOffset;
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

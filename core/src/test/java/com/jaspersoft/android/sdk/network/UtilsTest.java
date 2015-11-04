@@ -22,39 +22,37 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.network;
+
+import com.jaspersoft.android.sdk.network.Utils;
+
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class UtilsTest {
+
+    @Test
+    public void normalizeBaseUrlShouldAddTrailingSlashIfMissing() {
+        String url = "http://mobiledemo.jaspersoft.com/jasperserver-pro";
+        assertThat(Utils.normalizeBaseUrl(url), is(url + "/"));
     }
-    dependencies {
+
+    @Test
+    public void normalizeBaseUrlShouldNotNormalizeEmptyString() {
+        String url = "";
+        assertThat(Utils.normalizeBaseUrl(url), is(""));
     }
-}
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    @Test
+    public void normalizeBaseUrlShouldNotNormalizeNullString() {
+        String url = null;
+        assertThat(Utils.normalizeBaseUrl(url), is(nullValue()));
     }
+
 }
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

@@ -22,39 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.network;
+
+import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class ReportExecutionRestApiBuilderTest {
+    private ReportExecutionRestApi.Builder builderUnderTest;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Before
+    public void setup() {
+        builderUnderTest = new ReportExecutionRestApi.Builder();
     }
-    dependencies {
+
+    @Test
+    public void builderShouldNotAllowNullBaseUrl() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("baseUrl == null");
+
+        builderUnderTest.baseUrl(null);
+    }
+
+    @Test
+    public void builderShouldNotAllowEmptyUrl() {
+        expectedException.expect(IllegalArgumentException.class);
+        builderUnderTest.baseUrl("");
+    }
+
+    @Test
+    public void builderShouldAllowNullLogLevel() {
+        builderUnderTest.logger(null);
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

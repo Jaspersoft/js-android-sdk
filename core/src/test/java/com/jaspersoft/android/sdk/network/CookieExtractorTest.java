@@ -22,39 +22,45 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.network;
+
+import com.jaspersoft.android.sdk.network.CookieExtractor;
+import com.squareup.okhttp.Protocol;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class CookieExtractorTest {
+
+    private Request mRequest;
+
+    @Before
+    public void setup() {
+        mRequest = new Request.Builder()
+                .url("http://localhost")
+                .build();
     }
-    dependencies {
+
+    @Test
+    public void shouldExtractTokenFromNetworkResponse() {
+        Response mockResponse = new Response.Builder()
+                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie2")
+                .code(200)
+                .protocol(Protocol.HTTP_1_1)
+                .request(mRequest)
+                .build();
+
+        String token = CookieExtractor.extract(mockResponse);
+        assertThat(token, is("cookie1;cookie2"));
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

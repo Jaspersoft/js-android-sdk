@@ -22,39 +22,34 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.service.report;
+
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+final class StatusChain implements Answer<String> {
+    private final String[] mChain;
+    private int invocationCount = 0;
+
+    private StatusChain(String... chain) {
+        mChain = chain;
     }
-    dependencies {
+
+    public static StatusChain of(String... statuses) {
+        return new StatusChain(statuses);
+    }
+
+    @Override
+    public String answer(InvocationOnMock invocation) throws Throwable {
+        int statusIndex = invocationCount;
+        if (statusIndex >= mChain.length) {
+            statusIndex = mChain.length - 1;
+        }
+        invocationCount++;
+        return mChain[statusIndex];
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

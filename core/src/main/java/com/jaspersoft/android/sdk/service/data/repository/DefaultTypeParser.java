@@ -22,39 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
-    }
-    dependencies {
+package com.jaspersoft.android.sdk.service.data.repository;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+enum DefaultTypeParser implements ResourceType.Parser {
+    INSTANCE;
+
+    public ResourceType parse(String rawValue) {
+        ResourceType type;
+        try {
+            type = ResourceType.valueOf(rawValue);
+        } catch (IllegalArgumentException ex) {
+            type = ResourceType.unknown;
+            type.setRawValue(rawValue);
+        }
+        return type;
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-

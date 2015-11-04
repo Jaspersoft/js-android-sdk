@@ -22,39 +22,41 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        mavenLocal()
+package com.jaspersoft.android.sdk.service.report;
+
+import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public final class ReportExport {
+    private final Collection<ReportAttachment> mAttachments;
+    private final String mExecutionId;
+    private final String mExportId;
+    private final ReportExportUseCase mExportUseCase;
+
+    ReportExport(String executionId,
+                 String exportId,
+                 Collection<ReportAttachment> attachments,
+                 ReportExportUseCase exportUseCase) {
+        mExecutionId = executionId;
+        mExportId = exportId;
+        mAttachments = attachments;
+        mExportUseCase = exportUseCase;
     }
-    dependencies {
+
+    @NotNull
+    public Collection<ReportAttachment> getAttachments() {
+        return mAttachments;
+    }
+
+    @NotNull
+    public ReportOutput download() {
+        return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }
 }
-
-subprojects {
-    group = 'com.jaspersoft.android.sdk'
-
-    ext.clientModuleVersion = '2.0-SNAPSHOT'
-
-    repositories {
-        jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    }
-}
-
-
-// ensure clean is also triggered for root build folder
-apply plugin: 'java'
-apply plugin: 'build-dashboard'
-
-buildDashboard {
-    reports.html.destination = "build/"
-}
-
-// just clean up dashboard from not generated reports
-test.reports.html.enabled = false
-// just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false
-
