@@ -1,7 +1,11 @@
 package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
+
+import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel
@@ -15,13 +19,23 @@ public final class JrsAuthenticator {
         mAuthPolicy = authPolicy;
     }
 
-    public static JrsAuthenticator create(String baseUrl) {
+    @NotNull
+    public static JrsAuthenticator create(@NotNull String baseUrl) {
+        checkNotNull(baseUrl, "Base url should not be null");
         AuthPolicy policyImpl = AuthPolicy.Default.create(baseUrl);
         return new JrsAuthenticator(policyImpl);
     }
 
     @NotNull
-    public String authenticate(Credentials credentials) {
+    public static JrsAuthenticator create(@NotNull AuthenticationRestApi restApi) {
+        checkNotNull(restApi, "Authentication API should not be null");
+        AuthPolicy policyImpl = AuthPolicy.Default.create(restApi);
+        return new JrsAuthenticator(policyImpl);
+    }
+
+    @NotNull
+    public String authenticate(@NotNull Credentials credentials) {
+        checkNotNull(credentials, "Credentials should not be null");
         return credentials.applyPolicy(mAuthPolicy);
     }
 }

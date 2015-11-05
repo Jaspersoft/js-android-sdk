@@ -53,11 +53,18 @@ final class SpringAuthService {
         mRestApi = restApi;
     }
 
+    @NotNull
     public static SpringAuthService create(@NotNull String baseUrl) {
         JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
         AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                 .baseUrl(baseUrl)
                 .build();
+        return new SpringAuthService(algorithm, restApi);
+    }
+
+    @NotNull
+    public static SpringAuthService create(@NotNull AuthenticationRestApi restApi) {
+        JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
         return new SpringAuthService(algorithm, restApi);
     }
 
