@@ -29,7 +29,6 @@ import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.HashMap;
@@ -37,63 +36,61 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class SpringAuthService implements AuthService {
+final class SpringAuthService {
+
     private final AuthenticationRestApi mRestApi;
-    private final String mUsername;
-    private final String mPassword;
-    private final String mOrganization;
     private final JSEncryptionAlgorithm mEncryptionAlgorithm;
-    private final Locale mLocale;
-    private final TimeZone mTimeZone;
 
     @TestOnly
     SpringAuthService(
             @NotNull JSEncryptionAlgorithm generator,
-            @NotNull AuthenticationRestApi restApi,
-            @NotNull String username,
-            @NotNull String password,
-            @NotNull String organization,
-            @NotNull Locale locale,
-            @NotNull TimeZone timeZone) {
+            @NotNull AuthenticationRestApi restApi) {
         mEncryptionAlgorithm = generator;
         mRestApi = restApi;
-        mUsername = username;
-        mPassword = password;
-        mOrganization = organization;
-        mLocale = locale;
-        mTimeZone = timeZone;
+    }
+
+    public static SpringAuthService create(@NotNull String baseUrl) {
+        JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                .baseUrl(baseUrl)
+                .build();
+        return new SpringAuthService(algorithm, restApi);
     }
 
     @NotNull
-    @Override
-    public String authenticate() {
-        String password = mPassword;
+    public String authenticate(SpringCredentials credentials) {
+        String password = credentials.getPassword();
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
         if (encryptionKey.isAvailable()) {
-            password = encryptPassword(mPassword, encryptionKey);
+            password = encryptPassword(credentials.getPassword(), encryptionKey);
         }
 
-        Map<String, String> params = prepareOptionals();
-        return mRestApi.authenticate(mUsername, password, mOrganization, params);
+        Map<String, String> params = prepareOptionals(credentials);
+        return mRestApi.authenticate(
+                credentials.getUsername(),
+                password,
+                credentials.getOrganization(),
+                params);
     }
 
-    private Map<String, String> prepareOptionals() {
+    @NotNull
+    private Map<String, String> prepareOptionals(SpringCredentials credentials) {
         Map<String, String> params = new HashMap<>();
+        Locale locale = credentials.getLocale();
+        TimeZone timeZone = credentials.getTimeZone();
 
         // For Locale.US it will produce "en_US" result
-        String locale = mLocale.getLanguage() + "_" + mLocale.getCountry();
+        String localeAsString = locale.getLanguage() + "_" + locale.getCountry();
         // Result could be "Europe/Helsinki"
-        String timeZone = mTimeZone.getID();
+        String timeZoneAsString = timeZone.getID();
 
-        params.put("userLocale", locale);
-        params.put("userTimezone", timeZone);
+        params.put("userLocale", localeAsString);
+        params.put("userTimezone", timeZoneAsString);
 
         return params;
     }
@@ -101,91 +98,5 @@ public final class SpringAuthService implements AuthService {
     @NotNull
     private String encryptPassword(String password, EncryptionKey key) {
         return mEncryptionAlgorithm.encrypt(key.getModulus(), key.getExponent(), password);
-    }
-
-    public static class Builder {
-        private AuthenticationRestApi mRestApi;
-        private String mUsername;
-        private String mPassword;
-        private String mOrganization;
-
-        // Optional
-        private Locale mLocale;
-        private TimeZone mTimeZone;
-
-        public Builder username(@NotNull String username) {
-            mUsername = checkNotNull(username, "username == null");
-            return this;
-        }
-
-        public Builder password(@NotNull String password) {
-            mPassword = checkNotNull(password, "password == null");
-            return this;
-        }
-
-        public Builder restApi(@NotNull AuthenticationRestApi restApi) {
-            mRestApi = checkNotNull(restApi, "restApi == null");
-            return this;
-        }
-
-        public Builder organization(@Nullable String organization) {
-            mOrganization = organization;
-            return this;
-        }
-
-        public Builder timeZone(@NotNull TimeZone timeZone) {
-            mTimeZone = checkNotNull(timeZone, "timeZone == null");
-            return this;
-        }
-
-        public Builder locale(@NotNull Locale locale) {
-            mLocale = checkNotNull(locale, "locale == null");
-            return this;
-        }
-
-        /**
-         * TODO experimental API consider before release
-         */
-        public Builder withDefaultApiProvider(@NotNull String serverUrl) {
-            mRestApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(serverUrl)
-                    .build();
-            return this;
-        }
-
-        @NotNull
-        public SpringAuthService build() {
-            ensureValidState();
-            ensureDefaults();
-            JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
-            return new SpringAuthService(algorithm,
-                    mRestApi,
-                    mUsername,
-                    mPassword,
-                    mOrganization,
-                    mLocale,
-                    mTimeZone);
-        }
-
-        private void ensureDefaults() {
-            if (mTimeZone == null) {
-                mTimeZone = TimeZone.getDefault();
-            }
-            if (mLocale == null) {
-                mLocale = Locale.getDefault();
-            }
-        }
-
-        private void ensureValidState() {
-            if (mUsername == null) {
-                throw new IllegalStateException("Username should not be null");
-            }
-            if (mPassword == null) {
-                throw new IllegalStateException("Password should not be null");
-            }
-            if (mRestApi == null) {
-                throw new IllegalStateException("Rest api should not be null. Either set it or call useDefaultApi(url)");
-            }
-        }
     }
 }

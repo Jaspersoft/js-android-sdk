@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -43,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -218,7 +217,7 @@ public class RepositoryRestApiTest {
     public void shouldSearchResources() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<>();
         params.put("limit", 100);
         params.put("offset", 100);
         restApiUnderTest.searchResources("cookie", params);

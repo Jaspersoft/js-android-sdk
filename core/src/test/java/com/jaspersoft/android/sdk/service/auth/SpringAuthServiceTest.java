@@ -69,6 +69,7 @@ public class SpringAuthServiceTest {
     TimeZone mTimeZone;
 
     private SpringAuthService objectUnderTest;
+    private SpringCredentials credentials;
 
     private static final Map<String, String> sOptionals = new HashMap<>();
 
@@ -82,13 +83,16 @@ public class SpringAuthServiceTest {
         MockitoAnnotations.initMocks(this);
         objectUnderTest = new SpringAuthService(
                 mAlgorithm,
-                mRestApi,
-                "user",
-                "1234",
-                "organization",
-                Locale.US,
-                mTimeZone
+                mRestApi
         );
+
+        credentials = SpringCredentials.builder()
+                .username("user")
+                .password("1234")
+                .organization("organization")
+                .locale(Locale.US)
+                .timeZone(mTimeZone)
+                .build();
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
@@ -102,7 +106,7 @@ public class SpringAuthServiceTest {
         when(mKey.getModulus()).thenReturn("m");
         when(mAlgorithm.encrypt(anyString(), anyString(), anyString())).thenReturn("hashed password");
 
-        objectUnderTest.authenticate();
+        objectUnderTest.authenticate(credentials);
 
         verify(mRestApi, times(1)).authenticate("user", "hashed password", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
@@ -113,7 +117,7 @@ public class SpringAuthServiceTest {
     public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing() {
         when(mKey.isAvailable()).thenReturn(false);
 
-        objectUnderTest.authenticate();
+        objectUnderTest.authenticate(credentials);
 
         verify(mRestApi, times(1)).authenticate("user", "1234", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();

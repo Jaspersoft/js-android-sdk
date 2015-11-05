@@ -33,17 +33,13 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class SpringAuthServiceBuilderTest {
+public class SpringCredentialsTest {
 
-    private SpringAuthService.Builder objectUnderTest;
+    private SpringCredentials.Builder objectUnderTest;
 
     @Mock
     AuthenticationRestApi mRestApi;
@@ -54,7 +50,7 @@ public class SpringAuthServiceBuilderTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SpringAuthService.Builder();
+        objectUnderTest = SpringCredentials.builder();
     }
 
     @Test
@@ -74,14 +70,6 @@ public class SpringAuthServiceBuilderTest {
     }
 
     @Test
-    public void builderShouldNotAllowNullRestApi() {
-        mException.expect(NullPointerException.class);
-        mException.expectMessage("restApi == null");
-
-        objectUnderTest.restApi(null);
-    }
-
-    @Test
     public void builderShouldNotAllowNullLocale() {
         mException.expect(NullPointerException.class);
         mException.expectMessage("locale == null");
@@ -95,44 +83,5 @@ public class SpringAuthServiceBuilderTest {
         mException.expectMessage("timeZone == null");
 
         objectUnderTest.timeZone(null);
-    }
-
-    @Test
-    public void serviceShouldThrowIfBuildWithNullUsername() {
-        mException.expect(IllegalStateException.class);
-        mException.expectMessage("Username should not be null");
-
-        objectUnderTest.restApi(mRestApi);
-        objectUnderTest.password("");
-        objectUnderTest.build();
-    }
-
-    @Test
-    public void serviceShouldThrowIfBuildWithNullPassword() {
-        mException.expect(IllegalStateException.class);
-        mException.expectMessage("Password should not be null");
-
-        objectUnderTest.restApi(mRestApi);
-        objectUnderTest.username("");
-        objectUnderTest.build();
-    }
-
-    @Test
-    public void serviceShouldThrowIfBuildWithNullRestApi() {
-        mException.expect(IllegalStateException.class);
-        mException.expectMessage("Rest api should not be null. Either set it or call useDefaultApi(url)");
-
-        objectUnderTest.username("");
-        objectUnderTest.password("");
-        objectUnderTest.build();
-    }
-
-    @Test
-    public void builderShouldCreateServiceWithDefaultApi() {
-        objectUnderTest.username("");
-        objectUnderTest.password("");
-
-        SpringAuthService service = objectUnderTest.withDefaultApiProvider("http://localhost/").build();
-        assertThat(service, is(notNullValue()));
     }
 }
