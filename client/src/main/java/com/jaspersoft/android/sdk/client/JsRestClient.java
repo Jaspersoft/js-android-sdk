@@ -47,6 +47,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.ReportStatusResponse;
 import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdapter;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
+import com.jaspersoft.android.sdk.client.oxm.resource.FileLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
@@ -316,6 +317,31 @@ public class JsRestClient {
     //---------------------------------------------------------------------
     // The Resource Service
     //---------------------------------------------------------------------
+
+    /**
+     * Gets the single resource lookup for the specified URI.
+     *
+     * @param uri resource URI (e.g. /reports/samples/)
+     * @return the ResourceDescriptor value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public FileLookup getFileDescriptor(String uri) throws RestClientException {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + uri;
+
+        HttpHeaders headers = new HttpHeaders();
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.file+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.file+xml");
+            headers.add("Content-Type", "application/xml");
+        }
+
+        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+
+        return restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FileLookup.class).getBody();
+    }
 
     /**
      * Gets the single resource lookup for the specified URI.
