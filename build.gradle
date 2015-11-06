@@ -38,13 +38,13 @@ buildscript {
 subprojects {
     group = 'com.jaspersoft.android.sdk'
 
-    ext.clientModuleVersion = '1.11'
-    ext.clientModuleVersionCode = 9011100
+    ext.clientModuleVersion = '1.12-SNAPSHOT'
+    ext.clientModuleVersionCode = 9011200
 
     ext.androidMinSdkVersion = 9
-    ext.androidBuildToolsVersion = '21.1.2'
-    ext.androidCompileSdkVersion = 21
-    ext.androidTargetSdkVersion = 21
+    ext.androidBuildToolsVersion = '23.0.2'
+    ext.androidCompileSdkVersion = 23
+    ext.androidTargetSdkVersion = 23
 
     repositories {
         jcenter()
