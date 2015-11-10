@@ -24,18 +24,18 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * @author Tom Koptel
@@ -52,8 +52,7 @@ public final class JSEncryptionAlgorithm {
     }
 
     public static JSEncryptionAlgorithm create() {
-        BouncyCastleProvider provider = new BouncyCastleProvider();
-        return create(provider);
+        return create(null);
     }
 
     public static JSEncryptionAlgorithm create(Provider provider) {
@@ -64,7 +63,7 @@ public final class JSEncryptionAlgorithm {
         try {
             PublicKey publicKey = createPublicKey(modulus, exponent);
 
-            Cipher cipher = Cipher.getInstance("RSA/NONE/NoPadding", mProvider);
+            Cipher cipher = getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
             String utfPass = URLEncoder.encode(text, UTF_8);
@@ -72,8 +71,16 @@ public final class JSEncryptionAlgorithm {
 
             return byteArrayToHexString(encryptedUtfPass);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            // Oops we failed to cipher text remove original
+           return text;
         }
+    }
+
+    private Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
+        if (mProvider == null) {
+            return Cipher.getInstance("RSA/NONE/NoPadding", "BC");
+        }
+        return Cipher.getInstance("RSA/NONE/NoPadding", mProvider);
     }
 
     private PublicKey createPublicKey(String modulus, String exponent)

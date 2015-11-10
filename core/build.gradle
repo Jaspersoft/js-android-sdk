@@ -36,7 +36,6 @@ ext {
 dependencies {
     compile 'com.intellij:annotations:12.0'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
-    compile 'com.madgag.spongycastle:prov:1.52.0.0'
 
     testCompile('pl.pragmatists:JUnitParams:1.0.4') {
         exclude group: 'org.hamcrest'
