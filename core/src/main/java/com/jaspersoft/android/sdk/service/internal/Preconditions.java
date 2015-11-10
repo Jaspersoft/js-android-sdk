@@ -22,28 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.internal;
 
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.text.SimpleDateFormat;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal interface to abstract out server info generation strategy
- *
- * @author Tom Koptel
+ * @author Kevin Bourrillion
  * @since 2.0
  */
-public interface InfoProvider {
-    @NotNull
-    String getBaseUrl();
-    @NotNull
-    ServerInfo provideInfo();
-    @NotNull
-    ServerVersion provideVersion();
-    @NotNull
-    SimpleDateFormat provideDateTimeFormat();
+public final class Preconditions {
+    private Preconditions() {
+    }
+
+    public static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
+    }
+
+    public static void checkArgument(boolean expression, @Nullable Object errorMessage) {
+        if (!expression) {
+            throw new IllegalArgumentException(String.valueOf(errorMessage));
+        }
+    }
 }

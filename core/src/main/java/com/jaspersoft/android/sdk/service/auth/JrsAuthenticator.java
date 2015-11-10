@@ -5,7 +5,7 @@ import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
-import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
+import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel

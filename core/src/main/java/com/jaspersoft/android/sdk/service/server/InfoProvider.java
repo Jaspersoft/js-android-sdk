@@ -22,58 +22,28 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.text.SimpleDateFormat;
 
 /**
- * Always make call on server
+ * Internal interface to abstract out server info generation strategy
  *
  * @author Tom Koptel
  * @since 2.0
  */
-final class GreedyInfoProvider implements InfoProvider {
-    private final ServerInfoService mServerInfoService;
-    private final String mBaseUrl;
-
-    @TestOnly
-    GreedyInfoProvider(ServerInfoService serverInfoService, String serverUrl) {
-        mServerInfoService = serverInfoService;
-        mBaseUrl = serverUrl;
-    }
-
-    public static InfoProvider newInstance(String serverUrl) {
-        ServerInfoService service = ServerInfoService.newInstance(serverUrl);
-        return new GreedyInfoProvider(service, serverUrl);
-    }
-
+public interface InfoProvider {
     @NotNull
-    @Override
-    public String getBaseUrl() {
-        return mBaseUrl;
-    }
-
-    @Override
+    String getBaseUrl();
     @NotNull
-    public ServerInfo provideInfo() {
-        return mServerInfoService.requestServerInfo();
-    }
-
+    ServerInfo provideInfo();
     @NotNull
-    @Override
-    public ServerVersion provideVersion() {
-        return mServerInfoService.requestServerVersion();
-    }
-
+    ServerVersion provideVersion();
     @NotNull
-    @Override
-    public SimpleDateFormat provideDateTimeFormat() {
-        return mServerInfoService.requestServerDateTimeFormat();
-    }
+    SimpleDateFormat provideDateTimeFormat();
 }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
+import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel
