@@ -22,58 +22,51 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.client.oxm.resource;
+package com.jaspersoft.android.sdk.client.async.request;
 
-import com.google.gson.annotations.Expose;
+import com.jaspersoft.android.sdk.client.JsRestClient;
+import com.jaspersoft.android.sdk.client.async.request.cacheable.CacheableRequest;
 
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import java.io.File;
 
 /**
- * @author Tom Koptel
- * @since 1.10
+ * Request that gets the file resource content for the specified URI.
+ *
+ * @author Andrew Tivodar
+ * @since 1.12
  */
-@Root(strict=false, name = "file")
-public class FileLookup extends ResourceLookup {
-    @Expose
-    @Element(required=false)
-    protected String type;
+public class GetFileContentRequest extends CacheableRequest<File> {
 
-    public FileType getFileType() {
-        try {
-            return FileType.valueOf(type);
-        } catch (IllegalArgumentException ex) {
-            return FileType.unknown;
-        }
+    private String fileUri;
+    private File fileToSave;
+
+    /**
+     * Creates a new instance of {@link GetFileContentRequest}.
+     * @param uri file URI (e.g. /reports/samples/)
+     */
+    public GetFileContentRequest(JsRestClient jsRestClient, File file, String uri) {
+        super(jsRestClient, File.class);
+        this.fileUri = uri;
+        this.fileToSave = file;
+    }
+
+    @Override
+    public File loadDataFromNetwork() throws Exception {
+        getJsRestClient().getFileContent(fileUri, fileToSave);
+        return fileToSave;
+    }
+
+    @Override
+    protected String createCacheKeyString() {
+        return super.createCacheKeyString() + fileUri;
     }
 
     //---------------------------------------------------------------------
-    // Nested Classes
+    // Getters & Setters
     //---------------------------------------------------------------------
 
-    public enum FileType {
-        pdf,
-        html,
-        xls,
-        rtf,
-        csv,
-        odt,
-        txt,
-        docx,
-        ods,
-        xlsx,
-        font,
-        img,
-        jrxml,
-        jar,
-        prop,
-        jrtx,
-        xml,
-        css,
-        accessGrantSchema,
-        olapMondrianSchema,
-        json,
-        pptx,
-        unknown
+    public String getUri() {
+        return fileUri;
     }
+
 }

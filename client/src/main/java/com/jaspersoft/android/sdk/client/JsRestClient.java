@@ -344,6 +344,23 @@ public class JsRestClient {
     }
 
     /**
+     * Save resource in file.
+     *
+     * @param fileUri resource URI (e.g. /reports/samples/)
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public void getFileContent(String fileUri, File file) throws RestClientException {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + fileUri;
+        URI uri;
+        try {
+            uri = new URI(fullUri);
+        } catch (URISyntaxException ex) {
+            throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
+        }
+        downloadFile(uri, file);
+    }
+
+    /**
      * Gets the single resource lookup for the specified URI.
      *
      * @param uri resource URI (e.g. /reports/samples/)

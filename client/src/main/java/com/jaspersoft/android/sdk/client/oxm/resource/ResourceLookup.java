@@ -192,7 +192,7 @@ public class ResourceLookup implements Parcelable {
     public enum ResourceType {
         folder,
         reportUnit,
-        reportOption,
+        reportOptions,
         dashboard,
         legacyDashboard,
         file,
