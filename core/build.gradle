@@ -37,6 +37,7 @@ dependencies {
     compile 'com.intellij:annotations:12.0'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
 
+    testCompile "nl.jqno.equalsverifier:equalsverifier:1.7.5"
     testCompile('pl.pragmatists:JUnitParams:1.0.4') {
         exclude group: 'org.hamcrest'
     }
