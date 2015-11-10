@@ -1,0 +1,137 @@
+package com.jaspersoft.android.sdk.service.auth;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
+
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public final class SpringCredentials extends Credentials {
+    private final String mUsername;
+    private final String mPassword;
+    private final String mOrganization;
+    private final Locale mLocale;
+    private final TimeZone mTimeZone;
+
+    @TestOnly
+    SpringCredentials(
+            @NotNull String username,
+            @NotNull String password,
+            @NotNull String organization,
+            @NotNull Locale locale,
+            @NotNull TimeZone timeZone) {
+        mUsername = username;
+        mPassword = password;
+        mOrganization = organization;
+        mLocale = locale;
+        mTimeZone = timeZone;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @NotNull
+    public String getUsername() {
+        return mUsername;
+    }
+
+    @NotNull
+    public String getPassword() {
+        return mPassword;
+    }
+
+    @Nullable
+    public String getOrganization() {
+        return mOrganization;
+    }
+
+    @NotNull
+    public TimeZone getTimeZone() {
+        return mTimeZone;
+    }
+
+    @NotNull
+    public Locale getLocale() {
+        return mLocale;
+    }
+
+    @Override
+    protected String applyPolicy(AuthPolicy policy) {
+        return policy.applyCredentials(this);
+    }
+
+    public static class Builder {
+        private String mUsername;
+        private String mPassword;
+        private String mOrganization;
+
+        // Optional
+        private Locale mLocale;
+        private TimeZone mTimeZone;
+
+        private Builder() {}
+
+        public Builder username(@NotNull String username) {
+            mUsername = checkNotNull(username, "username == null");
+            return this;
+        }
+
+        public Builder password(@NotNull String password) {
+            mPassword = checkNotNull(password, "password == null");
+            return this;
+        }
+
+        public Builder organization(@Nullable String organization) {
+            mOrganization = organization;
+            return this;
+        }
+
+        public Builder timeZone(@NotNull TimeZone timeZone) {
+            mTimeZone = checkNotNull(timeZone, "timeZone == null");
+            return this;
+        }
+
+        public Builder locale(@NotNull Locale locale) {
+            mLocale = checkNotNull(locale, "locale == null");
+            return this;
+        }
+
+        @NotNull
+        public SpringCredentials build() {
+            ensureValidState();
+            ensureDefaults();
+            return new SpringCredentials(
+                    mUsername,
+                    mPassword,
+                    mOrganization,
+                    mLocale,
+                    mTimeZone);
+        }
+
+        private void ensureDefaults() {
+            if (mTimeZone == null) {
+                mTimeZone = TimeZone.getDefault();
+            }
+            if (mLocale == null) {
+                mLocale = Locale.getDefault();
+            }
+        }
+
+        private void ensureValidState() {
+            if (mUsername == null) {
+                throw new IllegalStateException("Username should not be null");
+            }
+            if (mPassword == null) {
+                throw new IllegalStateException("Password should not be null");
+            }
+        }
+    }
+}
