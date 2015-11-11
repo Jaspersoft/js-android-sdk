@@ -44,7 +44,7 @@ public interface OutputResource {
      * Client responsible for closing stream
      *
      * @return raw stream of bytes of corresponding file
-     * @throws IOException
+     * @throws IOException that refers to network error. E.g. missing network connection
      */
     InputStream getStream() throws IOException;
 }
