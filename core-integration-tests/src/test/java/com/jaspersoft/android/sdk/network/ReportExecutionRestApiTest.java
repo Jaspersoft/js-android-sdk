@@ -22,16 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api;
+package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
+import com.jaspersoft.android.sdk.util.DummyTokenProvider;
+import com.jaspersoft.android.sdk.util.JrsMetadata;
+import com.jaspersoft.android.sdk.util.TestLogger;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;

@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api.utils;
+package com.jaspersoft.android.sdk.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;

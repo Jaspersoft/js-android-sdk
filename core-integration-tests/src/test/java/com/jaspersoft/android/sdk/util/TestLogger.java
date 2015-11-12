@@ -22,42 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api.utils;
+package com.jaspersoft.android.sdk.util;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.RestApiLog;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class DummyTokenProvider {
+public final class TestLogger implements RestApiLog {
 
-    private final JrsMetadata mJrsMetadata;
-    private String mToken;
+    private final Logger logger;
 
-    public DummyTokenProvider(JrsMetadata jrsMetadata) {
-        mJrsMetadata = jrsMetadata;
+    private TestLogger(String logTarget) {
+        logger = Logger.getLogger(logTarget);
     }
 
-    public static DummyTokenProvider create(JrsMetadata metadata) {
-        return new DummyTokenProvider(metadata);
+    public static TestLogger get(Object target) {
+        return new TestLogger(target.getClass().getSimpleName());
     }
 
-    @NotNull
-    public String provideToken() {
-        if (mToken == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(mJrsMetadata.getServerUrl())
-                    .build();
-            mToken = restApi
-                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
-        }
-        return mToken;
-    }
-
-    public String token() {
-        return provideToken();
+    @Override
+    public void log(String message) {
+        logger.log(Level.INFO, message);
     }
 }

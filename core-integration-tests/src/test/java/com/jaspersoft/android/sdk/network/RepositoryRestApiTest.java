@@ -22,15 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api;
+package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
+import com.jaspersoft.android.sdk.util.DummyTokenProvider;
+import com.jaspersoft.android.sdk.util.JrsMetadata;
+import com.jaspersoft.android.sdk.util.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;

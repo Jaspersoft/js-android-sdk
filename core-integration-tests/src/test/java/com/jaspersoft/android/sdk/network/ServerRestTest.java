@@ -22,12 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api;
+package com.jaspersoft.android.sdk.network;
 
 
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.test.TestLogger;
+import com.jaspersoft.android.sdk.util.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;
