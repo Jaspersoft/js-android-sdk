@@ -21,38 +21,41 @@
  * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-buildscript {
-    repositories {
-        mavenCentral()
+
+package com.jaspersoft.android.sdk.util;
+
+import java.io.IOException;
+import java.util.Properties;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public final class IntegrationEnv {
+    private final Properties config;
+
+    private IntegrationEnv(Properties properties) {
+        config = properties;
     }
-    dependencies {
-        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-    }
-}
 
-apply plugin: 'java'
-apply plugin: 'net.saliman.properties'
-
-dependencies {
-    compile project(':js-android-sdk-core')
-    testCompile 'org.hamcrest:hamcrest-integration:1.3'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
-}
-
-task prep() {
-    def resourceDir = file("${projectDir}/src/test/resources")
-    def env = 'integration_env.properties'
-    requiredProperties "server"
-    outputs.file new File(resourceDir, env)
-    doFirst {
-        copy {
-            from file("${rootDir}/buildsystem/")
-            include env
-            into resourceDir
-            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
+    public static IntegrationEnv load() {
+        Properties properties = new Properties();
+        try {
+            properties.load(TestResource.create("integration_env.properties").asStream());
+            return new IntegrationEnv(properties);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-}
 
-compileJava.dependsOn prep
+    public String getSetver() {
+        return config.getProperty("test.server");
+    }
+
+    @Override
+    public String toString() {
+        return "IntegrationEnv{" +
+                "config=" + config +
+                '}';
+    }
+}
