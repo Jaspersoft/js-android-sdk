@@ -25,9 +25,15 @@
 package com.jaspersoft.android.sdk.util;
 
 
-import com.jaspersoft.android.sdk.util.rest.token.Credentials;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.util.rest.dto.Server;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -37,9 +43,11 @@ import java.util.Properties;
 public final class IntegrationEnv {
     private static final String PROPERTIES_FILE = "integration_env.properties";
     private final Properties config;
+    private final Gson mGson;
 
     private IntegrationEnv(Properties properties) {
         config = properties;
+        mGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 
     public static IntegrationEnv load() {
@@ -52,28 +60,11 @@ public final class IntegrationEnv {
         }
     }
 
-    public String[] getServers() {
-        String serverProp = config.getProperty("test.servers");
-        String[] servers = serverProp.split(",");
-        if (servers.length == 0) {
-            return new String[] {serverProp};
-        }
-        return servers;
-    }
-
-    public Credentials[] getCredentials() {
-        String serverProp = config.getProperty("test.credentials");
-        String[] credentials = serverProp.split(",");
-        if (credentials.length == 0) {
-            credentials = new String[] {serverProp};
-        }
-
-        Credentials[] result = new Credentials[credentials.length];
-        for (int i = 0; i < credentials.length; i++) {
-            result[i] = Credentials.Factory.create(credentials[i]);
-        }
-
-        return result;
+    public List<Server> getServers() {
+        String configFile = config.getProperty("servers.config.file");
+        TestResource rawConfig = TestResource.create(configFile);
+        Reader reader = new InputStreamReader(rawConfig.asStream());
+        return mGson.fromJson(reader, new TypeToken<List<Server>>(){}.getType());
     }
 
     @Override

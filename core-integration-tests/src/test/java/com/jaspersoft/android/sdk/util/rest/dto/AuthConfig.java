@@ -22,30 +22,37 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.token;
+package com.jaspersoft.android.sdk.util.rest.dto;
 
-import com.jaspersoft.android.sdk.util.rest.dto.AuthConfig;
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
-
-import java.io.IOException;
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public abstract class Credentials {
-    protected abstract String delegateSelf(TokenFactory factory) throws IOException, HttpException;
+public final class AuthConfig {
+    @Expose
+    private String type;
+    @Expose
+    private String username;
+    @Expose
+    private String password;
+    @Expose
+    private String organization;
 
-    public static class Factory {
-        public static Credentials create(AuthConfig config) {
-            if ("spring".equals(config.getType())) {
-                return SpringCredentials.builder()
-                        .setUsername(config.getUsername())
-                        .setPassword(config.getPassword())
-                        .setOrganization(config.getOrganization())
-                        .create();
-            }
-            throw new UnsupportedOperationException("Test could not create credential of type: " + config.getType());
-        }
+    public String getOrganization() {
+        return organization;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

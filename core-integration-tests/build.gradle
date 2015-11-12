@@ -46,7 +46,7 @@ dependencies {
 task prep() {
     def resourceDir = file("${projectDir}/src/test/resources")
     def env = 'integration_env.properties'
-    requiredProperties "servers", "credentials"
+    requiredProperties "servers.file.name"
     outputs.file new File(resourceDir, env)
     doFirst {
         copy {
@@ -57,5 +57,11 @@ task prep() {
         }
     }
 }
+task copyConfig(type: Copy) {
+    def resourceDir = file("${projectDir}/src/test/resources")
+    from file("${projectDir}/servers-local.json")
+    into resourceDir
+}
 
+prep.dependsOn copyConfig
 compileJava.dependsOn prep

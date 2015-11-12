@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.util;
 
+import com.jaspersoft.android.sdk.util.rest.dto.AuthConfig;
+import com.jaspersoft.android.sdk.util.rest.dto.Server;
 import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
 import com.jaspersoft.android.sdk.util.rest.token.Authorizer;
 import com.jaspersoft.android.sdk.util.rest.token.Credentials;
@@ -31,6 +33,8 @@ import com.jaspersoft.android.sdk.util.rest.token.Credentials;
 import org.junit.rules.ExternalResource;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -40,31 +44,35 @@ public final class JrsEnvironmentRule extends ExternalResource {
     private IntegrationEnv mIntegrationEnv;
 
     public Object[] listServers() {
-        String[] servers = getLazyEnv().getServers();
-        Object[] result = new Object[servers.length];
-        for (int i = 0; i < servers.length; i++) {
-            result[i] = new Object[]{servers[i]};
+        List<Server> servers = getLazyEnv().getServers();
+        Object[] result = new Object[servers.size()];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new Object[]{servers.get(i).getUrl()};
         }
+
         return result;
     }
 
     public Object[] listAuthorizedServers() {
-        String[] servers = getLazyEnv().getServers();
-        Credentials[] credentials = getLazyEnv().getCredentials();
-        if (servers.length != credentials.length) {
-            throw new IllegalStateException("Test environment configured improperly. Servers number should equal credentials");
-        }
+        List<Server> servers = getLazyEnv().getServers();
+        List<Object> result = new ArrayList<>();
 
-        Object[] result = new Object[servers.length];
-        for (int i = 0; i < servers.length; i++) {
-            try {
-                String token = Authorizer.create(servers[i]).authorize(credentials[i]);
-                result[i] = new Object[]{token, servers[i]};
-            } catch (IOException | HttpException e) {
-                throw new RuntimeException("Failed to configure token for server " + servers[i] + " abort test execution", e);
+        for (Server server : servers) {
+            for (AuthConfig config : server.getAuthConfigs()) {
+                Credentials credentials = Credentials.Factory.create(config);
+                try {
+                    String token = Authorizer.create(server.getUrl()).authorize(credentials);
+                    result.add(new Object[]{token, server.getUrl()});
+                } catch (IOException | HttpException e) {
+                    System.out.println(e);
+                }
             }
         }
-        return result;
+
+        Object[] resultArray = new Object[result.size()];
+        result.toArray(resultArray);
+        return resultArray;
     }
 
     private IntegrationEnv getLazyEnv() {

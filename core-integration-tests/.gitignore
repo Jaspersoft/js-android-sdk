@@ -1,2 +1,4 @@
 /build
 gradle-local.properties
+servers-local.json
+integration_env.properties
