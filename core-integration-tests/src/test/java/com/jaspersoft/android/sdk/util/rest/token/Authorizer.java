@@ -21,41 +21,32 @@
  * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-    }
-}
 
-apply plugin: 'java'
-apply plugin: 'net.saliman.properties'
+package com.jaspersoft.android.sdk.util.rest.token;
 
-dependencies {
-    compile project(':js-android-sdk-core')
+import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
 
-    testCompile 'org.hamcrest:hamcrest-integration:1.3'
-    testCompile('pl.pragmatists:JUnitParams:1.0.4') {
-        exclude group: 'org.hamcrest'
-    }
-    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
-}
+import java.io.IOException;
 
-task prep() {
-    def resourceDir = file("${projectDir}/src/test/resources")
-    def env = 'integration_env.properties'
-    requiredProperties "servers", "credentials"
-    outputs.file new File(resourceDir, env)
-    doFirst {
-        copy {
-            from file("${rootDir}/buildsystem/")
-            include env
-            into resourceDir
-            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
+/**
+ * @author Tom Koptel
+ * @since 2.3
+ */
+public final class Authorizer {
+    private final TokenFactory tokeFactory;
+
+    private Authorizer(String baseUrl) {
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
         }
+        this.tokeFactory = new TokenFactory(baseUrl);
+    }
+
+    public static Authorizer create(String baseUrl) {
+        return new Authorizer(baseUrl);
+    }
+
+    public String authorize(Credentials credentials) throws IOException, HttpException {
+        return credentials.delegateSelf(tokeFactory);
     }
 }
-
-compileJava.dependsOn prep

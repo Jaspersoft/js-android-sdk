@@ -24,43 +24,30 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.util.DummyTokenProvider;
-import com.jaspersoft.android.sdk.util.JrsMetadata;
+import com.jaspersoft.android.sdk.util.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.util.TestLogger;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class RepositoryRestApiTest {
 
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
-    private RepositoryRestApi api;
+    @ClassRule
+    public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
 
-    @Before
-    public void setup() {
-        if (api == null) {
-            api = new RepositoryRestApi.Builder()
-                    .baseUrl(mMetadata.getServerUrl())
-                    .logger(TestLogger.get(this))
-                    .build();
-        }
-    }
-
+/*
     @Test
     public void shouldRequestListOfResources() {
         ResourceSearchResult resourceSearchResult = api.searchResources(mAuthenticator.token(), null);
@@ -74,10 +61,22 @@ public class RepositoryRestApiTest {
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
-
+*/
     @Test
-    public void shouldRequestRootFolder() {
-        FolderLookup folder = api.requestFolderResource(mAuthenticator.token(), "/");
-        assertThat(folder, is(notNullValue()));
+    @Parameters(method = "servers")
+    public void shouldRequestRootFolder(String token, String baseUrl) {
+        FolderLookup folder = createApi(baseUrl).requestFolderResource(token, "/");
+        assertThat("Failed to root folder response", folder != null);
+    }
+
+    private Object[] servers() {
+        return sEnv.listAuthorizedServers();
+    }
+
+    private RepositoryRestApi createApi(String baseUrl) {
+        return new RepositoryRestApi.Builder()
+                .baseUrl(baseUrl)
+                .logger(TestLogger.get(this))
+                .build();
     }
 }

@@ -21,41 +21,15 @@
  * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-    }
-}
 
-apply plugin: 'java'
-apply plugin: 'net.saliman.properties'
+package com.jaspersoft.android.sdk.util.rest.exception;
 
-dependencies {
-    compile project(':js-android-sdk-core')
-
-    testCompile 'org.hamcrest:hamcrest-integration:1.3'
-    testCompile('pl.pragmatists:JUnitParams:1.0.4') {
-        exclude group: 'org.hamcrest'
-    }
-    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
-}
-
-task prep() {
-    def resourceDir = file("${projectDir}/src/test/resources")
-    def env = 'integration_env.properties'
-    requiredProperties "servers", "credentials"
-    outputs.file new File(resourceDir, env)
-    doFirst {
-        copy {
-            from file("${rootDir}/buildsystem/")
-            include env
-            into resourceDir
-            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
-        }
+/**
+ * @author Tom Koptel
+ * @since 2.3
+ */
+public final class ServerErrorException extends HttpException {
+    public ServerErrorException(int code, String url, String response) {
+        super(code, url, response);
     }
 }
-
-compileJava.dependsOn prep

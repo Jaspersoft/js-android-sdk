@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.util;
 
+
+import com.jaspersoft.android.sdk.util.rest.token.Credentials;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -50,12 +53,27 @@ public final class IntegrationEnv {
     }
 
     public String[] getServers() {
-        String serverProp = config.getProperty("test.server");
+        String serverProp = config.getProperty("test.servers");
         String[] servers = serverProp.split(",");
         if (servers.length == 0) {
             return new String[] {serverProp};
         }
         return servers;
+    }
+
+    public Credentials[] getCredentials() {
+        String serverProp = config.getProperty("test.credentials");
+        String[] credentials = serverProp.split(",");
+        if (credentials.length == 0) {
+            credentials = new String[] {serverProp};
+        }
+
+        Credentials[] result = new Credentials[credentials.length];
+        for (int i = 0; i < credentials.length; i++) {
+            result[i] = Credentials.Factory.create(credentials[i]);
+        }
+
+        return result;
     }
 
     @Override

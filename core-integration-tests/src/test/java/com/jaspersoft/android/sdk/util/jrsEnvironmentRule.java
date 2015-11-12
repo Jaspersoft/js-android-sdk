@@ -24,7 +24,13 @@
 
 package com.jaspersoft.android.sdk.util;
 
+import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.jaspersoft.android.sdk.util.rest.token.Authorizer;
+import com.jaspersoft.android.sdk.util.rest.token.Credentials;
+
 import org.junit.rules.ExternalResource;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -37,7 +43,26 @@ public final class JrsEnvironmentRule extends ExternalResource {
         String[] servers = getLazyEnv().getServers();
         Object[] result = new Object[servers.length];
         for (int i = 0; i < servers.length; i++) {
-            result[i] = new Object[] {servers[i]};
+            result[i] = new Object[]{servers[i]};
+        }
+        return result;
+    }
+
+    public Object[] listAuthorizedServers() {
+        String[] servers = getLazyEnv().getServers();
+        Credentials[] credentials = getLazyEnv().getCredentials();
+        if (servers.length != credentials.length) {
+            throw new IllegalStateException("Test environment configured improperly. Servers number should equal credentials");
+        }
+
+        Object[] result = new Object[servers.length];
+        for (int i = 0; i < servers.length; i++) {
+            try {
+                String token = Authorizer.create(servers[i]).authorize(credentials[i]);
+                result[i] = new Object[]{token, servers[i]};
+            } catch (IOException | HttpException e) {
+                throw new RuntimeException("Failed to configure token for server " + servers[i] + " abort test execution", e);
+            }
         }
         return result;
     }

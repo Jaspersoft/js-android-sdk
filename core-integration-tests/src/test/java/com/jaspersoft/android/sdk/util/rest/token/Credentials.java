@@ -21,41 +21,32 @@
  * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-    }
-}
 
-apply plugin: 'java'
-apply plugin: 'net.saliman.properties'
+package com.jaspersoft.android.sdk.util.rest.token;
 
-dependencies {
-    compile project(':js-android-sdk-core')
+import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
 
-    testCompile 'org.hamcrest:hamcrest-integration:1.3'
-    testCompile('pl.pragmatists:JUnitParams:1.0.4') {
-        exclude group: 'org.hamcrest'
-    }
-    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
-}
+import java.io.IOException;
 
-task prep() {
-    def resourceDir = file("${projectDir}/src/test/resources")
-    def env = 'integration_env.properties'
-    requiredProperties "servers", "credentials"
-    outputs.file new File(resourceDir, env)
-    doFirst {
-        copy {
-            from file("${rootDir}/buildsystem/")
-            include env
-            into resourceDir
-            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
+/**
+ * @author Tom Koptel
+ * @since 2.3
+ */
+public abstract class Credentials {
+    protected abstract String delegateSelf(TokenFactory factory) throws IOException, HttpException;
+
+    public static class Factory {
+        public static Credentials create(String data) {
+            String[] items = data.split("\\|");
+            String type = items[0];
+            if ("spring".equals(type)) {
+                return SpringCredentials.builder()
+                        .setUsername(items[1])
+                        .setPassword(items[2])
+                        .setOrganization("null".equals(items[3]) ? null : items[3])
+                        .create();
+            }
+            throw new UnsupportedOperationException("Test could not create credential of type: " + type);
         }
     }
 }
-
-compileJava.dependsOn prep
