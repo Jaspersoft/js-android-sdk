@@ -26,89 +26,106 @@ package com.jaspersoft.android.sdk.network;
 
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+import com.jaspersoft.android.sdk.util.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.util.TestLogger;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class ServerRestTest {
 
-    private String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
-    private ServerRestApi apiUnderTest;
+    @ClassRule
+    public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
 
-    @Before
-    public void setup() {
-        apiUnderTest = new ServerRestApi.Builder()
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestServerInfo(String baseUrl) throws Exception {
+        ServerInfoData response = createApi(baseUrl).requestServerInfo();
+        assertThat("Failed to receive server info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestBuild(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestBuild();
+        assertThat("Failed to receive build info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestDateFormatPattern(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestDateFormatPattern();
+        assertThat("Failed to receive date format info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestDateTimeFormatPattern(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestDateTimeFormatPattern();
+        assertThat("Failed to receive date time format info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestEdition(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestEdition();
+        assertThat("Failed to receive edition info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestEditionName(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestEditionName();
+        assertThat("Failed to receive edition name info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestVersion(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestVersion();
+        assertThat("Failed to receive version info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestFeatures(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestFeatures();
+        assertThat("Failed to receive features info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestLicenseType(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestLicenseType();
+        assertThat("Failed to receive license info response", response != null);
+    }
+
+    @Test
+    @Parameters(method = "servers")
+    public void shouldRequestExpiration(String baseUrl) throws Exception {
+        String response = createApi(baseUrl).requestExpiration();
+        assertThat("Failed to receive expiration info response", response != null);
+    }
+
+    private ServerRestApi createApi(String baseUrl) {
+        return new ServerRestApi.Builder()
                 .logger(TestLogger.get(this))
-                .baseUrl(mobileDemo2)
+                .baseUrl(baseUrl)
                 .build();
     }
 
-    @Test
-    public void shouldRequestServerInfo() throws Exception {
-        ServerInfoData response = apiUnderTest.requestServerInfo();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestBuild() throws Exception {
-        String response = apiUnderTest.requestBuild();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestDateFormatPattern() throws Exception {
-        String response = apiUnderTest.requestDateFormatPattern();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestDateTimeFormatPattern() throws Exception {
-        String response = apiUnderTest.requestDateTimeFormatPattern();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestEdition() throws Exception {
-        String response = apiUnderTest.requestEdition();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestEditionName() throws Exception {
-        String response = apiUnderTest.requestEditionName();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestVersion() throws Exception {
-        String response = apiUnderTest.requestVersion();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestFeatures() throws Exception {
-        String response = apiUnderTest.requestFeatures();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestLicenseType() throws Exception {
-        String response = apiUnderTest.requestLicenseType();
-        assertThat(response, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldRequestExpiration() throws Exception {
-        String response = apiUnderTest.requestExpiration();
-        assertThat(response, is(notNullValue()));
+    private Object[] servers() {
+        return sEnv.listServers();
     }
 }

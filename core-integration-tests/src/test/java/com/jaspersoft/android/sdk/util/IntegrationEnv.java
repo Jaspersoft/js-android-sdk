@@ -32,6 +32,7 @@ import java.util.Properties;
  * @since 2.0
  */
 public final class IntegrationEnv {
+    private static final String PROPERTIES_FILE = "integration_env.properties";
     private final Properties config;
 
     private IntegrationEnv(Properties properties) {
@@ -41,15 +42,20 @@ public final class IntegrationEnv {
     public static IntegrationEnv load() {
         Properties properties = new Properties();
         try {
-            properties.load(TestResource.create("integration_env.properties").asStream());
+            properties.load(TestResource.create(PROPERTIES_FILE).asStream());
             return new IntegrationEnv(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getSetver() {
-        return config.getProperty("test.server");
+    public String[] getServers() {
+        String serverProp = config.getProperty("test.server");
+        String[] servers = serverProp.split(",");
+        if (servers.length == 0) {
+            return new String[] {serverProp};
+        }
+        return servers;
     }
 
     @Override
