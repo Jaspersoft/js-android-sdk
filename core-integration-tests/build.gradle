@@ -46,7 +46,7 @@ dependencies {
 task prep() {
     def resourceDir = file("${projectDir}/src/test/resources")
     def env = 'integration_env.properties'
-    requiredProperties "servers.file.name"
+    requiredProperties "servers.file.name", "run.report.count"
     outputs.file new File(resourceDir, env)
     doFirst {
         copy {

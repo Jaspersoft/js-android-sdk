@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.util.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.util.TestLogger;
 
@@ -47,21 +49,20 @@ public class RepositoryRestApiTest {
     @ClassRule
     public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
 
-/*
     @Test
-    public void shouldRequestListOfResources() {
-        ResourceSearchResult resourceSearchResult = api.searchResources(mAuthenticator.token(), null);
-        assertThat(resourceSearchResult, is(notNullValue()));
-        assertThat(resourceSearchResult.getResources(), is(not(empty())));
+    @Parameters(method = "reports")
+    public void shouldRequestReport(String token, String baseUrl, String reportUri) {
+        ReportLookup report = createApi(baseUrl).requestReportResource(token, reportUri);
+        assertThat("Failed load report data", report != null);
     }
 
     @Test
-    public void shouldRequestReport() {
-        ReportLookup report = api.requestReportResource(mAuthenticator.token(), "/public/Samples/Reports/AllAccounts");
-        assertThat(report, is(notNullValue()));
-        assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
+    @Parameters(method = "servers")
+    public void shouldRequestListOfResources(String token, String baseUrl) {
+        ResourceSearchResult response = createApi(baseUrl).searchResources(token, null);
+        assertThat("Failed to perform search lookup", response != null);
     }
-*/
+
     @Test
     @Parameters(method = "servers")
     public void shouldRequestRootFolder(String token, String baseUrl) {
@@ -71,6 +72,10 @@ public class RepositoryRestApiTest {
 
     private Object[] servers() {
         return sEnv.listAuthorizedServers();
+    }
+
+    private Object[] reports() {
+        return sEnv.listReports();
     }
 
     private RepositoryRestApi createApi(String baseUrl) {

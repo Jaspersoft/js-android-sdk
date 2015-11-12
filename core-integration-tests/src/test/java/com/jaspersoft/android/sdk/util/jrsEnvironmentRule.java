@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.util;
 import com.jaspersoft.android.sdk.util.rest.dto.AuthConfig;
 import com.jaspersoft.android.sdk.util.rest.dto.Server;
 import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.jaspersoft.android.sdk.util.rest.resource.ResourceRepository;
 import com.jaspersoft.android.sdk.util.rest.token.Authorizer;
 import com.jaspersoft.android.sdk.util.rest.token.Credentials;
 
@@ -70,6 +71,30 @@ public final class JrsEnvironmentRule extends ExternalResource {
             }
         }
 
+        return toArray(result);
+    }
+
+    public Object[] listReports() {
+        List<Object> result = new ArrayList<>();
+        for (Object o : listAuthorizedServers()) {
+            Object[] pair = (Object[]) o;
+            try {
+                String token = String.valueOf(pair[0]);
+                String url = String.valueOf(pair[1]);
+                List<String> reports = ResourceRepository
+                        .create(token, url)
+                        .listResources("reportUnit", getLazyEnv().reportExecNumber());
+                for (String report : reports) {
+                    result.add(new Object[] {token, url, report});
+                }
+            } catch (IOException | HttpException e) {
+                System.out.println(e);
+            }
+        }
+        return toArray(result);
+    }
+
+    private static Object[] toArray(List<Object> result) {
         Object[] resultArray = new Object[result.size()];
         result.toArray(resultArray);
         return resultArray;

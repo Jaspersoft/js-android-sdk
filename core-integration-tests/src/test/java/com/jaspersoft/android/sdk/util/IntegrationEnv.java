@@ -67,6 +67,10 @@ public final class IntegrationEnv {
         return mGson.fromJson(reader, new TypeToken<List<Server>>(){}.getType());
     }
 
+    public int reportExecNumber() {
+        return Integer.parseInt(config.getProperty("run.report.count"));
+    }
+
     @Override
     public String toString() {
         return "IntegrationEnv{" +
