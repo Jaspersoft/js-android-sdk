@@ -43,25 +43,55 @@ dependencies {
     testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
 }
 
-task prep() {
-    def resourceDir = file("${projectDir}/src/test/resources")
-    def env = 'integration_env.properties'
+ext {
+    buildSystemPath = "${rootDir}/buildsystem/"
+    envPath = "${projectDir}/build/env"
+    envFileName = 'integration_env.properties'
+}
+
+task prepIntegrationEnv() {
+    def buildDir = file(envPath)
     requiredProperties "servers.file.name", "run.report.count"
-    outputs.file new File(resourceDir, env)
+    outputs.file new File(buildDir, envFileName)
     doFirst {
         copy {
-            from file("${rootDir}/buildsystem/")
-            include env
-            into resourceDir
+            from file(buildSystemPath)
+            include envFileName
+            into buildDir
             filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
         }
     }
 }
-task copyConfig(type: Copy) {
+
+task copyConfig << {
+    Properties envProperties = new Properties()
     def resourceDir = file("${projectDir}/src/test/resources")
-    from file("${projectDir}/servers-local.json")
-    into resourceDir
+    def dynamicEnv = new File(envPath, envFileName)
+
+    def copyServerConfigurationList = {
+        def stream = new FileInputStream(dynamicEnv)
+        envProperties.load(stream)
+
+        def serverConfigPath = envProperties["servers.config.file"]
+        copy {
+            from file(serverConfigPath)
+            into resourceDir
+        }
+    }
+    def createTestEnvProperties = {
+        def reportRunCount = envProperties["run.report.count"]
+        def testEnv = file("${resourceDir}/test-env.properties")
+        testEnv.createNewFile()
+
+        Properties props = new Properties()
+        props["run.report.count"] = reportRunCount
+        def stream = new FileOutputStream(testEnv)
+        props.store(stream, null)
+    }
+
+    copyServerConfigurationList()
+    createTestEnvProperties()
 }
 
-prep.dependsOn copyConfig
-compileJava.dependsOn prep
+copyConfig.dependsOn prepIntegrationEnv
+compileJava.dependsOn copyConfig

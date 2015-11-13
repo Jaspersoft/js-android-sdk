@@ -41,7 +41,8 @@ import java.util.Properties;
  * @since 2.0
  */
 public final class IntegrationEnv {
-    private static final String PROPERTIES_FILE = "integration_env.properties";
+    private static final String PROPERTIES_FILE = "test-env.properties";
+    private static final String SERVERS_CONFIG_FILE = "servers-local.json";
     private final Properties config;
     private final Gson mGson;
 
@@ -61,8 +62,7 @@ public final class IntegrationEnv {
     }
 
     public List<Server> getServers() {
-        String configFile = config.getProperty("servers.config.file");
-        TestResource rawConfig = TestResource.create(configFile);
+        TestResource rawConfig = TestResource.create(SERVERS_CONFIG_FILE);
         Reader reader = new InputStreamReader(rawConfig.asStream());
         return mGson.fromJson(reader, new TypeToken<List<Server>>(){}.getType());
     }
