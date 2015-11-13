@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.env;
 import com.jaspersoft.android.sdk.testkit.dto.AuthConfig;
 import com.jaspersoft.android.sdk.testkit.dto.Server;
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
-import com.jaspersoft.android.sdk.testkit.resource.ResourceRepository;
+import com.jaspersoft.android.sdk.testkit.resource.ResourceServiceFactory;
 import com.jaspersoft.android.sdk.testkit.token.Authorizer;
 import com.jaspersoft.android.sdk.testkit.token.Credentials;
 import com.jaspersoft.android.sdk.testkit.token.CredentialsMapper;
@@ -82,9 +82,12 @@ public final class JrsEnvironmentRule extends ExternalResource {
             try {
                 String token = String.valueOf(pair[0]);
                 String url = String.valueOf(pair[1]);
-                List<String> reports = ResourceRepository
-                        .create(token, url)
-                        .listResources("reportUnit", getLazyEnv().reportExecNumber());
+                ResourceServiceFactory service = ResourceServiceFactory.builder()
+                        .baseUrl(url).token(token).create();
+
+                List<String> reports = service
+                        .resourceRepository(getLazyEnv().reportExecNumber(), "reportUnit")
+                        .listResources();
                 for (String report : reports) {
                     result.add(new Object[] {token, url, report});
                 }

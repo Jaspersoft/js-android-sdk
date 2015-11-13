@@ -31,58 +31,84 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class ResourceRepository extends AbstractService {
-    private final int mCount;
-    private final String mType;
+public final class ResourceParameter extends AbstractService {
 
-    ResourceRepository(String token, String baseUrl, int count, String type) {
+    private final String mResourceUri;
+
+    public ResourceParameter(String token, String baseUrl, String resourceUri) {
         super(token, baseUrl);
-        mCount = count;
-        mType = type;
+        mResourceUri = resourceUri;
     }
 
     @Override
     protected HttpUrl provideUrl(String baseUrl) {
-        return HttpUrl.parse(baseUrl + "rest_v2/resources").newBuilder()
-                .addQueryParameter("forceFullPage", "true")
-                .addQueryParameter("limit", String.valueOf(mCount))
-                .addQueryParameter("offset", "0")
-                .addQueryParameter("type", mType)
+        String path = String.format("rest_v2/reports%s/inputControls/values", mResourceUri);
+        return HttpUrl.parse(baseUrl + path).newBuilder()
+                .addQueryParameter("freshData", "true")
                 .build();
     }
 
-    public List<String> listResources() throws IOException, HttpException {
+    public Map<String, Set<String>> listParams() throws IOException, HttpException {
         Response response = performRequest();
-        List<String> resources = new ArrayList<>();
-        JsonReader reader = new JsonReader(new InputStreamReader(response.body().byteStream(), "UTF-8"));
+        Map<String, Set<String>> params = new HashMap<>();
+        mapResponse(response, params);
+        return params;
+    }
 
+    private void mapResponse(Response response, Map<String, Set<String>> params) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(response.body().byteStream(), "UTF-8"));
         reader.beginObject();
         reader.nextName();
         reader.beginArray();
+        while (reader.hasNext()) {
+            populateParams(params, reader);
+        }
+        reader.endArray();
+        reader.endObject();
+    }
 
+    private void populateParams(Map<String, Set<String>> params, JsonReader reader) throws IOException {
+        reader.beginObject();
+        while (reader.hasNext()) {
+            Set<String> values = new HashSet<>();
+            String id = "null";
+
+            String name = reader.nextName();
+            if ("options".equals(name)) {
+                readValues(reader, values);
+            } else if ("id".equals(name)) {
+                id = reader.nextString();
+            } else {
+                reader.skipValue();
+            }
+            params.put(id, values);
+        }
+        reader.endObject();
+    }
+
+    private void readValues(JsonReader reader, Set<String> values) throws IOException {
+        reader.beginArray();
         while (reader.hasNext()) {
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
-                if ("uri".equals(name)) {
-                    resources.add(reader.nextString());
+                if ("value".equals(name)) {
+                    values.add(reader.nextString());
                 } else {
                     reader.skipValue();
                 }
             }
             reader.endObject();
         }
-
         reader.endArray();
-        reader.endObject();
-
-        return resources;
     }
 }
