@@ -22,52 +22,54 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.testkit.resource;
+package com.jaspersoft.android.sdk.testkit.dto;
+
+import com.google.gson.annotations.Expose;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class ResourceServiceFactory {
-    private final String mToken;
-    private final String mBaseUrl;
+public final class ReportExecConfig {
+    @Expose
+    private final Map<String, Set<String>> parameters;
+    @Expose
+    private final String reportUnitUri;
 
-    ResourceServiceFactory(String token, String baseUrl) {
-        mToken = token;
-        mBaseUrl = baseUrl;
+    ReportExecConfig(Map<String, Set<String>> parameters, String reportUnitUri) {
+        this.parameters = parameters;
+        this.reportUnitUri = reportUnitUri;
+    }
+
+    public String getUri() {
+        return reportUnitUri;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public ResourceRepository resourceRepository(int count, String type) {
-        return new ResourceRepository(mToken, mBaseUrl, count, type);
-    }
-
-    public ResourceParameter resourceParameter(String resourceUri) {
-        return new ResourceParameter(mToken, mBaseUrl, resourceUri);
-    }
-
     public static class Builder {
-        private String mToken;
-        private String mBaseUrl;
+        private Map<String, Set<String>> mParameters;
+        private String mReportUnitUri;
 
-        private Builder() {
-        }
+        private Builder() {}
 
-        public Builder token(String token) {
-            mToken = token;
+        public Builder params(Map<String, Set<String>> parameters) {
+            mParameters = parameters;
             return this;
         }
 
-        public Builder baseUrl(String baseUrl) {
-            mBaseUrl = baseUrl;
+        public Builder uri(String reportUnitUri) {
+            mReportUnitUri = reportUnitUri;
             return this;
         }
 
-        public ResourceServiceFactory create() {
-            return new ResourceServiceFactory(mToken, mBaseUrl);
+        public ReportExecConfig create() {
+            return new ReportExecConfig(mParameters, mReportUnitUri);
         }
     }
 }

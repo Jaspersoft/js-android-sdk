@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.TestLogger;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.testkit.resource.ResourceServiceFactory;
+import com.jaspersoft.android.sdk.testkit.ServiceFactory;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class IntegrationReportOptionRestApiTest {
     @Test
     @Parameters(method = "reports")
     public void apiSupportsCrudForReportOption(String token, String baseUrl, String reportUri) throws Exception {
-        Map<String, Set<String>> params = ResourceServiceFactory.builder()
+        Map<String, Set<String>> params = ServiceFactory.builder()
                 .baseUrl(baseUrl).token(token)
                 .create()
                 .resourceParameter(reportUri)

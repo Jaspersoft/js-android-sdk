@@ -22,44 +22,22 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.testkit.resource;
+package com.jaspersoft.android.sdk.testkit;
 
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public abstract class AbstractService {
-    private final String mToken;
-    private final String mBaseUrl;
-    private final OkHttpClient mClient;
-
-
-    protected AbstractService(String token, String baseUrl) {
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-
-        mClient = new OkHttpClient();
-        mToken = token;
-        mBaseUrl = baseUrl;
-    }
-
-    protected Response performRequest() throws IOException, HttpException {
-        Request request = new Request.Builder()
-                .url(provideUrl(mBaseUrl))
-                .addHeader("Cookie", mToken)
-                .addHeader("Accept", "application/json")
-                .build();
-        Response response = mClient.newCall(request).execute();
-
+public final class CallAdapter {
+    public static Response adapt(Call call) throws IOException, HttpException {
+        Response response = call.execute();
         int code = response.code();
 
         if (code >= 200 && code < 300) {
@@ -68,6 +46,4 @@ public abstract class AbstractService {
             throw HttpException.Factory.create(response);
         }
     }
-
-    protected abstract HttpUrl provideUrl(String baseUrl);
 }

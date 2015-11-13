@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.testkit.resource;
+package com.jaspersoft.android.sdk.testkit;
 
 import com.google.gson.stream.JsonReader;
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
