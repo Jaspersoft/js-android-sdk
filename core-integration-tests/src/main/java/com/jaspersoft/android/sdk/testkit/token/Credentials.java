@@ -22,29 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.token;
-
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
-
-import java.io.IOException;
+package com.jaspersoft.android.sdk.testkit.token;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class SpringCredentials extends Credentials {
+public final class Credentials {
     private final String username;
     private final String password;
     private final String organization;
 
-    public SpringCredentials(String username, String password, String organization) {
+    private Credentials(String username, String password, String organization) {
         this.username = username;
         this.password = password;
         this.organization = organization;
-    }
-
-    protected String delegateSelf(TokenFactory factory) throws IOException, HttpException {
-        return factory.create(this);
     }
 
     public String getOrganization() {
@@ -86,8 +78,8 @@ public final class SpringCredentials extends Credentials {
             return this;
         }
 
-        public SpringCredentials create() {
-            return new SpringCredentials(mUsername, mPassword, mOrganization);
+        public Credentials create() {
+            return new Credentials(mUsername, mPassword, mOrganization);
         }
     }
 }

@@ -22,29 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.dto;
+package com.jaspersoft.android.sdk.testkit.token;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
+import com.jaspersoft.android.sdk.testkit.dto.AuthConfig;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class Server {
-    @Expose
-    @SerializedName("auth_config")
-    List<AuthConfig> mAuthConfigs;
-    @Expose
-    String url;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public List<AuthConfig> getAuthConfigs() {
-        return mAuthConfigs;
+public final class CredentialsMapper {
+    public static Credentials transform(AuthConfig config) {
+        return Credentials.builder()
+                .setUsername(config.getUsername())
+                .setPassword(config.getPassword())
+                .setOrganization(config.getOrganization())
+                .create();
     }
 }

@@ -22,31 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.token;
+package com.jaspersoft.android.sdk.testkit.dto;
 
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class Authorizer {
-    private final TokenFactory tokeFactory;
+public final class Server {
+    @Expose
+    @SerializedName("auth_config")
+    List<AuthConfig> mAuthConfigs;
+    @Expose
+    String url;
 
-    private Authorizer(String baseUrl) {
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-        this.tokeFactory = new TokenFactory(baseUrl);
+    public String getUrl() {
+        return url;
     }
 
-    public static Authorizer create(String baseUrl) {
-        return new Authorizer(baseUrl);
-    }
-
-    public String authorize(Credentials credentials) throws IOException, HttpException {
-        return credentials.delegateSelf(tokeFactory);
+    public List<AuthConfig> getAuthConfigs() {
+        return mAuthConfigs;
     }
 }

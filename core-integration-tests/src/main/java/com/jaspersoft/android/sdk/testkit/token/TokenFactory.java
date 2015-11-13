@@ -22,10 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.token;
+package com.jaspersoft.android.sdk.testkit.token;
 
-import com.jaspersoft.android.sdk.util.rest.exception.AuthenticationException;
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.jaspersoft.android.sdk.testkit.exception.AuthenticationException;
+import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
@@ -50,7 +50,7 @@ final class TokenFactory {
         mOkhttp.setFollowRedirects(false);
     }
 
-    public String create(SpringCredentials credentials) throws IOException, HttpException {
+    public String create(Credentials credentials) throws IOException, HttpException {
         FormEncodingBuilder formBody = new FormEncodingBuilder()
                 .add("j_password", credentials.getPassword())
                 .add("j_username", credentials.getUsername());

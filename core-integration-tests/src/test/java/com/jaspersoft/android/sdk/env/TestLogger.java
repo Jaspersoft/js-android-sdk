@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util;
+package com.jaspersoft.android.sdk.env;
 
 import com.jaspersoft.android.sdk.network.RestApiLog;
 

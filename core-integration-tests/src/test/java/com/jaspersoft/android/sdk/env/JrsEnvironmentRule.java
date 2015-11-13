@@ -22,14 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util;
+package com.jaspersoft.android.sdk.env;
 
-import com.jaspersoft.android.sdk.util.rest.dto.AuthConfig;
-import com.jaspersoft.android.sdk.util.rest.dto.Server;
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
-import com.jaspersoft.android.sdk.util.rest.resource.ResourceRepository;
-import com.jaspersoft.android.sdk.util.rest.token.Authorizer;
-import com.jaspersoft.android.sdk.util.rest.token.Credentials;
+import com.jaspersoft.android.sdk.testkit.dto.AuthConfig;
+import com.jaspersoft.android.sdk.testkit.dto.Server;
+import com.jaspersoft.android.sdk.testkit.exception.HttpException;
+import com.jaspersoft.android.sdk.testkit.resource.ResourceRepository;
+import com.jaspersoft.android.sdk.testkit.token.Authorizer;
+import com.jaspersoft.android.sdk.testkit.token.Credentials;
+import com.jaspersoft.android.sdk.testkit.token.CredentialsMapper;
 
 import org.junit.rules.ExternalResource;
 
@@ -61,7 +62,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
         for (Server server : servers) {
             for (AuthConfig config : server.getAuthConfigs()) {
-                Credentials credentials = Credentials.Factory.create(config);
+                Credentials credentials = CredentialsMapper.transform(config);
                 try {
                     String token = Authorizer.create(server.getUrl()).authorize(credentials);
                     result.add(new Object[]{token, server.getUrl()});

@@ -22,30 +22,42 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.token;
+package com.jaspersoft.android.sdk.env;
 
-import com.jaspersoft.android.sdk.util.rest.dto.AuthConfig;
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.0
  */
-public abstract class Credentials {
-    protected abstract String delegateSelf(TokenFactory factory) throws IOException, HttpException;
+public final class DummyTokenProvider {
 
-    public static class Factory {
-        public static Credentials create(AuthConfig config) {
-            if ("spring".equals(config.getType())) {
-                return SpringCredentials.builder()
-                        .setUsername(config.getUsername())
-                        .setPassword(config.getPassword())
-                        .setOrganization(config.getOrganization())
-                        .create();
-            }
-            throw new UnsupportedOperationException("Test could not create credential of type: " + config.getType());
+    private final JrsMetadata mJrsMetadata;
+    private String mToken;
+
+    public DummyTokenProvider(JrsMetadata jrsMetadata) {
+        mJrsMetadata = jrsMetadata;
+    }
+
+    public static DummyTokenProvider create(JrsMetadata metadata) {
+        return new DummyTokenProvider(metadata);
+    }
+
+    @NotNull
+    public String provideToken() {
+        if (mToken == null) {
+            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                    .baseUrl(mJrsMetadata.getServerUrl())
+                    .build();
+            mToken = restApi
+                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
         }
+        return mToken;
+    }
+
+    public String token() {
+        return provideToken();
     }
 }

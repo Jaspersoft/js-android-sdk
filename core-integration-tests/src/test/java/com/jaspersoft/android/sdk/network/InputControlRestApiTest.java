@@ -24,12 +24,11 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.util.DummyTokenProvider;
-import com.jaspersoft.android.sdk.util.JrsMetadata;
-import com.jaspersoft.android.sdk.util.TestLogger;
+import com.jaspersoft.android.sdk.env.DummyTokenProvider;
+import com.jaspersoft.android.sdk.env.JrsMetadata;
+import com.jaspersoft.android.sdk.env.TestLogger;
 
 import org.junit.Before;
 import org.junit.Test;

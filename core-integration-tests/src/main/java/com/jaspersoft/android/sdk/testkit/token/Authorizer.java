@@ -22,18 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.exception;
+package com.jaspersoft.android.sdk.testkit.token;
+
+import com.jaspersoft.android.sdk.testkit.exception.HttpException;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class AuthenticationException extends HttpException {
-    private AuthenticationException(int code, String url, String response) {
-        super(code, url, response);
+public final class Authorizer {
+    private final TokenFactory tokeFactory;
+
+    private Authorizer(String baseUrl) {
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        this.tokeFactory = new TokenFactory(baseUrl);
     }
 
-    public static AuthenticationException create(String url, String response) {
-        return new AuthenticationException(401, url, response);
+    public static Authorizer create(String baseUrl) {
+        return new Authorizer(baseUrl);
+    }
+
+    public String authorize(Credentials credentials) throws IOException, HttpException {
+        return tokeFactory.create(credentials);
     }
 }

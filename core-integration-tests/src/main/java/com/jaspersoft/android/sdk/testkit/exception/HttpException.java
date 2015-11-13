@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.exception;
+package com.jaspersoft.android.sdk.testkit.exception;
 
 import com.squareup.okhttp.Response;
 

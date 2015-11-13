@@ -24,17 +24,15 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
-import com.jaspersoft.android.sdk.util.DummyTokenProvider;
-import com.jaspersoft.android.sdk.util.JrsMetadata;
-import com.jaspersoft.android.sdk.util.TestLogger;
+import com.jaspersoft.android.sdk.env.DummyTokenProvider;
+import com.jaspersoft.android.sdk.env.JrsMetadata;
+import com.jaspersoft.android.sdk.env.TestLogger;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;

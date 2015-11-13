@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util;
+package com.jaspersoft.android.sdk.env;
 
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.jaspersoft.android.sdk.util.rest.dto.Server;
+import com.jaspersoft.android.sdk.testkit.dto.Server;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

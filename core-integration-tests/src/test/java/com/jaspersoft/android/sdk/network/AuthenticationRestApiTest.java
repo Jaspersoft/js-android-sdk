@@ -24,10 +24,8 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
-import com.jaspersoft.android.sdk.util.TestLogger;
+import com.jaspersoft.android.sdk.env.TestLogger;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Ignore;

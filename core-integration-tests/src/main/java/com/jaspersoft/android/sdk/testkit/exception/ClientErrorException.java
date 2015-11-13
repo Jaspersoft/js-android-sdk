@@ -22,14 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.exception;
+package com.jaspersoft.android.sdk.testkit.exception;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class ServerErrorException extends HttpException {
-    public ServerErrorException(int code, String url, String response) {
+public final class ClientErrorException extends HttpException {
+    public ClientErrorException(int code, String url, String response) {
         super(code, url, response);
     }
 }

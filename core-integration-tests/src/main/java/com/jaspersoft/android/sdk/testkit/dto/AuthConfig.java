@@ -22,14 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.exception;
+package com.jaspersoft.android.sdk.testkit.dto;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class ClientErrorException extends HttpException {
-    public ClientErrorException(int code, String url, String response) {
-        super(code, url, response);
+public final class AuthConfig {
+    @Expose
+    private String username;
+    @Expose
+    private String password;
+    @Expose
+    private String organization;
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

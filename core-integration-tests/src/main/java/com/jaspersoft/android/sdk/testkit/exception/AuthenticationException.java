@@ -22,37 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.dto;
-
-import com.google.gson.annotations.Expose;
+package com.jaspersoft.android.sdk.testkit.exception;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class AuthConfig {
-    @Expose
-    private String type;
-    @Expose
-    private String username;
-    @Expose
-    private String password;
-    @Expose
-    private String organization;
-
-    public String getOrganization() {
-        return organization;
+public final class AuthenticationException extends HttpException {
+    private AuthenticationException(int code, String url, String response) {
+        super(code, url, response);
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getUsername() {
-        return username;
+    public static AuthenticationException create(String url, String response) {
+        return new AuthenticationException(401, url, response);
     }
 }

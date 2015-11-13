@@ -26,8 +26,8 @@ package com.jaspersoft.android.sdk.network;
 
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.util.JrsEnvironmentRule;
-import com.jaspersoft.android.sdk.util.TestLogger;
+import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
+import com.jaspersoft.android.sdk.env.TestLogger;
 
 import org.junit.ClassRule;
 import org.junit.Test;

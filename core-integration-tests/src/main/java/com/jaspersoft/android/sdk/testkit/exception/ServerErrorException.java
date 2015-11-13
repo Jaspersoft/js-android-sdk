@@ -22,42 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util;
-
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-
-import org.jetbrains.annotations.NotNull;
+package com.jaspersoft.android.sdk.testkit.exception;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
-public final class DummyTokenProvider {
-
-    private final JrsMetadata mJrsMetadata;
-    private String mToken;
-
-    public DummyTokenProvider(JrsMetadata jrsMetadata) {
-        mJrsMetadata = jrsMetadata;
-    }
-
-    public static DummyTokenProvider create(JrsMetadata metadata) {
-        return new DummyTokenProvider(metadata);
-    }
-
-    @NotNull
-    public String provideToken() {
-        if (mToken == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(mJrsMetadata.getServerUrl())
-                    .build();
-            mToken = restApi
-                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
-        }
-        return mToken;
-    }
-
-    public String token() {
-        return provideToken();
+public final class ServerErrorException extends HttpException {
+    public ServerErrorException(int code, String url, String response) {
+        super(code, url, response);
     }
 }

@@ -22,11 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.util.rest.resource;
+package com.jaspersoft.android.sdk.testkit.resource;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.jaspersoft.android.sdk.util.rest.exception.HttpException;
+import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -45,11 +44,9 @@ public final class ResourceRepository {
     private final String mBaseUrl;
     private final String mToken;
     private final OkHttpClient mOkhttp;
-    private final Gson mGson;
 
     ResourceRepository(String token, String baseUrl) {
         mOkhttp = new OkHttpClient();
-        mGson = new Gson();
         mToken = token;
         mBaseUrl = baseUrl;
     }
