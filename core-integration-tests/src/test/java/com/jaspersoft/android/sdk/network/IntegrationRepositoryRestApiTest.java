@@ -44,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class RepositoryRestApiTest {
+public class IntegrationRepositoryRestApiTest {
 
     @ClassRule
     public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
