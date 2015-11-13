@@ -1,0 +1,12 @@
+[
+  {
+    "url": "http://mobiledemo2.jaspersoft.com/jasperserver-pro",
+    "auth_config": [
+      {
+        "type": "spring",
+        "username": "phoneuser",
+        "password": "phoneuser"
+      }
+    ]
+  }
+]

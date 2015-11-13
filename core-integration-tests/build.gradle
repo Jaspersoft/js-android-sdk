@@ -72,11 +72,28 @@ task copyConfig << {
 
     def copyServerConfigurationList = {
         def stream = new FileInputStream(dynamicEnv)
-        envProperties.load(stream)
+        try {
+            envProperties.load(stream)
+        } finally {
+            stream.close()
+        }
 
         def serverConfigPath = envProperties["servers.config.file"]
+        def isConfigResidesInProject = rootProject.file(serverConfigPath).exists()
+        def fileToCopy
+        if (isConfigResidesInProject) {
+            fileToCopy = rootProject.file(serverConfigPath)
+        }
+        def isFileResidesOnSystem = file(serverConfigPath).exists()
+        if (isFileResidesOnSystem) {
+            fileToCopy = file(serverConfigPath)
+        }
+        if (fileToCopy == null) {
+            throw new GradleException("Failed to localate servers list configuration on file system. Path: ${serverConfigPath}")
+        }
+
         copy {
-            from file(serverConfigPath)
+            from fileToCopy
             into resourceDir
             rename { String fileName -> testServersName }
         }
@@ -89,7 +106,11 @@ task copyConfig << {
         Properties props = new Properties()
         props["run.report.count"] = reportRunCount
         def stream = new FileOutputStream(testEnv)
-        props.store(stream, null)
+        try {
+            props.store(stream, null)
+        } finally {
+            stream.close()
+        }
     }
 
     copyServerConfigurationList()
