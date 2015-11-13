@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class ServerRestTest {
+public class IntegrationServerRestApiTest {
 
     @ClassRule
     public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
