@@ -66,21 +66,27 @@ task prepIntegrationEnv() {
 }
 
 task copyConfig << {
-    Properties envProperties = new Properties()
     def resourceDir = file("${projectDir}/src/test/resources")
-    def dynamicEnv = new File(envPath, envFileName)
 
-    def copyServerConfigurationList = {
-        def stream = new FileInputStream(dynamicEnv)
+    def loadProperties = { source ->
+        Properties properties = new Properties()
+        def stream = new FileInputStream(source)
         try {
-            envProperties.load(stream)
+            properties.load(stream)
         } finally {
             stream.close()
         }
-
+        return properties
+    }
+    def loadEnvProperties = {
+        return loadProperties(new File(envPath, envFileName))
+    }
+    def copyServerConfigurationList = {
+        def envProperties = loadEnvProperties()
         def serverConfigPath = envProperties["servers.config.file"]
-        def isConfigResidesInProject = rootProject.file(serverConfigPath).exists()
+
         def fileToCopy
+        def isConfigResidesInProject = rootProject.file(serverConfigPath).exists()
         if (isConfigResidesInProject) {
             fileToCopy = rootProject.file(serverConfigPath)
         }
@@ -99,12 +105,13 @@ task copyConfig << {
         }
     }
     def createTestEnvProperties = {
-        def reportRunCount = envProperties["run.report.count"]
+        def envProperties = loadEnvProperties()
         def testEnv = file("${resourceDir}/${testPropertiesName}")
         testEnv.createNewFile()
 
         Properties props = new Properties()
-        props["run.report.count"] = reportRunCount
+        props += envProperties
+        props.remove("servers.config.file")
         def stream = new FileOutputStream(testEnv)
         try {
             props.store(stream, null)
