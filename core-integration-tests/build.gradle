@@ -46,7 +46,9 @@ dependencies {
 ext {
     buildSystemPath = "${rootDir}/buildsystem/"
     envPath = "${projectDir}/build/env"
-    envFileName = 'integration_env.properties'
+    envFileName = "integration_env.properties"
+    testPropertiesName = "test-env.properties"
+    testServersName = "test-servers.json"
 }
 
 task prepIntegrationEnv() {
@@ -76,11 +78,12 @@ task copyConfig << {
         copy {
             from file(serverConfigPath)
             into resourceDir
+            rename { String fileName -> testServersName }
         }
     }
     def createTestEnvProperties = {
         def reportRunCount = envProperties["run.report.count"]
-        def testEnv = file("${resourceDir}/test-env.properties")
+        def testEnv = file("${resourceDir}/${testPropertiesName}")
         testEnv.createNewFile()
 
         Properties props = new Properties()

@@ -1,4 +1,5 @@
 /build
 gradle-local.properties
 servers-local.json
+test-servers.json
 test-env.properties

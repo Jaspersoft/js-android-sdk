@@ -42,7 +42,7 @@ import java.util.Properties;
  */
 public final class IntegrationEnv {
     private static final String PROPERTIES_FILE = "test-env.properties";
-    private static final String SERVERS_CONFIG_FILE = "servers-local.json";
+    private static final String SERVERS_CONFIG_FILE = "test-servers.json";
     private final Properties config;
     private final Gson mGson;
 
