@@ -22,12 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.server.ServerInfoTransformer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class ServerInfoTransformerTest {
 
     @Before
     public void setup() {
-        transformerUnderTest = ServerInfoTransformer.getInstance();
+        transformerUnderTest = ServerInfoTransformer.get();
         mServerInfoData = PowerMockito.mock(ServerInfoData.class);
         when(mServerInfoData.getBuild()).thenReturn("20150527_1447");
         when(mServerInfoData.getDateFormatPattern()).thenReturn("yyyy-MM-dd");

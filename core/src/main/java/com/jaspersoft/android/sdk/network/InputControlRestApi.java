@@ -41,8 +41,8 @@ public interface InputControlRestApi {
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
-     * <p/>
-     * <b>ATTENTION:<b/> Exclude flag works only on JRS instances 6.0+
+     *
+     * <b>ATTENTION:</b> Exclude flag works only on JRS instances 6.0+
      *
      * @param token        is a key API sends to authorize client
      * @param reportUri    uri of report
@@ -63,6 +63,7 @@ public interface InputControlRestApi {
      * Provides values for specified controls. This API helpful to
      * delegate cascading resolving for the server, also should handle non-cascading cases
      *
+     * @param token        is a key API sends to authorize client
      * @param reportUri      uri of report
      * @param controlsValues map of {control_id: [value, value]} associated input controls metadata
      * @param freshData      whether data should be retrieved from cache or not

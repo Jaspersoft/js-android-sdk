@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
@@ -47,16 +47,12 @@ public final class ServerInfoService {
         mTransformer = transformer;
     }
 
-    public static ServerInfoService newInstance(ServerRestApi restApi) {
-        return new ServerInfoService(restApi, ServerInfoTransformer.getInstance());
-    }
-
-    public static ServerInfoService newInstance(String baseUrl) {
+    public static ServerInfoService create(String baseUrl) {
         ServerRestApi restApi = new ServerRestApi.Builder()
                 .baseUrl(baseUrl)
                 .build();
 
-        return new ServerInfoService(restApi, ServerInfoTransformer.getInstance());
+        return new ServerInfoService(restApi, ServerInfoTransformer.get());
     }
 
     public ServerInfo requestServerInfo() {

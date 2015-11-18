@@ -22,29 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.server;
 
-
-import org.jetbrains.annotations.Nullable;
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
- * @author Kevin Bourrillion
+ * @author Tom Koptel
  * @since 2.0
  */
-public final class Preconditions {
-    private Preconditions() {
+class ServerInfoTransformer {
+
+    private static class InstanceHolder {
+        private static ServerInfoTransformer INSTANCE = new ServerInfoTransformer();
     }
 
-    public static <T> T checkNotNull(T object, String message) {
-        if (object == null) {
-            throw new NullPointerException(message);
-        }
-        return object;
+    private ServerInfoTransformer() {
+        // single instance
     }
 
-    public static void checkArgument(boolean expression, @Nullable Object errorMessage) {
-        if (!expression) {
-            throw new IllegalArgumentException(String.valueOf(errorMessage));
-        }
+    public static ServerInfoTransformer get() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    public ServerInfo transform(ServerInfoData response) {
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setBuild(response.getBuild());
+        serverInfo.setDateFormatPattern(response.getDateFormatPattern());
+        serverInfo.setDatetimeFormatPattern(response.getDatetimeFormatPattern());
+        serverInfo.setVersion(response.getVersion());
+        serverInfo.setEdition(response.getEdition());
+        serverInfo.setEditionName(response.getEditionName());
+        serverInfo.setFeatures(response.getFeatures());
+        return serverInfo;
     }
 }

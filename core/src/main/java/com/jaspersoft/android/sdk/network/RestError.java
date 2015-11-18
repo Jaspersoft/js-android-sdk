@@ -65,12 +65,12 @@ public final class RestError extends RuntimeException {
         this.kind = kind;
     }
 
-    /** HTTP status code. */
+    // HTTP status code.
     public int code() {
         return response.code();
     }
 
-    /** HTTP status message. */
+    // HTTP status message.
     public String message() {
         return response.message();
     }

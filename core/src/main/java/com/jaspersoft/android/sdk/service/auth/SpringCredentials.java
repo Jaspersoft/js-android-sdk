@@ -7,7 +7,7 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import static com.jaspersoft.android.sdk.service.Preconditions.checkNotNull;
+import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel
@@ -66,6 +66,43 @@ public final class SpringCredentials extends Credentials {
     @Override
     protected String applyPolicy(AuthPolicy policy) {
         return policy.applyCredentials(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpringCredentials that = (SpringCredentials) o;
+
+        if (mUsername != null ? !mUsername.equals(that.mUsername) : that.mUsername != null)
+            return false;
+        if (mPassword != null ? !mPassword.equals(that.mPassword) : that.mPassword != null)
+            return false;
+        if (mOrganization != null ? !mOrganization.equals(that.mOrganization) : that.mOrganization != null)
+            return false;
+        if (mLocale != null ? !mLocale.equals(that.mLocale) : that.mLocale != null) return false;
+        return !(mTimeZone != null ? !mTimeZone.equals(that.mTimeZone) : that.mTimeZone != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mUsername != null ? mUsername.hashCode() : 0;
+        result = 31 * result + (mPassword != null ? mPassword.hashCode() : 0);
+        result = 31 * result + (mOrganization != null ? mOrganization.hashCode() : 0);
+        result = 31 * result + (mLocale != null ? mLocale.hashCode() : 0);
+        result = 31 * result + (mTimeZone != null ? mTimeZone.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SpringCredentials{" +
+                "mLocale=" + mLocale +
+                ", mUsername='" + mUsername + '\'' +
+                ", mOrganization='" + mOrganization + '\'' +
+                ", mTimeZone=" + mTimeZone +
+                '}';
     }
 
     public static class Builder {

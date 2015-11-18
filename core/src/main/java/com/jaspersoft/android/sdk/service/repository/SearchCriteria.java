@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.service.repository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.jaspersoft.android.sdk.service.Preconditions.checkArgument;
+import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkArgument;
 
 /**
  * @author Tom Koptel

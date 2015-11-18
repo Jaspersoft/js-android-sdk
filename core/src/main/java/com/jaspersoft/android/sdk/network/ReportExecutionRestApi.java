@@ -56,9 +56,7 @@ public interface ReportExecutionRestApi {
                                   @NotNull String executionId,
                                   @NotNull Collection<Map<String, Set<String>>> params);
 
-    /**
-     * TODO: API is broken requires investigation before release
-     */
+     // TODO: API is broken requires investigation before release
     @NotNull
     ReportExecutionSearchResponse searchReportExecution(@NotNull String token, Map<String, String> params);
 

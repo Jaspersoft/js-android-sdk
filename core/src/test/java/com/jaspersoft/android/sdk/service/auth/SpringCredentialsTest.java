@@ -33,6 +33,8 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -83,5 +85,10 @@ public class SpringCredentialsTest {
         mException.expectMessage("timeZone == null");
 
         objectUnderTest.timeZone(null);
+    }
+
+    @Test
+    public void testEqualsHashcodeContract() {
+        EqualsVerifier.forClass(SpringCredentials.class).verify();
     }
 }
