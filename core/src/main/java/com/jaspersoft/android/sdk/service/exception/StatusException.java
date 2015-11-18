@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.exception;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.0
  */
 public class StatusException extends Exception {
     private final int mCode;

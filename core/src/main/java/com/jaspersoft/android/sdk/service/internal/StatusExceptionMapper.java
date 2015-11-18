@@ -35,7 +35,7 @@ import java.io.IOException;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.0
  */
 public final class StatusExceptionMapper {
     @NotNull
@@ -67,7 +67,7 @@ public final class StatusExceptionMapper {
             case 400:
                 return new StatusException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
             case 403:
-                return new StatusException("User has no access to resource", e, StatusCodes.PERMISSION_ERROR);
+                return new StatusException("User has no access to resource", e, StatusCodes.PERMISSION_DENIED_ERROR);
             case 401:
                 return new StatusException("User is not authorized", e, StatusCodes.AUTHORIZATION_ERROR);
             default:

@@ -26,14 +26,14 @@ package com.jaspersoft.android.sdk.service.exception;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.0
  */
 public final class StatusCodes {
     public static final int ERROR = 1;
     public static final int NETWORK_ERROR = 2;
     public static final int CLIENT_ERROR = 3;
     public static final int INTERNAL_ERROR = 4;
-    public static final int PERMISSION_ERROR = 5;
+    public static final int PERMISSION_DENIED_ERROR = 5;
     public static final int AUTHORIZATION_ERROR = 6;
 
     // EXPORT
