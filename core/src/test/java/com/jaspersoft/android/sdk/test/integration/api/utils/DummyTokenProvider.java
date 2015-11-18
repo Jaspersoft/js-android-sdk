@@ -46,7 +46,7 @@ public final class DummyTokenProvider {
     }
 
     @NotNull
-    public String provideToken() {
+    public String provideToken() throws Exception {
         if (mToken == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                     .baseUrl(mJrsMetadata.getServerUrl())
@@ -57,7 +57,7 @@ public final class DummyTokenProvider {
         return mToken;
     }
 
-    public String token() {
+    public String token() throws Exception {
         return provideToken();
     }
 }

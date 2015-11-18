@@ -73,13 +73,13 @@ public class ReportOptionRestApiTest {
     }
 
     @Test
-    public void shouldRequestReportOptionsList() {
+    public void shouldRequestReportOptionsList() throws Exception {
         Set<ReportOption> response = apiUnderTest.requestReportOptionsList(mAuthenticator.token(), REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 
     @Test
-    public void apiSupportsCrudForReportOption() {
+    public void apiSupportsCrudForReportOption() throws Exception {
         ReportOption response = apiUnderTest.createReportOption(mAuthenticator.token(), REPORT_URI, "label", CONTROL_PARAMETERS, true);
         assertThat(response.getLabel(), is("label"));
 

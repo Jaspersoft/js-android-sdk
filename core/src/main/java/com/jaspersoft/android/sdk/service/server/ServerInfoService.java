@@ -24,13 +24,16 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 import org.jetbrains.annotations.TestOnly;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 /**
@@ -55,18 +58,36 @@ public final class ServerInfoService {
         return new ServerInfoService(restApi, ServerInfoTransformer.get());
     }
 
-    public ServerInfo requestServerInfo() {
-        ServerInfoData response = mRestApi.requestServerInfo();
-        return mTransformer.transform(response);
+    public ServerInfo requestServerInfo() throws JSException {
+        try {
+            ServerInfoData response = mRestApi.requestServerInfo();
+            return mTransformer.transform(response);
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 
-    public ServerVersion requestServerVersion() {
-        String version = mRestApi.requestVersion();
-        return ServerVersion.defaultParser().parse(version);
+    public ServerVersion requestServerVersion() throws JSException {
+        try {
+            String version = mRestApi.requestVersion();
+            return ServerVersion.defaultParser().parse(version);
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 
-    public SimpleDateFormat requestServerDateTimeFormat() {
-        String dateTimeFormat = mRestApi.requestDateTimeFormatPattern();
-        return new SimpleDateFormat(dateTimeFormat);
+    public SimpleDateFormat requestServerDateTimeFormat() throws JSException {
+        try {
+            String dateTimeFormat = mRestApi.requestDateTimeFormatPattern();
+            return new SimpleDateFormat(dateTimeFormat);
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 }

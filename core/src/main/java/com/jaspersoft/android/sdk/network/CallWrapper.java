@@ -44,29 +44,21 @@ final class CallWrapper<Body> {
         return new CallWrapper<>(originalCall);
     }
 
-    public Body body() {
-        try {
-            Response<Body> response = mDelegateCall.execute();
-            if (response.isSuccess()) {
-                return response.body();
-            } else {
-                throw RestError.httpError(response);
-            }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
+    public Body body() throws HttpException, IOException {
+        Response<Body> response = mDelegateCall.execute();
+        if (response.isSuccess()) {
+            return response.body();
+        } else {
+            throw HttpException.httpError(response);
         }
     }
 
-    public Response<Body> response() {
-        try {
-            Response<Body> response = mDelegateCall.execute();
-            if (response.isSuccess()) {
-                return response;
-            } else {
-                throw RestError.httpError(response);
-            }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
+    public Response<Body> response() throws HttpException, IOException {
+        Response<Body> response = mDelegateCall.execute();
+        if (response.isSuccess()) {
+            return response;
+        } else {
+            throw HttpException.httpError(response);
         }
     }
 }

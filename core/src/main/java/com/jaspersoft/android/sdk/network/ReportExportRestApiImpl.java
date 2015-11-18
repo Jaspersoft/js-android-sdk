@@ -34,6 +34,8 @@ import com.squareup.okhttp.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -59,7 +61,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
     @Override
     public ExportExecutionDescriptor runExportExecution(@Nullable String token,
                                                         @Nullable String executionId,
-                                                        @Nullable ExecutionRequestOptions executionOptions) {
+                                                        @Nullable ExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
@@ -72,7 +74,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
     @Override
     public ExecutionStatus checkExportExecutionStatus(@Nullable String token,
                                                       @Nullable String executionId,
-                                                      @Nullable String exportId) {
+                                                      @Nullable String exportId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
@@ -85,7 +87,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
     @Override
     public ExportOutputResource requestExportOutput(@Nullable String token,
                                                     @Nullable String executionId,
-                                                    @Nullable String exportId) {
+                                                    @Nullable String exportId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
@@ -106,7 +108,7 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
     public OutputResource requestExportAttachment(@Nullable String token,
                                                   @Nullable String executionId,
                                                   @Nullable String exportId,
-                                                  @Nullable String attachmentId) {
+                                                  @Nullable String attachmentId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
         Utils.checkNotNull(attachmentId, "Attachment id should not be null");

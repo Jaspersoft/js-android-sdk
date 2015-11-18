@@ -64,7 +64,7 @@ public class SearchTaskImplTest {
     private SearchTaskImpl objectUnderTest;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mTokenProvider, mInfoProvider);
 
@@ -84,7 +84,7 @@ public class SearchTaskImplTest {
     }
 
     @Test
-    public void nextLookupShouldDefineSearchStrategy() {
+    public void nextLookupShouldDefineSearchStrategy() throws Exception {
         objectUnderTest.nextLookup();
 
         PowerMockito.verifyStatic(times(1));
@@ -94,7 +94,7 @@ public class SearchTaskImplTest {
     }
 
     @Test
-    public void secondLookupShouldUseCachedStrategy() {
+    public void secondLookupShouldUseCachedStrategy() throws Exception {
         objectUnderTest.nextLookup();
         objectUnderTest.nextLookup();
 

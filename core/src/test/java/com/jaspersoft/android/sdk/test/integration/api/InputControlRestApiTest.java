@@ -74,7 +74,7 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideInputControlsList() {
+    public void shouldProvideInputControlsList() throws Exception {
         Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, false);
         assertThat(controls, is(not(empty())));
 
@@ -86,7 +86,7 @@ public class InputControlRestApiTest {
      * TODO: Implement annotation to mark specific API tests.
      */
     @Test
-    public void shouldProvideInputControlsListIfStateExcluded() {
+    public void shouldProvideInputControlsListIfStateExcluded() throws Exception {
         Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, true);
         assertThat(controls, is(not(empty())));
 
@@ -95,13 +95,13 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void shouldProvideFreshInitialInputControlsValues() {
+    public void shouldProvideFreshInitialInputControlsValues() throws Exception {
         Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(mAuthenticator.token(), REPORT_URI, true);
         assertThat(states, is(not(empty())));
     }
 
     @Test
-    public void shouldProvideFreshStatesForInputControls() {
+    public void shouldProvideFreshStatesForInputControls() throws Exception {
         Collection<InputControlState> states = mRestApi.requestInputControlsStates(mAuthenticator.token(), REPORT_URI, CONTROL_PARAMETERS, true);
         assertThat(states, is(not(empty())));
     }

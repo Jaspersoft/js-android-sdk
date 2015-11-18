@@ -140,7 +140,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testRunShouldThrowFailedIfStatusFailed() {
+    public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
         mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/report/uri' failed on server side");
 
@@ -162,7 +162,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testRunShouldThrowCancelledIfStatusCancelled() {
+    public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
         mException.expect(ReportExportException.class);
         mException.expectMessage("Export for report '/report/uri' was cancelled");
 
@@ -184,7 +184,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void ensureThatExportCancelledEventWillBeResolved() {
+    public void ensureThatExportCancelledEventWillBeResolved() throws Exception {
         mockRunExportExecution("cancelled", "ready");
         mockReportExecutionDetails("ready");
 
@@ -217,7 +217,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() {
+    public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
@@ -227,7 +227,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testAwaitCompleteReportThrowFailedIfStatusFailed() {
+    public void testAwaitCompleteReportThrowFailedIfStatusFailed() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
@@ -236,20 +236,20 @@ public class ReportExecutionTest {
         objectUnderTest.waitForReportCompletion();
     }
 
-    private void mockCheckExportExecStatus(String... statusChain) {
+    private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
         when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
 
-    private void mockRunExportExecution(String... statusChain) {
+    private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
         when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
         when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
 
-    private void mockReportExecutionDetails(String... statusChain) {
+    private void mockReportExecutionDetails(String... statusChain) throws Exception {
         ensureChain(statusChain);
         Set<ExportDescriptor> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("execution");

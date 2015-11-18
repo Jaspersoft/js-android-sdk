@@ -24,8 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.service.report.exception.ReportExportException;
-import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 import org.junit.Test;
 
@@ -90,32 +89,32 @@ public class ExecutionExceptionTest {
     @Test
     public void testReportCancelledAdaptsToClientEx() throws Exception {
         ExecutionException ex = ExecutionException.reportCancelled("/");
-        RuntimeException runtimeException = ex.adaptToClientException();
-        assertThat(runtimeException.getMessage(), is(notNullValue()));
-        assertThat(runtimeException, is(instanceOf(ReportRunException.class)));
+        JSException clientException = ex.adaptToClientException();
+        assertThat(clientException.getMessage(), is(notNullValue()));
+        assertThat(clientException.code(), is(JSException.REPORT_EXECUTION_CANCELLED));
     }
 
     @Test
     public void testReportFailedAdaptsToClientEx() throws Exception {
         ExecutionException ex = ExecutionException.reportFailed("/");
-        RuntimeException runtimeException = ex.adaptToClientException();
-        assertThat(runtimeException.getMessage(), is(notNullValue()));
-        assertThat(runtimeException, is(instanceOf(ReportRunException.class)));
+        JSException clientException = ex.adaptToClientException();
+        assertThat(clientException.getMessage(), is(notNullValue()));
+        assertThat(clientException.code(), is(JSException.REPORT_EXECUTION_FAILED));
     }
 
     @Test
     public void testExportCancelledAdaptsToClientEx() throws Exception {
         ExecutionException ex = ExecutionException.exportCancelled("/");
-        RuntimeException runtimeException = ex.adaptToClientException();
-        assertThat(runtimeException.getMessage(), is(notNullValue()));
-        assertThat(runtimeException, is(instanceOf(ReportExportException.class)));
+        JSException clientException = ex.adaptToClientException();
+        assertThat(clientException.getMessage(), is(notNullValue()));
+        assertThat(clientException.code(), is(JSException.EXPORT_EXECUTION_CANCELLED));
     }
 
     @Test
     public void testExportFailedAdaptsToClientEx() throws Exception {
         ExecutionException ex = ExecutionException.exportFailed("/");
-        RuntimeException runtimeException = ex.adaptToClientException();
-        assertThat(runtimeException.getMessage(), is(notNullValue()));
-        assertThat(runtimeException, is(instanceOf(ReportExportException.class)));
+        JSException clientException = ex.adaptToClientException();
+        assertThat(clientException.getMessage(), is(notNullValue()));
+        assertThat(clientException.code(), is(JSException.EXPORT_EXECUTION_FAILED));
     }
 }

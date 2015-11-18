@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -77,91 +75,91 @@ public class ReportOptionRestApiTest {
     }
 
     @Test
-    public void requestReportOptionsListShouldNotAllowNullReportUnitUri() {
+    public void requestReportOptionsListShouldNotAllowNullReportUnitUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
         restApiUnderTest.requestReportOptionsList("cookie", null);
     }
 
     @Test
-    public void requestReportOptionsListShouldNotAllowNullToken() {
+    public void requestReportOptionsListShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.requestReportOptionsList(null, "/my/uri");
     }
 
     @Test
-    public void createReportOptionShouldNotAllowNullReportUri() {
+    public void createReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
         restApiUnderTest.createReportOption("cookie", null, "label", Collections.EMPTY_MAP, false);
     }
 
     @Test
-    public void createReportOptionShouldNotAllowNullToken() {
+    public void createReportOptionShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.createReportOption(null, "/my/uri", "label", Collections.EMPTY_MAP, false);
     }
 
     @Test
-    public void createReportOptionShouldNotAllowNullOptionLabel() {
+    public void createReportOptionShouldNotAllowNullOptionLabel() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option label should not be null");
         restApiUnderTest.createReportOption("cookie", "any_id", null, Collections.EMPTY_MAP, false);
     }
 
     @Test
-    public void createReportOptionShouldNotAllowNullControlsValues() {
+    public void createReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
         restApiUnderTest.createReportOption("cookie", "any_id", "label", null, false);
     }
 
     @Test
-    public void updateReportOptionShouldNotAllowNullReportUri() {
+    public void updateReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
         restApiUnderTest.updateReportOption("cookie", null, "option_id", Collections.EMPTY_MAP);
     }
 
     @Test
-    public void updateReportOptionShouldNotAllowNullOptionId() {
+    public void updateReportOptionShouldNotAllowNullOptionId() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
         restApiUnderTest.updateReportOption("cookie", "any_id", null, Collections.EMPTY_MAP);
     }
 
     @Test
-    public void updateReportOptionShouldNotAllowNullControlsValues() {
+    public void updateReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
         restApiUnderTest.updateReportOption("cookie", "any_id", "option_id", null);
     }
 
     @Test
-    public void updateReportOptionShouldNotAllowNullToken() {
+    public void updateReportOptionShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.updateReportOption(null, "any_id", "option_id", Collections.EMPTY_MAP);
     }
 
     @Test
-    public void deleteReportOptionShouldNotAllowNullReportUri() {
+    public void deleteReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
         restApiUnderTest.deleteReportOption("cookie", null, "option_id");
     }
 
     @Test
-    public void deleteReportOptionShouldNotAllowNullOptionId() {
+    public void deleteReportOptionShouldNotAllowNullOptionId() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
         restApiUnderTest.deleteReportOption("cookie", "any_id", null);
     }
 
     @Test
-    public void deleteReportOptionShouldNotAllowNullToken() {
+    public void deleteReportOptionShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.deleteReportOption(null, "any_id", "option_id");
@@ -227,8 +225,8 @@ public class ReportOptionRestApiTest {
     }
 
     @Test
-    public void requestReportOptionsListShouldThrow500Error() {
-        mExpectedException.expect(RestError.class);
+    public void requestReportOptionsListShouldThrow500Error() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -236,8 +234,8 @@ public class ReportOptionRestApiTest {
     }
 
     @Test
-    public void updateReportOptionShouldThrowRestErrorFor500() {
-        mExpectedException.expect(RestError.class);
+    public void updateReportOptionShouldThrowRestErrorFor500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -245,8 +243,8 @@ public class ReportOptionRestApiTest {
     }
 
     @Test
-    public void deleteReportOptionShouldThrowRestErrorFor500() {
-        mExpectedException.expect(RestError.class);
+    public void deleteReportOptionShouldThrowRestErrorFor500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 

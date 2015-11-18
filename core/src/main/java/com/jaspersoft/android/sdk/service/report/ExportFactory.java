@@ -54,7 +54,7 @@ final class ExportFactory {
 
     @NotNull
     public ReportExport create(ReportExecutionDescriptor executionDetails,
-                               ExportExecutionDescriptor exportExecutionDetails) {
+                               ExportExecutionDescriptor exportExecutionDetails) throws ExecutionException {
         String exportId = exportExecutionDetails.getExportId();
         ExportDescriptor export = findExportDescriptor(executionDetails, exportId);
         if (export == null) {

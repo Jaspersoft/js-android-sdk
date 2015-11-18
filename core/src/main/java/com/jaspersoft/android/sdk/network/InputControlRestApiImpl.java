@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollec
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @Override
     public Collection<InputControl> requestInputControls(@Nullable String token,
                                                          @Nullable String reportUri,
-                                                         boolean excludeState) {
+                                                         boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -76,7 +77,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     @Override
     public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String token,
                                                                            @Nullable String reportUri,
-                                                                           boolean freshData) {
+                                                                           boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -90,7 +91,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
     public Collection<InputControlState> requestInputControlsStates(@Nullable String token,
                                                                     @Nullable String reportUri,
                                                                     @Nullable Map<String, Set<String>> controlsValues,
-                                                                    boolean freshData) {
+                                                                    boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
         Utils.checkNotNull(token, "Request token should not be null");

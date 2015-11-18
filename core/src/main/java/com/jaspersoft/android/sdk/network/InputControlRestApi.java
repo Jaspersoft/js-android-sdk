@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -52,12 +53,12 @@ public interface InputControlRestApi {
     @NotNull
     Collection<InputControl> requestInputControls(@NotNull String token,
                                                   @NotNull String reportUri,
-                                                  boolean excludeState);
+                                                  boolean excludeState) throws HttpException, IOException;
 
     @NotNull
     Collection<InputControlState> requestInputControlsInitialStates(@NotNull String token,
                                                                     @NotNull String reportUri,
-                                                                    boolean freshData);
+                                                                    boolean freshData) throws HttpException, IOException;
 
     /**
      * Provides values for specified controls. This API helpful to
@@ -73,7 +74,7 @@ public interface InputControlRestApi {
     Collection<InputControlState> requestInputControlsStates(@NotNull String token,
                                                              @NotNull String reportUri,
                                                              @NotNull Map<String, Set<String>> controlsValues,
-                                                             boolean freshData);
+                                                             boolean freshData) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, InputControlRestApi> {
         @Override

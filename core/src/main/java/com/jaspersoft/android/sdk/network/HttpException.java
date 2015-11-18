@@ -36,33 +36,26 @@ import retrofit.Response;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class RestError extends RuntimeException {
-    static RestError networkError(IOException exception) {
-        return new RestError(exception.getMessage(), null, Kind.NETWORK,
+public class HttpException extends Exception {
+    static HttpException networkError(IOException exception) {
+        return new HttpException(exception.getMessage(), null,
                 exception);
     }
 
-    static RestError httpError(Response response) {
+    static HttpException httpError(Response response) {
         return httpError(response.raw());
     }
 
-    static RestError httpError(com.squareup.okhttp.Response response) {
+    static HttpException httpError(com.squareup.okhttp.Response response) {
         String message = response.code() + " " + response.message();
-        return new RestError(message, response, Kind.HTTP, null);
-    }
-
-    static RestError unexpectedError(Throwable exception) {
-        return new RestError(exception.getMessage(), null, Kind.UNEXPECTED,
-                exception);
+        return new HttpException(message, response, null);
     }
 
     private final com.squareup.okhttp.Response response;
-    private final Kind kind;
 
-    RestError(String message,com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+    HttpException(String message, com.squareup.okhttp.Response response, Throwable exception) {
         super(message, exception);
         this.response = response;
-        this.kind = kind;
     }
 
     // HTTP status code.
@@ -83,20 +76,4 @@ public final class RestError extends RuntimeException {
         return response.request().urlString();
     }
 
-    public Kind kind() {
-        return kind;
-    }
-
-    /** Identifies the event kind which triggered a {@link RestError}. */
-    public enum Kind {
-        /** An {@link IOException} occurred while communicating to the server. */
-        NETWORK,
-        /** A non-200 HTTP status code was received from the server. */
-        HTTP,
-        /**
-         * An internal error occurred while attempting to execute a request. It is best practice to
-         * re-throw this exception so your application crashes.
-         */
-        UNEXPECTED
-    }
 }

@@ -24,14 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.service.report.exception.ReportExportException;
-import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ExecutionException extends RuntimeException {
+final class ExecutionException extends Exception {
     private final Kind mKind;
 
     private ExecutionException(Kind kind, String message) {
@@ -72,16 +71,16 @@ final class ExecutionException extends RuntimeException {
         return Kind.EXPORT_CANCELLED == mKind || Kind.REPORT_CANCELLED == mKind;
     }
 
-    public RuntimeException adaptToClientException() {
+    public JSException adaptToClientException() {
         switch (mKind) {
             case REPORT_FAILED:
             case REPORT_CANCELLED:
-                return new ReportRunException(getMessage(), getCause());
+                return JSException.create(getMessage(), getCause(), JSException.REPORT_EXECUTION_CANCELLED);
             case EXPORT_FAILED:
             case EXPORT_CANCELLED:
-                return new ReportExportException(getMessage(), getCause());
+                return JSException.create(getMessage(), getCause(), JSException.EXPORT_EXECUTION_CANCELLED);
         }
-        return new UnsupportedOperationException("Unexpected type of kind: " + mKind);
+        throw new UnsupportedOperationException("Unexpected type of kind: " + mKind);
     }
 
     private enum Kind {

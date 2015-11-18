@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +60,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<Resource> searchNext() {
+    public Collection<Resource> searchNext() throws JSException {
         int limit = mInitialCriteria.getLimit();
         int offset = mInitialCriteria.getOffset();
 
@@ -75,7 +76,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
         return !mEndReached;
     }
 
-    private void calculateDisposition(int offset) {
+    private void calculateDisposition(int offset) throws JSException {
         boolean serverDispositionUndefined = offset >= mServerDisposition;
         if (serverDispositionUndefined) {
             internalSearch(offset);
@@ -83,7 +84,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @NotNull
-    private Collection<Resource> internalSearch(int limit) {
+    private Collection<Resource> internalSearch(int limit) throws JSException {
         int count = 0;
         while (mBuffer.size() < limit && hasNext()) {
             SearchResult response = performSearch(limit);
@@ -111,7 +112,7 @@ final class EmeraldMR2SearchStrategy implements SearchStrategy {
     }
 
     @NotNull
-    private SearchResult performSearch(int limit) {
+    private SearchResult performSearch(int limit) throws JSException {
         InternalCriteria nextCriteria = mInitialCriteria.newBuilder()
                 .offset(mServerDisposition)
                 .limit(limit)

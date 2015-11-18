@@ -33,8 +33,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -62,7 +60,7 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldReturnResponseForSpringRequest() throws IOException {
+    public void shouldReturnResponseForSpringRequest() throws Exception {
         AuthenticationRestApi authApi = new AuthenticationRestApi.Builder()
                 .baseUrl(mobileDemo2)
                 .logger(TestLogger.get(this))

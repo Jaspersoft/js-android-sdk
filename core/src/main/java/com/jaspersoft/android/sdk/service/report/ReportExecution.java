@@ -28,6 +28,7 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -63,16 +64,18 @@ public final class ReportExecution {
     }
 
     @NotNull
-    public ReportMetadata waitForReportCompletion() {
+    public ReportMetadata waitForReportCompletion() throws JSException {
         try {
             return performAwaitFoReport();
         } catch (ExecutionException ex) {
             throw ex.adaptToClientException();
+        } catch (JSException e) {
+            throw e;
         }
     }
 
     @NotNull
-    public ReportExport export(RunExportCriteria criteria) {
+    public ReportExport export(RunExportCriteria criteria) throws JSException {
         try {
             return performExport(criteria);
         } catch (ExecutionException ex) {
@@ -88,11 +91,13 @@ public final class ReportExecution {
                 }
             }
             throw ex.adaptToClientException();
+        } catch (JSException e) {
+            throw e;
         }
     }
 
     @NotNull
-    private ReportMetadata performAwaitFoReport() {
+    private ReportMetadata performAwaitFoReport() throws JSException, ExecutionException {
         ReportExecutionDescriptor details = requestExecutionDetails();
         ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
         return new ReportMetadata(mReportUri,
@@ -100,14 +105,14 @@ public final class ReportExecution {
     }
 
     @NotNull
-    private ReportExport performExport(RunExportCriteria criteria) {
+    private ReportExport performExport(RunExportCriteria criteria) throws JSException, ExecutionException {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
         waitForExportReadyStatus(exportDetails);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
         return mExportFactory.create(currentDetails, exportDetails);
     }
 
-    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) {
+    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) throws JSException, ExecutionException{
         final String exportId = exportDetails.getExportId();
 
         Status status = Status.wrap(exportDetails.getStatus());
@@ -129,7 +134,7 @@ public final class ReportExecution {
     }
 
     @NotNull
-    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) {
+    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) throws JSException, ExecutionException{
         Status status = Status.wrap(details.getStatus());
 
         ReportExecutionDescriptor resultDetails = details;
@@ -152,12 +157,12 @@ public final class ReportExecution {
     }
 
     @NotNull
-    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) {
+    private ExportExecutionDescriptor runExport(RunExportCriteria criteria) throws JSException {
         return mExportUseCase.runExport(mExecutionId, criteria);
     }
 
     @NotNull
-    private ReportExecutionDescriptor requestExecutionDetails() {
+    private ReportExecutionDescriptor requestExecutionDetails() throws JSException {
         return mExecutionUseCase.requestExecutionDetails(mExecutionId);
     }
 }

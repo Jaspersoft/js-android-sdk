@@ -22,28 +22,37 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report;
+package com.jaspersoft.android.sdk.service.exception;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.jaspersoft.android.sdk.network.HttpException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
-public class RunExportCriteriaTest {
-    private ExecutionCriteria objectUnderTest;
+public class JSException extends Exception {
+    public static final int EXPORT_EXECUTION_CANCELLED = 1;
+    public static final int EXPORT_EXECUTION_FAILED = 2;
+    public static final int REPORT_EXECUTION_CANCELLED = 2;
+    public static final int REPORT_EXECUTION_FAILED = 3;
 
-    @Before
-    public void setUp() throws Exception {
-        objectUnderTest = RunExportCriteria.builder().create();
+    public static JSException wrap(IOException e) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Test
-    public void interactiveShouldBeTrueByDefault() {
-        assertThat(objectUnderTest.isInteractive(), is(true));
+    public static JSException wrap(HttpException e) {
+        throw new UnsupportedOperationException("Not implemented");
     }
+
+    public static JSException create(String message, Throwable cause, int exportExecutionCancelled) {
+        return null;
+    }
+
+    public int code() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+
 }

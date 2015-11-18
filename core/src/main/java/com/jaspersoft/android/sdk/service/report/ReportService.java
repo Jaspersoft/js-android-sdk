@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
@@ -76,16 +77,18 @@ public final class ReportService {
                 reportExportUseCase);
     }
 
-    public ReportExecution run(String reportUri, RunReportCriteria criteria) {
+    public ReportExecution run(String reportUri, RunReportCriteria criteria) throws JSException {
         try {
             return performRun(reportUri, criteria);
         } catch (ExecutionException ex) {
             throw ex.adaptToClientException();
+        } catch (JSException ex) {
+            throw ex;
         }
     }
 
     @NotNull
-    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
+    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) throws JSException, ExecutionException {
         ReportExecutionDescriptor details = mExecutionUseCase.runReportExecution(reportUri, criteria);
 
         waitForReportExecutionStart(reportUri, details);
@@ -98,7 +101,7 @@ public final class ReportService {
                 details.getReportURI());
     }
 
-    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) {
+    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) throws ExecutionException, JSException {
         String executionId = details.getExecutionId();
         Status status = Status.wrap(details.getStatus());
 

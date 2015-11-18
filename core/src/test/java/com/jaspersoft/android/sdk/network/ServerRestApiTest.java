@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.RestError;
-import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 
@@ -58,8 +56,8 @@ public class ServerRestApiTest {
     }
 
     @Test
-    public void shouldThroughRestErrorForHttpError() {
-        mExpectedException.expect(RestError.class);
+    public void shouldThroughRestErrorForHttpError() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 

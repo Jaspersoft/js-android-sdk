@@ -61,7 +61,7 @@ public class JrsAuthenticatorTest {
     }
 
     @Test
-    public void authenticateShouldNotAcceptNullCredentials() {
+    public void authenticateShouldNotAcceptNullCredentials() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Credentials should not be null");
 

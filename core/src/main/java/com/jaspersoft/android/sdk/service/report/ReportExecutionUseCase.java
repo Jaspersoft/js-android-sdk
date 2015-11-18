@@ -24,13 +24,17 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.exception.JSException;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -50,19 +54,37 @@ final class ReportExecutionUseCase {
     }
 
     @NotNull
-    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) {
+    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws JSException {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
-        return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
+        try {
+            return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 
     @NotNull
-    public Status requestStatus(String executionId) {
-        ExecutionStatus executionStatus = mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
-        return Status.wrap(executionStatus.getStatus());
+    public Status requestStatus(String executionId) throws JSException {
+        try {
+            ExecutionStatus executionStatus = mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
+            return Status.wrap(executionStatus.getStatus());
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 
     @NotNull
-    public ReportExecutionDescriptor requestExecutionDetails(String executionId) {
-        return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
+    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws JSException {
+        try {
+            return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
+        } catch (HttpException e) {
+            throw JSException.wrap(e);
+        } catch (IOException e) {
+            throw JSException.wrap(e);
+        }
     }
 }

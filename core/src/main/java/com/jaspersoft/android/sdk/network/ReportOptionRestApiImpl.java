@@ -32,6 +32,7 @@ import com.squareup.okhttp.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     @NotNull
     @Override
     public Set<ReportOption> requestReportOptionsList(@Nullable String token,
-                                                      @Nullable String reportUnitUri) {
+                                                      @Nullable String reportUnitUri) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -86,7 +87,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
                                            @Nullable String reportUnitUri,
                                            @Nullable String optionLabel,
                                            @Nullable Map<String, Set<String>> controlsValues,
-                                           boolean overwrite) {
+                                           boolean overwrite) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionLabel, "Option label should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
@@ -100,7 +101,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     public void updateReportOption(@Nullable String token,
                                    @Nullable String reportUnitUri,
                                    @Nullable String optionId,
-                                   @Nullable Map<String, Set<String>> controlsValues) {
+                                   @Nullable Map<String, Set<String>> controlsValues) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
@@ -113,7 +114,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     @Override
     public void deleteReportOption(@Nullable String token,
                                    @Nullable String reportUnitUri,
-                                   @Nullable String optionId) {
+                                   @Nullable String optionId) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");

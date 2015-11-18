@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,7 +76,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldStartReportExecution() {
+    public void shouldStartReportExecution() throws Exception {
         ReportExecutionDescriptor response = startExecution();
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatus(), is(notNullValue()));
@@ -87,14 +86,14 @@ public class ReportExecutionRestApiTest {
      * TODO: TEST IS FLAKY provide workaround
      */
     @Ignore
-    public void shouldCancelReportExecution() throws InterruptedException {
+    public void shouldCancelReportExecution() throws Exception {
         ReportExecutionDescriptor response = startExecution();
         boolean cancelled = apiUnderTest.cancelReportExecution(mAuthenticator.token(), response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
     @Test
-    public void shouldReturnReportExecutionDetails() throws IOException {
+    public void shouldReturnReportExecutionDetails() throws Exception {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
@@ -103,7 +102,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldCheckReportExecutionStatus() throws IOException {
+    public void shouldCheckReportExecutionStatus() throws Exception {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(mAuthenticator.token(), executionResponse.getExecutionId());
@@ -114,7 +113,7 @@ public class ReportExecutionRestApiTest {
      * TODO: API is broken requires investigation before release
      */
     @Ignore
-    public void searchForExecutionShouldReturnResult() throws IOException {
+    public void searchForExecutionShouldReturnResult() throws Exception {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         Map<String, String> params = new HashMap<>();
@@ -125,7 +124,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void updateOfParametersForExecutionShouldReturnResult() {
+    public void updateOfParametersForExecutionShouldReturnResult() throws Exception {
         List<Map<String, Set<String>>> list = new ArrayList<>();
 
         Map<String, Set<String>> reportParameter = new HashMap<>();
@@ -141,12 +140,12 @@ public class ReportExecutionRestApiTest {
      * Helper methods
      */
     @NotNull
-    private ReportExecutionDescriptor startExecution() {
+    private ReportExecutionDescriptor startExecution() throws Exception  {
         return startExecution(REPORT_URI);
     }
 
     @NotNull
-    private ReportExecutionDescriptor startExecution(String uri) {
+    private ReportExecutionDescriptor startExecution(String uri) throws Exception {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
         Map<String, Set<String>> params = new HashMap<>();
         params.put("ProductFamily", new HashSet<String>(Collections.singletonList("Food")));

@@ -28,7 +28,7 @@ package com.jaspersoft.android.sdk.service.report.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExportException extends RuntimeException {
+public final class ReportExportException extends Exception {
     public ReportExportException(String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
     }

@@ -25,12 +25,14 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -69,7 +71,7 @@ final class SpringAuthService {
     }
 
     @NotNull
-    public String authenticate(SpringCredentials credentials) {
+    public String authenticate(SpringCredentials credentials) throws IOException, HttpException {
         String password = credentials.getPassword();
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 

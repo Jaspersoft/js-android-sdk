@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.InputControlRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
@@ -86,57 +84,57 @@ public class InputControlRestApiTest {
     }
 
     @Test
-    public void requestInputControlsShouldNotAllowNullReportUri() {
+    public void requestInputControlsShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
         restApiUnderTest.requestInputControls("cookie", null, false);
     }
 
     @Test
-    public void requestInputControlsInitialStatesShouldNotAllowNullToken() {
+    public void requestInputControlsInitialStatesShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.requestInputControlsInitialStates(null, "/uri", false);
     }
 
     @Test
-    public void requestInputControlsStatesShouldNotAllowNullReportUri() {
+    public void requestInputControlsStatesShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
         restApiUnderTest.requestInputControlsStates("cookie", null, Collections.EMPTY_MAP, true);
     }
 
     @Test
-    public void requestInputControlsStatesShouldNotAllowNullControlParams() {
+    public void requestInputControlsStatesShouldNotAllowNullControlParams() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
         restApiUnderTest.requestInputControlsStates("cookie", "any_id", null, true);
     }
 
     @Test
-    public void requestInputControlsStatesShouldNotAllowNullToken() {
+    public void requestInputControlsStatesShouldNotAllowNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
         restApiUnderTest.requestInputControlsStates(null, "any_id", Collections.EMPTY_MAP, true);
     }
 
     @Test
-    public void requestInputControlsShouldThrowRestErrorFor500() {
-        mExpectedException.expect(RestError.class);
+    public void requestInputControlsShouldThrowRestErrorFor500() throws Exception {
+        mExpectedException.expect(HttpException.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
         restApiUnderTest.requestInputControls("cookie", "any_id", true);
     }
 
     @Test
-    public void requestInputControlsInitialStatesShouldThrowRestErrorFor500() {
-        mExpectedException.expect(RestError.class);
+    public void requestInputControlsInitialStatesShouldThrowRestErrorFor500() throws Exception {
+        mExpectedException.expect(HttpException.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
         restApiUnderTest.requestInputControlsInitialStates("cookie", "any_id", true);
     }
 
     @Test
-    public void requestInputControlsStatesShouldThrowRestErrorFor500() {
-        mExpectedException.expect(RestError.class);
+    public void requestInputControlsStatesShouldThrowRestErrorFor500() throws Exception {
+        mExpectedException.expect(HttpException.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
         restApiUnderTest.requestInputControlsStates("cookie", "any_id", Collections.EMPTY_MAP, true);
     }

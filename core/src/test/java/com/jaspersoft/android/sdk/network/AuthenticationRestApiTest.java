@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -70,7 +68,7 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldReturnResponseForSuccessRedirect() {
+    public void shouldReturnResponseForSuccessRedirect() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create302()
                 .addHeader("Set-Cookie", "cookie1")
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
@@ -81,8 +79,8 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldRiseErrorForErrorRedirect() {
-        mExpectedException.expect(RestError.class);
+    public void shouldRiseErrorForErrorRedirect() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         MockResponse mockResponse = MockResponseFactory.create302()
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR)
@@ -93,8 +91,8 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldRiseErrorForHttpException() {
-        mExpectedException.expect(RestError.class);
+    public void shouldRiseErrorForHttpException() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -102,7 +100,7 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldRiseIllegalExceptionIfLocationHeaderIsMissing() {
+    public void shouldRiseIllegalExceptionIfLocationHeaderIsMissing() throws Exception {
         mExpectedException.expect(IllegalStateException.class);
         mExpectedException.expectMessage("Location HEADER is missing please contact JRS admin");
 
@@ -112,7 +110,7 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldReturnEncryptionKeyIfApiAvailable() {
+    public void shouldReturnEncryptionKeyIfApiAvailable() throws Exception {
         MockResponse anonymousCookie = MockResponseFactory.create200()
                 .setBody("6.1")
                 .addHeader("Set-Cookie", "cookie1");
@@ -126,7 +124,7 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldReturnEmptyEncryptionKeyIfApiNotAvailable() {
+    public void shouldReturnEmptyEncryptionKeyIfApiNotAvailable() throws Exception {
         MockResponse anonymousCookie = MockResponseFactory.create200()
                 .setBody("6.1")
                 .addHeader("Set-Cookie", "cookie1");

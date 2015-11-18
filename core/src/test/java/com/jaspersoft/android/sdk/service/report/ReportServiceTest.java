@@ -100,7 +100,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunShouldCreateActiveSession() {
+    public void testRunShouldCreateActiveSession() throws Exception {
         mockRunReportExecution("execution");
         mockRunReportExecution("ready");
 
@@ -112,7 +112,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunThrowsFailedStatusImmediately() {
+    public void testRunThrowsFailedStatusImmediately() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
@@ -122,7 +122,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunShouldThrowFailedIfStatusFailed() {
+    public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' failed on server side");
 
@@ -133,7 +133,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunThrowsCancelledStatusImmediately() {
+    public void testRunThrowsCancelledStatusImmediately() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
@@ -143,7 +143,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunShouldThrowCancelledIfStatusCancelled() {
+    public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
         mException.expect(ReportRunException.class);
         mException.expectMessage("Report execution '/report/uri' was cancelled");
 
@@ -154,7 +154,7 @@ public class ReportServiceTest {
     }
 
     @Test
-    public void testRunShouldLoopUntilStatusExecution() {
+    public void testRunShouldLoopUntilStatusExecution() throws Exception {
         mockRunReportExecution("queued");
         mockReportExecutionStatus("queued", "execution");
 
@@ -162,12 +162,12 @@ public class ReportServiceTest {
         verify(executionApi, times(2)).requestReportExecutionStatus(anyString(), eq("exec_id"));
     }
 
-    private void mockReportExecutionStatus(String... statusChain) {
+    private void mockReportExecutionStatus(String... statusChain) throws Exception {
         when(statusDetails.getStatus()).then(StatusChain.of(statusChain));
         when(executionApi.requestReportExecutionStatus(anyString(), anyString())).thenReturn(statusDetails);
     }
 
-    private void mockRunReportExecution(String execution) {
+    private void mockRunReportExecution(String execution) throws Exception {
         when(initDetails.getStatus()).thenReturn(execution);
         when(initDetails.getExecutionId()).thenReturn("exec_id");
         when(executionApi.runReportExecution(anyString(), any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
