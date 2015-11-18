@@ -22,14 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report.exception;
+package com.jaspersoft.android.sdk.service.exception;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
-public final class ReportRunException extends Exception {
-    public ReportRunException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
+public class StatusException extends Exception {
+    private final int mCode;
+
+    public StatusException(String message, Throwable cause, int code) {
+        super(message, cause);
+        mCode = code;
+    }
+
+    public int code() {
+        return mCode;
     }
 }

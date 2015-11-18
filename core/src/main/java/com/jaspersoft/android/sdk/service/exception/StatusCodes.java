@@ -22,14 +22,26 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report.exception;
+package com.jaspersoft.android.sdk.service.exception;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
-public final class ReportExportException extends Exception {
-    public ReportExportException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
-    }
+public final class StatusCodes {
+    public static final int ERROR = 1;
+    public static final int NETWORK_ERROR = 2;
+    public static final int CLIENT_ERROR = 3;
+    public static final int INTERNAL_ERROR = 4;
+    public static final int PERMISSION_ERROR = 5;
+    public static final int AUTHORIZATION_ERROR = 6;
+
+    // EXPORT
+    public static final int EXPORT_PAGE_OUT_OF_RANGE = 100;
+    public static final int EXPORT_EXECUTION_CANCELLED = 101;
+    public static final int EXPORT_EXECUTION_FAILED = 102;
+
+    // REPORT
+    public static final int REPORT_EXECUTION_CANCELLED = 201;
+    public static final int REPORT_EXECUTION_FAILED = 202;
 }

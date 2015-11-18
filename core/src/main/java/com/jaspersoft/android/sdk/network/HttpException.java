@@ -25,7 +25,14 @@
 package com.jaspersoft.android.sdk.network;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import retrofit.Response;
 
@@ -37,10 +44,6 @@ import retrofit.Response;
  * @since 2.0
  */
 public class HttpException extends Exception {
-    static HttpException networkError(IOException exception) {
-        return new HttpException(exception.getMessage(), null,
-                exception);
-    }
 
     static HttpException httpError(Response response) {
         return httpError(response.raw());
@@ -68,8 +71,15 @@ public class HttpException extends Exception {
         return response.message();
     }
 
-    public String errorBody() {
-        return Utils.bodyToString(response.body());
+    public ErrorDescriptor getDescriptor() throws IOException {
+        Gson gson = GsonFactory.create();
+        InputStream stream = response.body().byteStream();
+        InputStreamReader reader = new InputStreamReader(stream);
+        try {
+            return gson.fromJson(reader, ErrorDescriptor.class);
+        } catch (JsonParseException ex) {
+            return null;
+        }
     }
 
     public String urlString() {

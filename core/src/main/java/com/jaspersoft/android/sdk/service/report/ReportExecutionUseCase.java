@@ -30,7 +30,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,37 +55,36 @@ final class ReportExecutionUseCase {
     }
 
     @NotNull
-    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws JSException {
+    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws StatusException {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
         try {
             return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public Status requestStatus(String executionId) throws JSException {
+    public ExecutionStatus requestStatus(String executionId) throws StatusException {
         try {
-            ExecutionStatus executionStatus = mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
-            return Status.wrap(executionStatus.getStatus());
+            return mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws JSException {
+    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws StatusException {
         try {
             return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 }

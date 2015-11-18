@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +37,6 @@ import java.util.Collection;
  */
 public interface SearchTask {
     @NotNull
-    Collection<Resource> nextLookup() throws JSException;
+    Collection<Resource> nextLookup() throws StatusException;
     boolean hasNext();
 }

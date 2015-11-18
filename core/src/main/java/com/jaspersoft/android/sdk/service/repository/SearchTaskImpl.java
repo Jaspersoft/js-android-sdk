@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
@@ -60,7 +60,7 @@ final class SearchTaskImpl implements SearchTask {
 
     @NotNull
     @Override
-    public Collection<Resource> nextLookup() throws JSException {
+    public Collection<Resource> nextLookup() throws StatusException {
         return defineSearchStrategy().searchNext();
     }
 

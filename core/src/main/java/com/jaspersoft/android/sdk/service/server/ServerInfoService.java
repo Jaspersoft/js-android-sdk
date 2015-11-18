@@ -29,7 +29,8 @@ import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
 
 import org.jetbrains.annotations.TestOnly;
 
@@ -58,36 +59,36 @@ public final class ServerInfoService {
         return new ServerInfoService(restApi, ServerInfoTransformer.get());
     }
 
-    public ServerInfo requestServerInfo() throws JSException {
+    public ServerInfo requestServerInfo() throws StatusException {
         try {
             ServerInfoData response = mRestApi.requestServerInfo();
             return mTransformer.transform(response);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 
-    public ServerVersion requestServerVersion() throws JSException {
+    public ServerVersion requestServerVersion() throws StatusException {
         try {
             String version = mRestApi.requestVersion();
             return ServerVersion.defaultParser().parse(version);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 
-    public SimpleDateFormat requestServerDateTimeFormat() throws JSException {
+    public SimpleDateFormat requestServerDateTimeFormat() throws StatusException {
         try {
             String dateTimeFormat = mRestApi.requestDateTimeFormatPattern();
             return new SimpleDateFormat(dateTimeFormat);
         } catch (HttpException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw JSException.wrap(e);
+            throw StatusExceptionMapper.transform(e);
         }
     }
 }

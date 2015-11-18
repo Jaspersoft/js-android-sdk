@@ -26,11 +26,13 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,6 +64,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
         ExecutionStatus.class,
+        ErrorDescriptor.class,
         ReportExecutionDescriptor.class,
         ExecutionOptionsDataMapper.class})
 public class ReportServiceTest {
@@ -72,6 +75,8 @@ public class ReportServiceTest {
     ReportExportRestApi exportApi;
     @Mock
     TokenProvider mTokenProvider;
+    @Mock
+    ErrorDescriptor mDescriptor;
 
     @Mock
     RunReportCriteria configuration;
@@ -113,44 +118,48 @@ public class ReportServiceTest {
 
     @Test
     public void testRunThrowsFailedStatusImmediately() throws Exception {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' failed on server side");
-
         mockRunReportExecution("failed");
 
-        objectUnderTest.run("/report/uri", configuration);
+        try {
+            objectUnderTest.run("/report/uri", configuration);
+        } catch (StatusException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
+        }
     }
 
     @Test
     public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' failed on server side");
-
         mockRunReportExecution("queued");
         mockReportExecutionStatus("failed");
 
-        objectUnderTest.run("/report/uri", configuration);
+        try {
+            objectUnderTest.run("/report/uri", configuration);
+        } catch (StatusException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
+        }
     }
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' was cancelled");
-
         mockRunReportExecution("cancelled");
 
-        objectUnderTest.run("/report/uri", configuration);
+        try {
+            objectUnderTest.run("/report/uri", configuration);
+        } catch (StatusException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
+        }
     }
 
     @Test
     public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' was cancelled");
-
         mockRunReportExecution("queued");
         mockReportExecutionStatus("cancelled");
 
-        objectUnderTest.run("/report/uri", configuration);
+        try {
+            objectUnderTest.run("/report/uri", configuration);
+        } catch (StatusException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
+        }
     }
 
     @Test
@@ -164,11 +173,13 @@ public class ReportServiceTest {
 
     private void mockReportExecutionStatus(String... statusChain) throws Exception {
         when(statusDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(statusDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(executionApi.requestReportExecutionStatus(anyString(), anyString())).thenReturn(statusDetails);
     }
 
     private void mockRunReportExecution(String execution) throws Exception {
         when(initDetails.getStatus()).thenReturn(execution);
+        when(initDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(initDetails.getExecutionId()).thenReturn("exec_id");
         when(executionApi.runReportExecution(anyString(), any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
     }

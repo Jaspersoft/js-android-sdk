@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +57,7 @@ public final class ReportExport {
     }
 
     @NotNull
-    public ReportOutput download() throws JSException {
+    public ReportOutput download() throws StatusException {
         return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
     }
 }

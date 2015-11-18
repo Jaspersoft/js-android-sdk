@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
-import com.jaspersoft.android.sdk.service.exception.JSException;
+import com.jaspersoft.android.sdk.service.exception.StatusException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +51,7 @@ public final class ReportAttachment {
     }
 
     @NotNull
-    public ResourceOutput download() throws JSException {
+    public ResourceOutput download() throws StatusException {
         return mExportUseCase.requestExportAttachmentOutput(
                 mExecutionId, mExportId, mFileName);
     }
