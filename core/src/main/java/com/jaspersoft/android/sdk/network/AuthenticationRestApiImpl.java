@@ -75,9 +75,6 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
             return CookieExtractor.extract(response);
         } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
             String location = response.headers().get("Location");
-            if (location == null) {
-                throw new IllegalStateException("Location HEADER is missing please contact JRS admin");
-            }
             HttpUrl url = HttpUrl.parse(location);
             String errorQueryParameter = url.queryParameter("error");
             if (errorQueryParameter == null) {
