@@ -64,7 +64,7 @@ public class EmeraldMR3SearchStrategyTest {
     SearchResult mResponse;
 
     @Before
-    public void setupMocks() {
+    public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         when(mSearchUseCase.performSearch(any(InternalCriteria.class))).thenReturn(mResponse);
@@ -74,7 +74,7 @@ public class EmeraldMR3SearchStrategyTest {
     }
 
     @Test
-    public void shouldMakeImmediateCallOnApiForUserOffsetZero() {
+    public void shouldMakeImmediateCallOnApiForUserOffsetZero() throws Exception {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mSearchUseCase);
 
@@ -88,7 +88,7 @@ public class EmeraldMR3SearchStrategyTest {
     }
 
     @Test
-    public void makesAdditionalCallOnApiIfUserOffsetNotZero() {
+    public void makesAdditionalCallOnApiIfUserOffsetNotZero() throws Exception {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(5).create();
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mSearchUseCase);
 
@@ -102,7 +102,7 @@ public class EmeraldMR3SearchStrategyTest {
     }
 
     @Test
-    public void secondSearchLookupShouldUseNextOffset() {
+    public void secondSearchLookupShouldUseNextOffset() throws Exception {
         InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(searchCriteria, mSearchUseCase);
 
@@ -124,7 +124,7 @@ public class EmeraldMR3SearchStrategyTest {
     }
 
     @Test
-    public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() {
+    public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() throws Exception {
         EmeraldMR3SearchStrategy strategy = new EmeraldMR3SearchStrategy(NO_CRITERIA, mSearchUseCase);
 
         when(mResponse.getNextOffset()).thenReturn(133);
@@ -142,7 +142,7 @@ public class EmeraldMR3SearchStrategyTest {
     }
 
     @Test
-    public void shouldReturnEmptyCollectionForZeroLimit() {
+    public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         SearchStrategy strategy = new EmeraldMR3SearchStrategy(userCriteria, mSearchUseCase);
 

@@ -40,8 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -77,14 +75,14 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void runExportRequestShouldReturnResult() {
+    public void runExportRequestShouldReturnResult() throws Exception {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
         assertThat(execDetails.getExportId(), is(notNullValue()));
     }
 
     @Test
-    public void checkExportRequestStatusShouldReturnResult() throws IOException {
+    public void checkExportRequestStatusShouldReturnResult() throws Exception {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
         ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
@@ -92,7 +90,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void requestExportOutputShouldReturnResult() {
+    public void requestExportOutputShouldReturnResult() throws Exception {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
         ExportOutputResource output = apiUnderTest.requestExportOutput(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
@@ -106,7 +104,7 @@ public class ReportExportRestApiTest {
      * Helper methods
      */
     @NotNull
-    private ExportExecutionDescriptor startExportExecution(ReportExecutionDescriptor exec) {
+    private ExportExecutionDescriptor startExportExecution(ReportExecutionDescriptor exec) throws Exception {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
@@ -114,7 +112,7 @@ public class ReportExportRestApiTest {
     }
 
     @NotNull
-    private ReportExecutionDescriptor startExecution() {
+    private ReportExecutionDescriptor startExecution() throws Exception {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
         return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }

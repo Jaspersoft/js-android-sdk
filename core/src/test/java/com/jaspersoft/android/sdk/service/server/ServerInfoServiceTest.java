@@ -63,7 +63,7 @@ public class ServerInfoServiceTest {
     }
 
     @Test
-    public void requestInfoShouldProvideServerInfoDataObject() {
+    public void requestInfoShouldProvideServerInfoDataObject() throws Exception {
         when(mockApi.requestServerInfo()).thenReturn(mockResponse);
 
         serviceUnderTest.requestServerInfo();

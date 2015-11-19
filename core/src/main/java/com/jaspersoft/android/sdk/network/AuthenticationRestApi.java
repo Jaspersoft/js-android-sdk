@@ -31,6 +31,7 @@ import com.squareup.okhttp.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -42,10 +43,10 @@ public interface AuthenticationRestApi {
     String authenticate(@NotNull String username,
                         @NotNull String password,
                         @Nullable String organization,
-                        @Nullable Map<String, String> params);
+                        @Nullable Map<String, String> params) throws HttpException, IOException;
 
     @NotNull
-    EncryptionKey requestEncryptionMetadata();
+    EncryptionKey requestEncryptionMetadata() throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {
         @Override

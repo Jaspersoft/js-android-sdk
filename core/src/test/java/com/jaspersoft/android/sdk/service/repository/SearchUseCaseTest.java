@@ -89,7 +89,7 @@ public class SearchUseCaseTest {
     }
 
     @Test
-    public void shouldProvideAndAdaptSearchResult() {
+    public void shouldProvideAndAdaptSearchResult() throws Exception {
         when(mResult.getNextOffset()).thenReturn(100);
         when(mRepositoryRestApi.searchResources(anyString(), any(Map.class))).thenReturn(mResult);
         when(mInfoProvider.provideDateTimeFormat()).thenReturn(DATE_TIME_FORMAT);

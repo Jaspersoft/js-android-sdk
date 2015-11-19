@@ -75,7 +75,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldReturnEmptyResponseForNoContentResponse() {
+    public void shouldReturnEmptyResponseForNoContentResponse() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
         ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
@@ -83,7 +83,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForSearchShouldParseHeaderResultCount() {
+    public void requestForSearchShouldParseHeaderResultCount() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Result-Count", "100");
@@ -94,7 +94,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForSearchShouldParseHeaderTotalCount() {
+    public void requestForSearchShouldParseHeaderTotalCount() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Total-Count", "1000");
@@ -105,7 +105,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForSearchShouldParseHeaderStartIndex() {
+    public void requestForSearchShouldParseHeaderStartIndex() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Start-Index", "5");
@@ -116,7 +116,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForSearchShouldParseHeaderNextOffset() {
+    public void requestForSearchShouldParseHeaderNextOffset() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(searchResponse.asString())
                 .addHeader("Next-Offset", "10");
@@ -127,7 +127,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void searchResourcesShouldNotAcceptNullToken() {
+    public void searchResourcesShouldNotAcceptNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -135,7 +135,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForReportResourceShouldNotAcceptNullUri() {
+    public void requestForReportResourceShouldNotAcceptNullUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
 
@@ -143,7 +143,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForReportResourceShouldNotAcceptNullToken() {
+    public void requestForReportResourceShouldNotAcceptNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -151,7 +151,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForFolderResourceShouldNotAcceptNullUri() {
+    public void requestForFolderResourceShouldNotAcceptNullUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Folder uri should not be null");
 
@@ -159,7 +159,7 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForFolderResourceShouldNotAcceptNullToken() {
+    public void requestForFolderResourceShouldNotAcceptNullToken() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -167,8 +167,8 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void searchResourcesShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void searchResourcesShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -176,8 +176,8 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestReportResourceShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void requestReportResourceShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -185,8 +185,8 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestFolderResourceShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void requestFolderResourceShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 

@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,8 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ResourceSearchResult searchResources(@Nullable String token, @Nullable Map<String, Object> searchParams) {
+    public ResourceSearchResult searchResources(@Nullable String token,
+                                                @Nullable Map<String, Object> searchParams) throws IOException, HttpException {
         Utils.checkNotNull(token, "Request token should not be null");
 
         Iterable<?> types = null;
@@ -105,7 +107,8 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ReportLookup requestReportResource(@Nullable String token, @Nullable String resourceUri) {
+    public ReportLookup requestReportResource(@Nullable String token,
+                                              @Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Report uri should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -115,7 +118,8 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public FolderLookup requestFolderResource(@Nullable String token, @Nullable String resourceUri) {
+    public FolderLookup requestFolderResource(@Nullable String token,
+                                              @Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Folder uri should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 

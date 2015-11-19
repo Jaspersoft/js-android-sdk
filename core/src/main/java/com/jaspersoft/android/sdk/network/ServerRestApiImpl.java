@@ -28,6 +28,8 @@ import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
 import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.GET;
@@ -47,62 +49,62 @@ final class ServerRestApiImpl implements ServerRestApi {
 
     @NotNull
     @Override
-    public ServerInfoData requestServerInfo() {
+    public ServerInfoData requestServerInfo() throws IOException, HttpException {
         Call<ServerInfoData> call = mApi.requestServerInfo();
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public String requestEdition() {
+    public String requestEdition() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestEdition()).body();
     }
 
     @NotNull
     @Override
-    public String requestVersion() {
+    public String requestVersion() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestVersion()).body();
     }
 
     @NotNull
     @Override
-    public String requestBuild() {
+    public String requestBuild() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestBuild()).body();
     }
 
     @NotNull
     @Override
-    public String requestFeatures() {
+    public String requestFeatures() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestFeatures()).body();
     }
 
     @NotNull
     @Override
-    public String requestEditionName() {
+    public String requestEditionName() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestEditionName()).body();
     }
 
     @NotNull
     @Override
-    public String requestLicenseType() {
+    public String requestLicenseType() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestLicenseType()).body();
     }
 
     @NotNull
     @Override
-    public String requestExpiration() {
+    public String requestExpiration() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestExpiration()).body();
     }
 
     @NotNull
     @Override
-    public String requestDateFormatPattern() {
+    public String requestDateFormatPattern() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
     }
 
     @NotNull
     @Override
-    public String requestDateTimeFormatPattern() {
+    public String requestDateTimeFormatPattern() throws IOException, HttpException {
         return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
     }
 

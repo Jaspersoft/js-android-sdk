@@ -79,7 +79,7 @@ public class SpringAuthServiceTest {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         objectUnderTest = new SpringAuthService(
                 mAlgorithm,
@@ -100,7 +100,7 @@ public class SpringAuthServiceTest {
     }
 
     @Test
-    public void shouldAuthenticateWithHashedPasswordIfEncryptionKeyIsMissing() {
+    public void shouldAuthenticateWithHashedPasswordIfEncryptionKeyIsMissing() throws Exception {
         when(mKey.isAvailable()).thenReturn(true);
         when(mKey.getExponent()).thenReturn("e");
         when(mKey.getModulus()).thenReturn("m");
@@ -114,7 +114,7 @@ public class SpringAuthServiceTest {
     }
 
     @Test
-    public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing() {
+    public void shouldAuthenticateWithOpenPasswordIfEncryptionKeyIsMissing() throws Exception {
         when(mKey.isAvailable()).thenReturn(false);
 
         objectUnderTest.authenticate(credentials);

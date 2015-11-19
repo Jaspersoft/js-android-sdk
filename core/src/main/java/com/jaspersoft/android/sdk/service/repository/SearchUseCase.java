@@ -24,8 +24,11 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
@@ -33,6 +36,7 @@ import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
@@ -56,16 +60,24 @@ final class SearchUseCase {
     }
 
     @NotNull
-    public SearchResult performSearch(@NotNull InternalCriteria criteria) {
-        ResourceSearchResult response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
-        SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
+    public SearchResult performSearch(@NotNull InternalCriteria criteria) throws ServiceException {
+        ResourceSearchResult response = null;
+        try {
+            response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
 
-        SearchResult searchResult = new SearchResult();
-        searchResult.setNextOffset(response.getNextOffset());
+            SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
 
-        Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
-        searchResult.setResources(resources);
+            SearchResult searchResult = new SearchResult();
+            searchResult.setNextOffset(response.getNextOffset());
 
-        return searchResult;
+            Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+            searchResult.setResources(resources);
+
+            return searchResult;
+        } catch (HttpException e) {
+            throw ServiceExceptionMapper.transform(e);
+        } catch (IOException e) {
+            throw ServiceExceptionMapper.transform(e);
+        }
     }
 }

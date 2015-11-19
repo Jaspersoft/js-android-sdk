@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,22 +39,23 @@ import java.util.Set;
 public interface ReportOptionRestApi {
 
     @NotNull
-    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri, @NotNull String token);
+    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri,
+                                               @NotNull String token) throws HttpException, IOException;
 
     @NotNull
     ReportOption createReportOption(@NotNull String token, @NotNull String reportUnitUri,
                                     @NotNull String optionLabel,
                                     @NotNull Map<String, Set<String>> controlsValues,
-                                    boolean overwrite);
+                                    boolean overwrite) throws HttpException, IOException;
 
     void updateReportOption(@NotNull String token,
                             @NotNull String reportUnitUri,
                             @NotNull String optionId,
-                            @NotNull Map<String, Set<String>> controlsValues);
+                            @NotNull Map<String, Set<String>> controlsValues) throws HttpException, IOException;
 
     void deleteReportOption(@NotNull String token,
                             @NotNull String reportUnitUri,
-                            @NotNull String optionId);
+                            @NotNull String optionId) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
         @Override

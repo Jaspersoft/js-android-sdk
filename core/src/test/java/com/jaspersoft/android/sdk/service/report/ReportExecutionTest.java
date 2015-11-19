@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
@@ -33,8 +34,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
-import com.jaspersoft.android.sdk.service.report.exception.ReportExportException;
-import com.jaspersoft.android.sdk.service.report.exception.ReportRunException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -71,6 +73,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
         ExportExecutionDescriptor.class,
         ExportDescriptor.class,
         ExecutionStatus.class,
+        ErrorDescriptor.class,
         ExecutionOptionsDataMapper.class})
 public class ReportExecutionTest {
 
@@ -84,6 +87,8 @@ public class ReportExecutionTest {
     ExportDescriptor mExportExecution;
     @Mock
     ExecutionStatus mExecutionStatusResponse;
+    @Mock
+    ErrorDescriptor mDescriptor;
 
     @Mock
     ReportExportRestApi mExportRestApi;
@@ -130,46 +135,53 @@ public class ReportExecutionTest {
 
     @Test
     public void testRunThrowsFailedStatusImmediately() throws Exception {
-        mException.expect(ReportExportException.class);
-        mException.expectMessage("Export for report '/report/uri' failed on server side");
-
         // export run request
         mockRunExportExecution("failed");
 
-        objectUnderTest.export(exportCriteria);
+        try {
+            objectUnderTest.export(exportCriteria);
+            fail("Should throw Status exception");
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_FAILED));
+        }
     }
 
     @Test
-    public void testRunShouldThrowFailedIfStatusFailed() {
-        mException.expect(ReportExportException.class);
-        mException.expectMessage("Export for report '/report/uri' failed on server side");
-
+    public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
         mockRunExportExecution("queued");
-
         mockCheckExportExecStatus("failed");
-        objectUnderTest.export(exportCriteria);
+        try {
+            objectUnderTest.export(exportCriteria);
+            fail("Should throw Status exception");
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_FAILED));
+        }
     }
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
-        mException.expect(ReportExportException.class);
-        mException.expectMessage("Export for report '/report/uri' was cancelled");
-
         // export run request
         mockRunExportExecution("cancelled");
 
-        objectUnderTest.export(exportCriteria);
+        try {
+            objectUnderTest.export(exportCriteria);
+            fail("Should throw Status exception");
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_CANCELLED));
+        }
     }
 
     @Test
-    public void testRunShouldThrowCancelledIfStatusCancelled() {
-        mException.expect(ReportExportException.class);
-        mException.expectMessage("Export for report '/report/uri' was cancelled");
-
+    public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("cancelled");
 
-        objectUnderTest.export(exportCriteria);
+        try {
+            objectUnderTest.export(exportCriteria);
+            fail("Should throw Status exception");
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_CANCELLED));
+        }
     }
 
     @Test
@@ -184,7 +196,7 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void ensureThatExportCancelledEventWillBeResolved() {
+    public void ensureThatExportCancelledEventWillBeResolved() throws Exception {
         mockRunExportExecution("cancelled", "ready");
         mockReportExecutionDetails("ready");
 
@@ -217,45 +229,50 @@ public class ReportExecutionTest {
     }
 
     @Test
-    public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' was cancelled");
-
+    public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() throws Exception {
         mockReportExecutionDetails("execution", "cancelled");
 
-        objectUnderTest.waitForReportCompletion();
+        try {
+            objectUnderTest.waitForReportCompletion();
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
+        }
     }
 
     @Test
-    public void testAwaitCompleteReportThrowFailedIfStatusFailed() {
-        mException.expect(ReportRunException.class);
-        mException.expectMessage("Report execution '/report/uri' failed on server side");
-
+    public void testAwaitCompleteReportThrowFailedIfStatusFailed() throws Exception {
         mockReportExecutionDetails("execution", "failed");
 
-        objectUnderTest.waitForReportCompletion();
-    }
+        try {
+            objectUnderTest.waitForReportCompletion();
+        } catch (ServiceException ex) {
+            assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
+        }
+   }
 
-    private void mockCheckExportExecStatus(String... statusChain) {
+    private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecutionStatusResponse.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
 
-    private void mockRunExportExecution(String... statusChain) {
+    private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
         when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExportExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
 
-    private void mockReportExecutionDetails(String... statusChain) {
+    private void mockReportExecutionDetails(String... statusChain) throws Exception {
         ensureChain(statusChain);
         Set<ExportDescriptor> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
         when(mExecDetails.getExports()).thenReturn(exports);
         when(mExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
     }
 

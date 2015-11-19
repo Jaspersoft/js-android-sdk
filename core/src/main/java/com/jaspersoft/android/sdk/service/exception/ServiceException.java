@@ -22,28 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+package com.jaspersoft.android.sdk.service.exception;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class RunExportCriteriaTest {
-    private ExecutionCriteria objectUnderTest;
+public class ServiceException extends Exception {
+    private final int mCode;
 
-    @Before
-    public void setUp() throws Exception {
-        objectUnderTest = RunExportCriteria.builder().create();
+    public ServiceException(String message, Throwable cause, int code) {
+        super(message, cause);
+        mCode = code;
     }
 
-    @Test
-    public void interactiveShouldBeTrueByDefault() {
-        assertThat(objectUnderTest.isInteractive(), is(true));
+    public int code() {
+        return mCode;
     }
 }

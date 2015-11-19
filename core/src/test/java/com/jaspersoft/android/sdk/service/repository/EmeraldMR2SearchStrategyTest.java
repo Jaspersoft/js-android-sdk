@@ -73,7 +73,7 @@ public class EmeraldMR2SearchStrategyTest {
     public static final List<Resource> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
 
     @Before
-    public void setupMocks() {
+    public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         when(mSearchUseCase.performSearch(Matchers.any(InternalCriteria.class))).thenReturn(mResponse);
@@ -146,7 +146,7 @@ public class EmeraldMR2SearchStrategyTest {
     }
 
     @Test
-    public void shouldReturnEmptyCollectionForZeroLimit() {
+    public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
         InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
         EmeraldMR2SearchStrategy strategy = new EmeraldMR2SearchStrategy(userCriteria, mSearchUseCase);
 

@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
@@ -73,7 +71,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void executionIdShouldNotBeNullForRunRequestExecution() {
+    public void executionIdShouldNotBeNullForRunRequestExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -81,7 +79,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void bodyShouldNotBeNullForRunRequestExecution() {
+    public void bodyShouldNotBeNullForRunRequestExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution options should not be null");
 
@@ -89,7 +87,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForRunRequestExecution() {
+    public void tokenShouldNotBeNullForRunRequestExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -97,7 +95,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void executionIdShouldNotBeNullForCheckRequestExecutionStatus() {
+    public void executionIdShouldNotBeNullForCheckRequestExecutionStatus() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -105,7 +103,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void exportIdShouldNotBeNullForCheckRequestExecutionStatus() {
+    public void exportIdShouldNotBeNullForCheckRequestExecutionStatus() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Export id should not be null");
 
@@ -113,7 +111,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForCheckRequestExecutionStatus() {
+    public void tokenShouldNotBeNullForCheckRequestExecutionStatus() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -121,7 +119,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void executionIdParameterShouldNotBeNullForAttachmentRequest() {
+    public void executionIdParameterShouldNotBeNullForAttachmentRequest() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -129,7 +127,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void exportIdParameterShouldNotBeNullForAttachmentRequest() {
+    public void exportIdParameterShouldNotBeNullForAttachmentRequest() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Export id should not be null");
 
@@ -137,7 +135,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void attachmentIdParameterShouldNotBeNullForAttachmentRequest() {
+    public void attachmentIdParameterShouldNotBeNullForAttachmentRequest() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Attachment id should not be null");
 
@@ -145,7 +143,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void tokenIdParameterShouldNotBeNullForAttachmentRequest() {
+    public void tokenIdParameterShouldNotBeNullForAttachmentRequest() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -153,7 +151,7 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void requestForOutputShouldParsePagesFromHeader() {
+    public void requestForOutputShouldParsePagesFromHeader() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody("")
                 .addHeader("report-pages", "1-10");
@@ -235,8 +233,8 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void runExportExecutionShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void runExportExecutionShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -244,8 +242,8 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void checkExportExecutionStatusShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void checkExportExecutionStatusShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -253,8 +251,8 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void requestExportOutputShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void requestExportOutputShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -262,8 +260,8 @@ public class ReportExportRestApiTest {
     }
 
     @Test
-    public void requestExportAttachmentShouldThrowRestErrorOn500() {
-        mExpectedException.expect(RestError.class);
+    public void requestExportAttachmentShouldThrowRestErrorOn500() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 

@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.RestError;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
@@ -43,7 +41,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,8 +97,8 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void shouldThroughRestErrorOnSearchRequestIfHttpError() {
-        mExpectedException.expect(RestError.class);
+    public void shouldThroughRestErrorOnSearchRequestIfHttpError() throws Exception {
+        mExpectedException.expect(HttpException.class);
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
@@ -109,7 +106,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void bodyParameterShouldNotBeNullForRunReportExecution() {
+    public void bodyParameterShouldNotBeNullForRunReportExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution options should not be null");
 
@@ -117,7 +114,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForRunReportExecution() {
+    public void tokenShouldNotBeNullForRunReportExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -126,7 +123,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionIdShouldNotBeNullForRequestExecutionDetails() {
+    public void executionIdShouldNotBeNullForRequestExecutionDetails() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -134,7 +131,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForRequestExecutionDetails() {
+    public void tokenShouldNotBeNullForRequestExecutionDetails() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -142,7 +139,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionIdShouldNotBeNullForRequestExecutionStatus() {
+    public void executionIdShouldNotBeNullForRequestExecutionStatus() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -150,7 +147,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForRequestExecutionStatus() {
+    public void tokenShouldNotBeNullForRequestExecutionStatus() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -158,7 +155,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionIdShouldNotBeNullForCancelRequestExecution() {
+    public void executionIdShouldNotBeNullForCancelRequestExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
@@ -166,7 +163,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void tokenShouldNotBeNullForCancelRequestExecution() {
+    public void tokenShouldNotBeNullForCancelRequestExecution() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Request token should not be null");
 
@@ -174,7 +171,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void bodyParameterShouldNotBeNullForExecutionUpdate() {
+    public void bodyParameterShouldNotBeNullForExecutionUpdate() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution params should not be null");
 
@@ -182,7 +179,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void bodyParameterShouldNotBeEmptyForExecutionUpdate() {
+    public void bodyParameterShouldNotBeEmptyForExecutionUpdate() throws Exception {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Execution params should not be empty");
 
@@ -261,7 +258,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void responseShouldNotBeCancelledIfResponseIs204() {
+    public void responseShouldNotBeCancelledIfResponseIs204() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
         boolean cancelled = restApiUnderTest.cancelReportExecution("cookie", "any_id");
@@ -270,7 +267,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void responseShouldBeCancelledIfResponseIs200() {
+    public void responseShouldBeCancelledIfResponseIs200() throws Exception {
         MockResponse response = MockResponseFactory.create200().setBody(cancelledResponse.asString());
         mWebMockRule.enqueue(response);
 
@@ -280,7 +277,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws IOException {
+    public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
         ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution("cookie", SEARCH_PARAMS);
@@ -288,7 +285,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() throws IOException {
+    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200();
         mockResponse.setBody(searchExecutionResponse.asString());
         mWebMockRule.enqueue(mockResponse);
@@ -298,7 +295,7 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void executionUpdateRequestShouldBeSuccessIfResponseIs204() {
+    public void executionUpdateRequestShouldBeSuccessIfResponseIs204() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
         boolean response = restApiUnderTest.updateReportExecution("cookie", "any_id", PARAMS);
         assertThat(response, is(true));

@@ -66,44 +66,37 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     public String authenticate(@NotNull final String username,
                                @NotNull final String password,
                                final String organization,
-                               final Map<String, String> params) {
+                               final Map<String, String> params) throws HttpException, IOException {
         Request request = createAuthRequest(username, password, organization, params);
         Call call = mClient.newCall(request);
-        try {
-            com.squareup.okhttp.Response response = call.execute();
-            int statusCode = response.code();
-            if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
+        com.squareup.okhttp.Response response = call.execute();
+        int statusCode = response.code();
+        if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
+            return CookieExtractor.extract(response);
+        } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+            String location = response.headers().get("Location");
+            HttpUrl url = HttpUrl.parse(location);
+            String errorQueryParameter = url.queryParameter("error");
+            if (errorQueryParameter == null) {
                 return CookieExtractor.extract(response);
-            } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
-                String location = response.headers().get("Location");
-                if (location == null) {
-                    throw new IllegalStateException("Location HEADER is missing please contact JRS admin");
-                }
-                HttpUrl url = HttpUrl.parse(location);
-                String errorQueryParameter = url.queryParameter("error");
-                if (errorQueryParameter == null) {
-                    return CookieExtractor.extract(response);
-                } else {
-                    com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
-                            .protocol(response.protocol())
-                            .request(response.request())
-                            .headers(response.headers())
-                            .body(response.body())
-                            .code(401)
-                            .build();
-                    throw RestError.httpError(response401);
-                }
             } else {
-                throw RestError.httpError(response);
+                com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                        .protocol(response.protocol())
+                        .request(response.request())
+                        .headers(response.headers())
+                        .body(response.body())
+                        .code(401)
+                        .build();
+                throw HttpException.httpError(response401);
             }
-        } catch (IOException ex) {
-            throw RestError.networkError(ex);
+        } else {
+            throw HttpException.httpError(response);
         }
     }
 
     @NotNull
     @Override
-    public EncryptionKey requestEncryptionMetadata() {
+    public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
         String anonymousToken = CookieExtractor.extract(response.raw());

@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +59,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @Override
-    public Collection<Resource> searchNext() {
+    public Collection<Resource> searchNext() throws ServiceException {
         if (mEndReached || mInitialCriteria.getLimit() == 0){
             return EMPTY_RESPONSE;
         }
@@ -75,7 +76,7 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NotNull
-    private Collection<Resource> performLookup() {
+    private Collection<Resource> performLookup() throws ServiceException {
         InternalCriteria newSearchCriteria = createNextCriteria();
         SearchResult result = performApiCall(newSearchCriteria);
         updateInternalOffset(result);
@@ -83,11 +84,11 @@ final class EmeraldMR3SearchStrategy implements SearchStrategy {
     }
 
     @NotNull
-    private SearchResult performApiCall(InternalCriteria newSearchCriteria) {
+    private SearchResult performApiCall(InternalCriteria newSearchCriteria) throws ServiceException {
         return mSearchUseCase.performSearch(newSearchCriteria);
     }
 
-    private void defineInternalOffset() {
+    private void defineInternalOffset() throws ServiceException {
         if (mUserOffset == 0) {
             mInternalOffset = mUserOffset;
         } else {

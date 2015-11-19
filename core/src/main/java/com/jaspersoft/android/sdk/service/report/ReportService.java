@@ -26,7 +26,11 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 
@@ -76,16 +80,12 @@ public final class ReportService {
                 reportExportUseCase);
     }
 
-    public ReportExecution run(String reportUri, RunReportCriteria criteria) {
-        try {
-            return performRun(reportUri, criteria);
-        } catch (ExecutionException ex) {
-            throw ex.adaptToClientException();
-        }
+    public ReportExecution run(String reportUri, RunReportCriteria criteria) throws ServiceException {
+        return performRun(reportUri, criteria);
     }
 
     @NotNull
-    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) {
+    private ReportExecution performRun(String reportUri, RunReportCriteria criteria) throws ServiceException {
         ReportExecutionDescriptor details = mExecutionUseCase.runReportExecution(reportUri, criteria);
 
         waitForReportExecutionStart(reportUri, details);
@@ -98,23 +98,28 @@ public final class ReportService {
                 details.getReportURI());
     }
 
-    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) {
+    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) throws ServiceException {
         String executionId = details.getExecutionId();
         Status status = Status.wrap(details.getStatus());
+        ErrorDescriptor descriptor = details.getErrorDescriptor();
 
         while (!status.isReady() && !status.isExecution()) {
             if (status.isCancelled()) {
-                throw ExecutionException.reportCancelled(reportUri);
+                throw new ServiceException(
+                        String.format("Report '%s' execution cancelled", reportUri), null,
+                        StatusCodes.REPORT_EXECUTION_CANCELLED);
             }
             if (status.isFailed()) {
-                throw ExecutionException.reportFailed(reportUri);
+                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.REPORT_EXECUTION_FAILED);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw ExecutionException.reportFailed(reportUri, ex);
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-            status = mExecutionUseCase.requestStatus(executionId);
+            ExecutionStatus statusDetails = mExecutionUseCase.requestStatus(executionId);
+            status = Status.wrap(statusDetails.getStatus());
+            descriptor = statusDetails.getErrorDescriptor();
         }
     }
 }

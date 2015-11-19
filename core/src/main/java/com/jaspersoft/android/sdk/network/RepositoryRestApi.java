@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -40,13 +41,16 @@ import java.util.Map;
  */
 public interface RepositoryRestApi {
     @NotNull
-    ResourceSearchResult searchResources(@NotNull String token, @Nullable Map<String, Object> searchParams);
+    ResourceSearchResult searchResources(@NotNull String token,
+                                         @Nullable Map<String, Object> searchParams) throws HttpException, IOException;
 
     @NotNull
-    ReportLookup requestReportResource(@NotNull String token, @NotNull String resourceUri);
+    ReportLookup requestReportResource(@NotNull String token,
+                                       @NotNull String resourceUri) throws HttpException, IOException;
 
     @NotNull
-    FolderLookup requestFolderResource(@NotNull String token, @NotNull String resourceUri);
+    FolderLookup requestFolderResource(@NotNull String token,
+                                       @NotNull String resourceUri) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {
         @Override

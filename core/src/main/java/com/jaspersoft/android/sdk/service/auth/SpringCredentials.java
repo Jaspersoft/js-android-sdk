@@ -1,9 +1,14 @@
 package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -64,8 +69,14 @@ public final class SpringCredentials extends Credentials {
     }
 
     @Override
-    protected String applyPolicy(AuthPolicy policy) {
-        return policy.applyCredentials(this);
+    protected String applyPolicy(AuthPolicy policy) throws ServiceException {
+        try {
+            return policy.applyCredentials(this);
+        } catch (HttpException e) {
+            throw ServiceExceptionMapper.transform(e);
+        } catch (IOException e) {
+            throw ServiceExceptionMapper.transform(e);
+        }
     }
 
     @Override

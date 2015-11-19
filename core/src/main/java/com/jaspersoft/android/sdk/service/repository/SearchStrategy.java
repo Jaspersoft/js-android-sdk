@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
@@ -37,7 +38,7 @@ import java.util.Collection;
  * @since 2.0
  */
 interface SearchStrategy {
-    Collection<Resource> searchNext();
+    Collection<Resource> searchNext() throws ServiceException;
     boolean hasNext();
 
     class Factory {

@@ -28,6 +28,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,21 +46,19 @@ final class ExportFactory {
     private final ReportExportUseCase mExportUseCase;
 
     private final String mExecutionId;
-    private final String mReportUri;
 
-    ExportFactory(ReportExportUseCase exportUseCase, String executionId, String reportUri) {
+    ExportFactory(ReportExportUseCase exportUseCase, String executionId) {
         mExportUseCase = exportUseCase;
         mExecutionId = executionId;
-        mReportUri = reportUri;
     }
 
     @NotNull
     public ReportExport create(ReportExecutionDescriptor executionDetails,
-                               ExportExecutionDescriptor exportExecutionDetails) {
+                               ExportExecutionDescriptor exportExecutionDetails) throws ServiceException {
         String exportId = exportExecutionDetails.getExportId();
         ExportDescriptor export = findExportDescriptor(executionDetails, exportId);
         if (export == null) {
-            throw ExecutionException.exportFailed(mReportUri);
+            throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
         Collection<ReportAttachment> attachments = adaptAttachments(export);
         return new ReportExport(mExecutionId, exportId, attachments, mExportUseCase);

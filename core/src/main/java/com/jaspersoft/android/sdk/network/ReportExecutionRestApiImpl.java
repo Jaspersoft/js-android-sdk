@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearch
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,8 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor runReportExecution(@Nullable String token, @Nullable ReportExecutionRequestOptions executionOptions) {
+    public ReportExecutionDescriptor runReportExecution(@Nullable String token,
+                                                        @Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -72,7 +74,8 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String token, @Nullable String executionId) {
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String token,
+                                                                   @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -82,7 +85,8 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ExecutionStatus requestReportExecutionStatus(@Nullable String token, @Nullable String executionId) {
+    public ExecutionStatus requestReportExecutionStatus(@Nullable String token,
+                                                        @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -91,7 +95,8 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     }
 
     @Override
-    public boolean cancelReportExecution(@Nullable String token, @Nullable String executionId) {
+    public boolean cancelReportExecution(@Nullable String token,
+                                         @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(token, "Request token should not be null");
 
@@ -104,7 +109,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     @Override
     public boolean updateReportExecution(@Nullable String token,
                                          @Nullable String executionId,
-                                         @Nullable Collection<Map<String, Set<String>>> params) {
+                                         @Nullable Collection<Map<String, Set<String>>> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
@@ -118,7 +123,8 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable String token, @Nullable Map<String, String> params) {
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable String token,
+                                                               @Nullable Map<String, String> params) throws IOException, HttpException {
         Utils.checkNotNull(params, "Search params should not be null");
         Utils.checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
         Utils.checkNotNull(token, "Request token should not be null");

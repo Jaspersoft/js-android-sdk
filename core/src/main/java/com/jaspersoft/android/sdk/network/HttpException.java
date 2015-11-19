@@ -25,7 +25,14 @@
 package com.jaspersoft.android.sdk.network;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import retrofit.Response;
 
@@ -36,33 +43,22 @@ import retrofit.Response;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class RestError extends RuntimeException {
-    static RestError networkError(IOException exception) {
-        return new RestError(exception.getMessage(), null, Kind.NETWORK,
-                exception);
-    }
+public class HttpException extends Exception {
 
-    static RestError httpError(Response response) {
+    static HttpException httpError(Response response) {
         return httpError(response.raw());
     }
 
-    static RestError httpError(com.squareup.okhttp.Response response) {
+    static HttpException httpError(com.squareup.okhttp.Response response) {
         String message = response.code() + " " + response.message();
-        return new RestError(message, response, Kind.HTTP, null);
-    }
-
-    static RestError unexpectedError(Throwable exception) {
-        return new RestError(exception.getMessage(), null, Kind.UNEXPECTED,
-                exception);
+        return new HttpException(message, response, null);
     }
 
     private final com.squareup.okhttp.Response response;
-    private final Kind kind;
 
-    RestError(String message,com.squareup.okhttp.Response response,Kind kind, Throwable exception) {
+    HttpException(String message, com.squareup.okhttp.Response response, Throwable exception) {
         super(message, exception);
         this.response = response;
-        this.kind = kind;
     }
 
     // HTTP status code.
@@ -75,28 +71,19 @@ public final class RestError extends RuntimeException {
         return response.message();
     }
 
-    public String errorBody() {
-        return Utils.bodyToString(response.body());
+    public ErrorDescriptor getDescriptor() throws IOException {
+        Gson gson = GsonFactory.create();
+        InputStream stream = response.body().byteStream();
+        InputStreamReader reader = new InputStreamReader(stream);
+        try {
+            return gson.fromJson(reader, ErrorDescriptor.class);
+        } catch (JsonParseException ex) {
+            return null;
+        }
     }
 
     public String urlString() {
         return response.request().urlString();
     }
 
-    public Kind kind() {
-        return kind;
-    }
-
-    /** Identifies the event kind which triggered a {@link RestError}. */
-    public enum Kind {
-        /** An {@link IOException} occurred while communicating to the server. */
-        NETWORK,
-        /** A non-200 HTTP status code was received from the server. */
-        HTTP,
-        /**
-         * An internal error occurred while attempting to execute a request. It is best practice to
-         * re-throw this exception so your application crashes.
-         */
-        UNEXPECTED
-    }
 }

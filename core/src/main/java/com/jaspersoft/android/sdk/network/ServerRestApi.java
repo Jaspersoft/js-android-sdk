@@ -28,6 +28,8 @@ import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -35,34 +37,34 @@ import org.jetbrains.annotations.NotNull;
 public interface ServerRestApi {
 
     @NotNull
-    ServerInfoData requestServerInfo();
+    ServerInfoData requestServerInfo() throws HttpException, IOException;
 
     @NotNull
-    String requestBuild();
+    String requestBuild() throws HttpException, IOException;
 
     @NotNull
-    String requestDateFormatPattern();
+    String requestDateFormatPattern() throws HttpException, IOException;
 
     @NotNull
-    String requestDateTimeFormatPattern();
+    String requestDateTimeFormatPattern() throws HttpException, IOException;
 
     @NotNull
-    String requestEdition();
+    String requestEdition() throws HttpException, IOException;
 
     @NotNull
-    String requestEditionName();
+    String requestEditionName() throws HttpException, IOException;
 
     @NotNull
-    String requestVersion();
+    String requestVersion() throws HttpException, IOException;
 
     @NotNull
-    String requestFeatures();
+    String requestFeatures() throws HttpException, IOException;
 
     @NotNull
-    String requestLicenseType();
+    String requestLicenseType() throws HttpException, IOException;
 
     @NotNull
-    String requestExpiration();
+    String requestExpiration() throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, ServerRestApi> {
         @Override
