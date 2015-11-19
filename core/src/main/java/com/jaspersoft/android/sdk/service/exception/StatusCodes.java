@@ -44,4 +44,6 @@ public final class StatusCodes {
     // REPORT
     public static final int REPORT_EXECUTION_CANCELLED = 201;
     public static final int REPORT_EXECUTION_FAILED = 202;
+
+    private StatusCodes() {}
 }
