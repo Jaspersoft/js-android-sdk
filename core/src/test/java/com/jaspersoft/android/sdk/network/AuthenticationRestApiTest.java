@@ -100,16 +100,6 @@ public class AuthenticationRestApiTest {
     }
 
     @Test
-    public void shouldRiseIllegalExceptionIfLocationHeaderIsMissing() throws Exception {
-        mExpectedException.expect(IllegalStateException.class);
-        mExpectedException.expectMessage("Location HEADER is missing please contact JRS admin");
-
-        mWebMockRule.enqueue(MockResponseFactory.create302().addHeader("Set-Cookie", "cookie1"));
-
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
-    }
-
-    @Test
     public void shouldReturnEncryptionKeyIfApiAvailable() throws Exception {
         MockResponse anonymousCookie = MockResponseFactory.create200()
                 .setBody("6.1")
