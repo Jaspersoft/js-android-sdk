@@ -115,7 +115,7 @@ public final class ReportService {
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw new ServiceException("Unexpected error", ex, StatusCodes.ERROR);
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
             ExecutionStatus statusDetails = mExecutionUseCase.requestStatus(executionId);
             status = Status.wrap(statusDetails.getStatus());

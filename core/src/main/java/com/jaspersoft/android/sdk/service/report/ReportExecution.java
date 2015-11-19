@@ -121,7 +121,7 @@ public final class ReportExecution {
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw new ServiceException("Unexpected error", ex, StatusCodes.ERROR);
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
 
             status = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
@@ -145,7 +145,7 @@ public final class ReportExecution {
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
-                throw new ServiceException("Unexpected error", ex, StatusCodes.ERROR);
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
             status = Status.wrap(details.getStatus());
             descriptor = details.getErrorDescriptor();

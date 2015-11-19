@@ -71,7 +71,7 @@ public final class ServiceExceptionMapper {
             case 400:
                 return new ServiceException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
             default:
-                return new ServiceException("The operation failed with no more detailed information", e, StatusCodes.ERROR);
+                return new ServiceException("The operation failed with no more detailed information", e, StatusCodes.UNDEFINED_ERROR);
         }
     }
 

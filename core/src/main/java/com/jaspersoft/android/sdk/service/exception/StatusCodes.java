@@ -29,7 +29,7 @@ package com.jaspersoft.android.sdk.service.exception;
  * @since 2.0
  */
 public final class StatusCodes {
-    public static final int ERROR = 1;
+    public static final int UNDEFINED_ERROR = 1;
     public static final int NETWORK_ERROR = 2;
     public static final int CLIENT_ERROR = 3;
     public static final int INTERNAL_ERROR = 4;
