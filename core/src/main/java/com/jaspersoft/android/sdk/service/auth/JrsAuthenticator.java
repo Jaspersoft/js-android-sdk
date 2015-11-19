@@ -1,7 +1,7 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -35,7 +35,7 @@ public final class JrsAuthenticator {
     }
 
     @NotNull
-    public String authenticate(@NotNull Credentials credentials) throws StatusException {
+    public String authenticate(@NotNull Credentials credentials) throws ServiceException {
         checkNotNull(credentials, "Credentials should not be null");
         return credentials.applyPolicy(mAuthPolicy);
     }

@@ -1,8 +1,8 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
-import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,13 +69,13 @@ public final class SpringCredentials extends Credentials {
     }
 
     @Override
-    protected String applyPolicy(AuthPolicy policy) throws StatusException {
+    protected String applyPolicy(AuthPolicy policy) throws ServiceException {
         try {
             return policy.applyCredentials(this);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 

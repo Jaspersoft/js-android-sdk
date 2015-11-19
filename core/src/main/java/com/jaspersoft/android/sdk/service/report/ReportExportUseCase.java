@@ -34,8 +34,8 @@ import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
-import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,54 +58,54 @@ final class ReportExportUseCase {
     }
 
     @NotNull
-    public ExportExecutionDescriptor runExport(String executionId, RunExportCriteria criteria) throws StatusException {
+    public ExportExecutionDescriptor runExport(String executionId, RunExportCriteria criteria) throws ServiceException {
         ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
         try {
             return mExportApi.runExportExecution(mTokenProvider.provideToken(), executionId, options);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public Status checkExportExecutionStatus(String executionId, String exportId) throws StatusException {
+    public Status checkExportExecutionStatus(String executionId, String exportId) throws ServiceException {
         try {
             ExecutionStatus exportStatus = mExportApi
                     .checkExportExecutionStatus(mTokenProvider.provideToken(), executionId, exportId);
             return Status.wrap(exportStatus.getStatus());
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public ReportOutput requestExportOutput(String executionId, String exportId) throws StatusException {
+    public ReportOutput requestExportOutput(String executionId, String exportId) throws ServiceException {
         try {
             ExportOutputResource result = mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
             return OutputDataMapper.transform(result);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 
     @NotNull
     public ResourceOutput requestExportAttachmentOutput(String executionId, String exportId,
-                                                        String fileName) throws StatusException {
+                                                        String fileName) throws ServiceException {
         try {
             OutputResource result = mExportApi.requestExportAttachment(
                     mTokenProvider.provideToken(),
                     executionId, exportId, fileName);
             return OutputDataMapper.transform(result);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 }

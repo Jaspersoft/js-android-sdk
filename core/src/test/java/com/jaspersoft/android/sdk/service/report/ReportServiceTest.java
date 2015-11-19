@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -122,7 +122,7 @@ public class ReportServiceTest {
 
         try {
             objectUnderTest.run("/report/uri", configuration);
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
         }
     }
@@ -134,7 +134,7 @@ public class ReportServiceTest {
 
         try {
             objectUnderTest.run("/report/uri", configuration);
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
         }
     }
@@ -145,7 +145,7 @@ public class ReportServiceTest {
 
         try {
             objectUnderTest.run("/report/uri", configuration);
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
         }
     }
@@ -157,7 +157,7 @@ public class ReportServiceTest {
 
         try {
             objectUnderTest.run("/report/uri", configuration);
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
         }
     }

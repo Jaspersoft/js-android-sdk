@@ -30,8 +30,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
-import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,36 +55,36 @@ final class ReportExecutionUseCase {
     }
 
     @NotNull
-    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws StatusException {
+    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws ServiceException {
         ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
         try {
             return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public ExecutionStatus requestStatus(String executionId) throws StatusException {
+    public ExecutionStatus requestStatus(String executionId) throws ServiceException {
         try {
             return mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 
     @NotNull
-    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws StatusException {
+    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws ServiceException {
         try {
             return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 }

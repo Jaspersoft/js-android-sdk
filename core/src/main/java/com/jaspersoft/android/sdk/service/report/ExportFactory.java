@@ -29,7 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,11 +54,11 @@ final class ExportFactory {
 
     @NotNull
     public ReportExport create(ReportExecutionDescriptor executionDetails,
-                               ExportExecutionDescriptor exportExecutionDetails) throws StatusException {
+                               ExportExecutionDescriptor exportExecutionDetails) throws ServiceException {
         String exportId = exportExecutionDetails.getExportId();
         ExportDescriptor export = findExportDescriptor(executionDetails, exportId);
         if (export == null) {
-            throw new StatusException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
+            throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
         Collection<ReportAttachment> attachments = adaptAttachments(export);
         return new ReportExport(mExecutionId, exportId, attachments, mExportUseCase);

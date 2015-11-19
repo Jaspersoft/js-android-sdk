@@ -28,10 +28,10 @@ package com.jaspersoft.android.sdk.service.exception;
  * @author Tom Koptel
  * @since 2.0
  */
-public class StatusException extends Exception {
+public class ServiceException extends Exception {
     private final int mCode;
 
-    public StatusException(String message, Throwable cause, int code) {
+    public ServiceException(String message, Throwable cause, int code) {
         super(message, cause);
         mCode = code;
     }

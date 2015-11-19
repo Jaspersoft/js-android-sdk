@@ -35,7 +35,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -141,7 +141,7 @@ public class ReportExecutionTest {
         try {
             objectUnderTest.export(exportCriteria);
             fail("Should throw Status exception");
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_FAILED));
         }
     }
@@ -153,7 +153,7 @@ public class ReportExecutionTest {
         try {
             objectUnderTest.export(exportCriteria);
             fail("Should throw Status exception");
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_FAILED));
         }
     }
@@ -166,7 +166,7 @@ public class ReportExecutionTest {
         try {
             objectUnderTest.export(exportCriteria);
             fail("Should throw Status exception");
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_CANCELLED));
         }
     }
@@ -179,7 +179,7 @@ public class ReportExecutionTest {
         try {
             objectUnderTest.export(exportCriteria);
             fail("Should throw Status exception");
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.EXPORT_EXECUTION_CANCELLED));
         }
     }
@@ -234,7 +234,7 @@ public class ReportExecutionTest {
 
         try {
             objectUnderTest.waitForReportCompletion();
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_CANCELLED));
         }
     }
@@ -245,7 +245,7 @@ public class ReportExecutionTest {
 
         try {
             objectUnderTest.waitForReportCompletion();
-        } catch (StatusException ex) {
+        } catch (ServiceException ex) {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
         }
    }

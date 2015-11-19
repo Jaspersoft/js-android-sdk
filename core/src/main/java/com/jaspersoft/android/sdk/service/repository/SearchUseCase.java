@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
-import com.jaspersoft.android.sdk.service.internal.StatusExceptionMapper;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
@@ -60,7 +60,7 @@ final class SearchUseCase {
     }
 
     @NotNull
-    public SearchResult performSearch(@NotNull InternalCriteria criteria) throws StatusException {
+    public SearchResult performSearch(@NotNull InternalCriteria criteria) throws ServiceException {
         ResourceSearchResult response = null;
         try {
             response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
@@ -75,9 +75,9 @@ final class SearchUseCase {
 
             return searchResult;
         } catch (HttpException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw StatusExceptionMapper.transform(e);
+            throw ServiceExceptionMapper.transform(e);
         }
     }
 }

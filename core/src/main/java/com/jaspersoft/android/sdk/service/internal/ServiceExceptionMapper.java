@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.service.internal;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.exception.StatusException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,14 +37,14 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class StatusExceptionMapper {
+public final class ServiceExceptionMapper {
     @NotNull
-    public static StatusException transform(IOException e) {
-        return new StatusException("Failed to perform network request. Check network!", e, StatusCodes.NETWORK_ERROR);
+    public static ServiceException transform(IOException e) {
+        return new ServiceException("Failed to perform network request. Check network!", e, StatusCodes.NETWORK_ERROR);
     }
 
     @NotNull
-    public static StatusException transform(HttpException e) {
+    public static ServiceException transform(HttpException e) {
         try {
             ErrorDescriptor descriptor = e.getDescriptor();
             if (e.getDescriptor() == null) {
@@ -58,27 +58,27 @@ public final class StatusExceptionMapper {
     }
 
     @NotNull
-    private static StatusException mapHttpCodesToState(HttpException e) {
+    private static ServiceException mapHttpCodesToState(HttpException e) {
         switch (e.code()) {
             case 500:
-                return new StatusException("Server encountered unexpected error", e, StatusCodes.INTERNAL_ERROR);
+                return new ServiceException("Server encountered unexpected error", e, StatusCodes.INTERNAL_ERROR);
             case 404:
-                return new StatusException("Service exist but requested entity not found", e, StatusCodes.CLIENT_ERROR);
-            case 400:
-                return new StatusException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
+                return new ServiceException("Service exist but requested entity not found", e, StatusCodes.CLIENT_ERROR);
             case 403:
-                return new StatusException("User has no access to resource", e, StatusCodes.PERMISSION_DENIED_ERROR);
+                return new ServiceException("User has no access to resource", e, StatusCodes.PERMISSION_DENIED_ERROR);
             case 401:
-                return new StatusException("User is not authorized", e, StatusCodes.AUTHORIZATION_ERROR);
+                return new ServiceException("User is not authorized", e, StatusCodes.AUTHORIZATION_ERROR);
+            case 400:
+                return new ServiceException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
             default:
-                return new StatusException("The operation failed with no more detailed information", e, StatusCodes.ERROR);
+                return new ServiceException("The operation failed with no more detailed information", e, StatusCodes.ERROR);
         }
     }
 
     @NotNull
-    private static StatusException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
+    private static ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
         if ("export.pages.out.of.range".equals(descriptor.getErrorCode())) {
-            return new StatusException(descriptor.getMessage(), e, StatusCodes.EXPORT_PAGE_OUT_OF_RANGE);
+            return new ServiceException(descriptor.getMessage(), e, StatusCodes.EXPORT_PAGE_OUT_OF_RANGE);
         } else {
             return mapHttpCodesToState(e);
         }
