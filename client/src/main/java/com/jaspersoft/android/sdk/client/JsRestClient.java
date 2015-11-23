@@ -48,6 +48,7 @@ import com.jaspersoft.android.sdk.client.oxm.report.adapter.ExecutionRequestAdap
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOption;
 import com.jaspersoft.android.sdk.client.oxm.report.option.ReportOptionResponse;
 import com.jaspersoft.android.sdk.client.oxm.resource.FileLookup;
+import com.jaspersoft.android.sdk.client.oxm.resource.ReportOptionLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ReportUnit;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookupSearchCriteria;
@@ -386,6 +387,19 @@ public class JsRestClient {
         resourceLookup.setResourceType(ResourceLookup.ResourceType.reportUnit);
 
         return resourceLookup;
+    }
+
+    /**
+     * Gets the report option lookup for the specified URI.
+     *
+     * @param uri resource URI (e.g. /reports/samples/)
+     * @return the ReportOptionLookup value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ReportOptionLookup getReportOptionDescriptor(String uri) throws RestClientException {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + uri;
+
+        return restTemplate.getForObject(fullUri, ReportOptionLookup.class);
     }
 
     /**
