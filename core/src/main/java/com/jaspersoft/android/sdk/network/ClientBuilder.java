@@ -47,13 +47,13 @@ final class ClientBuilder {
         return this;
     }
 
-    public ClientBuilder connectionTimeOut(long timeout) {
-        connectTimeout = timeout;
+    public ClientBuilder connectionTimeOut(long timeout, TimeUnit unit) {
+        connectTimeout = unit.toMillis(timeout);
         return this;
     }
 
-    public ClientBuilder readTimeout(long timeout) {
-        readTimeout = timeout;
+    public ClientBuilder readTimeout(long timeout, TimeUnit unit) {
+        readTimeout = unit.toMillis(timeout);
         return this;
     }
 
