@@ -29,7 +29,6 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.util.Collection;
 
@@ -46,18 +45,17 @@ interface SearchStrategy {
                                          RepositoryRestApi repositoryRestApi,
                                          InfoProvider infoProvider,
                                          TokenProvider tokenProvider) {
-            ServerVersion version = infoProvider.provideVersion();
+            double version = infoProvider.provideVersion();
             ResourceMapper resourceMapper = new ResourceMapper();
             SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
 
-            if (version.code() <= ServerVersion.v5_5.code()) {
+            if (version <= 5.5d) {
                 return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
-            if (version.code() >= ServerVersion.v5_6.code()) {
+            if (version >= 5.6d) {
                 return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
-            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.rawCode());
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version);
         }
-
     }
 }

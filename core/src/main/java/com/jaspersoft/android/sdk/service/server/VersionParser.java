@@ -22,9 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.server;
-
-import org.jetbrains.annotations.NotNull;
+package com.jaspersoft.android.sdk.service.server;
 
 import java.math.BigDecimal;
 
@@ -32,28 +30,10 @@ import java.math.BigDecimal;
  * @author Tom Koptel
  * @since 2.0
  */
-enum DefaultVersionParser {
+enum VersionParser {
     INSTANCE;
 
-    @NotNull
-    public ServerVersion parse(String rawVersion) {
-        double value = convertToDouble(rawVersion);
-        ServerVersion serverVersion = findReleaseByCode(value);
-        serverVersion.setRawValue(rawVersion);
-        return serverVersion;
-    }
-
-    private ServerVersion findReleaseByCode(final double versionCode) {
-        for (ServerVersion release : ServerVersion.values()) {
-            if (Double.compare(release.code(), versionCode) == 0) {
-                return release;
-            }
-        }
-        ServerVersion.UNKNOWN.setVersionCode(versionCode);
-        return ServerVersion.UNKNOWN;
-    }
-
-    double convertToDouble(String version) {
+    public double toDouble(String version) {
         double versionCode = 0d;
         // update version code
         if (version != null) {
