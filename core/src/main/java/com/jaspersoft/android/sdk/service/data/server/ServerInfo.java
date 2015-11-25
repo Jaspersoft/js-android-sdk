@@ -34,7 +34,7 @@ import java.util.Set;
 public class ServerInfo {
     private SimpleDateFormat dateFormatPattern;
     private SimpleDateFormat datetimeFormatPattern;
-    private ServerVersion version;
+    private double version;
     private ServerEdition edition;
     private String licenseType;
     private String build;
@@ -97,11 +97,11 @@ public class ServerInfo {
         this.licenseType = licenseType;
     }
 
-    public ServerVersion getVersion() {
+    public double getVersion() {
         return version;
     }
 
-    public void setVersion(ServerVersion version) {
+    public void setVersion(double version) {
         this.version = version;
     }
 }

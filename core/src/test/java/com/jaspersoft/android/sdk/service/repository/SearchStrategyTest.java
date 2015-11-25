@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,11 +64,10 @@ public class SearchStrategyTest {
     @Test
     @Parameters({
             "5.0",
-            "5.5",
+            "5.5"
     })
     public void factoryCreatesEmeraldMR2Strategy(String version) {
-        ServerVersion serverVersion = ServerVersion.parse(version);
-        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+        when(mInfoProvider.provideVersion()).thenReturn(Double.valueOf(version));
 
         SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
@@ -78,11 +76,10 @@ public class SearchStrategyTest {
     @Test
     @Parameters({
             "6.0",
-            "6.0.1",
+            "6.1"
     })
     public void factoryCreatesEmeraldMR3Strategy(String version) {
-        ServerVersion serverVersion = ServerVersion.parse(version);
-        when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
+        when(mInfoProvider.provideVersion()).thenReturn(Double.valueOf(version));
 
         SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
         assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));

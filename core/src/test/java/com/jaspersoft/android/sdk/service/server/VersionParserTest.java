@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.data.server;
+package com.jaspersoft.android.sdk.service.server;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ import static org.hamcrest.core.Is.is;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class DefaultVersionParserTest {
+public class VersionParserTest {
     @Test
     @Parameters({
             "5.0.0, 5",
@@ -54,7 +54,7 @@ public class DefaultVersionParserTest {
     })
     public void shouldParseSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = DefaultVersionParser.INSTANCE.convertToDouble(versionCode);
+        double resultCode = VersionParser.INSTANCE.toDouble(versionCode);
         assertThat(resultCode, is(expectedCode));
     }
 
@@ -69,7 +69,7 @@ public class DefaultVersionParserTest {
     })
     public void shouldParseLongSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = DefaultVersionParser.INSTANCE.convertToDouble(versionCode);
+        double resultCode = VersionParser.INSTANCE.toDouble(versionCode);
         assertThat(resultCode, is(expectedCode));
     }
 }

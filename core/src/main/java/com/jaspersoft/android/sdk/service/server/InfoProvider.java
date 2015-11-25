@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +42,7 @@ public interface InfoProvider {
     @NotNull
     ServerInfo provideInfo();
     @NotNull
-    ServerVersion provideVersion();
+    double provideVersion();
     @NotNull
     SimpleDateFormat provideDateTimeFormat();
 }

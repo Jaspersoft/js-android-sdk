@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.service.server;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +88,7 @@ public class ServerInfoTransformerTest {
     @Test
     public void shouldTransformServerVersionProperty() {
         ServerInfo info = transformerUnderTest.transform(mServerInfoData);
-        assertThat(info.getVersion(), is(ServerVersion.v6_1));
+        assertThat(info.getVersion(), is(6.1d));
     }
 
     @Test
