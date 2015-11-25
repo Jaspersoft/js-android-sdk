@@ -41,35 +41,35 @@ import static org.hamcrest.core.Is.is;
 public class ServerVersionTest {
     @Test
     @Parameters({
-            "5.0.0, EMERALD",
-            "5.2.0, EMERALD_MR1",
-            "5.5.0, EMERALD_MR2",
-            "5.6.0, EMERALD_MR3",
-            "5.6.1, EMERALD_MR4",
-            "6.0, AMBER",
-            "6.0.1, AMBER_MR1",
-            "6.1, AMBER_MR2",
+            "5.0.0, v5",
+            "5.2.0, v5_2",
+            "5.5.0, v5_5",
+            "5.6.0, v5_6",
+            "5.6.1, v5_61",
+            "6.0, v6",
+            "6.0.1, v6_0_1",
+            "6.1, v6_1",
     })
     public void shouldParseSemanticVersioning(String versionCode, String enumName) {
         ServerVersion expectedRelease = ServerVersion.valueOf(enumName);
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(versionCode);
+        ServerVersion resultRelease = ServerVersion.parse(versionCode);
         assertThat(resultRelease, is(expectedRelease));
     }
 
     @Test
     @Parameters({
-            "5.0, EMERALD",
-            "5.2, EMERALD_MR1",
-            "5.5, EMERALD_MR2",
-            "5.6, EMERALD_MR3",
-            "5.6.1, EMERALD_MR4",
-            "6.0, AMBER",
-            "6.0.1, AMBER_MR1",
-            "6.1, AMBER_MR2",
+            "5.0, v5",
+            "5.2, v5_2",
+            "5.5, v5_5",
+            "5.6, v5_6",
+            "5.6.1, v5_61",
+            "6.0, v6",
+            "6.0.1, v6_0_1",
+            "6.1, v6_1",
     })
     public void shouldParseCode(String versionCode, String enumName) {
         ServerVersion expectedRelease = ServerVersion.valueOf(enumName);
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(versionCode);
+        ServerVersion resultRelease = ServerVersion.parse(versionCode);
         assertThat(resultRelease, is(expectedRelease));
     }
 
@@ -79,7 +79,7 @@ public class ServerVersionTest {
             "5.6.0-BETA",
     })
     public void shouldParseNonSemanticVersioning(String nonSemanticVersion) {
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(nonSemanticVersion);
-        assertThat(resultRelease, is(ServerVersion.EMERALD_MR3));
+        ServerVersion resultRelease = ServerVersion.parse(nonSemanticVersion);
+        assertThat(resultRelease, is(ServerVersion.v5_6));
     }
 }
