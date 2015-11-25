@@ -58,6 +58,10 @@ public final class ServerInfoService {
         return new ServerInfoService(restApi, ServerInfoTransformer.get());
     }
 
+    public static ServerInfoService create(ServerRestApi restApi) {
+        return new ServerInfoService(restApi, ServerInfoTransformer.get());
+    }
+
     public ServerInfo requestServerInfo() throws ServiceException {
         try {
             ServerInfoData response = mRestApi.requestServerInfo();
