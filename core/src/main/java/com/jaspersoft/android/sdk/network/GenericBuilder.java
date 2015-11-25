@@ -42,12 +42,24 @@ abstract class GenericBuilder<TargetBuilder, Api> {
     @SuppressWarnings("unchecked")
     public TargetBuilder baseUrl(String baseUrl) {
         adapterBuilder.baseUrl(baseUrl);
-        return  (TargetBuilder) this;
+        return (TargetBuilder) this;
     }
 
     @SuppressWarnings("unchecked")
     public TargetBuilder logger(RestApiLog log) {
         clientBuilder.setLog(log);
+        return (TargetBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TargetBuilder connectionTimeOut(long timeout) {
+        clientBuilder.connectionTimeOut(timeout);
+        return (TargetBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TargetBuilder readTimeout(long timeout) {
+        clientBuilder.readTimeout(timeout);
         return (TargetBuilder) this;
     }
 
