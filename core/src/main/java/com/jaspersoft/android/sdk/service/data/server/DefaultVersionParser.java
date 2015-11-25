@@ -24,16 +24,18 @@
 
 package com.jaspersoft.android.sdk.service.data.server;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-enum DefaultVersionParser implements ServerVersion.Parser {
+enum DefaultVersionParser {
     INSTANCE;
 
-    @Override
+    @NotNull
     public ServerVersion parse(String rawVersion) {
         double value = convertToDouble(rawVersion);
         ServerVersion serverVersion = findReleaseByCode(value);
@@ -43,7 +45,7 @@ enum DefaultVersionParser implements ServerVersion.Parser {
 
     private ServerVersion findReleaseByCode(final double versionCode) {
         for (ServerVersion release : ServerVersion.values()) {
-            if (Double.compare(release.getVersionCode(), versionCode) == 0) {
+            if (Double.compare(release.code(), versionCode) == 0) {
                 return release;
             }
         }

@@ -73,7 +73,7 @@ public final class ServerInfoService {
     public ServerVersion requestServerVersion() throws ServiceException {
         try {
             String version = mRestApi.requestVersion();
-            return ServerVersion.defaultParser().parse(version);
+            return ServerVersion.parse(version);
         } catch (HttpException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {

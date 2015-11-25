@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.data.server;
 
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -38,7 +39,7 @@ public class ServerInfo {
     private String licenseType;
     private String build;
     private String editionName;
-    private FeatureSet features;
+    private Set<String> features;
 
     public String getBuild() {
         return build;
@@ -52,24 +53,24 @@ public class ServerInfo {
         return dateFormatPattern;
     }
 
-    public void setDateFormatPattern(String dateFormatPattern) {
-        this.dateFormatPattern = new SimpleDateFormat(dateFormatPattern);
+    public void setDateFormatPattern(SimpleDateFormat dateFormatPattern) {
+        this.dateFormatPattern = dateFormatPattern;
     }
 
     public SimpleDateFormat getDatetimeFormatPattern() {
         return datetimeFormatPattern;
     }
 
-    public void setDatetimeFormatPattern(String datetimeFormatPattern) {
-        this.datetimeFormatPattern = new SimpleDateFormat(datetimeFormatPattern);
+    public void setDatetimeFormatPattern(SimpleDateFormat datetimeFormatPattern) {
+        this.datetimeFormatPattern = datetimeFormatPattern;
     }
 
     public ServerEdition getEdition() {
         return edition;
     }
 
-    public void setEdition(String edition) {
-        this.edition = ServerEdition.valueOf(edition);
+    public void setEdition(ServerEdition edition) {
+        this.edition = edition;
     }
 
     public String getEditionName() {
@@ -80,12 +81,12 @@ public class ServerInfo {
         this.editionName = editionName;
     }
 
-    public FeatureSet getFeatures() {
+    public Set<String> getFeatures() {
         return features;
     }
 
-    public void setFeatures(String features) {
-        this.features = FeatureSet.parse(features);
+    public void setFeatures(Set<String> features) {
+        this.features = features;
     }
 
     public String getLicenseType() {
@@ -100,8 +101,7 @@ public class ServerInfo {
         return version;
     }
 
-    public void setVersion(String version) {
-        ServerVersion.Parser parser = ServerVersion.defaultParser();
-        this.version = parser.parse(version);
+    public void setVersion(ServerVersion version) {
+        this.version = version;
     }
 }

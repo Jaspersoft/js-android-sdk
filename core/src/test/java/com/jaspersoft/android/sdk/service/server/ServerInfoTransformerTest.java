@@ -28,7 +28,6 @@ import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
-import com.jaspersoft.android.sdk.service.server.ServerInfoTransformer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +89,7 @@ public class ServerInfoTransformerTest {
     @Test
     public void shouldTransformServerVersionProperty() {
         ServerInfo info = transformerUnderTest.transform(mServerInfoData);
-        assertThat(info.getVersion(), is(ServerVersion.AMBER_MR2));
+        assertThat(info.getVersion(), is(ServerVersion.v6_1));
     }
 
     @Test
@@ -108,7 +107,7 @@ public class ServerInfoTransformerTest {
     @Test
     public void shouldTransformFeaturesProperty() {
         ServerInfo info = transformerUnderTest.transform(mServerInfoData);
-        assertThat(info.getFeatures().asSet(), contains("Fusion"));
+        assertThat(info.getFeatures(), contains("Fusion"));
     }
 
 }

@@ -50,13 +50,13 @@ interface SearchStrategy {
             ResourceMapper resourceMapper = new ResourceMapper();
             SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
 
-            if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
+            if (version.code() <= ServerVersion.v5_5.code()) {
                 return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
-            if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
+            if (version.code() >= ServerVersion.v5_6.code()) {
                 return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
-            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.getRawValue());
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.rawCode());
         }
 
     }

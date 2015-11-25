@@ -25,34 +25,29 @@
 package com.jaspersoft.android.sdk.service.data.server;
 
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public enum ServerVersion {
     UNKNOWN(0d),
-    EMERALD(5.0d),
-    EMERALD_MR1(5.2d),
-    EMERALD_MR2(5.5d),
-    EMERALD_MR3(5.6d),
-    EMERALD_MR4(5.61d),
-    AMBER(6.0d),
-    AMBER_MR1(6.01d),
-    AMBER_MR2(6.1d);
+    v5(5.0d),
+    v5_2(5.2d),
+    v5_5(5.5d),
+    v5_6(5.6d),
+    v5_61(5.61d),
+    v6(6.0d),
+    v6_0_1(6.01d),
+    v6_1(6.1d),
+    v6_1_1(6.11d);
 
     private double mVersionCode;
     private String mRawValue;
 
     ServerVersion(double versionCode) {
         this.mVersionCode = versionCode;
-    }
-
-    public String getRawValue() {
-        return mRawValue;
-    }
-
-    public double getVersionCode() {
-        return mVersionCode;
     }
 
     void setVersionCode(double versionCode) {
@@ -63,11 +58,17 @@ public enum ServerVersion {
         mRawValue = rawValue;
     }
 
-    public static Parser defaultParser() {
-        return DefaultVersionParser.INSTANCE;
+    public double code() {
+        return mVersionCode;
     }
 
-    public interface Parser {
-        ServerVersion parse(String rawVersion);
+    @NotNull
+    public String rawCode() {
+        return mRawValue;
+    }
+
+    @NotNull
+    public static ServerVersion parse(String versionName) {
+        return DefaultVersionParser.INSTANCE.parse(versionName);
     }
 }

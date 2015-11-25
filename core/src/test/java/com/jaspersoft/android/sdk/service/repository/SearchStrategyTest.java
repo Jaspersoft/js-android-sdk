@@ -68,7 +68,7 @@ public class SearchStrategyTest {
             "5.5",
     })
     public void factoryCreatesEmeraldMR2Strategy(String version) {
-        ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
+        ServerVersion serverVersion = ServerVersion.parse(version);
         when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
 
         SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
@@ -81,7 +81,7 @@ public class SearchStrategyTest {
             "6.0.1",
     })
     public void factoryCreatesEmeraldMR3Strategy(String version) {
-        ServerVersion serverVersion = ServerVersion.defaultParser().parse(version);
+        ServerVersion serverVersion = ServerVersion.parse(version);
         when(mInfoProvider.provideVersion()).thenReturn(serverVersion);
 
         SearchStrategy searchStrategy = SearchStrategy.Factory.get(CRITERIA, mRepoApi, mInfoProvider, mTokenProvider);
