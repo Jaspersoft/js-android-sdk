@@ -41,16 +41,16 @@ public final class Session extends AnonymousSession implements InfoProvider {
 
     private final Credentials mCredentials;
     private final TokenCache mTokenCache;
-    private final InfoCache mInfo;
+    private final InfoCacheManager mInfoCacheManager;
 
     private ReportService mReportService;
 
     @TestOnly
-    Session(RestClient client, Credentials credentials, TokenCache tokenCache, InfoCache infoCache) {
+    Session(RestClient client, Credentials credentials, TokenCache tokenCache, InfoCacheManager infoCacheManager) {
         super(client);
         mCredentials = credentials;
         mTokenCache = tokenCache;
-        mInfo = infoCache;
+        mInfoCacheManager = infoCacheManager;
     }
 
     TokenCache getTokenCache() {
@@ -92,6 +92,7 @@ public final class Session extends AnonymousSession implements InfoProvider {
 
         private TokenCache mTokenCache;
         private InfoCache mInfoCache;
+        private InfoCacheManager mInfoCacheManager;
 
         Builder(RestClient client, Credentials credentials) {
             mClient = client;
@@ -100,6 +101,11 @@ public final class Session extends AnonymousSession implements InfoProvider {
 
         public Builder infoCache(InfoCache infoCache) {
             mInfoCache = infoCache;
+            return this;
+        }
+
+        public Builder infoCacheManager(InfoCacheManager infoCacheManager) {
+            mInfoCacheManager = infoCacheManager;
             return this;
         }
 
@@ -115,7 +121,10 @@ public final class Session extends AnonymousSession implements InfoProvider {
             if (mInfoCache == null) {
                 mInfoCache = new InMemoryInfoCache();
             }
-            return new Session(mClient, mCredentials, mTokenCache, mInfoCache);
+            if (mInfoCacheManager == null) {
+                mInfoCacheManager = InfoCacheManagerImpl.create(mClient, mInfoCache);
+            }
+            return new Session(mClient, mCredentials, mTokenCache, mInfoCacheManager);
         }
     }
 }

@@ -24,47 +24,42 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.ServerRestApi;
-import com.jaspersoft.android.sdk.service.auth.JrsAuthenticator;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.server.ServerInfoService;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AnonymousSession {
-    protected final RestClient mClient;
+final class InfoCacheManagerImpl implements InfoCacheManager {
+    private final ServerInfoService mInfoService;
+    private final InfoCache mInfoCache;
 
-    private JrsAuthenticator mAuthenticator;
-    private ServerInfoService mInfoService;
-
-    protected AnonymousSession(RestClient client) {
-        mClient = client;
+    @TestOnly
+    InfoCacheManagerImpl(ServerInfoService infoService, InfoCache infoCache) {
+        mInfoService = infoService;
+        mInfoCache = infoCache;
     }
 
-    @NotNull
-    public final JrsAuthenticator authApi() {
-        if (mAuthenticator == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .connectionTimeOut(mClient.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                    .readTimeout(mClient.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                    .baseUrl(mClient.getServerUrl())
-                    .build();
-
-            mAuthenticator = JrsAuthenticator.create(restApi);
-        }
-        return mAuthenticator;
+    public static InfoCacheManager create(RestClient client, InfoCache infoCache) {
+        ServerInfoService serverInfoService = ServerInfoService.create(client);
+        return new InfoCacheManagerImpl(serverInfoService, infoCache);
     }
 
-    @NotNull
-    public final ServerInfoService infoApi() {
-        if (mInfoService == null) {
-            mInfoService = ServerInfoService.create(mClient);
+    @Override
+    public ServerInfo getInfo() throws ServiceException {
+        ServerInfo info = mInfoCache.get();
+        if (info == null) {
+            info = mInfoService.requestServerInfo();
+            mInfoCache.put(info);
         }
-        return mInfoService;
+        return info;
+    }
+
+    @Override
+    public void invalidateInfo() {
+        mInfoCache.evict();
     }
 }
