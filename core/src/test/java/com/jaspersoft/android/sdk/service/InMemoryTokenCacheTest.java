@@ -24,12 +24,27 @@
 
 package com.jaspersoft.android.sdk.service;
 
-/**
- * @author Tom Koptel
- * @since 2.0
- */
-public interface TokenCache {
-    String get();
-    void put(String token);
-    void evict();
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
+public class InMemoryTokenCacheTest {
+
+    private InMemoryTokenCache cache;
+
+    @Before
+    public void setUp() throws Exception {
+        cache = new InMemoryTokenCache();
+    }
+
+    @Test
+    public void testCache() throws Exception {
+        cache.put("token");
+        assertThat(cache.get(), is("token"));
+        cache.evict();
+        assertThat(cache.get(), is(nullValue()));
+    }
 }

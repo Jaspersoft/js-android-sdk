@@ -58,22 +58,22 @@ public final class CallExecutorImpl implements CallExecutor {
     }
 */
     public <T> T execute(Call<T> call) throws ServiceException {
-        String token = mTokenCache.get(mCredentials);
+        String token = mTokenCache.get();
         try {
             if (token == null) {
                 token = mTokenFactory.create(mCredentials);
-                mTokenCache.put(mCredentials, token);
+                mTokenCache.put(token);
             }
             return call.perform(token);
         } catch (IOException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (HttpException e) {
             if (e.code() == 401) {
-                mTokenCache.evict(mCredentials);
+                mTokenCache.evict();
 
                 try {
                     token = mTokenFactory.create(mCredentials);
-                    mTokenCache.put(mCredentials, token);
+                    mTokenCache.put(token);
                     return call.perform(token);
                 } catch (IOException e1) {
                     throw ServiceExceptionMapper.transform(e1);

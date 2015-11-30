@@ -28,8 +28,21 @@ package com.jaspersoft.android.sdk.service;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenCache {
-    String get();
-    void put(String token);
-    void evict();
+public final class InMemoryTokenCache implements TokenCache {
+    private String mCache;
+
+    @Override
+    public String get() {
+        return mCache;
+    }
+
+    @Override
+    public void put(String token) {
+        mCache = token;
+    }
+
+    @Override
+    public void evict() {
+        mCache = null;
+    }
 }
