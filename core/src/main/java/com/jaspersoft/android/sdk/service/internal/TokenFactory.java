@@ -39,7 +39,7 @@ import java.io.IOException;
 class TokenFactory {
     private final RestClient mRestClient;
 
-    private TokenFactory(RestClient restClient) {
+    TokenFactory(RestClient restClient) {
         mRestClient = restClient;
     }
 

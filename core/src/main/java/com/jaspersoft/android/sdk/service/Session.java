@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -34,7 +32,6 @@ import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -53,17 +50,7 @@ public final class Session extends AnonymousSession implements TokenProvider, In
     @NotNull
     public ReportService reportApi() {
         if (mReportService == null) {
-            ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
-                    .connectionTimeOut(mClient.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                    .readTimeout(mClient.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                    .baseUrl(mClient.getServerUrl())
-                    .build();
-            ReportExportRestApi exportApi = new ReportExportRestApi.Builder()
-                    .connectionTimeOut(mClient.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                    .readTimeout(mClient.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                    .baseUrl(mClient.getServerUrl())
-                    .build();
-            mReportService = ReportService.create(executionApi, exportApi, this, this);
+            mReportService = ReportService.create(mClient, mCredentials);
         }
         return mReportService;
     }

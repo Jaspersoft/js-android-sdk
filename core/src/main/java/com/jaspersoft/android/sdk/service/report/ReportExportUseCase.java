@@ -31,12 +31,11 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -47,65 +46,64 @@ import java.io.IOException;
  */
 final class ReportExportUseCase {
     private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
+    private final CallExecutor mCallExecutor;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
 
-    ReportExportUseCase(ReportExportRestApi exportApi, TokenProvider tokenProvider,
-                        ExecutionOptionsDataMapper executionOptionsMapper) {
+    ReportExportUseCase(ReportExportRestApi exportApi,
+                        CallExecutor callExecutor, ExecutionOptionsDataMapper executionOptionsMapper) {
         mExportApi = exportApi;
-        mTokenProvider = tokenProvider;
+        mCallExecutor = callExecutor;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
     @NotNull
-    public ExportExecutionDescriptor runExport(String executionId, RunExportCriteria criteria) throws ServiceException {
-        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
-        try {
-            return mExportApi.runExportExecution(mTokenProvider.provideToken(), executionId, options);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ExportExecutionDescriptor runExport(final String executionId, final RunExportCriteria criteria) throws ServiceException {
+        Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
+            @Override
+            public ExportExecutionDescriptor perform(String token) throws IOException, HttpException {
+                ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
+                return mExportApi.runExportExecution(token, executionId, options);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public Status checkExportExecutionStatus(String executionId, String exportId) throws ServiceException {
-        try {
-            ExecutionStatus exportStatus = mExportApi
-                    .checkExportExecutionStatus(mTokenProvider.provideToken(), executionId, exportId);
-            return Status.wrap(exportStatus.getStatus());
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public Status checkExportExecutionStatus(final String executionId, final String exportId) throws ServiceException {
+        Call<Status> call = new Call<Status>() {
+            @Override
+            public Status perform(String token) throws IOException, HttpException {
+                ExecutionStatus exportStatus = mExportApi
+                        .checkExportExecutionStatus(token, executionId, exportId);
+                return Status.wrap(exportStatus.getStatus());
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ReportOutput requestExportOutput(String executionId, String exportId) throws ServiceException {
-        try {
-            ExportOutputResource result = mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
-            return OutputDataMapper.transform(result);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ReportOutput requestExportOutput(final String executionId, final String exportId) throws ServiceException {
+        Call<ReportOutput> call = new Call<ReportOutput>() {
+            @Override
+            public ReportOutput perform(String token) throws IOException, HttpException {
+                ExportOutputResource result = mExportApi.requestExportOutput(token, executionId, exportId);
+                return OutputDataMapper.transform(result);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ResourceOutput requestExportAttachmentOutput(String executionId, String exportId,
-                                                        String fileName) throws ServiceException {
-        try {
-            OutputResource result = mExportApi.requestExportAttachment(
-                    mTokenProvider.provideToken(),
-                    executionId, exportId, fileName);
-            return OutputDataMapper.transform(result);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ResourceOutput requestExportAttachmentOutput(final String executionId, final String exportId,
+                                                        final String fileName) throws ServiceException {
+        Call<ResourceOutput> call = new Call<ResourceOutput>() {
+            @Override
+            public ResourceOutput perform(String token) throws IOException, HttpException {
+                OutputResource result = mExportApi.requestExportAttachment(
+                        token, executionId, exportId, fileName);
+                return OutputDataMapper.transform(result);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 }

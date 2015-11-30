@@ -30,10 +30,9 @@ import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,9 +51,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -74,7 +71,7 @@ public class ReportServiceTest {
     @Mock
     ReportExportRestApi exportApi;
     @Mock
-    TokenProvider mTokenProvider;
+    CallExecutor mCallExecutor;
     @Mock
     ErrorDescriptor mDescriptor;
 
@@ -95,8 +92,8 @@ public class ReportServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, mTokenProvider, executionOptionsDataMapper);
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, mTokenProvider, executionOptionsDataMapper);
+        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, mCallExecutor, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, mCallExecutor, executionOptionsDataMapper);
 
         objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),

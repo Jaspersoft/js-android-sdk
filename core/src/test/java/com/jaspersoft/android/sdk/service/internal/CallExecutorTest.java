@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.token.TokenCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

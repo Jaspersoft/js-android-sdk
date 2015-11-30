@@ -25,8 +25,11 @@
 package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.token.TokenCache;
+import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 
@@ -39,10 +42,15 @@ public class CallExecutor {
     private final TokenFactory mTokenFactory;
     private final Credentials mCredentials;
 
-    public CallExecutor(Credentials credentials, TokenCache tokenCache, TokenFactory tokenFactory) {
+    @TestOnly
+    CallExecutor(Credentials credentials, TokenCache tokenCache, TokenFactory tokenFactory) {
         mTokenCache = tokenCache;
         mTokenFactory = tokenFactory;
         mCredentials = credentials;
+    }
+
+    public static CallExecutor create(RestClient client, Credentials credentials) {
+        return new CallExecutor(credentials, client.getTokenCache(), new TokenFactory(client));
     }
 
     // TODO: Discuss ServiceException reconsider approach on basis of Status result object

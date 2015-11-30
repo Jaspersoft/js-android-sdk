@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.token.TokenCache;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,16 +37,18 @@ public final class RestClient {
     private final String mServerUrl;
     private final long mReadTimeOut;
     private final long mConnectionTimeOut;
+    private final TokenCache mTokenCache;
 
     private AnonymousSession mAnonymousSession;
 
-    RestClient(String serverUrl, long readTimeOut, long connectionTimeOut) {
+    RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, TokenCache tokenCache) {
         mServerUrl = serverUrl;
         mReadTimeOut = readTimeOut;
         mConnectionTimeOut = connectionTimeOut;
+        mTokenCache = tokenCache;
     }
 
-    public Session authenticate(Credentials credentials) {
+    public Session newSession(Credentials credentials) {
         return new Session(this, credentials);
     }
 
@@ -54,6 +57,10 @@ public final class RestClient {
             mAnonymousSession = new AnonymousSession(this);
         }
         return mAnonymousSession;
+    }
+
+    public TokenCache getTokenCache() {
+        return mTokenCache;
     }
 
     public String getServerUrl() {
@@ -85,6 +92,7 @@ public final class RestClient {
         private final String mServerUrl;
         private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
         private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);;
+        private TokenCache mTokenCache;
 
         private ConditionalBuilder(String serverUrl) {
             mServerUrl = serverUrl;
@@ -100,8 +108,13 @@ public final class RestClient {
             return this;
         }
 
+        public ConditionalBuilder cache(TokenCache cache) {
+            mTokenCache = cache;
+            return this;
+        }
+
         public RestClient create() {
-            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut);
+            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mTokenCache);
         }
     }
 }

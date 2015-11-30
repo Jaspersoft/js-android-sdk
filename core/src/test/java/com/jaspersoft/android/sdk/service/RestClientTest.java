@@ -39,9 +39,13 @@ public class RestClientTest {
                 .connectionTimeOut(5, TimeUnit.DAYS)
                 .readTimeOut(5, TimeUnit.DAYS)
                 .create();
-        Credentials credentials = SpringCredentials.builder().build();
+        Credentials credentials = SpringCredentials.builder()
+                .username("any")
+                .password("any")
+                .organization("any")
+                .build();
 
-        Session session = client.authenticate(credentials);
+        Session session = client.newSession(credentials);
         session.reportApi();
 
         AnonymousSession anonymousSession = client.getAnonymousSession();

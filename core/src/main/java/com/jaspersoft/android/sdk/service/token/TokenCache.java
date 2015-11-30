@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.service.token;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 

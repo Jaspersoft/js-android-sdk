@@ -25,8 +25,7 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,7 +46,7 @@ public class ReportExportTest {
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    TokenProvider mTokenProvider;
+    CallExecutor mCallExecutor;
 
     private ReportExport objectUnderTest;
 
@@ -56,7 +55,7 @@ public class ReportExportTest {
         MockitoAnnotations.initMocks(this);
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mCallExecutor, executionOptionsDataMapper);
         objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), exportUseCase);
     }
 
