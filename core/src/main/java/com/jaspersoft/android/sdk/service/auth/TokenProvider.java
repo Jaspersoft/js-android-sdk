@@ -29,5 +29,5 @@ package com.jaspersoft.android.sdk.service.auth;
  * @since 2.0
  */
 public interface TokenProvider {
-    String provideToken();
+    String provideToken() throws Exception;
 }

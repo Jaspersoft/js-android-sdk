@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -39,10 +40,7 @@ import java.text.SimpleDateFormat;
 public interface InfoProvider {
     @NotNull
     String getBaseUrl();
+    double provideVersion() throws ServiceException;
     @NotNull
-    ServerInfo provideInfo();
-    @NotNull
-    double provideVersion();
-    @NotNull
-    SimpleDateFormat provideDateTimeFormat();
+    SimpleDateFormat provideDateTimeFormat() throws ServiceException;
 }

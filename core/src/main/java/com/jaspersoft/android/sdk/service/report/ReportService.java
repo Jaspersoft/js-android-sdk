@@ -59,14 +59,12 @@ public final class ReportService {
         mExportUseCase = exportUseCase;
     }
 
-    public static ReportService create(TokenProvider tokenProvider, InfoProvider infoProvider) {
+    public static ReportService create(
+            ReportExecutionRestApi executionApi,
+            ReportExportRestApi exportApi,
+            TokenProvider tokenProvider,
+            InfoProvider infoProvider) {
         String baseUrl = infoProvider.getBaseUrl();
-        ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
-                .baseUrl(baseUrl)
-                .build();
-        ReportExportRestApi exportApi = new ReportExportRestApi.Builder()
-                .baseUrl(baseUrl)
-                .build();
         ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(baseUrl);
 
         ReportExecutionUseCase reportExecutionUseCase =

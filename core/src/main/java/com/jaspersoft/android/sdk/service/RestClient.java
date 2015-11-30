@@ -24,41 +24,79 @@
 
 package com.jaspersoft.android.sdk.service;
 
+import com.jaspersoft.android.sdk.service.auth.Credentials;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class RestClient {
     private final String mServerUrl;
-    private final int mReadTimeOut;
-    private final int mConnectionTimeOut;
+    private final long mReadTimeOut;
+    private final long mConnectionTimeOut;
 
-    RestClient(String serverUrl, int readTimeOut, int connectionTimeOut) {
+    private AnonymousSession mAnonymousSession;
+
+    RestClient(String serverUrl, long readTimeOut, long connectionTimeOut) {
         mServerUrl = serverUrl;
         mReadTimeOut = readTimeOut;
         mConnectionTimeOut = connectionTimeOut;
     }
 
-    public static class Builder {
-        private String mServerUrl;
-        private int mConnectionReadTimeOut;
-        private int mConnectionTimeOut;
+    public Session authenticate(Credentials credentials) {
+        return new Session(this, credentials);
+    }
 
+    public AnonymousSession getAnonymousSession() {
+        if (mAnonymousSession == null) {
+            mAnonymousSession = new AnonymousSession(this);
+        }
+        return mAnonymousSession;
+    }
+
+    public String getServerUrl() {
+        return mServerUrl;
+    }
+
+    public long getReadTimeOut() {
+        return mReadTimeOut;
+    }
+
+    public long getConnectionTimeOut() {
+        return mConnectionTimeOut;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
         private Builder() {
         }
 
-        public Builder serverUrl(String serverUrl) {
+        public ConditionalBuilder serverUrl(String serverUrl) {
+            return new ConditionalBuilder(serverUrl);
+        }
+    }
+
+    public static class ConditionalBuilder {
+        private final String mServerUrl;
+        private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
+        private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);;
+
+        private ConditionalBuilder(String serverUrl) {
             mServerUrl = serverUrl;
+        }
+
+        public ConditionalBuilder readTimeOut(int timeOut, TimeUnit unit) {
+            mConnectionReadTimeOut = unit.toMillis(timeOut);
             return this;
         }
 
-        public Builder connectionReadTimeOut(int connectionReadTimeOut) {
-            mConnectionReadTimeOut = connectionReadTimeOut;
-            return this;
-        }
-
-        public Builder connectionTimeOut(int connectionTimeOut) {
-            mConnectionTimeOut = connectionTimeOut;
+        public ConditionalBuilder connectionTimeOut(int timeOut, TimeUnit unit) {
+            mConnectionTimeOut = unit.toMillis(timeOut);
             return this;
         }
 
