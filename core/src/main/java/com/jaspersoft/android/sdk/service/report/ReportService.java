@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.service.CallExecutor;
 import com.jaspersoft.android.sdk.service.CallExecutorImpl;
 import com.jaspersoft.android.sdk.service.RestClient;
-import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public final class ReportService {
         mExportUseCase = exportUseCase;
     }
 
-    public static ReportService create(RestClient client, Credentials credentials) {
+    public static ReportService create(RestClient client, Session session) {
         ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
                 .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
@@ -71,7 +71,7 @@ public final class ReportService {
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .baseUrl(client.getServerUrl())
                 .build();
-        CallExecutor callExecutor = CallExecutorImpl.create(client, credentials);
+        CallExecutor callExecutor = CallExecutorImpl.create(client, session);
         ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(client.getServerUrl());
 
         ReportExecutionUseCase reportExecutionUseCase =

@@ -36,19 +36,17 @@ public final class RestClient {
     private final String mServerUrl;
     private final long mReadTimeOut;
     private final long mConnectionTimeOut;
-    private final TokenCache mTokenCache;
 
     private AnonymousSession mAnonymousSession;
 
-    RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, TokenCache tokenCache) {
+   private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut) {
         mServerUrl = serverUrl;
         mReadTimeOut = readTimeOut;
         mConnectionTimeOut = connectionTimeOut;
-        mTokenCache = tokenCache;
     }
 
-    public Session newSession(Credentials credentials) {
-        return new Session(this, credentials);
+    public Session.Builder newSession(Credentials credentials) {
+        return new Session.Builder(this, credentials);
     }
 
     public AnonymousSession getAnonymousSession() {
@@ -56,10 +54,6 @@ public final class RestClient {
             mAnonymousSession = new AnonymousSession(this);
         }
         return mAnonymousSession;
-    }
-
-    public TokenCache getTokenCache() {
-        return mTokenCache;
     }
 
     public String getServerUrl() {
@@ -91,7 +85,6 @@ public final class RestClient {
         private final String mServerUrl;
         private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
         private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);;
-        private TokenCache mTokenCache;
 
         private ConditionalBuilder(String serverUrl) {
             mServerUrl = serverUrl;
@@ -107,13 +100,8 @@ public final class RestClient {
             return this;
         }
 
-        public ConditionalBuilder cache(TokenCache cache) {
-            mTokenCache = cache;
-            return this;
-        }
-
         public RestClient create() {
-            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mTokenCache);
+            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut);
         }
     }
 }

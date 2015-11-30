@@ -25,11 +25,11 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.service.server.InfoProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.text.SimpleDateFormat;
 
@@ -37,20 +37,32 @@ import java.text.SimpleDateFormat;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Session extends AnonymousSession implements TokenProvider, InfoProvider {
+public final class Session extends AnonymousSession implements InfoProvider {
+
     private final Credentials mCredentials;
+    private final TokenCache mTokenCache;
 
     private ReportService mReportService;
 
-    public Session(RestClient client, Credentials credentials) {
+    @TestOnly
+    Session(RestClient client, Credentials credentials, TokenCache tokenCache) {
         super(client);
         mCredentials = credentials;
+        mTokenCache = tokenCache;
+    }
+
+    TokenCache getTokenCache() {
+        return mTokenCache;
+    }
+
+    public Credentials getCredentials() {
+        return mCredentials;
     }
 
     @NotNull
     public ReportService reportApi() {
         if (mReportService == null) {
-            mReportService = ReportService.create(mClient, mCredentials);
+            mReportService = ReportService.create(mClient, this);
         }
         return mReportService;
     }
@@ -62,11 +74,6 @@ public final class Session extends AnonymousSession implements TokenProvider, In
     }
 
     @Override
-    public String provideToken() throws ServiceException {
-        return authApi().authenticate(mCredentials);
-    }
-
-    @Override
     public double provideVersion() throws ServiceException {
         return infoApi().requestServerVersion();
     }
@@ -75,5 +82,29 @@ public final class Session extends AnonymousSession implements TokenProvider, In
     @Override
     public SimpleDateFormat provideDateTimeFormat() throws ServiceException {
         return infoApi().requestServerDateTimeFormat();
+    }
+
+    public static class Builder {
+        private final RestClient mClient;
+        private final Credentials mCredentials;
+
+        private TokenCache mTokenCache;
+
+        Builder(RestClient client, Credentials credentials) {
+            mClient = client;
+            mCredentials = credentials;
+        }
+
+        public Builder tokenCache(TokenCache tokenCache) {
+            mTokenCache = tokenCache;
+            return this;
+        }
+
+        public Session create() {
+            if (mTokenCache == null) {
+                mTokenCache = new InMemoryTokenCache();
+            }
+            return new Session(mClient, mCredentials, mTokenCache);
+        }
     }
 }

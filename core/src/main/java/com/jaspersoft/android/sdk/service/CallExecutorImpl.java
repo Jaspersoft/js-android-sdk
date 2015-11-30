@@ -48,8 +48,12 @@ public final class CallExecutorImpl implements CallExecutor {
         mCredentials = credentials;
     }
 
-    public static CallExecutorImpl create(RestClient client, Credentials credentials) {
-        return new CallExecutorImpl(credentials, client.getTokenCache(), new TokenFactory(client));
+    public static CallExecutorImpl create(RestClient client, Session session) {
+        return new CallExecutorImpl(
+                session.getCredentials(),
+                session.getTokenCache(),
+                new TokenFactory(client)
+        );
     }
 
     // TODO: Discuss ServiceException reconsider approach on basis of Status result object
