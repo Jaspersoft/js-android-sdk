@@ -22,12 +22,17 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.call.Call;
+import com.jaspersoft.android.sdk.service.call.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
@@ -36,25 +41,25 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class CallExecutorImpl implements CallExecutor {
+public class DefaultCallExecutor implements CallExecutor {
         private final TokenCacheManager.Factory mTokenCacheManagerFactory;
     private final InfoCacheManager mInfoCacheManager;
     private final TokenFactory mTokenFactory;
     private final Credentials mCredentials;
 
     @TestOnly
-    CallExecutorImpl(Credentials credentials,
-                     TokenCacheManager.Factory tokenCacheManagerFactory,
-                     InfoCacheManager cacheManager,
-                     TokenFactory tokenFactory) {
+    DefaultCallExecutor(Credentials credentials,
+                        TokenCacheManager.Factory tokenCacheManagerFactory,
+                        InfoCacheManager cacheManager,
+                        TokenFactory tokenFactory) {
         mTokenCacheManagerFactory = tokenCacheManagerFactory;
         mInfoCacheManager = cacheManager;
         mTokenFactory = tokenFactory;
         mCredentials = credentials;
     }
 
-    public static CallExecutorImpl create(RestClient client, Session session) {
-        return new CallExecutorImpl(
+    public static DefaultCallExecutor create(RestClient client, Session session) {
+        return new DefaultCallExecutor(
                 session.getCredentials(),
                 session.getTokenCacheManagerFactory(),
                 session.getInfoCacheManager(),

@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
+import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
 import org.junit.Before;
 import org.junit.Test;
 

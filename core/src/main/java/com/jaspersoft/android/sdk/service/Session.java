@@ -25,8 +25,14 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
+import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
+import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
+import com.jaspersoft.android.sdk.service.token.TokenCache;
+import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -51,7 +57,7 @@ public final class Session extends AnonymousSession {
         mInfoCacheManager = infoCacheManager;
     }
 
-    TokenCacheManager.Factory getTokenCacheManagerFactory() {
+    public TokenCacheManager.Factory getTokenCacheManagerFactory() {
         return mTokenCacheManagerFactory;
     }
 

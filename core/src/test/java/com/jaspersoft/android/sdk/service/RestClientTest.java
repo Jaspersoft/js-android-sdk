@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.auth.SpringCredentials;
+import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
+import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;

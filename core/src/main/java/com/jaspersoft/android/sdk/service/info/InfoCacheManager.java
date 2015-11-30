@@ -22,16 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.info;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface InfoCache {
-    ServerInfo get();
-    void put(ServerInfo serverInfo);
-    void evict();
+public interface InfoCacheManager {
+    ServerInfo getInfo() throws ServiceException;
+    void invalidateInfo();
 }

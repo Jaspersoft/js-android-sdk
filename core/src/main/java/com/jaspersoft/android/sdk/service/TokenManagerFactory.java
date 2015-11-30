@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.service;
 
+import com.jaspersoft.android.sdk.service.token.TokenCache;
+import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
+
 /**
  * @author Tom Koptel
  * @since 2.0

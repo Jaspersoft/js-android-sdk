@@ -26,6 +26,9 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.*;
+import com.jaspersoft.android.sdk.service.call.CallExecutor;
+import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.concurrent.TimeUnit;
@@ -52,7 +55,7 @@ public class RepositoryService {
                 .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .build();
-        CallExecutor callExecutor = CallExecutorImpl.create(client, session);
+        CallExecutor callExecutor = DefaultCallExecutor.create(client, session);
 
         return new RepositoryService(repositoryRestApi, callExecutor, session.getInfoCacheManager());
     }

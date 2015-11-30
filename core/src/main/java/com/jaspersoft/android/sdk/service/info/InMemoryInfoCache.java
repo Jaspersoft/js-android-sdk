@@ -22,18 +22,29 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.info;
+
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenCacheManager {
-    public String getToken();
-    public void persistToken(String token);
-    public void invalidateToken();
+public final class InMemoryInfoCache implements InfoCache {
+    private ServerInfo mInfoCache;
 
-    interface Factory {
-        TokenCacheManager create(double versionCode);
+    @Override
+    public ServerInfo get() {
+        return mInfoCache;
+    }
+
+    @Override
+    public void put(ServerInfo serverInfo) {
+        mInfoCache = serverInfo;
+    }
+
+    @Override
+    public void evict() {
+        mInfoCache = null;
     }
 }

@@ -22,14 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.call;
 
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.network.HttpException;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface CallExecutor {
-    <T> T execute(Call<T> call) throws ServiceException;
+public interface Call<T> {
+    public T perform(String token) throws IOException, HttpException;
 }

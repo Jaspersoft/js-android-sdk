@@ -22,14 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.call;
+
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenCache {
-    String get();
-    void put(String token);
-    void evict();
+public interface CallExecutor {
+    <T> T execute(Call<T> call) throws ServiceException;
 }

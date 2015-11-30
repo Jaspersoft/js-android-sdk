@@ -26,9 +26,14 @@ package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.call.Call;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
+import com.jaspersoft.android.sdk.service.internal.TokenFactory;
+import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -41,7 +46,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class CallExecutorImplTest {
+public class DefaultCallExecutorTest {
 
     @Mock
     TokenCacheManager mTokenCacheManager;
@@ -63,7 +68,7 @@ public class CallExecutorImplTest {
     @Mock
     ServerInfo mServerInfo;
 
-    private CallExecutorImpl resolver;
+    private DefaultCallExecutor resolver;
     private Object mResponse = new Object();
 
     @Before
@@ -74,7 +79,7 @@ public class CallExecutorImplTest {
 
         when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
         when(mTokenCacheManagerFactory.create(anyDouble())).thenReturn(mTokenCacheManager);
-        resolver = new CallExecutorImpl(mCredentials, mTokenCacheManagerFactory, mInfoCacheManager, mFactory);
+        resolver = new DefaultCallExecutor(mCredentials, mTokenCacheManagerFactory, mInfoCacheManager, mFactory);
     }
 
     @Test

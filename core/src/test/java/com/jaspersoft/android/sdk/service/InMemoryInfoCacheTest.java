@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
 import org.junit.Before;
 import org.junit.Test;
 

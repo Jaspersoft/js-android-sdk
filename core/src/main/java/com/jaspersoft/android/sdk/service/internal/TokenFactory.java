@@ -22,9 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
