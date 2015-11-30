@@ -24,11 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.util.Collection;
 
@@ -41,14 +38,7 @@ interface SearchStrategy {
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(InternalCriteria criteria,
-                                         RepositoryRestApi repositoryRestApi,
-                                         InfoProvider infoProvider,
-                                         TokenProvider tokenProvider) {
-            double version = infoProvider.provideVersion();
-            ResourceMapper resourceMapper = new ResourceMapper();
-            SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
-
+        public static SearchStrategy get(SearchUseCase searchUseCase, InternalCriteria criteria, double version) {
             if (version <= 5.5d) {
                 return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }

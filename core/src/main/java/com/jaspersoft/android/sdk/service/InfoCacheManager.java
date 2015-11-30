@@ -25,12 +25,13 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface InfoCacheManager {
-    ServerInfo getInfo() throws Exception;
+    ServerInfo getInfo() throws ServiceException;
     void invalidateInfo();
 }

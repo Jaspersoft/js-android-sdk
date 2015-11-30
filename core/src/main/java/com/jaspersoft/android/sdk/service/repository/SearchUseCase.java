@@ -27,57 +27,70 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.Call;
+import com.jaspersoft.android.sdk.service.CallExecutor;
+import com.jaspersoft.android.sdk.service.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
-
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchUseCase {
-    private final RepositoryRestApi mRestApi;
-    private final TokenProvider mTokenProvider;
-    private final InfoProvider mInfoProvider;
+class SearchUseCase {
     private final ResourceMapper mDataMapper;
+    private final RepositoryRestApi mRestApi;
+    private final InfoCacheManager mInfoCacheManager;
+    private final CallExecutor mCallExecutor;
 
-    public SearchUseCase(
-            ResourceMapper dataMapper, RepositoryRestApi restApi,
-            TokenProvider tokenProvider, InfoProvider infoProvider) {
-        mRestApi = restApi;
-        mTokenProvider = tokenProvider;
-        mInfoProvider = infoProvider;
+    SearchUseCase(ResourceMapper dataMapper,
+                  RepositoryRestApi restApi,
+                  InfoCacheManager infoCacheManager,
+                  CallExecutor callExecutor) {
         mDataMapper = dataMapper;
+        mRestApi = restApi;
+        mInfoCacheManager = infoCacheManager;
+        mCallExecutor = callExecutor;
     }
 
     @NotNull
-    public SearchResult performSearch(@NotNull InternalCriteria criteria) throws ServiceException {
-        ResourceSearchResult response = null;
-        try {
-            response = mRestApi.searchResources(mTokenProvider.provideToken(), CriteriaMapper.map(criteria));
+    public SearchResult performSearch(@NotNull final InternalCriteria internalCriteria) throws ServiceException {
+        Call<SearchResult> call = new Call<SearchResult>() {
+            @Override
+            public SearchResult perform(String token) throws IOException, HttpException {
+                Map<String, Object> criteria = CriteriaMapper.map(internalCriteria);
+                ResourceSearchResult response = mRestApi.searchResources(token, criteria);
 
-            SimpleDateFormat dateTimeFormat = mInfoProvider.provideDateTimeFormat();
+                SimpleDateFormat dateTimeFormat = null;
+                try {
+                    dateTimeFormat = mInfoCacheManager.getInfo().getDatetimeFormatPattern();
 
-            SearchResult searchResult = new SearchResult();
-            searchResult.setNextOffset(response.getNextOffset());
+                    SearchResult searchResult = new SearchResult();
+                    searchResult.setNextOffset(response.getNextOffset());
 
-            Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
-            searchResult.setResources(resources);
+                    Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+                    searchResult.setResources(resources);
 
-            return searchResult;
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+                    return searchResult;
+                } catch (ServiceException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof IOException) {
+                        throw (IOException) cause;
+                    }
+                    if (cause instanceof HttpException) {
+                        throw (HttpException) cause;
+                    }
+                    throw new RuntimeException(cause);
+                }
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 }

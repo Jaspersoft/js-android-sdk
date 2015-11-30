@@ -50,6 +50,7 @@ public class RestClientTest {
                 .infoCache(new InMemoryInfoCache())
                 .create();
         session.reportApi();
+        session.repositoryApi();
 
         AnonymousSession anonymousSession = client.getAnonymousSession();
         anonymousSession.authApi();

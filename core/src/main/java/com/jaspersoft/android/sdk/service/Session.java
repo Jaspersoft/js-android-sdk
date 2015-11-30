@@ -25,25 +25,23 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportService;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
+import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
-
-import java.text.SimpleDateFormat;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Session extends AnonymousSession implements InfoProvider {
+public final class Session extends AnonymousSession {
 
     private final Credentials mCredentials;
     private final TokenCache mTokenCache;
     private final InfoCacheManager mInfoCacheManager;
 
     private ReportService mReportService;
+    private RepositoryService mRepositoryService;
 
     @TestOnly
     Session(RestClient client, Credentials credentials, TokenCache tokenCache, InfoCacheManager infoCacheManager) {
@@ -55,6 +53,10 @@ public final class Session extends AnonymousSession implements InfoProvider {
 
     TokenCache getTokenCache() {
         return mTokenCache;
+    }
+
+    public InfoCacheManager getInfoCacheManager() {
+        return mInfoCacheManager;
     }
 
     public Credentials getCredentials() {
@@ -70,20 +72,11 @@ public final class Session extends AnonymousSession implements InfoProvider {
     }
 
     @NotNull
-    @Override
-    public String getBaseUrl() {
-        return mClient.getServerUrl();
-    }
-
-    @Override
-    public double provideVersion() throws ServiceException {
-        return infoApi().requestServerVersion();
-    }
-
-    @NotNull
-    @Override
-    public SimpleDateFormat provideDateTimeFormat() throws ServiceException {
-        return infoApi().requestServerDateTimeFormat();
+    public RepositoryService repositoryApi() {
+        if (mRepositoryService == null) {
+            mRepositoryService = RepositoryService.create(mClient, this);
+        }
+        return mRepositoryService;
     }
 
     public static class Builder {

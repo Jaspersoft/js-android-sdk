@@ -25,9 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
+import com.jaspersoft.android.sdk.service.FakeCallExecutor;
+import com.jaspersoft.android.sdk.service.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class RepositoryServiceTest {
     @Mock
     TokenProvider mTokenProvider;
     @Mock
-    InfoProvider mInfoProvider;
+    InfoCacheManager mInfoCacheManager;
 
     private RepositoryService objectUnderTest;
 
@@ -59,7 +59,7 @@ public class RepositoryServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new RepositoryService(repoApi, mTokenProvider, mInfoProvider);
+        objectUnderTest = new RepositoryService(repoApi, new FakeCallExecutor("cookie"), mInfoCacheManager);
     }
 
     @Test

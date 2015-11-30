@@ -25,8 +25,10 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.*;
+import org.jetbrains.annotations.TestOnly;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -34,18 +36,28 @@ import com.jaspersoft.android.sdk.service.auth.TokenProvider;
  */
 public class RepositoryService {
     private final RepositoryRestApi mRepositoryRestApi;
-    private final TokenProvider mTokenProvider;
-    private final InfoProvider mInfoProvider;
+    private final CallExecutor mCallExecutor;
+    private final InfoCacheManager mInfoCacheManager;
 
-    public RepositoryService(RepositoryRestApi repositoryRestApi,
-                             TokenProvider tokenProvider,
-                             InfoProvider infoProvider) {
+    @TestOnly
+    RepositoryService(RepositoryRestApi repositoryRestApi, CallExecutor callExecutor, InfoCacheManager infoCacheManager) {
         mRepositoryRestApi = repositoryRestApi;
-        mTokenProvider = tokenProvider;
-        mInfoProvider = infoProvider;
+        mCallExecutor = callExecutor;
+        mInfoCacheManager = infoCacheManager;
+    }
+
+    public static RepositoryService create(RestClient client, Session session) {
+        RepositoryRestApi repositoryRestApi = new RepositoryRestApi.Builder()
+                .baseUrl(client.getServerUrl())
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .build();
+        CallExecutor callExecutor = CallExecutorImpl.create(client, session);
+
+        return new RepositoryService(repositoryRestApi, callExecutor, session.getInfoCacheManager());
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mTokenProvider, mInfoProvider);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mCallExecutor, mInfoCacheManager);
     }
 }

@@ -25,13 +25,13 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.CallExecutor;
+import com.jaspersoft.android.sdk.service.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Collection;
 
@@ -42,20 +42,21 @@ import java.util.Collection;
 final class SearchTaskImpl implements SearchTask {
     private final InternalCriteria mCriteria;
     private final RepositoryRestApi mRepositoryRestApi;
-    private final TokenProvider mTokenProvider;
-    private final InfoProvider mInfoProvider;
+    private final CallExecutor mCallExecutor;
+    private final InfoCacheManager mInfoCacheManager;
 
     @Nullable
     private SearchStrategy strategy;
 
+    @TestOnly
     SearchTaskImpl(InternalCriteria criteria,
                    RepositoryRestApi repositoryRestApi,
-                   TokenProvider tokenProvider,
-                   InfoProvider infoProvider) {
+                   CallExecutor callExecutor,
+                   InfoCacheManager infoCacheManager) {
         mCriteria = criteria;
         mRepositoryRestApi = repositoryRestApi;
-        mTokenProvider = tokenProvider;
-        mInfoProvider = infoProvider;
+        mCallExecutor = callExecutor;
+        mInfoCacheManager = infoCacheManager;
     }
 
     @NotNull
@@ -76,9 +77,22 @@ final class SearchTaskImpl implements SearchTask {
         return true;
     }
 
-    private SearchStrategy defineSearchStrategy() {
+    private SearchStrategy defineSearchStrategy() throws ServiceException {
         if (strategy == null) {
-            strategy = SearchStrategy.Factory.get(mCriteria, mRepositoryRestApi, mInfoProvider, mTokenProvider);
+            double version = mInfoCacheManager.getInfo().getVersion();
+
+            ResourceMapper resourceMapper = new ResourceMapper();
+            SearchUseCase searchUseCase = new SearchUseCase(
+                    resourceMapper,
+                    mRepositoryRestApi,
+                    mInfoCacheManager,
+                    mCallExecutor
+            );
+            strategy = SearchStrategy.Factory.get(
+                    searchUseCase,
+                    mCriteria,
+                    version
+            );
         }
         return strategy;
     }
