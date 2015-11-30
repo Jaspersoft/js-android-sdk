@@ -22,16 +22,33 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.token;
+package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenCache {
-    String get(Credentials credentials);
-    void put(Credentials credentials, String token);
-    void evict(Credentials credentials);
+public final class FakeCallExecutor implements CallExecutor {
+    private final String mToken;
+
+    public FakeCallExecutor(String token) {
+        mToken = token;
+    }
+
+    @Override
+    public <T> T execute(Call<T> call) throws ServiceException {
+        try {
+            return call.perform(mToken);
+        } catch (IOException e) {
+            throw ServiceExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw ServiceExceptionMapper.transform(e);
+        }
+    }
 }

@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.token.TokenCache;
 
 import java.util.concurrent.TimeUnit;
 

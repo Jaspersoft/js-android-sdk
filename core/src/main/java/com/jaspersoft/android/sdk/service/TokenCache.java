@@ -22,16 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.HttpException;
-
-import java.io.IOException;
+import com.jaspersoft.android.sdk.service.auth.Credentials;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Call<T> {
-    public T perform(String token) throws IOException, HttpException;
+public interface TokenCache {
+    String get(Credentials credentials);
+    void put(Credentials credentials, String token);
+    void evict(Credentials credentials);
 }

@@ -30,9 +30,9 @@ import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
+import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,8 +71,6 @@ public class ReportServiceTest {
     @Mock
     ReportExportRestApi exportApi;
     @Mock
-    CallExecutor mCallExecutor;
-    @Mock
     ErrorDescriptor mDescriptor;
 
     @Mock
@@ -92,8 +90,9 @@ public class ReportServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, mCallExecutor, executionOptionsDataMapper);
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, mCallExecutor, executionOptionsDataMapper);
+        FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
+        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, callExecutor, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, callExecutor, executionOptionsDataMapper);
 
         objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),

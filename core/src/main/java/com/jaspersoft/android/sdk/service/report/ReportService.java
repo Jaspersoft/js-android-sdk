@@ -29,11 +29,12 @@ import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.service.CallExecutor;
+import com.jaspersoft.android.sdk.service.CallExecutorImpl;
 import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -70,7 +71,7 @@ public final class ReportService {
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .baseUrl(client.getServerUrl())
                 .build();
-        CallExecutor callExecutor = CallExecutor.create(client, credentials);
+        CallExecutor callExecutor = CallExecutorImpl.create(client, credentials);
         ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(client.getServerUrl());
 
         ReportExecutionUseCase reportExecutionUseCase =

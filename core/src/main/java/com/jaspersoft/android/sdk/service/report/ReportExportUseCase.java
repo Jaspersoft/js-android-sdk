@@ -31,11 +31,11 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.service.Call;
+import com.jaspersoft.android.sdk.service.CallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.Call;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

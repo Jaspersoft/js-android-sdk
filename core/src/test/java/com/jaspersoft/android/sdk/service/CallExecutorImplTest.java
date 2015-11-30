@@ -22,13 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.token.TokenCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -41,7 +40,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class CallExecutorTest {
+public class CallExecutorImplTest {
 
     @Mock
     TokenCache mCache;
@@ -55,7 +54,7 @@ public class CallExecutorTest {
     @Mock
     HttpException _401Exception;
 
-    private CallExecutor resolver;
+    private CallExecutorImpl resolver;
     private Object mResponse = new Object();
 
     @Before
@@ -63,7 +62,7 @@ public class CallExecutorTest {
         MockitoAnnotations.initMocks(this);
         when(_401Exception.code()).thenReturn(401);
         when(mCall.perform(anyString())).thenReturn(mResponse);
-        resolver = new CallExecutor(mCredentials, mCache, mFactory);
+        resolver = new CallExecutorImpl(mCredentials, mCache, mFactory);
     }
 
     @Test
