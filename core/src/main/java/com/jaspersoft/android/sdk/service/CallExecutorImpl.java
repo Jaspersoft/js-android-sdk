@@ -37,13 +37,18 @@ import java.io.IOException;
  * @since 2.0
  */
 public final class CallExecutorImpl implements CallExecutor {
-    private final TokenCache mTokenCache;
+        private final TokenCacheManager.Factory mTokenCacheManagerFactory;
+    private final InfoCacheManager mInfoCacheManager;
     private final TokenFactory mTokenFactory;
     private final Credentials mCredentials;
 
     @TestOnly
-    CallExecutorImpl(Credentials credentials, TokenCache tokenCache, TokenFactory tokenFactory) {
-        mTokenCache = tokenCache;
+    CallExecutorImpl(Credentials credentials,
+                     TokenCacheManager.Factory tokenCacheManagerFactory,
+                     InfoCacheManager cacheManager,
+                     TokenFactory tokenFactory) {
+        mTokenCacheManagerFactory = tokenCacheManagerFactory;
+        mInfoCacheManager = cacheManager;
         mTokenFactory = tokenFactory;
         mCredentials = credentials;
     }
@@ -51,7 +56,8 @@ public final class CallExecutorImpl implements CallExecutor {
     public static CallExecutorImpl create(RestClient client, Session session) {
         return new CallExecutorImpl(
                 session.getCredentials(),
-                session.getTokenCache(),
+                session.getTokenCacheManagerFactory(),
+                session.getInfoCacheManager(),
                 new TokenFactory(client)
         );
     }
@@ -62,22 +68,24 @@ public final class CallExecutorImpl implements CallExecutor {
     }
 */
     public <T> T execute(Call<T> call) throws ServiceException {
-        String token = mTokenCache.get();
+        double versionCode = mInfoCacheManager.getInfo().getVersion();
+        TokenCacheManager tokenCacheManager = mTokenCacheManagerFactory.create(versionCode);
+        String token = tokenCacheManager.getToken();
         try {
             if (token == null) {
                 token = mTokenFactory.create(mCredentials);
-                mTokenCache.put(token);
+                tokenCacheManager.persistToken(token);
             }
             return call.perform(token);
         } catch (IOException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (HttpException e) {
             if (e.code() == 401) {
-                mTokenCache.evict();
+                tokenCacheManager.invalidateToken();
 
                 try {
                     token = mTokenFactory.create(mCredentials);
-                    mTokenCache.put(token);
+                    tokenCacheManager.persistToken(token);
                     return call.perform(token);
                 } catch (IOException e1) {
                     throw ServiceExceptionMapper.transform(e1);

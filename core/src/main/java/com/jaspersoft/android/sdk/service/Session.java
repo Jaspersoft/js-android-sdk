@@ -37,22 +37,22 @@ import org.jetbrains.annotations.TestOnly;
 public final class Session extends AnonymousSession {
 
     private final Credentials mCredentials;
-    private final TokenCache mTokenCache;
     private final InfoCacheManager mInfoCacheManager;
+    private final TokenCacheManager.Factory mTokenCacheManagerFactory;
 
     private ReportService mReportService;
     private RepositoryService mRepositoryService;
 
     @TestOnly
-    Session(RestClient client, Credentials credentials, TokenCache tokenCache, InfoCacheManager infoCacheManager) {
+    Session(RestClient client, Credentials credentials, TokenCacheManager.Factory tokenCacheManagerFactory, InfoCacheManager infoCacheManager) {
         super(client);
         mCredentials = credentials;
-        mTokenCache = tokenCache;
+        mTokenCacheManagerFactory = tokenCacheManagerFactory;
         mInfoCacheManager = infoCacheManager;
     }
 
-    TokenCache getTokenCache() {
-        return mTokenCache;
+    TokenCacheManager.Factory getTokenCacheManagerFactory() {
+        return mTokenCacheManagerFactory;
     }
 
     public InfoCacheManager getInfoCacheManager() {
@@ -86,6 +86,7 @@ public final class Session extends AnonymousSession {
         private TokenCache mTokenCache;
         private InfoCache mInfoCache;
         private InfoCacheManager mInfoCacheManager;
+        private TokenCacheManager.Factory mTokenCacheManagerFactory;
 
         Builder(RestClient client, Credentials credentials) {
             mClient = client;
@@ -99,6 +100,11 @@ public final class Session extends AnonymousSession {
 
         public Builder infoCacheManager(InfoCacheManager infoCacheManager) {
             mInfoCacheManager = infoCacheManager;
+            return this;
+        }
+
+        public Builder tokenCacheManagerFactory(TokenCacheManager.Factory tokenCacheManagerFactory) {
+            mTokenCacheManagerFactory = tokenCacheManagerFactory;
             return this;
         }
 
@@ -117,7 +123,10 @@ public final class Session extends AnonymousSession {
             if (mInfoCacheManager == null) {
                 mInfoCacheManager = InfoCacheManagerImpl.create(mClient, mInfoCache);
             }
-            return new Session(mClient, mCredentials, mTokenCache, mInfoCacheManager);
+            if (mTokenCacheManagerFactory == null) {
+                mTokenCacheManagerFactory = new TokenManagerFactory(mTokenCache);
+            }
+            return new Session(mClient, mCredentials, mTokenCacheManagerFactory, mInfoCacheManager);
         }
     }
 }

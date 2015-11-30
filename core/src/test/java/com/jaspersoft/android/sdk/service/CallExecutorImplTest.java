@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.junit.Before;
@@ -43,7 +44,12 @@ import static org.mockito.Mockito.*;
 public class CallExecutorImplTest {
 
     @Mock
-    TokenCache mCache;
+    TokenCacheManager mTokenCacheManager;
+    @Mock
+    TokenCacheManager.Factory mTokenCacheManagerFactory;
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+
     @Mock
     TokenFactory mFactory;
     @Mock
@@ -54,6 +60,9 @@ public class CallExecutorImplTest {
     @Mock
     HttpException _401Exception;
 
+    @Mock
+    ServerInfo mServerInfo;
+
     private CallExecutorImpl resolver;
     private Object mResponse = new Object();
 
@@ -62,37 +71,40 @@ public class CallExecutorImplTest {
         MockitoAnnotations.initMocks(this);
         when(_401Exception.code()).thenReturn(401);
         when(mCall.perform(anyString())).thenReturn(mResponse);
-        resolver = new CallExecutorImpl(mCredentials, mCache, mFactory);
+
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mTokenCacheManagerFactory.create(anyDouble())).thenReturn(mTokenCacheManager);
+        resolver = new CallExecutorImpl(mCredentials, mTokenCacheManagerFactory, mInfoCacheManager, mFactory);
     }
 
     @Test
     public void testExecuteWithValidCache() throws Exception {
-        when(mCache.get()).thenReturn("token");
+        when(mTokenCacheManager.getToken()).thenReturn("token");
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
-        verify(mCache).get();
+        verify(mTokenCacheManager).getToken();
         verify(mCall).perform("token");
-        verifyNoMoreInteractions(mCache);
+        verifyNoMoreInteractions(mTokenCacheManager);
         verifyZeroInteractions(mFactory);
     }
 
     @Test
     public void testExecuteWithEmptyCache() throws Exception {
-        when(mCache.get()).thenReturn(null);
+        when(mTokenCacheManager.getToken()).thenReturn(null);
         when(mFactory.create(any(Credentials.class))).thenReturn("token");
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
-        verify(mCache).get();
+        verify(mTokenCacheManager).getToken();
         verify(mFactory).create(mCredentials);
-        verify(mCache).put("token");
+        verify(mTokenCacheManager).persistToken("token");
         verify(mCall).perform("token");
     }
 
     @Test
     public void testExecuteWithInvalidCache() throws Exception {
-        when(mCache.get()).thenReturn("invalid token");
+        when(mTokenCacheManager.getToken()).thenReturn("invalid token");
 
         when(_401Exception.code()).thenReturn(401);
         when(mCall.perform(anyString())).thenAnswer(_401ResponseAtFirstInvokation());
@@ -101,17 +113,17 @@ public class CallExecutorImplTest {
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
-        verify(mCache).get();
+        verify(mTokenCacheManager).getToken();
         verify(mCall).perform("invalid token");
-        verify(mCache).evict();
+        verify(mTokenCacheManager).invalidateToken();
         verify(mFactory).create(mCredentials);
-        verify(mCache).put("token");
+        verify(mTokenCacheManager).persistToken("token");
         verify(mCall).perform("token");
     }
 
     @Test
     public void testExecuteWithInvalidCredentials() throws Exception {
-        when(mCache.get()).thenReturn("invalid token");
+        when(mTokenCacheManager.getToken()).thenReturn("invalid token");
         when(mCall.perform(anyString())).thenThrow(_401Exception);
         when(mFactory.create(any(Credentials.class))).thenThrow(_401Exception);
 
@@ -121,15 +133,15 @@ public class CallExecutorImplTest {
             assertThat(exception.code(), is(StatusCodes.AUTHORIZATION_ERROR));
         }
 
-        verify(mCache).get();
+        verify(mTokenCacheManager).getToken();
         verify(mCall).perform("invalid token");
-        verify(mCache).evict();
+        verify(mTokenCacheManager).invalidateToken();
         verify(mFactory).create(mCredentials);
     }
 
     @Test
     public void testExecuteWithInvalidCredentialsAndEmptyCache() throws Exception {
-        when(mCache.get()).thenReturn(null);
+        when(mTokenCacheManager.getToken()).thenReturn(null);
         when(mFactory.create(any(Credentials.class))).thenThrow(_401Exception);
 
         try {
@@ -138,11 +150,11 @@ public class CallExecutorImplTest {
             assertThat(exception.code(), is(StatusCodes.AUTHORIZATION_ERROR));
         }
 
-        verify(mCache).get();
-        verify(mCache).evict();
+        verify(mTokenCacheManager).getToken();
+        verify(mTokenCacheManager).invalidateToken();
 
         verify(mFactory, times(2)).create(mCredentials);
-        verifyNoMoreInteractions(mCache);
+        verifyNoMoreInteractions(mTokenCacheManager);
         verifyNoMoreInteractions(mFactory);
         verifyZeroInteractions(mCall);
     }
