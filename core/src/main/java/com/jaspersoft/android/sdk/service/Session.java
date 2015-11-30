@@ -41,14 +41,16 @@ public final class Session extends AnonymousSession implements InfoProvider {
 
     private final Credentials mCredentials;
     private final TokenCache mTokenCache;
+    private final InfoCache mInfo;
 
     private ReportService mReportService;
 
     @TestOnly
-    Session(RestClient client, Credentials credentials, TokenCache tokenCache) {
+    Session(RestClient client, Credentials credentials, TokenCache tokenCache, InfoCache infoCache) {
         super(client);
         mCredentials = credentials;
         mTokenCache = tokenCache;
+        mInfo = infoCache;
     }
 
     TokenCache getTokenCache() {
@@ -89,10 +91,16 @@ public final class Session extends AnonymousSession implements InfoProvider {
         private final Credentials mCredentials;
 
         private TokenCache mTokenCache;
+        private InfoCache mInfoCache;
 
         Builder(RestClient client, Credentials credentials) {
             mClient = client;
             mCredentials = credentials;
+        }
+
+        public Builder infoCache(InfoCache infoCache) {
+            mInfoCache = infoCache;
+            return this;
         }
 
         public Builder tokenCache(TokenCache tokenCache) {
@@ -104,7 +112,10 @@ public final class Session extends AnonymousSession implements InfoProvider {
             if (mTokenCache == null) {
                 mTokenCache = new InMemoryTokenCache();
             }
-            return new Session(mClient, mCredentials, mTokenCache);
+            if (mInfoCache == null) {
+                mInfoCache = new InMemoryInfoCache();
+            }
+            return new Session(mClient, mCredentials, mTokenCache, mInfoCache);
         }
     }
 }

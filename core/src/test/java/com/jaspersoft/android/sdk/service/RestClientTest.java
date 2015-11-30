@@ -45,7 +45,10 @@ public class RestClientTest {
                 .organization("any")
                 .build();
 
-        Session session = client.newSession(credentials).create();
+        Session session = client.newSession(credentials)
+                .tokenCache(new InMemoryTokenCache())
+                .infoCache(new InMemoryInfoCache())
+                .create();
         session.reportApi();
 
         AnonymousSession anonymousSession = client.getAnonymousSession();
