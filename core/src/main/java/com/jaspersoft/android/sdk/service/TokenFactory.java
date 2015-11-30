@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.auth.JrsAuthenticator;
+import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ class TokenFactory {
     }
 
     public String create(Credentials credentials) throws IOException, HttpException {
-        JrsAuthenticator auth = mRestClient.getAnonymousSession().authApi();
+        AuthenticationService auth = mRestClient.getAnonymousSession().authApi();
         try {
             return auth.authenticate(credentials);
         } catch (ServiceException e) {

@@ -1,10 +1,13 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
@@ -12,26 +15,23 @@ import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNot
  * @author Tom Koptel
  * @since 2.0
  */
-public final class JrsAuthenticator {
+public final class AuthenticationService {
     private final AuthPolicy mAuthPolicy;
 
     @TestOnly
-    JrsAuthenticator(AuthPolicy authPolicy) {
+    AuthenticationService(AuthPolicy authPolicy) {
         mAuthPolicy = authPolicy;
     }
 
     @NotNull
-    public static JrsAuthenticator create(@NotNull String baseUrl) {
-        checkNotNull(baseUrl, "Base url should not be null");
-        AuthPolicy policyImpl = AuthPolicy.Default.create(baseUrl);
-        return new JrsAuthenticator(policyImpl);
-    }
-
-    @NotNull
-    public static JrsAuthenticator create(@NotNull AuthenticationRestApi restApi) {
-        checkNotNull(restApi, "Authentication API should not be null");
+    public static AuthenticationService create(@NotNull RestClient mClient) {
+        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
+                .connectionTimeOut(mClient.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(mClient.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .baseUrl(mClient.getServerUrl())
+                .build();
         AuthPolicy policyImpl = AuthPolicy.Default.create(restApi);
-        return new JrsAuthenticator(policyImpl);
+        return new AuthenticationService(policyImpl);
     }
 
     @NotNull

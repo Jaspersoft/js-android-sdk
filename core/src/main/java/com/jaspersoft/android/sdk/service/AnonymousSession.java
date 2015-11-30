@@ -24,13 +24,9 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.ServerRestApi;
-import com.jaspersoft.android.sdk.service.auth.JrsAuthenticator;
+import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
 import com.jaspersoft.android.sdk.service.server.ServerInfoService;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -39,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class AnonymousSession {
     protected final RestClient mClient;
 
-    private JrsAuthenticator mAuthenticator;
+    private AuthenticationService mAuthenticator;
     private ServerInfoService mInfoService;
 
     protected AnonymousSession(RestClient client) {
@@ -47,15 +43,9 @@ public class AnonymousSession {
     }
 
     @NotNull
-    public final JrsAuthenticator authApi() {
+    public final AuthenticationService authApi() {
         if (mAuthenticator == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .connectionTimeOut(mClient.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                    .readTimeout(mClient.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                    .baseUrl(mClient.getServerUrl())
-                    .build();
-
-            mAuthenticator = JrsAuthenticator.create(restApi);
+            mAuthenticator = AuthenticationService.create(mClient);
         }
         return mAuthenticator;
     }
