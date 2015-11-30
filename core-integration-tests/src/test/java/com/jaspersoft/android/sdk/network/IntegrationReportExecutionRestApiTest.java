@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
+import com.jaspersoft.android.sdk.env.ServerBundle;
 import com.jaspersoft.android.sdk.env.TestLogger;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
@@ -67,7 +68,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldStartReportExecution(String token, String baseUrl, String reportUri) throws Exception {
+    public void shouldStartReportExecution(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         ServiceFactory serviceFactory = ServiceFactory.builder()
                 .baseUrl(baseUrl).token(token)
                 .create();
@@ -87,7 +90,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldCancelReportExecution(final String token, final String baseUrl, String reportUri) throws Exception {
+    public void shouldCancelReportExecution(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         startExecution(token, baseUrl, reportUri).perform(new Action() {
             @Override
             public void call(Session session) {
@@ -98,7 +103,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldReturnReportExecutionDetails(final String token, final String baseUrl, String reportUri) throws Exception {
+    public void shouldReturnReportExecutionDetails(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         startExecution(token, baseUrl, reportUri).perform(new Action() {
             @Override
             public void call(Session session) {
@@ -110,7 +117,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldCheckReportExecutionStatus(final String token, final String baseUrl, String reportUri) throws Exception {
+    public void shouldCheckReportExecutionStatus(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         startExecution(token, baseUrl, reportUri).perform(new Action() {
             @Override
             public void call(Session session) {
@@ -122,7 +131,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void searchForExecutionShouldReturnResult(final String token, final String baseUrl, final String reportUri) throws Exception {
+    public void searchForExecutionShouldReturnResult(ServerBundle bundle, final String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         startExecution(token, baseUrl, reportUri).perform(new Action() {
             @Override
             public void call(Session session) {
@@ -137,7 +148,9 @@ public class IntegrationReportExecutionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void updateOfParametersForExecutionShouldReturnResult(final String token, final String baseUrl, String reportUri) throws Exception {
+    public void updateOfParametersForExecutionShouldReturnResult(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         startExecution(token, baseUrl, reportUri).perform(new Action() {
             @Override
             public void call(Session session) {

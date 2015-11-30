@@ -24,11 +24,12 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
+import com.jaspersoft.android.sdk.env.ServerBundle;
+import com.jaspersoft.android.sdk.env.TestLogger;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
-import com.jaspersoft.android.sdk.env.TestLogger;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -51,22 +52,22 @@ public class IntegrationRepositoryRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldRequestReport(String token, String baseUrl, String reportUri) {
-        ReportLookup report = createApi(baseUrl).requestReportResource(token, reportUri);
+    public void shouldRequestReport(ServerBundle bundle, String reportUri) {
+        ReportLookup report = createApi(bundle.getUrl()).requestReportResource(bundle.getToken(), reportUri);
         assertThat("Failed load report data", report != null);
     }
 
     @Test
     @Parameters(method = "servers")
-    public void shouldRequestListOfResources(String token, String baseUrl) {
-        ResourceSearchResult response = createApi(baseUrl).searchResources(token, null);
+    public void shouldRequestListOfResources(ServerBundle bundle) {
+        ResourceSearchResult response = createApi(bundle.getUrl()).searchResources(bundle.getToken(), null);
         assertThat("Failed to perform search lookup", response != null);
     }
 
     @Test
     @Parameters(method = "servers")
-    public void shouldRequestRootFolder(String token, String baseUrl) {
-        FolderLookup folder = createApi(baseUrl).requestFolderResource(token, "/");
+    public void shouldRequestRootFolder(ServerBundle bundle) {
+        FolderLookup folder = createApi(bundle.getUrl()).requestFolderResource(bundle.getToken(), "/");
         assertThat("Failed to root folder response", folder != null);
     }
 

@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
+import com.jaspersoft.android.sdk.env.ServerBundle;
 import com.jaspersoft.android.sdk.env.TestLogger;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.testkit.ServiceFactory;
@@ -54,14 +55,16 @@ public class IntegrationReportOptionRestApiTest {
 
     @Test
     @Parameters(method = "reports")
-    public void shouldRequestReportOptionsList(String token, String baseUrl, String reportUri) throws Exception {
-        Set<ReportOption> response = createApi(baseUrl).requestReportOptionsList(token, reportUri);
+    public void shouldRequestReportOptionsList(ServerBundle bundle, String reportUri) throws Exception {
+        Set<ReportOption> response = createApi(bundle.getUrl()).requestReportOptionsList(bundle.getToken(), reportUri);
         assertThat("Failed load report options data", response != null);
     }
 
     @Test
     @Parameters(method = "reports")
-    public void apiSupportsCrudForReportOption(String token, String baseUrl, String reportUri) throws Exception {
+    public void apiSupportsCrudForReportOption(ServerBundle bundle, String reportUri) throws Exception {
+        String baseUrl = bundle.getUrl();
+        String token = bundle.getToken();
         Map<String, Set<String>> params = ServiceFactory.builder()
                 .baseUrl(baseUrl).token(token)
                 .create()

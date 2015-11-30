@@ -65,7 +65,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
                 Credentials credentials = CredentialsMapper.transform(config);
                 try {
                     String token = Authorizer.create(server.getUrl()).authorize(credentials);
-                    result.add(new Object[]{token, server.getUrl()});
+                    result.add(new Object[]{new ServerBundle(token, server.getUrl())});
                 } catch (IOException | HttpException e) {
                     System.out.println(e);
                 }
@@ -80,8 +80,9 @@ public final class JrsEnvironmentRule extends ExternalResource {
         for (Object o : listAuthorizedServers()) {
             Object[] pair = (Object[]) o;
             try {
-                String token = String.valueOf(pair[0]);
-                String url = String.valueOf(pair[1]);
+                ServerBundle bundle = (ServerBundle) pair[0];
+                String token = bundle.getToken();
+                String url = bundle.getUrl();
                 ServiceFactory service = ServiceFactory.builder()
                         .baseUrl(url).token(token).create();
 
@@ -89,7 +90,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
                         .resourceRepository(getLazyEnv().reportExecNumber(), "reportUnit")
                         .listResources();
                 for (String report : reports) {
-                    result.add(new Object[] {token, url, report});
+                    result.add(new Object[] {bundle, report});
                 }
             } catch (IOException | HttpException e) {
                 System.out.println(e);
