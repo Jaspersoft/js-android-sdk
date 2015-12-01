@@ -28,14 +28,16 @@ import com.jaspersoft.android.sdk.client.JsRestClient;
 import com.jaspersoft.android.sdk.client.async.request.cacheable.CacheableRequest;
 import com.jaspersoft.android.sdk.client.oxm.report.FolderDataResponse;
 
-public class GetRootFolderDataRequest extends CacheableRequest<FolderDataResponse> {
+import java.util.List;
+
+public class GetRootFolderDataRequest extends CacheableRequest<List<FolderDataResponse>> {
 
     public GetRootFolderDataRequest(JsRestClient jsRestClient) {
-        super(jsRestClient, FolderDataResponse.class);
+        super(jsRestClient, (Class<List<FolderDataResponse>>)(Class<?>)List.class);
     }
 
     @Override
-    public FolderDataResponse loadDataFromNetwork() throws Exception {
+    public  List<FolderDataResponse> loadDataFromNetwork() throws Exception {
         return getJsRestClient().getRootFolderData();
     }
 
