@@ -65,8 +65,8 @@ public class ServerInfo {
         this.datetimeFormatPattern = datetimeFormatPattern;
     }
 
-    public boolean isPro() {
-        return "PRO".equals(edition);
+    public String getEdition() {
+        return edition;
     }
 
     public void setEdition(String edition) {
