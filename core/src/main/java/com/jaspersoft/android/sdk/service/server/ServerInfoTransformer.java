@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
 import java.text.SimpleDateFormat;
@@ -64,8 +63,7 @@ class ServerInfoTransformer {
         double version = VersionParser.INSTANCE.toDouble(response.getVersion());
         serverInfo.setVersion(version);
 
-        ServerEdition edition = ServerEdition.valueOf(response.getEdition());
-        serverInfo.setEdition(edition);
+        serverInfo.setEdition(response.getEdition());
         serverInfo.setEditionName(response.getEditionName());
 
         Set<String> features = parseFeatureSet(response.getFeatures());

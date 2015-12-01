@@ -25,9 +25,7 @@
 package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.service.data.server.ServerEdition;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +92,7 @@ public class ServerInfoTransformerTest {
     @Test
     public void shouldTransformServerEditionProperty() {
         ServerInfo info = transformerUnderTest.transform(mServerInfoData);
-        assertThat(info.getEdition(), is(ServerEdition.PRO));
+        assertThat(info.isPro(), is(true));
     }
 
     @Test

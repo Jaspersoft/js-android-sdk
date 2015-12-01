@@ -35,7 +35,7 @@ public class ServerInfo {
     private SimpleDateFormat dateFormatPattern;
     private SimpleDateFormat datetimeFormatPattern;
     private double version;
-    private ServerEdition edition;
+    private String edition;
     private String licenseType;
     private String build;
     private String editionName;
@@ -65,11 +65,11 @@ public class ServerInfo {
         this.datetimeFormatPattern = datetimeFormatPattern;
     }
 
-    public ServerEdition getEdition() {
-        return edition;
+    public boolean isPro() {
+        return "PRO".equals(edition);
     }
 
-    public void setEdition(ServerEdition edition) {
+    public void setEdition(String edition) {
         this.edition = edition;
     }
 
