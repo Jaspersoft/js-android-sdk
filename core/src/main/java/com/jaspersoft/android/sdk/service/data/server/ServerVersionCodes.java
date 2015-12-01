@@ -30,6 +30,7 @@ package com.jaspersoft.android.sdk.service.data.server;
  */
 public final class ServerVersionCodes {
     public static double v5_5 = 5.5d;
+    public static double v5_6 = 5.6d;
     public static double v5_6_1 = 5.61d;
     public static double v6 = 6.0d;
     public static double v6_0_1 = 6.01d;
