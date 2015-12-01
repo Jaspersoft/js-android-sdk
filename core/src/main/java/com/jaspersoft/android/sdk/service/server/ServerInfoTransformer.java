@@ -60,7 +60,7 @@ class ServerInfoTransformer {
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat(response.getDatetimeFormatPattern());
         serverInfo.setDatetimeFormatPattern(dateTimeFormat);
 
-        double version = VersionParser.INSTANCE.toDouble(response.getVersion());
+        double version = VersionParser.toDouble(response.getVersion());
         serverInfo.setVersion(version);
 
         serverInfo.setEdition(response.getEdition());

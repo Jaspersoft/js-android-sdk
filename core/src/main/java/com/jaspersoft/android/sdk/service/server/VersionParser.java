@@ -30,30 +30,40 @@ import java.math.BigDecimal;
  * @author Tom Koptel
  * @since 2.0
  */
-enum VersionParser {
-    INSTANCE;
+public class VersionParser {
 
-    public double toDouble(String version) {
-        double versionCode = 0d;
-        // update version code
+    private VersionParser() {
+    }
+
+    public static double toDouble(String version) {
         if (version != null) {
-            String[] subs = version.split("\\.");
-
-            BigDecimal decimalSubVersion, decimalFactor, decimalResult;
-            BigDecimal decimalVersion = new BigDecimal("0");
-            for (int i = 0; i < subs.length; i++) {
-                try {
-                    decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
-                } catch (NumberFormatException ex) {
-                    decimalSubVersion = new BigDecimal("0");
-                }
-
-                decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));
-                decimalResult = decimalSubVersion.multiply(decimalFactor);
-                decimalVersion = decimalVersion.add(decimalResult);
+            try {
+                return Double.parseDouble(version);
+            } catch (NumberFormatException ex) {
+                return parseSchema(version);
             }
-            versionCode = decimalVersion.doubleValue();
         }
+        return 0d;
+    }
+
+    private static double parseSchema(String version) {
+        double versionCode;
+        String[] subs = version.split("\\.");
+
+        BigDecimal decimalSubVersion, decimalFactor, decimalResult;
+        BigDecimal decimalVersion = new BigDecimal("0");
+        for (int i = 0; i < subs.length; i++) {
+            try {
+                decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
+            } catch (NumberFormatException ex) {
+                decimalSubVersion = new BigDecimal("0");
+            }
+
+            decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));
+            decimalResult = decimalSubVersion.multiply(decimalFactor);
+            decimalVersion = decimalVersion.add(decimalResult);
+        }
+        versionCode = decimalVersion.doubleValue();
         return versionCode;
     }
 }

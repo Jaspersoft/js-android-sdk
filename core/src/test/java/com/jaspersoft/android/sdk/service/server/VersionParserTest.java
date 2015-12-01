@@ -54,7 +54,18 @@ public class VersionParserTest {
     })
     public void shouldParseSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = VersionParser.INSTANCE.toDouble(versionCode);
+        double resultCode = VersionParser.toDouble(versionCode);
+        assertThat(resultCode, is(expectedCode));
+    }
+
+    @Test
+    @Parameters({
+            "5.61, 5.61",
+            "6.01, 6.01"
+    })
+    public void shouldParseValidDouble(String versionCode, String expected) {
+        double expectedCode = Double.valueOf(expected);
+        double resultCode = VersionParser.toDouble(versionCode);
         assertThat(resultCode, is(expectedCode));
     }
 
@@ -69,7 +80,7 @@ public class VersionParserTest {
     })
     public void shouldParseLongSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = VersionParser.INSTANCE.toDouble(versionCode);
+        double resultCode = VersionParser.toDouble(versionCode);
         assertThat(resultCode, is(expectedCode));
     }
 }

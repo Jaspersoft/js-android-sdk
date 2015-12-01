@@ -76,7 +76,7 @@ public final class ServerInfoService {
     public double requestServerVersion() throws ServiceException {
         try {
             String version = mRestApi.requestVersion();
-            return VersionParser.INSTANCE.toDouble(version);
+            return VersionParser.toDouble(version);
         } catch (HttpException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {
