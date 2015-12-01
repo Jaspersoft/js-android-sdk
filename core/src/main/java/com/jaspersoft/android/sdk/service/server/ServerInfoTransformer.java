@@ -68,6 +68,7 @@ class ServerInfoTransformer {
 
         Set<String> features = parseFeatureSet(response.getFeatures());
         serverInfo.setFeatures(features);
+        serverInfo.setLicenseType(response.getLicenseType());
 
         return serverInfo;
     }

@@ -63,48 +63,19 @@ public class ServerInfoTransformerTest {
         when(mServerInfoData.getEdition()).thenReturn("PRO");
         when(mServerInfoData.getEditionName()).thenReturn("Enterprise for AWS");
         when(mServerInfoData.getFeatures()).thenReturn("Fusion");
+        when(mServerInfoData.getLicenseType()).thenReturn("Type");
     }
 
     @Test
-    public void shouldTransformBuildProperty() {
+    public void shouldTransform() {
         ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getBuild(), is("20150527_1447"));
-    }
-
-    @Test
-    public void shouldTransformDateFormatProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getDateFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd")));
-    }
-
-    @Test
-    public void shouldTransformDateTimeFormatProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getDatetimeFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")));
-    }
-
-    @Test
-    public void shouldTransformServerVersionProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getVersion(), is(6.1d));
-    }
-
-    @Test
-    public void shouldTransformServerEditionProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.isPro(), is(true));
-    }
-
-    @Test
-    public void shouldTransformServerEditionNameProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getEditionName(), is("Enterprise for AWS"));
-    }
-
-    @Test
-    public void shouldTransformFeaturesProperty() {
-        ServerInfo info = transformerUnderTest.transform(mServerInfoData);
         assertThat(info.getFeatures(), contains("Fusion"));
+        assertThat(info.getLicenseType(), is("Type"));
     }
-
 }
