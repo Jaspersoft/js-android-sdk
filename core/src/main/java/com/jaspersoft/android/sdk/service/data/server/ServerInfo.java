@@ -34,8 +34,8 @@ import java.util.Set;
 public class ServerInfo {
     private SimpleDateFormat dateFormatPattern;
     private SimpleDateFormat datetimeFormatPattern;
-    private double version;
-    private ServerEdition edition;
+    private ServerVersion version;
+    private String edition;
     private String licenseType;
     private String build;
     private String editionName;
@@ -65,11 +65,11 @@ public class ServerInfo {
         this.datetimeFormatPattern = datetimeFormatPattern;
     }
 
-    public ServerEdition getEdition() {
-        return edition;
+    public boolean isEditionPro() {
+        return "PRO".equals(edition);
     }
 
-    public void setEdition(ServerEdition edition) {
+    public void setEdition(String edition) {
         this.edition = edition;
     }
 
@@ -97,11 +97,11 @@ public class ServerInfo {
         this.licenseType = licenseType;
     }
 
-    public double getVersion() {
+    public ServerVersion getVersion() {
         return version;
     }
 
-    public void setVersion(double version) {
+    public void setVersion(ServerVersion version) {
         this.version = version;
     }
 }
