@@ -35,14 +35,14 @@ public class ServerVersion implements Comparable<ServerVersion> {
     private final String versionName;
     private final double versionCode;
 
-    public static ServerVersion v5_5 = new ServerVersion("5.5", 5.5d);
-    public static ServerVersion v5_6 = new ServerVersion("5.6", 5.6d);
-    public static ServerVersion v5_6_1 = new ServerVersion("5.6.1", 5.61d);
-    public static ServerVersion v6 = new ServerVersion("6.0", 6d);
-    public static ServerVersion v6_0_1 = new ServerVersion("6.0.1", 6.01d);
-    public static ServerVersion v6_1 = new ServerVersion("6.1", 6.1d);
-    public static ServerVersion v6_1_1 = new ServerVersion("6.1.1", 6.11d);
-    public static ServerVersion v6_2 = new ServerVersion("6.2", 6.2d);
+    public static final ServerVersion v5_5 = new ServerVersion("5.5", 5.5d);
+    public static final ServerVersion v5_6 = new ServerVersion("5.6", 5.6d);
+    public static final ServerVersion v5_6_1 = new ServerVersion("5.6.1", 5.61d);
+    public static final ServerVersion v6 = new ServerVersion("6.0", 6d);
+    public static final ServerVersion v6_0_1 = new ServerVersion("6.0.1", 6.01d);
+    public static final ServerVersion v6_1 = new ServerVersion("6.1", 6.1d);
+    public static final ServerVersion v6_1_1 = new ServerVersion("6.1.1", 6.11d);
+    public static final ServerVersion v6_2 = new ServerVersion("6.2", 6.2d);
 
     @TestOnly
     ServerVersion(String versionName, double versionCode) {
@@ -86,9 +86,11 @@ public class ServerVersion implements Comparable<ServerVersion> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ServerVersion)) {
+            return false;
+        }
 
         ServerVersion that = (ServerVersion) o;
 
@@ -98,7 +100,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         long temp = Double.doubleToLongBits(versionCode);
         return (int) (temp ^ (temp >>> 32));
     }

@@ -26,12 +26,12 @@ package com.jaspersoft.android.sdk.service.data.server;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(JUnitParamsRunner.class)
 public class ServerVersionTest {
@@ -121,5 +121,11 @@ public class ServerVersionTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionIfVersionMakeNoSense() {
         ServerVersion.valueOf("make no sense");
+    }
+
+    @Test
+    public void testEquals() {
+        EqualsVerifier.forClass(ServerVersion.class)
+                .verify();
     }
 }
