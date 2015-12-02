@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.data.server;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
@@ -43,6 +44,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
     public static ServerVersion v6_1_1 = new ServerVersion("6.1.1", 6.11d);
     public static ServerVersion v6_2 = new ServerVersion("6.2", 6.2d);
 
+    @TestOnly
     ServerVersion(String versionName, double versionCode) {
         this.versionName = versionName;
         this.versionCode = versionCode;
@@ -52,7 +54,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
     public static ServerVersion valueOf(@NotNull String version) {
         double code = VersionParser.toDouble(version);
         if (code == 0) {
-            throw new IllegalArgumentException(String.format("Version '%s' not defined", version));
+            throw new IllegalArgumentException(String.format("Supplied version '%s' invalid", version));
         }
         return new ServerVersion(version, code);
     }
