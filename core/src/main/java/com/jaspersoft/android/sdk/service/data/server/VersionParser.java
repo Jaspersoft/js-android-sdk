@@ -30,7 +30,7 @@ import java.math.BigDecimal;
  * @author Tom Koptel
  * @since 2.0
  */
-public class VersionParser {
+final class VersionParser {
 
     private VersionParser() {
     }

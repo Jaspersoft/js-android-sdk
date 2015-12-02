@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -60,7 +61,7 @@ class ServerInfoTransformer {
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat(response.getDatetimeFormatPattern());
         serverInfo.setDatetimeFormatPattern(dateTimeFormat);
 
-        double version = VersionParser.toDouble(response.getVersion());
+        ServerVersion version = ServerVersion.valueOf(response.getVersion());
         serverInfo.setVersion(version);
 
         serverInfo.setEdition(response.getEdition());

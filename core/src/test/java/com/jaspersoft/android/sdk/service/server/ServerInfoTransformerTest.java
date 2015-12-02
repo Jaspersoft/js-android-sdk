@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +73,7 @@ public class ServerInfoTransformerTest {
         assertThat(info.getBuild(), is("20150527_1447"));
         assertThat(info.getDateFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd")));
         assertThat(info.getDatetimeFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")));
-        assertThat(info.getVersion(), is(6.1d));
+        assertThat(info.getVersion(), is(ServerVersion.v6_1));
         assertThat(info.getEdition(), is("PRO"));
         assertThat(info.getEditionName(), is("Enterprise for AWS"));
         assertThat(info.getFeatures(), contains("Fusion"));
