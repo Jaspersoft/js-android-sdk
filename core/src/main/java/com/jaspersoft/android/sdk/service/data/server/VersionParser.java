@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.service.data.server;
 
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Tom Koptel
@@ -40,13 +42,26 @@ final class VersionParser {
             try {
                 return Double.parseDouble(version);
             } catch (NumberFormatException ex) {
-                return parseSchema(version);
+                if (version.contains(".")) {
+                    return parseAsVersionName(version);
+                } else {
+                    return parseAsNumber(version);
+                }
             }
         }
         return 0d;
     }
 
-    private static double parseSchema(String version) {
+    private static double parseAsNumber(String version) {
+        Pattern pattern = Pattern.compile("(\\d+)");
+        Matcher matcher = pattern.matcher(version);
+        if (matcher.find()) {
+            return Double.valueOf(matcher.group());
+        }
+        return 0;
+    }
+
+    private static double parseAsVersionName(String version) {
         double versionCode;
         String[] subs = version.split("\\.");
 
