@@ -74,7 +74,7 @@ public class ServerInfoTransformerTest {
         assertThat(info.getDateFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd")));
         assertThat(info.getDatetimeFormatPattern(), is(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")));
         assertThat(info.getVersion(), is(ServerVersion.v6_1));
-        assertThat(info.getEdition(), is("PRO"));
+        assertThat(info.isEditionPro(), is(true));
         assertThat(info.getEditionName(), is("Enterprise for AWS"));
         assertThat(info.getFeatures(), contains("Fusion"));
         assertThat(info.getLicenseType(), is("Type"));
