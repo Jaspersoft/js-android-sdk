@@ -33,9 +33,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface TokenCache {
     @Nullable
-    String get(String key);
+    String get(@NotNull String key);
 
-    void put(@NotNull String key, @Nullable String token);
+    void put(@NotNull String key, @NotNull String token);
 
     void remove(@NotNull String key);
 }

@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.token;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -36,18 +37,19 @@ import java.util.WeakHashMap;
 public final class InMemoryTokenCache implements TokenCache {
     private final Map<String, String> mCache = new WeakHashMap<String, String>();
 
+    @Nullable
     @Override
-    public String get(String key) {
+    public String get(@NotNull String key) {
         return mCache.get(key);
     }
 
     @Override
-    public void put(@NotNull String key, String token) {
+    public void put(@NotNull String key, @NotNull String token) {
         mCache.put(key, token);
     }
 
     @Override
-    public void remove(String key) {
+    public void remove(@NotNull String key) {
         mCache.remove(key);
     }
 }

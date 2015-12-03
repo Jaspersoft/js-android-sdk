@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.service.info;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -36,18 +38,19 @@ import java.util.WeakHashMap;
 public final class InMemoryInfoCache implements InfoCache {
     private Map<String, ServerInfo> mCache = new WeakHashMap<>();
 
+    @Nullable
     @Override
-    public ServerInfo get(String key) {
+    public ServerInfo get(@NotNull String key) {
         return mCache.get(key);
     }
 
     @Override
-    public void put(String key, ServerInfo serverInfo) {
+    public void put(@NotNull String key, @NotNull ServerInfo serverInfo) {
         mCache.put(key, serverInfo);
     }
 
     @Override
-    public void remove(String key) {
+    public void remove(@NotNull String key) {
         mCache.remove(key);
     }
 }
