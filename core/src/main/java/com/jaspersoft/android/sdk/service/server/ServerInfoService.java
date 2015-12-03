@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
@@ -62,6 +63,10 @@ public class ServerInfoService {
         return new ServerInfoService(restApi, ServerInfoTransformer.get());
     }
 
+    public static ServerInfoService create(ServerRestApi restApi) {
+        return new ServerInfoService(restApi, ServerInfoTransformer.get());
+    }
+
     public ServerInfo requestServerInfo() throws ServiceException {
         try {
             ServerInfoData response = mRestApi.requestServerInfo();
@@ -73,10 +78,10 @@ public class ServerInfoService {
         }
     }
 
-    public double requestServerVersion() throws ServiceException {
+    public ServerVersion requestServerVersion() throws ServiceException {
         try {
             String version = mRestApi.requestVersion();
-            return VersionParser.INSTANCE.toDouble(version);
+            return ServerVersion.valueOf(version);
         } catch (HttpException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (IOException e) {

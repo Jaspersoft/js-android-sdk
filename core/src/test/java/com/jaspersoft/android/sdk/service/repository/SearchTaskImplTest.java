@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Collections;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.*;
 
 /**
@@ -81,7 +81,7 @@ public class SearchTaskImplTest {
                 SearchStrategy.Factory.get(
                         any(SearchUseCase.class),
                         any(InternalCriteria.class),
-                        anyDouble()
+                        any(ServerVersion.class)
                 )
         ).thenReturn(mSearchStrategy);
     }

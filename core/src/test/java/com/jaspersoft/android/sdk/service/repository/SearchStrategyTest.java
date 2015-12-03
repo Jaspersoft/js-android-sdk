@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
@@ -52,22 +53,19 @@ public class SearchStrategyTest {
     }
 
     @Test
-    @Parameters({
-            "5.0",
-            "5.5"
-    })
-    public void factoryCreatesEmeraldMR2Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(mSearchUseCase, CRITERIA, Double.valueOf(version));
+    public void factoryCreatesEmeraldMR2Strategy() {
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(mSearchUseCase, CRITERIA, ServerVersion.v5_5);
         assertThat(searchStrategy, instanceOf(EmeraldMR2SearchStrategy.class));
     }
 
     @Test
     @Parameters({
-            "6.0",
-            "6.1"
+            "v6",
+            "v6_1"
     })
-    public void factoryCreatesEmeraldMR3Strategy(String version) {
-        SearchStrategy searchStrategy = SearchStrategy.Factory.get(mSearchUseCase, CRITERIA, Double.valueOf(version));
+    public void factoryCreatesEmeraldMR3Strategy(String versionName) throws Exception {
+        ServerVersion version = (ServerVersion) ServerVersion.class.getField(versionName).get(null);
+        SearchStrategy searchStrategy = SearchStrategy.Factory.get(mSearchUseCase, CRITERIA, version);
         assertThat(searchStrategy, instanceOf(EmeraldMR3SearchStrategy.class));
     }
 }

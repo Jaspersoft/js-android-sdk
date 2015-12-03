@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.util.Collection;
@@ -38,11 +39,11 @@ interface SearchStrategy {
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(SearchUseCase searchUseCase, InternalCriteria criteria, double version) {
-            if (version <= 5.5d) {
+        public static SearchStrategy get(SearchUseCase searchUseCase, InternalCriteria criteria, ServerVersion version) {
+            if (version.lessThanOrEquals(ServerVersion.v5_5)) {
                 return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
-            if (version >= 5.6d) {
+            if (version.greaterThanOrEquals(ServerVersion.v5_6)) {
                 return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
             throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version);

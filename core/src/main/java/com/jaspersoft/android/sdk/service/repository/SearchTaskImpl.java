@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
@@ -74,7 +75,7 @@ final class SearchTaskImpl implements SearchTask {
 
     private SearchStrategy defineSearchStrategy() throws ServiceException {
         if (strategy == null) {
-            double version = mInfoCacheManager.getInfo().getVersion();
+            ServerVersion version = mInfoCacheManager.getInfo().getVersion();
 
             strategy = SearchStrategy.Factory.get(
                     mSearchUseCase,
