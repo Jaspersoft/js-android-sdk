@@ -22,47 +22,14 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.internal;
 
-import com.jaspersoft.android.sdk.service.token.TokenCache;
-import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class TokenManagerFactory implements TokenCacheManager.Factory {
-    private final TokenCache mTokenCache;
-
-    public TokenManagerFactory(TokenCache tokenCache) {
-        mTokenCache = tokenCache;
-    }
-
-    @Override
-    public TokenCacheManager create(double versionCode) {
-        return new DefaultManager(mTokenCache);
-    }
-
-    private static class DefaultManager implements TokenCacheManager{
-        private final TokenCache mTokenCache;
-
-        private DefaultManager(TokenCache tokenCache) {
-            mTokenCache = tokenCache;
-        }
-
-        @Override
-        public String getToken() {
-            return mTokenCache.get();
-        }
-
-        @Override
-        public void persistToken(String token) {
-            mTokenCache.put(token);
-        }
-
-        @Override
-        public void invalidateToken() {
-            mTokenCache.evict();
-        }
-    }
+public interface CallExecutor {
+    <T> T execute(Call<T> call) throws ServiceException;
 }

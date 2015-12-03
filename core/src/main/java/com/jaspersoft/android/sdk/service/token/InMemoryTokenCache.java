@@ -24,27 +24,30 @@
 
 package com.jaspersoft.android.sdk.service.token;
 
-import com.jaspersoft.android.sdk.service.token.TokenCache;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class InMemoryTokenCache implements TokenCache {
-    private String mCache;
+    private final Map<String, String> mCache = new WeakHashMap<String, String>();
 
     @Override
-    public String get() {
-        return mCache;
+    public String get(String key) {
+        return mCache.get(key);
     }
 
     @Override
-    public void put(String token) {
-        mCache = token;
+    public void put(@NotNull String key, String token) {
+        mCache.put(key, token);
     }
 
     @Override
-    public void evict() {
-        mCache = null;
+    public void remove(String key) {
+        mCache.remove(key);
     }
 }

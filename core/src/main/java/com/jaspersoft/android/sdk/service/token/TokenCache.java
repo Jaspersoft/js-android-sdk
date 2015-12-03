@@ -24,12 +24,18 @@
 
 package com.jaspersoft.android.sdk.service.token;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface TokenCache {
-    String get();
-    void put(String token);
-    void evict();
+    @Nullable
+    String get(String key);
+
+    void put(@NotNull String key, @Nullable String token);
+
+    void remove(@NotNull String key);
 }

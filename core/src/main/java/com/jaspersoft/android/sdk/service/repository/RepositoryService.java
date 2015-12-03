@@ -25,10 +25,11 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.*;
-import com.jaspersoft.android.sdk.service.call.CallExecutor;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.Session;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.concurrent.TimeUnit;
@@ -38,14 +39,12 @@ import java.util.concurrent.TimeUnit;
  * @since 2.0
  */
 public class RepositoryService {
-    private final RepositoryRestApi mRepositoryRestApi;
-    private final CallExecutor mCallExecutor;
+    private final SearchUseCase mSearchUseCase;
     private final InfoCacheManager mInfoCacheManager;
 
     @TestOnly
-    RepositoryService(RepositoryRestApi repositoryRestApi, CallExecutor callExecutor, InfoCacheManager infoCacheManager) {
-        mRepositoryRestApi = repositoryRestApi;
-        mCallExecutor = callExecutor;
+    RepositoryService(SearchUseCase searchUseCase, InfoCacheManager infoCacheManager) {
+        mSearchUseCase = searchUseCase;
         mInfoCacheManager = infoCacheManager;
     }
 
@@ -56,11 +55,19 @@ public class RepositoryService {
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .build();
         CallExecutor callExecutor = DefaultCallExecutor.create(client, session);
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
 
-        return new RepositoryService(repositoryRestApi, callExecutor, session.getInfoCacheManager());
+        ResourceMapper resourceMapper = new ResourceMapper();
+        SearchUseCase searchUseCase = new SearchUseCase(
+                resourceMapper,
+                repositoryRestApi,
+                cacheManager,
+                callExecutor
+        );
+        return new RepositoryService(searchUseCase, cacheManager);
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mCallExecutor, mInfoCacheManager);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mSearchUseCase, mInfoCacheManager);
     }
 }

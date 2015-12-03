@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -168,7 +169,7 @@ public class ReportServiceTest {
     }
 
     private void mockReportExecutionStatus(String... statusChain) throws Exception {
-        when(statusDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(statusDetails.getStatus()).then(Chain.of(statusChain));
         when(statusDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(executionApi.requestReportExecutionStatus(anyString(), anyString())).thenReturn(statusDetails);
     }

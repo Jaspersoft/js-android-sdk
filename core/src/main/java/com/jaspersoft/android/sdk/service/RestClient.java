@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,13 +38,15 @@ public final class RestClient {
     private final String mServerUrl;
     private final long mReadTimeOut;
     private final long mConnectionTimeOut;
+    private final InfoCache mInfoCache;
 
     private AnonymousSession mAnonymousSession;
 
-   private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut) {
+    private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, InfoCache infoCache) {
         mServerUrl = serverUrl;
         mReadTimeOut = readTimeOut;
         mConnectionTimeOut = connectionTimeOut;
+        mInfoCache = infoCache;
     }
 
     public Session.Builder newSession(Credentials credentials) {
@@ -68,6 +72,10 @@ public final class RestClient {
         return mConnectionTimeOut;
     }
 
+    public InfoCache getInfoCache() {
+        return mInfoCache;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -84,7 +92,8 @@ public final class RestClient {
     public static class ConditionalBuilder {
         private final String mServerUrl;
         private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
-        private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);;
+        private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);
+        private InfoCache mInfoCache;
 
         private ConditionalBuilder(String serverUrl) {
             mServerUrl = serverUrl;
@@ -100,8 +109,16 @@ public final class RestClient {
             return this;
         }
 
+        public ConditionalBuilder infoCache(InfoCache infoCache) {
+            mInfoCache = infoCache;
+            return this;
+        }
+
         public RestClient create() {
-            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut);
+            if (mInfoCache == null) {
+                mInfoCache = new InMemoryInfoCache();
+            }
+            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mInfoCache);
         }
     }
 }

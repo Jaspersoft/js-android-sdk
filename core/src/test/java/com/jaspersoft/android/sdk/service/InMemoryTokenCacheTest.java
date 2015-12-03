@@ -43,9 +43,9 @@ public class InMemoryTokenCacheTest {
 
     @Test
     public void testCache() throws Exception {
-        cache.put("token");
-        assertThat(cache.get(), is("token"));
-        cache.evict();
-        assertThat(cache.get(), is(nullValue()));
+        cache.put("http://localhost", "token");
+        assertThat(cache.get("http://localhost"), is("token"));
+        cache.remove("http://localhost");
+        assertThat(cache.get("http://localhost"), is(nullValue()));
     }
 }

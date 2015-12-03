@@ -25,10 +25,6 @@
 package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.service.RestClient;
-import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.io.IOException;
 
@@ -36,26 +32,6 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-class TokenFactory {
-    private final RestClient mRestClient;
-
-    TokenFactory(RestClient restClient) {
-        mRestClient = restClient;
-    }
-
-    public String create(Credentials credentials) throws IOException, HttpException {
-        AuthenticationService auth = mRestClient.getAnonymousSession().authApi();
-        try {
-            return auth.authenticate(credentials);
-        } catch (ServiceException e) {
-            Throwable throwable = e.getCause();
-            if (throwable instanceof IOException) {
-                throw (IOException) throwable;
-            }
-            if (throwable instanceof HttpException) {
-                throw (HttpException) throwable;
-            }
-            throw new RuntimeException("Boom", throwable);
-        }
-    }
+public interface Call<T> {
+    T perform(String token) throws IOException, HttpException;
 }

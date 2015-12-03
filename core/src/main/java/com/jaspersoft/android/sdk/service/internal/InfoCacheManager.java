@@ -22,16 +22,44 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.info;
+package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
+import com.jaspersoft.android.sdk.service.server.ServerInfoService;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface InfoCacheManager {
-    ServerInfo getInfo() throws ServiceException;
-    void invalidateInfo();
+public class InfoCacheManager {
+    private final ServerInfoService mInfoService;
+    private final InfoCache mInfoCache;
+
+    @TestOnly
+    InfoCacheManager(ServerInfoService infoService, InfoCache infoCache) {
+        mInfoService = infoService;
+        mInfoCache = infoCache;
+    }
+
+    public static InfoCacheManager create(RestClient client) {
+        ServerInfoService serverInfoService = ServerInfoService.create(client);
+        return new InfoCacheManager(serverInfoService, client.getInfoCache());
+    }
+
+    public ServerInfo getInfo() throws ServiceException {
+        ServerInfo info = mInfoCache.get();
+        if (info == null) {
+            info = mInfoService.requestServerInfo();
+            mInfoCache.put(info);
+        }
+        return info;
+    }
+
+    public void invalidateInfo() {
+        mInfoCache.evict();
+    }
 }

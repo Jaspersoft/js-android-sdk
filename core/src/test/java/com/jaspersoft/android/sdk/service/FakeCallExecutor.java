@@ -25,8 +25,8 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.service.call.Call;
-import com.jaspersoft.android.sdk.service.call.CallExecutor;
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 

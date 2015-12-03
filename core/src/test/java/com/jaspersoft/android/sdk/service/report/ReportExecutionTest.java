@@ -32,6 +32,7 @@ import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -242,7 +243,7 @@ public class ReportExecutionTest {
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
-        when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
         when(mExecutionStatusResponse.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
@@ -250,7 +251,7 @@ public class ReportExecutionTest {
     private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExportExecDetails.getStatus()).then(Chain.of(statusChain));
         when(mExportExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
@@ -261,7 +262,7 @@ public class ReportExecutionTest {
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
         when(mExecDetails.getExports()).thenReturn(exports);
-        when(mExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecDetails.getStatus()).then(Chain.of(statusChain));
         when(mExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
     }

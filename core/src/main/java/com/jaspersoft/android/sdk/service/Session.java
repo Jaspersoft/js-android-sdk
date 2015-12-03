@@ -25,14 +25,10 @@
 package com.jaspersoft.android.sdk.service;
 
 import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
-import com.jaspersoft.android.sdk.service.info.InfoCache;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
 import com.jaspersoft.android.sdk.service.token.TokenCache;
-import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -43,26 +39,20 @@ import org.jetbrains.annotations.TestOnly;
 public final class Session extends AnonymousSession {
 
     private final Credentials mCredentials;
-    private final InfoCacheManager mInfoCacheManager;
-    private final TokenCacheManager.Factory mTokenCacheManagerFactory;
+    private final TokenCache mTokenCache;
 
     private ReportService mReportService;
     private RepositoryService mRepositoryService;
 
     @TestOnly
-    Session(RestClient client, Credentials credentials, TokenCacheManager.Factory tokenCacheManagerFactory, InfoCacheManager infoCacheManager) {
+    Session(RestClient client, Credentials credentials, TokenCache tokenCache) {
         super(client);
         mCredentials = credentials;
-        mTokenCacheManagerFactory = tokenCacheManagerFactory;
-        mInfoCacheManager = infoCacheManager;
+        mTokenCache = tokenCache;
     }
 
-    public TokenCacheManager.Factory getTokenCacheManagerFactory() {
-        return mTokenCacheManagerFactory;
-    }
-
-    public InfoCacheManager getInfoCacheManager() {
-        return mInfoCacheManager;
+    public TokenCache getTokenCache() {
+        return mTokenCache;
     }
 
     public Credentials getCredentials() {
@@ -90,28 +80,10 @@ public final class Session extends AnonymousSession {
         private final Credentials mCredentials;
 
         private TokenCache mTokenCache;
-        private InfoCache mInfoCache;
-        private InfoCacheManager mInfoCacheManager;
-        private TokenCacheManager.Factory mTokenCacheManagerFactory;
 
         Builder(RestClient client, Credentials credentials) {
             mClient = client;
             mCredentials = credentials;
-        }
-
-        public Builder infoCache(InfoCache infoCache) {
-            mInfoCache = infoCache;
-            return this;
-        }
-
-        public Builder infoCacheManager(InfoCacheManager infoCacheManager) {
-            mInfoCacheManager = infoCacheManager;
-            return this;
-        }
-
-        public Builder tokenCacheManagerFactory(TokenCacheManager.Factory tokenCacheManagerFactory) {
-            mTokenCacheManagerFactory = tokenCacheManagerFactory;
-            return this;
         }
 
         public Builder tokenCache(TokenCache tokenCache) {
@@ -123,16 +95,7 @@ public final class Session extends AnonymousSession {
             if (mTokenCache == null) {
                 mTokenCache = new InMemoryTokenCache();
             }
-            if (mInfoCache == null) {
-                mInfoCache = new InMemoryInfoCache();
-            }
-            if (mInfoCacheManager == null) {
-                mInfoCacheManager = InfoCacheManagerImpl.create(mClient, mInfoCache);
-            }
-            if (mTokenCacheManagerFactory == null) {
-                mTokenCacheManagerFactory = new TokenManagerFactory(mTokenCache);
-            }
-            return new Session(mClient, mCredentials, mTokenCacheManagerFactory, mInfoCacheManager);
+            return new Session(mClient, mCredentials, mTokenCache);
         }
     }
 }

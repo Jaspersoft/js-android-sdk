@@ -22,46 +22,56 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.info.InfoCache;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.server.ServerInfoService;
-import org.jetbrains.annotations.TestOnly;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-/**
- * @author Tom Koptel
- * @since 2.0
- */
-final class InfoCacheManagerImpl implements InfoCacheManager {
-    private final ServerInfoService mInfoService;
-    private final InfoCache mInfoCache;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-    @TestOnly
-    InfoCacheManagerImpl(ServerInfoService infoService, InfoCache infoCache) {
-        mInfoService = infoService;
-        mInfoCache = infoCache;
+
+public class InfoCacheManagerTest {
+    @Mock
+    ServerInfoService mInfoService;
+    @Mock
+    InfoCache mInfoCache;
+    @Mock
+    ServerInfo info;
+
+    private InfoCacheManager mManager;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        when(mInfoService.requestServerInfo()).thenReturn(info);
+        mManager = new InfoCacheManager(mInfoService, mInfoCache);
     }
 
-    public static InfoCacheManager create(RestClient client, InfoCache infoCache) {
-        ServerInfoService serverInfoService = ServerInfoService.create(client);
-        return new InfoCacheManagerImpl(serverInfoService, infoCache);
+    @Test
+    public void testGetInfoWithCache() throws Exception {
+        when(mInfoCache.get()).thenReturn(info);
+        mManager.getInfo();
+        verify(mInfoCache).get();
     }
 
-    @Override
-    public ServerInfo getInfo() throws ServiceException {
-        ServerInfo info = mInfoCache.get();
-        if (info == null) {
-            info = mInfoService.requestServerInfo();
-            mInfoCache.put(info);
-        }
-        return info;
+    @Test
+    public void testGetInfoWithoutCache() throws Exception {
+        when(mInfoCache.get()).thenReturn(null);
+        mManager.getInfo();
+        verify(mInfoCache).get();
+        verify(mInfoService).requestServerInfo();
+        verify(mInfoCache).put(info);
     }
 
-    @Override
-    public void invalidateInfo() {
-        mInfoCache.evict();
+    @Test
+    public void testInvalidateInfo() throws Exception {
+        mManager.invalidateInfo();
+        verify(mInfoCache).evict();
     }
 }

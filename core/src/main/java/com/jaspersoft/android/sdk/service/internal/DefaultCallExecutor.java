@@ -27,12 +27,8 @@ package com.jaspersoft.android.sdk.service.internal;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.Session;
-import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.call.Call;
-import com.jaspersoft.android.sdk.service.call.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
-import com.jaspersoft.android.sdk.service.token.TokenCacheManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
@@ -42,55 +38,32 @@ import java.io.IOException;
  * @since 2.0
  */
 public class DefaultCallExecutor implements CallExecutor {
-        private final TokenCacheManager.Factory mTokenCacheManagerFactory;
-    private final InfoCacheManager mInfoCacheManager;
-    private final TokenFactory mTokenFactory;
-    private final Credentials mCredentials;
+
+    private final TokenCacheManager mTokenCacheManager;
 
     @TestOnly
-    DefaultCallExecutor(Credentials credentials,
-                        TokenCacheManager.Factory tokenCacheManagerFactory,
-                        InfoCacheManager cacheManager,
-                        TokenFactory tokenFactory) {
-        mTokenCacheManagerFactory = tokenCacheManagerFactory;
-        mInfoCacheManager = cacheManager;
-        mTokenFactory = tokenFactory;
-        mCredentials = credentials;
+    DefaultCallExecutor(TokenCacheManager tokenCacheManager) {
+        mTokenCacheManager = tokenCacheManager;
     }
 
     public static DefaultCallExecutor create(RestClient client, Session session) {
-        return new DefaultCallExecutor(
-                session.getCredentials(),
-                session.getTokenCacheManagerFactory(),
-                session.getInfoCacheManager(),
-                new TokenFactory(client)
-        );
+        TokenCacheManager cacheManager = TokenCacheManager.create(client, session);
+        return new DefaultCallExecutor(cacheManager);
     }
 
-    // TODO: Discuss ServiceException reconsider approach on basis of Status result object
-/*
-    public <T extends Status> T execute(Call<T> call) {
-    }
-*/
+    @NotNull
     public <T> T execute(Call<T> call) throws ServiceException {
-        double versionCode = mInfoCacheManager.getInfo().getVersion();
-        TokenCacheManager tokenCacheManager = mTokenCacheManagerFactory.create(versionCode);
-        String token = tokenCacheManager.getToken();
         try {
-            if (token == null) {
-                token = mTokenFactory.create(mCredentials);
-                tokenCacheManager.persistToken(token);
-            }
+            String token = mTokenCacheManager.loadToken();
             return call.perform(token);
         } catch (IOException e) {
             throw ServiceExceptionMapper.transform(e);
         } catch (HttpException e) {
             if (e.code() == 401) {
-                tokenCacheManager.invalidateToken();
+                mTokenCacheManager.invalidateToken();
 
                 try {
-                    token = mTokenFactory.create(mCredentials);
-                    tokenCacheManager.persistToken(token);
+                    String token = mTokenCacheManager.loadToken();
                     return call.perform(token);
                 } catch (IOException e1) {
                     throw ServiceExceptionMapper.transform(e1);

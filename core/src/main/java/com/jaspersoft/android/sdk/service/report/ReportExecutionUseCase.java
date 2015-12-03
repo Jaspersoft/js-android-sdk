@@ -29,8 +29,8 @@ import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.call.Call;
-import com.jaspersoft.android.sdk.service.call.CallExecutor;
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 

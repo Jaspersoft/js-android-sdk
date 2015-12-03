@@ -25,10 +25,9 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.FakeCallExecutor;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,12 +61,15 @@ public class SearchTaskImplTest {
     @Mock
     ServerInfo mServerInfo;
 
+    @Mock
+    SearchUseCase mSearchUseCase;
+
     private SearchTaskImpl objectUnderTest;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, new FakeCallExecutor("cookie"), mInfoCacheManager);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mSearchUseCase, mInfoCacheManager);
 
         when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
         when(mSearchStrategy.searchNext()).thenReturn(Collections.<Resource>emptyList());

@@ -40,6 +40,7 @@ public class RestClientTest {
                 .serverUrl("http://localhost")
                 .connectionTimeOut(5, TimeUnit.DAYS)
                 .readTimeOut(5, TimeUnit.DAYS)
+                .infoCache(new InMemoryInfoCache())
                 .create();
         Credentials credentials = SpringCredentials.builder()
                 .username("any")
@@ -49,7 +50,6 @@ public class RestClientTest {
 
         Session session = client.newSession(credentials)
                 .tokenCache(new InMemoryTokenCache())
-                .infoCache(new InMemoryInfoCache())
                 .create();
         session.reportApi();
         session.repositoryApi();

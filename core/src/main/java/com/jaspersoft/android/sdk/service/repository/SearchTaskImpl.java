@@ -24,11 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.call.CallExecutor;
-import com.jaspersoft.android.sdk.service.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -41,8 +39,7 @@ import java.util.Collection;
  */
 final class SearchTaskImpl implements SearchTask {
     private final InternalCriteria mCriteria;
-    private final RepositoryRestApi mRepositoryRestApi;
-    private final CallExecutor mCallExecutor;
+    private final SearchUseCase mSearchUseCase;
     private final InfoCacheManager mInfoCacheManager;
 
     @Nullable
@@ -50,12 +47,10 @@ final class SearchTaskImpl implements SearchTask {
 
     @TestOnly
     SearchTaskImpl(InternalCriteria criteria,
-                   RepositoryRestApi repositoryRestApi,
-                   CallExecutor callExecutor,
+                   SearchUseCase searchUseCase,
                    InfoCacheManager infoCacheManager) {
         mCriteria = criteria;
-        mRepositoryRestApi = repositoryRestApi;
-        mCallExecutor = callExecutor;
+        mSearchUseCase = searchUseCase;
         mInfoCacheManager = infoCacheManager;
     }
 
@@ -81,15 +76,8 @@ final class SearchTaskImpl implements SearchTask {
         if (strategy == null) {
             double version = mInfoCacheManager.getInfo().getVersion();
 
-            ResourceMapper resourceMapper = new ResourceMapper();
-            SearchUseCase searchUseCase = new SearchUseCase(
-                    resourceMapper,
-                    mRepositoryRestApi,
-                    mInfoCacheManager,
-                    mCallExecutor
-            );
             strategy = SearchStrategy.Factory.get(
-                    searchUseCase,
+                    mSearchUseCase,
                     mCriteria,
                     version
             );
