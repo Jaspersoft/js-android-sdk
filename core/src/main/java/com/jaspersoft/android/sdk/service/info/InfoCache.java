@@ -25,13 +25,16 @@
 package com.jaspersoft.android.sdk.service.info;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public interface InfoCache {
-    ServerInfo get();
-    void put(ServerInfo serverInfo);
-    void evict();
+    ServerInfo get(@NotNull String key);
+
+    void put(@NotNull String key, @NotNull ServerInfo serverInfo);
+
+    void remove(@NotNull String key);
 }

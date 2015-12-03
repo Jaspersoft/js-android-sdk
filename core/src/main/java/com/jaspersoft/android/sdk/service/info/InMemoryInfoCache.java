@@ -26,25 +26,28 @@ package com.jaspersoft.android.sdk.service.info;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class InMemoryInfoCache implements InfoCache {
-    private ServerInfo mInfoCache;
+    private Map<String, ServerInfo> mCache = new WeakHashMap<>();
 
     @Override
-    public ServerInfo get() {
-        return mInfoCache;
+    public ServerInfo get(String key) {
+        return mCache.get(key);
     }
 
     @Override
-    public void put(ServerInfo serverInfo) {
-        mInfoCache = serverInfo;
+    public void put(String key, ServerInfo serverInfo) {
+        mCache.put(key, serverInfo);
     }
 
     @Override
-    public void evict() {
-        mInfoCache = null;
+    public void remove(String key) {
+        mCache.remove(key);
     }
 }

@@ -45,9 +45,9 @@ public class InMemoryInfoCacheTest {
     @Test
     public void testGet() throws Exception {
         ServerInfo serverInfo = new ServerInfo();
-        mInfoCache.put(serverInfo);
-        assertThat(mInfoCache.get(), is(serverInfo));
-        mInfoCache.evict();
-        assertThat(mInfoCache.get(), is(nullValue()));
+        mInfoCache.put("key", serverInfo);
+        assertThat(mInfoCache.get("key"), is(serverInfo));
+        mInfoCache.remove("key");
+        assertThat(mInfoCache.get("key"), is(nullValue()));
     }
 }

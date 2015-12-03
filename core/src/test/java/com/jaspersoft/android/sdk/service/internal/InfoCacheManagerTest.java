@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,33 +46,34 @@ public class InfoCacheManagerTest {
     ServerInfo info;
 
     private InfoCacheManager mManager;
+    private final String baseUrl = "http://localhost/";
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(mInfoService.requestServerInfo()).thenReturn(info);
-        mManager = new InfoCacheManager(mInfoService, mInfoCache);
+        mManager = new InfoCacheManager(baseUrl, mInfoService, mInfoCache);
     }
 
     @Test
     public void testGetInfoWithCache() throws Exception {
-        when(mInfoCache.get()).thenReturn(info);
+        when(mInfoCache.get(baseUrl)).thenReturn(info);
         mManager.getInfo();
-        verify(mInfoCache).get();
+        verify(mInfoCache).get(baseUrl);
     }
 
     @Test
     public void testGetInfoWithoutCache() throws Exception {
-        when(mInfoCache.get()).thenReturn(null);
+        when(mInfoCache.get(anyString())).thenReturn(null);
         mManager.getInfo();
-        verify(mInfoCache).get();
+        verify(mInfoCache).get(baseUrl);
         verify(mInfoService).requestServerInfo();
-        verify(mInfoCache).put(info);
+        verify(mInfoCache).put(baseUrl, info);
     }
 
     @Test
     public void testInvalidateInfo() throws Exception {
         mManager.invalidateInfo();
-        verify(mInfoCache).evict();
+        verify(mInfoCache).remove(baseUrl);
     }
 }

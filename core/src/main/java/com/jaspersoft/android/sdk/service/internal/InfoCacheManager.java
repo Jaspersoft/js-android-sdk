@@ -38,28 +38,31 @@ import org.jetbrains.annotations.TestOnly;
 public class InfoCacheManager {
     private final ServerInfoService mInfoService;
     private final InfoCache mInfoCache;
+    private final String mServerUrl;
 
     @TestOnly
-    InfoCacheManager(ServerInfoService infoService, InfoCache infoCache) {
+    InfoCacheManager(String serverUrl, ServerInfoService infoService, InfoCache infoCache) {
+        mServerUrl = serverUrl;
         mInfoService = infoService;
         mInfoCache = infoCache;
     }
 
     public static InfoCacheManager create(RestClient client) {
         ServerInfoService serverInfoService = ServerInfoService.create(client);
-        return new InfoCacheManager(serverInfoService, client.getInfoCache());
+        String baseUrl = client.getServerUrl();
+        return new InfoCacheManager(baseUrl, serverInfoService, client.getInfoCache());
     }
 
     public ServerInfo getInfo() throws ServiceException {
-        ServerInfo info = mInfoCache.get();
+        ServerInfo info = mInfoCache.get(mServerUrl);
         if (info == null) {
             info = mInfoService.requestServerInfo();
-            mInfoCache.put(info);
+            mInfoCache.put(mServerUrl, info);
         }
         return info;
     }
 
     public void invalidateInfo() {
-        mInfoCache.evict();
+        mInfoCache.remove(mServerUrl);
     }
 }
