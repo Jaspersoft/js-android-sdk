@@ -25,9 +25,10 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,11 +38,10 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
+
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Tom Koptel
@@ -57,28 +57,31 @@ public class SearchTaskImplTest {
     @Mock
     SearchStrategy mSearchStrategy;
     @Mock
-    TokenProvider mTokenProvider;
+    InfoCacheManager mInfoCacheManager;
     @Mock
-    InfoProvider mInfoProvider;
+    ServerInfo mServerInfo;
+
+    @Mock
+    SearchUseCase mSearchUseCase;
 
     private SearchTaskImpl objectUnderTest;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchTaskImpl(CRITERIA, mRepoApi, mTokenProvider, mInfoProvider);
+        objectUnderTest = new SearchTaskImpl(CRITERIA, mSearchUseCase, mInfoCacheManager);
 
-        when(mSearchStrategy.searchNext()).thenReturn(null);
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mSearchStrategy.searchNext()).thenReturn(Collections.<Resource>emptyList());
 
         PowerMockito.mockStatic(SearchStrategy.Factory.class);
 
 
         PowerMockito.when(
                 SearchStrategy.Factory.get(
+                        any(SearchUseCase.class),
                         any(InternalCriteria.class),
-                        any(RepositoryRestApi.class),
-                        any(InfoProvider.class),
-                        any(TokenProvider.class)
+                        any(ServerVersion.class)
                 )
         ).thenReturn(mSearchStrategy);
     }
@@ -87,10 +90,8 @@ public class SearchTaskImplTest {
     public void nextLookupShouldDefineSearchStrategy() throws Exception {
         objectUnderTest.nextLookup();
 
-        PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
-
         verify(mSearchStrategy).searchNext();
+        verify(mInfoCacheManager).getInfo();
     }
 
     @Test
@@ -98,9 +99,7 @@ public class SearchTaskImplTest {
         objectUnderTest.nextLookup();
         objectUnderTest.nextLookup();
 
-        PowerMockito.verifyStatic(times(1));
-        SearchStrategy.Factory.get(eq(CRITERIA), eq(mRepoApi), eq(mInfoProvider), eq(mTokenProvider));
-
+        verify(mInfoCacheManager).getInfo();
         verify(mSearchStrategy, times(2)).searchNext();
     }
 }

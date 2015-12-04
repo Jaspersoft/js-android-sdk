@@ -26,9 +26,8 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,8 +55,6 @@ public class ReportAttachmentTest {
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    TokenProvider mTokenProvider;
-    @Mock
     OutputResource input;
 
     private ReportAttachment objectUnderTest;
@@ -65,10 +62,9 @@ public class ReportAttachmentTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mTokenProvider.provideToken()).thenReturn("cookie");
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, new FakeCallExecutor("cookie"), executionOptionsDataMapper);
         objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", exportUseCase);
     }
 

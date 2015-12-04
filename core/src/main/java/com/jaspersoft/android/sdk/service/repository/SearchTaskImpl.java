@@ -24,14 +24,13 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Collection;
 
@@ -41,21 +40,19 @@ import java.util.Collection;
  */
 final class SearchTaskImpl implements SearchTask {
     private final InternalCriteria mCriteria;
-    private final RepositoryRestApi mRepositoryRestApi;
-    private final TokenProvider mTokenProvider;
-    private final InfoProvider mInfoProvider;
+    private final SearchUseCase mSearchUseCase;
+    private final InfoCacheManager mInfoCacheManager;
 
     @Nullable
     private SearchStrategy strategy;
 
+    @TestOnly
     SearchTaskImpl(InternalCriteria criteria,
-                   RepositoryRestApi repositoryRestApi,
-                   TokenProvider tokenProvider,
-                   InfoProvider infoProvider) {
+                   SearchUseCase searchUseCase,
+                   InfoCacheManager infoCacheManager) {
         mCriteria = criteria;
-        mRepositoryRestApi = repositoryRestApi;
-        mTokenProvider = tokenProvider;
-        mInfoProvider = infoProvider;
+        mSearchUseCase = searchUseCase;
+        mInfoCacheManager = infoCacheManager;
     }
 
     @NotNull
@@ -76,9 +73,15 @@ final class SearchTaskImpl implements SearchTask {
         return true;
     }
 
-    private SearchStrategy defineSearchStrategy() {
+    private SearchStrategy defineSearchStrategy() throws ServiceException {
         if (strategy == null) {
-            strategy = SearchStrategy.Factory.get(mCriteria, mRepositoryRestApi, mInfoProvider, mTokenProvider);
+            ServerVersion version = mInfoCacheManager.getInfo().getVersion();
+
+            strategy = SearchStrategy.Factory.get(
+                    mSearchUseCase,
+                    mCriteria,
+                    version
+            );
         }
         return strategy;
     }

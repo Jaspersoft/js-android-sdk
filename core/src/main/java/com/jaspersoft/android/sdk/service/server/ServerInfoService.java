@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.server;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -36,12 +37,13 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ServerInfoService {
+public class ServerInfoService {
     private final ServerRestApi mRestApi;
     private final ServerInfoTransformer mTransformer;
 
@@ -51,9 +53,11 @@ public final class ServerInfoService {
         mTransformer = transformer;
     }
 
-    public static ServerInfoService create(String baseUrl) {
+    public static ServerInfoService create(RestClient client) {
         ServerRestApi restApi = new ServerRestApi.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(client.getServerUrl())
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MICROSECONDS)
                 .build();
 
         return new ServerInfoService(restApi, ServerInfoTransformer.get());

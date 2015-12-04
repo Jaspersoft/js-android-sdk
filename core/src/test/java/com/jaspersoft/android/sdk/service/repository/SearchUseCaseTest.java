@@ -27,12 +27,11 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,9 +46,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,18 +57,16 @@ import static org.mockito.Mockito.when;
 public class SearchUseCaseTest {
 
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat();
-    @Mock
-    RepositoryRestApi mRepositoryRestApi;
+
     @Mock
     ResourceMapper mDataMapper;
     @Mock
-    TokenProvider mTokenProvider;
+    RepositoryRestApi mRepositoryRestApi;
     @Mock
-    InfoProvider mInfoProvider;
+    InfoCacheManager mInfoCacheManager;
 
     @Mock
     ResourceLookup mResourceLookup;
-
     @Mock
     InternalCriteria mCriteria;
     @Mock
@@ -83,16 +78,24 @@ public class SearchUseCaseTest {
     private SearchUseCase objectUnderTest;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new SearchUseCase(mDataMapper, mRepositoryRestApi, mTokenProvider, mInfoProvider);
+
+        when(mServerInfo.getDatetimeFormatPattern()).thenReturn(DATE_TIME_FORMAT);
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+
+        objectUnderTest = new SearchUseCase(
+                mDataMapper,
+                mRepositoryRestApi,
+                mInfoCacheManager,
+                new FakeCallExecutor("cookie")
+        );
     }
 
     @Test
     public void shouldProvideAndAdaptSearchResult() throws Exception {
         when(mResult.getNextOffset()).thenReturn(100);
         when(mRepositoryRestApi.searchResources(anyString(), any(Map.class))).thenReturn(mResult);
-        when(mInfoProvider.provideDateTimeFormat()).thenReturn(DATE_TIME_FORMAT);
 
         Collection<Resource> resources = new ArrayList<Resource>();
         when(mDataMapper.transform(anyCollection(), any(SimpleDateFormat.class))).thenReturn(resources);

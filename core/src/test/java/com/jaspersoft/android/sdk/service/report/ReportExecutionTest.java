@@ -26,17 +26,13 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
-import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.*;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,9 +53,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -94,11 +88,8 @@ public class ReportExecutionTest {
     ReportExportRestApi mExportRestApi;
     @Mock
     ReportExecutionRestApi mExecutionRestApi;
-    @Mock
-    TokenProvider mTokenProvider;
 
     private ReportExecution objectUnderTest;
-
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
@@ -107,13 +98,13 @@ public class ReportExecutionTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(mTokenProvider.provideToken()).thenReturn("cookie");
         when(mExecDetails.getExecutionId()).thenReturn("execution_id");
         when(mExecDetails.getReportURI()).thenReturn("/report/uri");
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/report/uri");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(mExecutionRestApi, mTokenProvider, executionOptionsDataMapper);
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
+        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(mExecutionRestApi, callExecutor, executionOptionsDataMapper);
+        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, callExecutor, executionOptionsDataMapper);
         objectUnderTest = new ReportExecution(
                 TimeUnit.SECONDS.toMillis(0),
                 reportExecutionUseCase,
@@ -252,7 +243,7 @@ public class ReportExecutionTest {
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
-        when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
         when(mExecutionStatusResponse.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
@@ -260,7 +251,7 @@ public class ReportExecutionTest {
     private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExportExecDetails.getStatus()).then(Chain.of(statusChain));
         when(mExportExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
@@ -271,7 +262,7 @@ public class ReportExecutionTest {
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
         when(mExecDetails.getExports()).thenReturn(exports);
-        when(mExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExecDetails.getStatus()).then(Chain.of(statusChain));
         when(mExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
     }

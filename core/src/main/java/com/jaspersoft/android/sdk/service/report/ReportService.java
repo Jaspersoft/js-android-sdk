@@ -29,11 +29,12 @@ import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
+import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -59,20 +60,24 @@ public final class ReportService {
         mExportUseCase = exportUseCase;
     }
 
-    public static ReportService create(TokenProvider tokenProvider, InfoProvider infoProvider) {
-        String baseUrl = infoProvider.getBaseUrl();
+    public static ReportService create(RestClient client, Session session) {
         ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
-                .baseUrl(baseUrl)
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .baseUrl(client.getServerUrl())
                 .build();
         ReportExportRestApi exportApi = new ReportExportRestApi.Builder()
-                .baseUrl(baseUrl)
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .baseUrl(client.getServerUrl())
                 .build();
-        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(baseUrl);
+        CallExecutor callExecutor = DefaultCallExecutor.create(client, session);
+        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(client.getServerUrl());
 
         ReportExecutionUseCase reportExecutionUseCase =
-                new ReportExecutionUseCase(executionApi, tokenProvider, executionOptionsMapper);
+                new ReportExecutionUseCase(executionApi, callExecutor, executionOptionsMapper);
         ReportExportUseCase reportExportUseCase =
-                new ReportExportUseCase(exportApi, tokenProvider, executionOptionsMapper);
+                new ReportExportUseCase(exportApi, callExecutor, executionOptionsMapper);
 
         return new ReportService(
                 TimeUnit.SECONDS.toMillis(1),
