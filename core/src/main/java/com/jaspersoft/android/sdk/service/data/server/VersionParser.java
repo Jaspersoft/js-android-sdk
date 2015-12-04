@@ -34,6 +34,8 @@ import java.util.regex.Pattern;
  */
 final class VersionParser {
 
+    private static final double INVALID_VERSION = -1d;
+
     private VersionParser() {
     }
 
@@ -49,7 +51,7 @@ final class VersionParser {
                 }
             }
         }
-        return 0d;
+        return INVALID_VERSION;
     }
 
     private static double parseAsNumber(String version) {
@@ -58,7 +60,7 @@ final class VersionParser {
         if (matcher.find()) {
             return Double.valueOf(matcher.group());
         }
-        return 0;
+        return INVALID_VERSION;
     }
 
     private static double parseAsVersionName(String version) {
@@ -71,7 +73,7 @@ final class VersionParser {
             try {
                 decimalSubVersion = new BigDecimal(Integer.parseInt(subs[i]));
             } catch (NumberFormatException ex) {
-                decimalSubVersion = new BigDecimal("0");
+                return INVALID_VERSION;
             }
 
             decimalFactor = new BigDecimal(String.valueOf(Math.pow(10, i * -1)));

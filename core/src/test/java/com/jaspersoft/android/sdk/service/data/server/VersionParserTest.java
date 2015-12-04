@@ -86,6 +86,8 @@ public class VersionParserTest {
 
     @Test
     @Parameters({
+            "0, 0",
+            "0.0, 0",
             "1-asdasdsad, 1",
             "1-asdasdsad2, 1",
             "12-asdasdsad2, 12",
@@ -103,6 +105,6 @@ public class VersionParserTest {
     })
     public void shouldReturnZeroForIncorrectVersion(String invalidVersion) {
         assertThat(String.format("Version '%s' should be treated as zero", invalidVersion),
-                VersionParser.toDouble(invalidVersion), is(0d));
+                VersionParser.toDouble(invalidVersion), is(-1d));
     }
 }

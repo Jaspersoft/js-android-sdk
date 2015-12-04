@@ -53,7 +53,7 @@ public class ServerVersion implements Comparable<ServerVersion> {
     @NotNull
     public static ServerVersion valueOf(@NotNull String version) {
         double code = VersionParser.toDouble(version);
-        if (code == 0) {
+        if (code == -1) {
             throw new IllegalArgumentException(String.format("Supplied version '%s' invalid", version));
         }
         return new ServerVersion(version, code);

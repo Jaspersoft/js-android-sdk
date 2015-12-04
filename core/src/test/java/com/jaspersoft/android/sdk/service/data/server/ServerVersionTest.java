@@ -124,6 +124,12 @@ public class ServerVersionTest {
     }
 
     @Test
+    @Parameters({"0", "0.0"})
+    public void shouldAcceptZeroAsArgument(String version) {
+        ServerVersion.valueOf(version);
+    }
+
+    @Test
     public void testEquals() {
         EqualsVerifier.forClass(ServerVersion.class)
                 .verify();
