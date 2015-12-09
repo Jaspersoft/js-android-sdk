@@ -57,7 +57,7 @@ public class ServerInfoService {
         ServerRestApi restApi = new ServerRestApi.Builder()
                 .baseUrl(client.getServerUrl())
                 .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                .readTimeout(client.getReadTimeOut(), TimeUnit.MICROSECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .build();
 
         return new ServerInfoService(restApi, ServerInfoTransformer.get());
