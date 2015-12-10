@@ -36,19 +36,12 @@ import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.notNullValue;
@@ -251,7 +244,7 @@ public class ReportExecutionRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/parameters"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
-        assertThat(request.getBody().readUtf8(), is("[{\"key\":[\"value\"]}]"));
+        assertThat(request.getBody().readUtf8(), is("[{\"name\":\"key\",\"value\":[\"value\"]}]"));
         assertThat(request.getMethod(), is("POST"));
     }
 

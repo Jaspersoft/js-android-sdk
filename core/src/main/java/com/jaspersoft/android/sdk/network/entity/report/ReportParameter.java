@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.network.entity.report;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.Set;
 
 /**
@@ -31,7 +33,9 @@ import java.util.Set;
  * @since 2.0
  */
 public final class ReportParameter {
+    @Expose
     private final String name;
+    @Expose
     private final Set<String> value;
 
     public ReportParameter(String name, Set<String> value) {
