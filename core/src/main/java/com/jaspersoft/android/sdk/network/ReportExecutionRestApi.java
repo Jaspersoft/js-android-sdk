@@ -28,13 +28,12 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -59,7 +58,7 @@ public interface ReportExecutionRestApi {
 
     boolean updateReportExecution(@NotNull String token,
                                   @NotNull String executionId,
-                                  @NotNull Collection<Map<String, Set<String>>> params) throws HttpException, IOException;
+                                  @NotNull List<ReportParameter> params) throws HttpException, IOException;
 
      // TODO: API is broken requires investigation before release
     @NotNull

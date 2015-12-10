@@ -25,9 +25,9 @@
 package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -60,7 +60,7 @@ public class ExecutionRequestOptions {
     @Expose
     protected String attachmentsPrefix;
     @Expose
-    protected Map<String, Set<String>> parameters;
+    protected List<ReportParameter> parameters;
 
     protected ExecutionRequestOptions() {}
 
@@ -93,7 +93,7 @@ public class ExecutionRequestOptions {
         return this;
     }
 
-    public ExecutionRequestOptions withParameters(Map<String, Set<String>> parameters) {
+    public ExecutionRequestOptions withParameters(List<ReportParameter> parameters) {
         this.parameters = parameters;
         return this;
     }
@@ -161,7 +161,7 @@ public class ExecutionRequestOptions {
         return pages;
     }
 
-    public Map<String, Set<String>> getParameters() {
+    public List<ReportParameter> getParameters() {
         return parameters;
     }
 

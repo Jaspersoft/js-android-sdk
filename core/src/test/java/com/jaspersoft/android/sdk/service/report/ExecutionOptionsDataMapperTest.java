@@ -26,13 +26,12 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,7 +45,7 @@ public class ExecutionOptionsDataMapperTest {
 
     private static final String REPORT_URI = "/report/uri";
     private static final String BASE_URL = "http:://localhost";
-    public static final Map<String, Set<String>> REPORT_PARAMS = Collections.emptyMap();
+    public static final List<ReportParameter> REPORT_PARAMS = Collections.singletonList(null);
 
     private ExecutionOptionsDataMapper mapper;
 

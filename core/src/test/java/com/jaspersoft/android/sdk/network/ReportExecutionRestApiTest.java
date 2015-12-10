@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -62,12 +63,9 @@ import static org.junit.Assert.assertThat;
 public class ReportExecutionRestApiTest {
 
     private static final Map<String, String> SEARCH_PARAMS = new HashMap<String, String>();
-    private static final List<Map<String, Set<String>>> PARAMS = new ArrayList<>();
-    static {
-        Map<String, Set<String>> reportParameter = new HashMap<>();
-        reportParameter.put("key", new HashSet<String>(Collections.singletonList("value")));
-        PARAMS.add(reportParameter);
-    }
+    private static final List<ReportParameter> PARAMS = Collections.singletonList(
+            new ReportParameter("key", new HashSet<String>(Collections.singletonList("value")))
+    );
 
     static {
         SEARCH_PARAMS.put("key", "value");
@@ -183,7 +181,7 @@ public class ReportExecutionRestApiTest {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Execution params should not be empty");
 
-        restApiUnderTest.updateReportExecution("cookie", "any_id", Collections.<Map<String, Set<String>>>emptyList());
+        restApiUnderTest.updateReportExecution("cookie", "any_id", Collections.<ReportParameter>emptyList());
     }
 
     @Test

@@ -28,26 +28,17 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.QueryMap;
+import retrofit.http.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tom Koptel
@@ -109,7 +100,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
     @Override
     public boolean updateReportExecution(@Nullable String token,
                                          @Nullable String executionId,
-                                         @Nullable Collection<Map<String, Set<String>>> params) throws IOException, HttpException {
+                                         @Nullable List<ReportParameter> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
@@ -160,7 +151,7 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/parameters")
         Call<Object> updateReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                           @NotNull @Body Collection<Map<String, Set<String>>> params,
+                                           @NotNull @Body List<ReportParameter> params,
                                            @Header("Cookie") String cookie);
 
         @NotNull

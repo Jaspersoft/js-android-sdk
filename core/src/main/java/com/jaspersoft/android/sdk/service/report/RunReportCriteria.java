@@ -24,18 +24,18 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class RunReportCriteria extends ExecutionCriteria {
-    private final Map<String, Set<String>> mParams;
+    private final List<ReportParameter> mParams;
 
     private RunReportCriteria(boolean freshData,
                                 boolean interactive,
@@ -43,7 +43,7 @@ public class RunReportCriteria extends ExecutionCriteria {
                                 Format format,
                                 String pages,
                                 String attachmentPrefix,
-                                Map<String, Set<String>> params
+                                List<ReportParameter> params
                                 ) {
         super(freshData, interactive, saveSnapshot, format, pages, attachmentPrefix);
         mParams = params;
@@ -55,7 +55,7 @@ public class RunReportCriteria extends ExecutionCriteria {
     }
 
     @Nullable
-    public Map<String, Set<String>> getParams() {
+    public List<ReportParameter> getParams() {
         return mParams;
     }
 
@@ -65,8 +65,8 @@ public class RunReportCriteria extends ExecutionCriteria {
         private boolean saveSnapshot;
         private Format format;
         private String pages;
-        public Map<String, Set<String>> params;
-        public String attachmentPrefix;
+        private List<ReportParameter> params;
+        private String attachmentPrefix;
 
         public Builder() {
             interactive = true;
@@ -97,7 +97,7 @@ public class RunReportCriteria extends ExecutionCriteria {
             return this;
         }
 
-        public Builder params(Map<String, Set<String>> params) {
+        public Builder params(List<ReportParameter> params) {
             this.params = params;
             return this;
         }
