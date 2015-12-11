@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.*;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -44,11 +45,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -65,6 +67,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
         ReportExecutionDescriptor.class,
         ExecutionOptionsDataMapper.class,
         ExportExecutionDescriptor.class,
+        ReportExecutionUseCase.class,
         ExportDescriptor.class,
         ExecutionStatus.class,
         ErrorDescriptor.class,
@@ -93,6 +96,7 @@ public class ReportExecutionTest {
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
+    private ReportExecutionUseCase reportExecutionUseCase;
 
     @Before
     public void setUp() throws Exception {
@@ -103,7 +107,9 @@ public class ReportExecutionTest {
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/report/uri");
         FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(mExecutionRestApi, callExecutor, executionOptionsDataMapper);
+        reportExecutionUseCase = spy(
+                new ReportExecutionUseCase(mExecutionRestApi, callExecutor, executionOptionsDataMapper)
+        );
         ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, callExecutor, executionOptionsDataMapper);
         objectUnderTest = new ReportExecution(
                 TimeUnit.SECONDS.toMillis(0),
@@ -240,6 +246,13 @@ public class ReportExecutionTest {
             assertThat(ex.code(), is(StatusCodes.REPORT_EXECUTION_FAILED));
         }
    }
+
+    @Test
+    public void testUpdateExecution() throws Exception {
+        List<ReportParameter> params = Collections.<ReportParameter>emptyList();
+        objectUnderTest.updateExecution(params);
+        verify(reportExecutionUseCase).updateExecution("execution_id", params);
+    }
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);

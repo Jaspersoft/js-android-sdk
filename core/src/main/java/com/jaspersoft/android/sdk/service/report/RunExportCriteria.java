@@ -47,7 +47,7 @@ public class RunExportCriteria extends ExecutionCriteria {
         private boolean saveSnapshot;
         private Format format;
         private String pages;
-        public String attachmentPrefix;
+        private String attachmentPrefix;
 
         public Builder() {
             interactive = true;
