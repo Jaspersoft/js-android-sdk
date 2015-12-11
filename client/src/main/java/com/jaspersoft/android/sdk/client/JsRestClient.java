@@ -726,7 +726,8 @@ public class JsRestClient {
     }
 
     /**
-     * Retrives all data for the root folder
+     * Retrieves metadata for the root folder
+     * @return FolderDataResponse for root folder
      */
     public FolderDataResponse getRootFolderData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
@@ -744,6 +745,37 @@ public class JsRestClient {
                 HttpMethod.GET, httpEntity, FolderDataResponse.class);
 
         return responseEntity.getBody();
+    }
+
+    /**
+     * Retrieves metadata for root and public folders
+     * @return List<FolderDataResponse> which contains metadata about root and public folders
+     */
+    public List<FolderDataResponse> getRootFoldersData() {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
+        HttpHeaders headers = new HttpHeaders();
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.folder+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.folder+xml");
+            headers.add("Content-Type", "application/xml");
+        }
+        HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+
+        ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FolderDataResponse.class);
+        FolderDataResponse rootFolder = responseEntity.getBody();
+
+        fullUri = fullUri + "/public";
+        responseEntity = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FolderDataResponse.class);
+        FolderDataResponse publicFolder = responseEntity.getBody();
+
+        List<FolderDataResponse> rootFolders = new ArrayList<>();
+        rootFolders.add(rootFolder);
+        rootFolders.add(publicFolder);
+        return rootFolders;
     }
 
     //---------------------------------------------------------------------
