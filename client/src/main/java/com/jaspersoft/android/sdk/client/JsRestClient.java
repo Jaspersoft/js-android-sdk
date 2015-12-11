@@ -390,6 +390,34 @@ public class JsRestClient {
     }
 
     /**
+     * Gets the single resource lookup for the specified URI.
+     *
+     * @param uri resource URI (e.g. /reports/samples/)
+     * @return the ResourceLookup value
+     * @throws RestClientException thrown by RestTemplate whenever it encounters client-side HTTP errors
+     */
+    public ResourceLookup getResourceDescriptor(String uri, ResourceLookup.ResourceType resourceType) throws RestClientException {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI + uri;
+
+        HttpHeaders headers = new HttpHeaders();
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository."+ resourceType.name() +"+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository."+ resourceType.name() +"+xml");
+            headers.add("Content-Type", "application/xml");
+        }
+
+        HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+
+        ReportUnit resourceLookup = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, ReportUnit.class).getBody();
+        resourceLookup.setResourceType(resourceType);
+
+        return resourceLookup;
+    }
+
+    /**
      * Gets the report option lookup for the specified URI.
      *
      * @param uri resource URI (e.g. /reports/samples/)
