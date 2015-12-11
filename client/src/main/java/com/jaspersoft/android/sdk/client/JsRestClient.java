@@ -700,7 +700,28 @@ public class JsRestClient {
     /**
      * Retrives all data for the root folder
      */
-    public List<FolderDataResponse> getRootFolderData() {
+    public FolderDataResponse getRootFolderData() {
+        String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
+        HttpHeaders headers = new HttpHeaders();
+        if (dataType == DataType.JSON) {
+            headers.add("Accept", "application/repository.folder+json");
+            headers.add("Content-Type", "application/json");
+        } else if (dataType == DataType.XML) {
+            headers.add("Accept", "application/repository.folder+xml");
+            headers.add("Content-Type", "application/xml");
+        }
+        HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+
+        ResponseEntity<FolderDataResponse> responseEntity = restTemplate.exchange(fullUri,
+                HttpMethod.GET, httpEntity, FolderDataResponse.class);
+
+        return responseEntity.getBody();
+    }
+
+    /**
+     * Retrives all data for the root folder and public
+     */
+    public List<FolderDataResponse> getRootFoldersData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
         HttpHeaders headers = new HttpHeaders();
         if (dataType == DataType.JSON) {
