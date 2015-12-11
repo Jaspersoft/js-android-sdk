@@ -719,7 +719,7 @@ public class JsRestClient {
     }
 
     /**
-     * Retrives all data for the root folder and public
+     * Retrives all data for root and public folders
      */
     public List<FolderDataResponse> getRootFoldersData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
