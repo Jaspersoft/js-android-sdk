@@ -698,7 +698,8 @@ public class JsRestClient {
     }
 
     /**
-     * Retrives all data for the root folder
+     * Retrieves metadata for the root folder
+     * @return FolderDataResponse for root folder
      */
     public FolderDataResponse getRootFolderData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
@@ -719,7 +720,8 @@ public class JsRestClient {
     }
 
     /**
-     * Retrives all data for root and public folders
+     * Retrieves metadata for root and public folders
+     * @return List<FolderDataResponse> which contains metadata about root and public folders
      */
     public List<FolderDataResponse> getRootFoldersData() {
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_RESOURCES_URI;
