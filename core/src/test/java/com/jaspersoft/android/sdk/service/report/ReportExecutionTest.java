@@ -76,7 +76,9 @@ public class ReportExecutionTest {
     @Mock
     ExportExecutionDescriptor mExportExecDetails;
     @Mock
-    ReportExecutionDescriptor mExecDetails;
+    ReportExecutionDescriptor mReportExecDetails1;
+    @Mock
+    ReportExecutionDescriptor mReportExecDetails2;
     @Mock
     ExportDescriptor mExportExecution;
     @Mock
@@ -98,8 +100,8 @@ public class ReportExecutionTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(mExecDetails.getExecutionId()).thenReturn("execution_id");
-        when(mExecDetails.getReportURI()).thenReturn("/report/uri");
+        when(mReportExecDetails1.getExecutionId()).thenReturn("execution_id");
+        when(mReportExecDetails1.getReportURI()).thenReturn("/report/uri");
 
         ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/report/uri");
         FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
@@ -113,7 +115,7 @@ public class ReportExecutionTest {
                 "/report/uri");
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRequestExportIdealCase() throws Exception {
         mockReportExecutionDetails("ready");
         mockRunExportExecution("ready");
@@ -124,7 +126,7 @@ public class ReportExecutionTest {
         verify(mExecutionRestApi).requestReportExecutionDetails(eq("cookie"), eq("execution_id"));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunThrowsFailedStatusImmediately() throws Exception {
         // export run request
         mockRunExportExecution("failed");
@@ -137,7 +139,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("failed");
@@ -149,7 +151,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
         // export run request
         mockRunExportExecution("cancelled");
@@ -162,7 +164,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("cancelled");
@@ -175,7 +177,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunReportPendingCase() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("queued", "ready");
@@ -186,7 +188,7 @@ public class ReportExecutionTest {
         verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("cookie"), eq("execution_id"), eq("export_id"));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void ensureThatExportCancelledEventWillBeResolved() throws Exception {
         mockRunExportExecution("cancelled", "ready");
         mockReportExecutionDetails("ready");
@@ -196,9 +198,9 @@ public class ReportExecutionTest {
         verify(mExportRestApi, times(2)).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReport() throws Exception {
-        when(mExecDetails.getTotalPages()).thenReturn(100);
+        when(mReportExecDetails1.getTotalPages()).thenReturn(100);
         mockReportExecutionDetails("ready");
 
         ReportMetadata metadata = objectUnderTest.waitForReportCompletion();
@@ -209,7 +211,7 @@ public class ReportExecutionTest {
         verifyNoMoreInteractions(mExecutionRestApi);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportShouldLoopCalls() throws Exception {
         mockReportExecutionDetails("execution", "ready");
 
@@ -219,7 +221,7 @@ public class ReportExecutionTest {
         verifyNoMoreInteractions(mExecutionRestApi);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() throws Exception {
         mockReportExecutionDetails("execution", "cancelled");
 
@@ -230,7 +232,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportThrowFailedIfStatusFailed() throws Exception {
         mockReportExecutionDetails("execution", "failed");
 
@@ -256,15 +258,21 @@ public class ReportExecutionTest {
         when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
     }
 
-    private void mockReportExecutionDetails(String... statusChain) throws Exception {
-        ensureChain(statusChain);
+    private void mockReportExecutionDetails(String firstStatus, String... statusChain) throws Exception {
         Set<ExportDescriptor> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
-        when(mExecDetails.getExports()).thenReturn(exports);
-        when(mExecDetails.getStatus()).then(Chain.of(statusChain));
-        when(mExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
-        when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
+
+        when(mReportExecDetails1.getStatus()).thenReturn(firstStatus);
+        when(mReportExecDetails1.getExports()).thenReturn(exports);
+        when(mReportExecDetails1.getErrorDescriptor()).thenReturn(mDescriptor);
+
+        when(mReportExecDetails2.getStatus()).then(Chain.of(statusChain));
+        when(mReportExecDetails2.getExports()).thenReturn(exports);
+        when(mReportExecDetails2.getErrorDescriptor()).thenReturn(mDescriptor);
+
+        when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString()))
+                .then(Chain.of(mReportExecDetails1, mReportExecDetails2));
     }
 
     private void ensureChain(String[] statusChain) {

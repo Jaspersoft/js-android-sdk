@@ -58,4 +58,9 @@ final class Status {
     public boolean isReady() {
         return mStatus.equals("ready");
     }
+
+    @Override
+    public String toString() {
+        return mStatus;
+    }
 }
