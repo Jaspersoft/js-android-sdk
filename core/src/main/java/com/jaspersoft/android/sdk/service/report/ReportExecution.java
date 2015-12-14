@@ -31,9 +31,12 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -52,13 +55,23 @@ public final class ReportExecution {
     private final String mExecutionId;
     private final String mReportUri;
     private final ExportFactory mExportFactory;
+    private final ReportService mService;
+    private final RunReportCriteria mCriteria;
+    private final InfoCacheManager mInfoCacheManager;
 
     @TestOnly
-    ReportExecution(long delay,
+    ReportExecution(ReportService service,
+                    RunReportCriteria criteria,
+                    InfoCacheManager infoCacheManager,
+                    long delay,
                     ReportExecutionUseCase executionUseCase,
                     ReportExportUseCase exportUseCase,
                     String executionId,
                     String reportUri) {
+        mService = service;
+        mCriteria = criteria;
+        mInfoCacheManager = infoCacheManager;
+
         mDelay = delay;
         mExecutionUseCase = executionUseCase;
         mExportUseCase = exportUseCase;
@@ -76,10 +89,18 @@ public final class ReportExecution {
 
     @NotNull
     public ReportExecution updateExecution(List<ReportParameter> newParameters) throws ServiceException {
-        mExecutionUseCase.updateExecution(mExecutionId, newParameters);
-        ExecutionStatus statusDetails = requestReportExecutionStatus();
-        waitForReportExecutionStart(mReportUri, statusDetails);
-        return this;
+        ServerInfo info = mInfoCacheManager.getInfo();
+        ServerVersion version = info.getVersion();
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            RunReportCriteria criteria = mCriteria.newBuilder()
+                    .params(newParameters)
+                    .create();
+            return mService.run(mReportUri, criteria);
+        } else {
+            mExecutionUseCase.updateExecution(mExecutionId, newParameters);
+            mService.waitForReportExecutionStart(mReportUri, mExecutionId);
+            return this;
+        }
     }
 
     @NotNull
@@ -181,27 +202,4 @@ public final class ReportExecution {
         return mExecutionUseCase.requestStatus(mExecutionId);
     }
 
-    private void waitForReportExecutionStart(String reportUri, ExecutionStatus details) throws ServiceException {
-        Status status = Status.wrap(details.getStatus());
-        ErrorDescriptor descriptor = details.getErrorDescriptor();
-
-        while (!status.isReady() && !status.isExecution()) {
-            if (status.isCancelled()) {
-                throw new ServiceException(
-                        String.format("Report '%s' execution cancelled", reportUri), null,
-                        StatusCodes.REPORT_EXECUTION_CANCELLED);
-            }
-            if (status.isFailed()) {
-                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.REPORT_EXECUTION_FAILED);
-            }
-            try {
-                Thread.sleep(mDelay);
-            } catch (InterruptedException ex) {
-                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
-            }
-            ExecutionStatus statusDetails = requestReportExecutionStatus();
-            status = Status.wrap(statusDetails.getStatus());
-            descriptor = statusDetails.getErrorDescriptor();
-        }
-    }
 }

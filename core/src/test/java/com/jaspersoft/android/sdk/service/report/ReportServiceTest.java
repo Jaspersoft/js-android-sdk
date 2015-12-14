@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,6 +79,9 @@ public class ReportServiceTest {
     @Mock
     ReportExportUseCase mReportExportUseCase;
 
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+
     ReportService objectUnderTest;
 
     @Rule
@@ -89,25 +93,26 @@ public class ReportServiceTest {
 
         objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),
+                mInfoCacheManager,
                 mReportExecutionUseCase,
                 mReportExportUseCase);
     }
 
     @Test
     public void testRunShouldCreateActiveSession() throws Exception {
-        mockRunReportExecution("execution");
-        mockRunReportExecution("ready");
+        mockRunReportExecution("queue");
+        mockReportExecutionStatus("execution", "ready");
 
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
         verify(mReportExecutionUseCase).runReportExecution(anyString(), any(RunReportCriteria.class));
-        verifyNoMoreInteractions(mReportExecutionUseCase);
     }
 
     @Test
     public void testRunThrowsFailedStatusImmediately() throws Exception {
-        mockRunReportExecution("failed");
+        mockRunReportExecution("queue");
+        mockReportExecutionStatus("failed");
 
         try {
             objectUnderTest.run("/report/uri", configuration);
@@ -130,7 +135,8 @@ public class ReportServiceTest {
 
     @Test
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
-        mockRunReportExecution("cancelled");
+        mockRunReportExecution("queue");
+        mockReportExecutionStatus("cancelled");
 
         try {
             objectUnderTest.run("/report/uri", configuration);

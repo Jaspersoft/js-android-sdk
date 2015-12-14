@@ -24,13 +24,18 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.entity.execution.*;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
+import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.test.Chain;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +75,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
         ExportDescriptor.class,
         ExecutionStatus.class,
         ErrorDescriptor.class,
-        ExecutionOptionsDataMapper.class})
+        ExecutionOptionsDataMapper.class,
+        ReportService.class,
+})
 public class ReportExecutionTest {
 
     @Mock
@@ -93,6 +100,16 @@ public class ReportExecutionTest {
     @Mock
     ReportExportUseCase mReportExportUseCase;
 
+    @Mock
+    ReportService mReportService;
+    @Mock
+    RunReportCriteria mReportCriteria;
+
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+    @Mock
+    ServerInfo mServerInfo;
+
     private ReportExecution objectUnderTest;
 
     @Rule
@@ -105,8 +122,13 @@ public class ReportExecutionTest {
         when(mReportExecDetails1.getExecutionId()).thenReturn("execution_id");
         when(mReportExecDetails1.getReportURI()).thenReturn("/report/uri");
 
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mServerInfo.getVersion()).thenReturn(ServerVersion.v6);
 
         objectUnderTest = new ReportExecution(
+                mReportService,
+                mReportCriteria,
+                mInfoCacheManager,
                 TimeUnit.SECONDS.toMillis(0),
                 mReportExecutionUseCase,
                 mReportExportUseCase,
@@ -244,16 +266,9 @@ public class ReportExecutionTest {
 
     @Test(timeout = 2000)
     public void testUpdateExecution() throws Exception {
-        mockRunExportExecStatus("queue", "execution");
         List<ReportParameter> params = Collections.<ReportParameter>emptyList();
         objectUnderTest.updateExecution(params);
         verify(mReportExecutionUseCase).updateExecution("execution_id", params);
-    }
-
-    private void mockRunExportExecStatus(String... statusChain) throws Exception {
-        ensureChain(statusChain);
-        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
-        when(mReportExecutionUseCase.requestStatus(anyString())).thenReturn(mExecutionStatusResponse);
     }
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {

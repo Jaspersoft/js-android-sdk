@@ -50,6 +50,18 @@ public class RunReportCriteria extends ExecutionCriteria {
     }
 
     @NotNull
+    public Builder newBuilder() {
+        return new Builder()
+                .freshData(mFreshData)
+                .interactive(mInteractive)
+                .saveSnapshot(mSaveSnapshot)
+                .format(mFormat)
+                .pages(mPages)
+                .params(mParams)
+                .attachmentPrefix(mAttachmentPrefix);
+    }
+
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
