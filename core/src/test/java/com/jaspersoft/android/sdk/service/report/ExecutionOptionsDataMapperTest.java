@@ -92,12 +92,30 @@ public class ExecutionOptionsDataMapperTest {
     @Test
     public void testReportExecutionFieldsReducedForServer5_5() throws Exception {
         RunReportCriteria criteria = RunReportCriteria.builder()
+                .freshData(true)
+                .interactive(false)
+                .saveSnapshot(true)
                 .create();
         ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
-        assertThat(options.getBaseUrl(), is(nullValue()));
-        assertThat(options.getAllowInlineScripts(), is(nullValue()));
-        assertThat(options.getFreshData(), is(nullValue()));
-        assertThat(options.getInteractive(), is(nullValue()));
+        assertThat("Should reduce 'baseUrl' from options", options.getBaseUrl(), is(nullValue()));
+        assertThat("Should reduce 'allowInteractive' from options", options.getAllowInlineScripts(), is(nullValue()));
+        assertThat("Should reduce 'freshData' from options", options.getFreshData(), is(nullValue()));
+        assertThat("Should reduce 'interactive' from options", options.getInteractive(), is(nullValue()));
+    }
+
+    @Test
+    public void testExportExecutionFieldsReducedForServer5_5() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder()
+                .freshData(true)
+                .interactive(false)
+                .saveSnapshot(true)
+                .create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_5);
+        assertThat("Should reduce 'baseUrl' from options", options.getBaseUrl(), is(nullValue()));
+        assertThat("Should reduce 'allowInteractive' from options", options.getAllowInlineScripts(), is(nullValue()));
+        assertThat("Should reduce 'freshData' from options",options.getFreshData(), is(nullValue()));
+        assertThat("Should reduce 'interactive' from options",options.getInteractive(), is(nullValue()));
+        assertThat("Should reduce 'saveDataSnapshot' from options",options.getSaveDataSnapshot(), is(nullValue()));
     }
 
     private void assertOptions(ExecutionRequestOptions options) {

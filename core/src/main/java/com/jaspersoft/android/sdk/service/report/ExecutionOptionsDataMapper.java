@@ -58,6 +58,9 @@ class ExecutionOptionsDataMapper {
                                                           @NotNull ServerVersion serverVersion) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
         mapCommonCriterion(configuration, serverVersion, options);
+        if (serverVersion.lessThanOrEquals(ServerVersion.v5_5)) {
+            options.withSaveDataSnapshot(null);
+        }
         return options;
     }
 
