@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.client;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.jaspersoft.android.sdk.client.oxm.ReportDescriptor;
@@ -80,6 +81,7 @@ import org.springframework.web.util.UriTemplate;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -91,6 +93,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.security.auth.login.LoginException;
 
 import static java.util.Collections.singletonList;
 
@@ -1117,6 +1121,23 @@ public class JsRestClient {
         String attachmentUri = "/{executionId}/exports/{exportOutput}/attachments/{attachment}";
         String fullUri = jsServerProfile.getServerUrl() + REST_SERVICES_V2_URI + REST_REPORT_EXECUTIONS + attachmentUri;
         return new UriTemplate(fullUri).expand(executionId, exportOutput, attachmentName);
+    }
+
+    /**
+     * Fetch binary data for resource
+     *
+     * @param uri resource uri on server
+     * @return resource binary data
+     * @throws RestClientException
+     * @throws LoginException in case of incorrect cookies
+     */
+    public byte[] getResourceBinaryData(String uri) throws RestClientException, LoginException {
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
+        List<String> needAuthHeader = response.getHeaders().get("LoginRequested");
+        if (needAuthHeader != null && needAuthHeader.contains("true")){
+           throw new LoginException("Login requested!");
+        }
+        return response.getBody();
     }
 
     /**
