@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -76,6 +77,8 @@ public final class ReportExecution {
     @NotNull
     public ReportExecution updateExecution(List<ReportParameter> newParameters) throws ServiceException {
         mExecutionUseCase.updateExecution(mExecutionId, newParameters);
+        ExecutionStatus statusDetails = requestReportExecutionStatus();
+        waitForReportExecutionStart(mReportUri, statusDetails);
         return this;
     }
 
@@ -171,5 +174,34 @@ public final class ReportExecution {
     @NotNull
     private ReportExecutionDescriptor requestExecutionDetails() throws ServiceException {
         return mExecutionUseCase.requestExecutionDetails(mExecutionId);
+    }
+
+    @NotNull
+    private ExecutionStatus requestReportExecutionStatus() throws ServiceException {
+        return mExecutionUseCase.requestStatus(mExecutionId);
+    }
+
+    private void waitForReportExecutionStart(String reportUri, ExecutionStatus details) throws ServiceException {
+        Status status = Status.wrap(details.getStatus());
+        ErrorDescriptor descriptor = details.getErrorDescriptor();
+
+        while (!status.isReady() && !status.isExecution()) {
+            if (status.isCancelled()) {
+                throw new ServiceException(
+                        String.format("Report '%s' execution cancelled", reportUri), null,
+                        StatusCodes.REPORT_EXECUTION_CANCELLED);
+            }
+            if (status.isFailed()) {
+                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.REPORT_EXECUTION_FAILED);
+            }
+            try {
+                Thread.sleep(mDelay);
+            } catch (InterruptedException ex) {
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
+            }
+            ExecutionStatus statusDetails = requestReportExecutionStatus();
+            status = Status.wrap(statusDetails.getStatus());
+            descriptor = statusDetails.getErrorDescriptor();
+        }
     }
 }

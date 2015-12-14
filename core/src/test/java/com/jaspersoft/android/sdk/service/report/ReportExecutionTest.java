@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.jaspersoft.android.sdk.test.Chain.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
@@ -241,11 +242,18 @@ public class ReportExecutionTest {
         }
    }
 
-    @Test
+    @Test(timeout = 2000)
     public void testUpdateExecution() throws Exception {
+        mockRunExportExecStatus("queue", "execution");
         List<ReportParameter> params = Collections.<ReportParameter>emptyList();
         objectUnderTest.updateExecution(params);
         verify(mReportExecutionUseCase).updateExecution("execution_id", params);
+    }
+
+    private void mockRunExportExecStatus(String... statusChain) throws Exception {
+        ensureChain(statusChain);
+        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
+        when(mReportExecutionUseCase.requestStatus(anyString())).thenReturn(mExecutionStatusResponse);
     }
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
@@ -254,13 +262,13 @@ public class ReportExecutionTest {
         for (String state : statusChain) {
             statuses.add(Status.wrap(state));
         }
-        when(mReportExportUseCase.checkExportExecutionStatus(anyString(), anyString())).then(Chain.of(statuses));
+        when(mReportExportUseCase.checkExportExecutionStatus(anyString(), anyString())).then(of(statuses));
     }
 
     private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).then(Chain.of(statusChain));
+        when(mExportExecDetails.getStatus()).then(of(statusChain));
         when(mExportExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(mReportExportUseCase.runExport(anyString(), any(RunExportCriteria.class))).thenReturn(mExportExecDetails);
     }
@@ -274,12 +282,12 @@ public class ReportExecutionTest {
         when(mReportExecDetails1.getExports()).thenReturn(exports);
         when(mReportExecDetails1.getErrorDescriptor()).thenReturn(mDescriptor);
 
-        when(mReportExecDetails2.getStatus()).then(Chain.of(statusChain));
+        when(mReportExecDetails2.getStatus()).then(of(statusChain));
         when(mReportExecDetails2.getExports()).thenReturn(exports);
         when(mReportExecDetails2.getErrorDescriptor()).thenReturn(mDescriptor);
 
         when(mReportExecutionUseCase.requestExecutionDetails(anyString()))
-                .then(Chain.of(mReportExecDetails1, mReportExecDetails2));
+                .then(of(mReportExecDetails1, mReportExecDetails2));
     }
 
     private void ensureChain(String[] statusChain) {
