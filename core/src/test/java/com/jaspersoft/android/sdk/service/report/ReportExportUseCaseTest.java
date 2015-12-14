@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
@@ -107,8 +108,8 @@ public class ReportExportUseCaseTest {
         when(mExportApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(cancelledStatus());
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_5);
 
-        Status status = useCase.checkExportExecutionStatus(EXEC_ID, EXPORT_ID);
-        assertThat("For server 5.5 status of export always ready", status, is(Status.wrap("ready")));
+        ExecutionStatus execStatus = useCase.checkExportExecutionStatus(EXEC_ID, EXPORT_ID);
+        assertThat("For server 5.5 status of export always ready", execStatus.getStatus(), is("ready"));
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
         verifyZeroInteractions(mExportApi);

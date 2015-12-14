@@ -79,20 +79,18 @@ class ReportExportUseCase {
     }
 
     @NotNull
-    public Status checkExportExecutionStatus(final String executionId,
+    public ExecutionStatus checkExportExecutionStatus(final String executionId,
                                              final String exportId) throws ServiceException {
         ServerInfo info = mCacheManager.getInfo();
         final ServerVersion version = info.getVersion();
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
-            return Status.wrap("ready");
+            return ExecutionStatus.readyStatus();
         }
 
-        Call<Status> call = new Call<Status>() {
+        Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
             @Override
-            public Status perform(String token) throws IOException, HttpException {
-                ExecutionStatus exportStatus = mExportApi
-                        .checkExportExecutionStatus(token, executionId, exportId);
-                return Status.wrap(exportStatus.getStatus());
+            public ExecutionStatus perform(String token) throws IOException, HttpException {
+                return mExportApi.checkExportExecutionStatus(token, executionId, exportId);
             }
         };
         return mCallExecutor.execute(call);

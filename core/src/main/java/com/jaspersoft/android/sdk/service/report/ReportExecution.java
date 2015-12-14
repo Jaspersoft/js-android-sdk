@@ -132,12 +132,12 @@ public final class ReportExecution {
     @NotNull
     private ReportExport performExport(RunExportCriteria criteria) throws ServiceException {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
-        waitForExportReadyStatus(criteria, exportDetails);
+        waitForExportReadyStatus(exportDetails);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
         return mExportFactory.create(criteria, currentDetails, exportDetails);
     }
 
-    private void waitForExportReadyStatus(RunExportCriteria criteria, ExportExecutionDescriptor exportDetails) throws ServiceException {
+    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) throws ServiceException {
         final String exportId = exportDetails.getExportId();
 
         Status status = Status.wrap(exportDetails.getStatus());
@@ -149,7 +149,11 @@ public final class ReportExecution {
                         StatusCodes.EXPORT_EXECUTION_CANCELLED);
             }
             if (status.isFailed()) {
-                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.EXPORT_EXECUTION_FAILED);
+                String message = "Failed to export page";
+                if (descriptor != null) {
+                    message = descriptor.getMessage();
+                }
+                throw new ServiceException(message, null, StatusCodes.EXPORT_EXECUTION_FAILED);
             }
             try {
                 Thread.sleep(mDelay);
@@ -157,7 +161,9 @@ public final class ReportExecution {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
 
-            status = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
+            ExecutionStatus executionStatus = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
+            status = Status.wrap(executionStatus.getStatus());
+            descriptor = executionStatus.getErrorDescriptor();
         }
     }
 
@@ -173,7 +179,11 @@ public final class ReportExecution {
                         StatusCodes.REPORT_EXECUTION_CANCELLED);
             }
             if (status.isFailed()) {
-                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.REPORT_EXECUTION_FAILED);
+                String message = "Failed to execute report";
+                if (descriptor != null) {
+                    message = descriptor.getMessage();
+                }
+                throw new ServiceException(message, null, StatusCodes.REPORT_EXECUTION_FAILED);
             }
             try {
                 Thread.sleep(mDelay);
@@ -196,10 +206,4 @@ public final class ReportExecution {
     private ReportExecutionDescriptor requestExecutionDetails() throws ServiceException {
         return mExecutionUseCase.requestExecutionDetails(mExecutionId);
     }
-
-    @NotNull
-    private ExecutionStatus requestReportExecutionStatus() throws ServiceException {
-        return mExecutionUseCase.requestStatus(mExecutionId);
-    }
-
 }
