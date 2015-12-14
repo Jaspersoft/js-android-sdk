@@ -26,13 +26,17 @@ package com.jaspersoft.android.sdk.service.report;
 
 
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -51,13 +55,23 @@ public final class ReportExecution {
     private final String mExecutionId;
     private final String mReportUri;
     private final ExportFactory mExportFactory;
+    private final ReportService mService;
+    private final RunReportCriteria mCriteria;
+    private final InfoCacheManager mInfoCacheManager;
 
     @TestOnly
-    ReportExecution(long delay,
+    ReportExecution(ReportService service,
+                    RunReportCriteria criteria,
+                    InfoCacheManager infoCacheManager,
+                    long delay,
                     ReportExecutionUseCase executionUseCase,
                     ReportExportUseCase exportUseCase,
                     String executionId,
                     String reportUri) {
+        mService = service;
+        mCriteria = criteria;
+        mInfoCacheManager = infoCacheManager;
+
         mDelay = delay;
         mExecutionUseCase = executionUseCase;
         mExportUseCase = exportUseCase;
@@ -75,8 +89,18 @@ public final class ReportExecution {
 
     @NotNull
     public ReportExecution updateExecution(List<ReportParameter> newParameters) throws ServiceException {
-        mExecutionUseCase.updateExecution(mExecutionId, newParameters);
-        return this;
+        ServerInfo info = mInfoCacheManager.getInfo();
+        ServerVersion version = info.getVersion();
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            RunReportCriteria criteria = mCriteria.newBuilder()
+                    .params(newParameters)
+                    .create();
+            return mService.run(mReportUri, criteria);
+        } else {
+            mExecutionUseCase.updateExecution(mExecutionId, newParameters);
+            mService.waitForReportExecutionStart(mReportUri, mExecutionId);
+            return this;
+        }
     }
 
     @NotNull
@@ -99,8 +123,7 @@ public final class ReportExecution {
 
     @NotNull
     private ReportMetadata performAwaitFoReport() throws ServiceException {
-        ReportExecutionDescriptor details = requestExecutionDetails();
-        ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
+        ReportExecutionDescriptor completeDetails = waitForReportReadyStart();
         return new ReportMetadata(mReportUri,
                 completeDetails.getTotalPages());
     }
@@ -108,58 +131,68 @@ public final class ReportExecution {
     @NotNull
     private ReportExport performExport(RunExportCriteria criteria) throws ServiceException {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
-        waitForExportReadyStatus(exportDetails);
+        String exportId = exportDetails.getExportId();
+        waitForExportReadyStatus(exportId);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
-        return mExportFactory.create(currentDetails, exportDetails);
+        return mExportFactory.create(criteria, currentDetails, exportDetails);
     }
 
-    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) throws ServiceException {
-        final String exportId = exportDetails.getExportId();
-
-        Status status = Status.wrap(exportDetails.getStatus());
-        ErrorDescriptor descriptor = exportDetails.getErrorDescriptor();
-        while (!status.isReady()) {
+    private void waitForExportReadyStatus(String exportId) throws ServiceException {
+        ExecutionStatus executionStatus;
+        ErrorDescriptor descriptor;
+        Status status;
+        do {
+            executionStatus = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
+            status = Status.wrap(executionStatus.getStatus());
+            descriptor = executionStatus.getErrorDescriptor();
             if (status.isCancelled()) {
                 throw new ServiceException(
                         String.format("Export for report '%s' execution cancelled", mReportUri), null,
                         StatusCodes.EXPORT_EXECUTION_CANCELLED);
             }
             if (status.isFailed()) {
-                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.EXPORT_EXECUTION_FAILED);
+                String message = "Failed to perform report export";
+                if (descriptor != null) {
+                    message = descriptor.getMessage();
+                }
+                throw new ServiceException(message, null, StatusCodes.EXPORT_EXECUTION_FAILED);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-
-            status = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
-        }
+        } while (!status.isReady());
     }
 
     @NotNull
-    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor firstRunDetails) throws ServiceException {
-        Status status = Status.wrap(firstRunDetails.getStatus());
-        ErrorDescriptor descriptor = firstRunDetails.getErrorDescriptor();
-        ReportExecutionDescriptor nextDetails = firstRunDetails;
-        while (!status.isReady()) {
+    private ReportExecutionDescriptor waitForReportReadyStart() throws ServiceException {
+        ReportExecutionDescriptor nextDetails;
+        ErrorDescriptor descriptor;
+        Status status;
+        do {
+            nextDetails = requestExecutionDetails();
+            descriptor = nextDetails.getErrorDescriptor();
+            status = Status.wrap(nextDetails.getStatus());
+
             if (status.isCancelled()) {
                 throw new ServiceException(
                         String.format("Report '%s' execution cancelled", mReportUri), null,
                         StatusCodes.REPORT_EXECUTION_CANCELLED);
             }
             if (status.isFailed()) {
-                throw new ServiceException(descriptor.getMessage(), null, StatusCodes.REPORT_EXECUTION_FAILED);
+                String message = "Failed to perform report execute";
+                if (descriptor != null) {
+                    message = descriptor.getMessage();
+                }
+                throw new ServiceException(message, null, StatusCodes.REPORT_EXECUTION_FAILED);
             }
             try {
                 Thread.sleep(mDelay);
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-            nextDetails = requestExecutionDetails();
-            status = Status.wrap(nextDetails.getStatus());
-            descriptor = nextDetails.getErrorDescriptor();
-        }
+        } while (!status.isReady());
         return nextDetails;
     }
 

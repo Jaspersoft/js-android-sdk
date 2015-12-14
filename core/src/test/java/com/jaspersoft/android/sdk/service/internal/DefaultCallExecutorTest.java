@@ -62,7 +62,7 @@ public class DefaultCallExecutorTest {
         when(_401Exception.code()).thenReturn(401);
         when(mCall.perform(anyString())).thenReturn(mResponse);
 
-        resolver = new DefaultCallExecutor(mTokenCacheManager);
+        resolver = new DefaultCallExecutor(mTokenCacheManager, new DefaultExceptionMapper());
     }
 
     @Test

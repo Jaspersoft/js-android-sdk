@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.server;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,13 +54,15 @@ public class ServerInfoServiceTest {
     ServerInfoTransformer mockTransformer;
     @Mock
     ServerInfoData mockResponse;
+    @Mock
+    ServiceExceptionMapper mockServiceExceptionMapper;
 
     private ServerInfoService serviceUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        serviceUnderTest = new ServerInfoService(mockApi, mockTransformer);
+        serviceUnderTest = new ServerInfoService(mockApi, mockTransformer, mockServiceExceptionMapper);
     }
 
     @Test

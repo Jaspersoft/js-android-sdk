@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
-import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -43,23 +41,23 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 public class ReportExportTest {
     @Mock
-    ReportExportRestApi mExportRestApi;
+    ReportExportUseCase mReportExportUseCase;
+    @Mock
+    RunExportCriteria mCriteria;
 
     private ReportExport objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
-        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, new FakeCallExecutor("cookie"), executionOptionsDataMapper);
-        objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), exportUseCase);
+        objectUnderTest = new ReportExport("report_execution_id", "export_id",
+                Collections.<ReportAttachment>emptyList(), mCriteria, mReportExportUseCase);
     }
 
     @Test
     public void testDownload() throws Exception {
         objectUnderTest.download();
-        verify(mExportRestApi).requestExportOutput(eq("cookie"), eq("report_execution_id"), eq("export_id"));
-        verifyNoMoreInteractions(mExportRestApi);
+        verify(mReportExportUseCase).requestExportOutput(eq(mCriteria), eq("report_execution_id"), eq("export_id"));
+        verifyNoMoreInteractions(mReportExportUseCase);
     }
 }

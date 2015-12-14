@@ -39,7 +39,7 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-class TokenCacheManager {
+public class TokenCacheManager {
     private final AuthenticationService mAuthService;
     private final Credentials mCredentials;
     private final TokenCache mTokenCache;

@@ -25,8 +25,6 @@
 package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.service.RestClient;
-import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -40,15 +38,11 @@ import java.io.IOException;
 public class DefaultCallExecutor implements CallExecutor {
 
     private final TokenCacheManager mTokenCacheManager;
+    private final ServiceExceptionMapper mServiceExceptionMapper;
 
-    @TestOnly
-    DefaultCallExecutor(TokenCacheManager tokenCacheManager) {
+    public DefaultCallExecutor(TokenCacheManager tokenCacheManager, ServiceExceptionMapper serviceExceptionMapper) {
         mTokenCacheManager = tokenCacheManager;
-    }
-
-    public static DefaultCallExecutor create(RestClient client, Session session) {
-        TokenCacheManager cacheManager = TokenCacheManager.create(client, session);
-        return new DefaultCallExecutor(cacheManager);
+        mServiceExceptionMapper = serviceExceptionMapper;
     }
 
     @NotNull
@@ -57,7 +51,7 @@ public class DefaultCallExecutor implements CallExecutor {
             String token = mTokenCacheManager.loadToken();
             return call.perform(token);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         } catch (HttpException e) {
             if (e.code() == 401) {
                 mTokenCacheManager.invalidateToken();
@@ -66,12 +60,12 @@ public class DefaultCallExecutor implements CallExecutor {
                     String token = mTokenCacheManager.loadToken();
                     return call.perform(token);
                 } catch (IOException e1) {
-                    throw ServiceExceptionMapper.transform(e1);
+                    throw mServiceExceptionMapper.transform(e1);
                 } catch (HttpException e1) {
-                    throw ServiceExceptionMapper.transform(e1);
+                    throw mServiceExceptionMapper.transform(e1);
                 }
             } else {
-                throw ServiceExceptionMapper.transform(e);
+                throw mServiceExceptionMapper.transform(e);
             }
         }
     }
