@@ -68,27 +68,27 @@ public class ExecutionRequestOptions {
         return new ExecutionRequestOptions();
     }
 
-    public ExecutionRequestOptions withAsync(boolean async) {
+    public ExecutionRequestOptions withAsync(Boolean async) {
         this.async = async;
         return this;
     }
 
-    public ExecutionRequestOptions withFreshData(boolean freshData) {
+    public ExecutionRequestOptions withFreshData(Boolean freshData) {
         this.freshData = freshData;
         return this;
     }
 
-    public ExecutionRequestOptions withIgnorePagination(boolean ignorePagination) {
+    public ExecutionRequestOptions withIgnorePagination(Boolean ignorePagination) {
         this.ignorePagination = ignorePagination;
         return this;
     }
 
-    public ExecutionRequestOptions withInteractive(boolean interactive) {
+    public ExecutionRequestOptions withInteractive(Boolean interactive) {
         this.interactive = interactive;
         return this;
     }
 
-    public ExecutionRequestOptions withSaveDataSnapshot(boolean saveDataSnapshot) {
+    public ExecutionRequestOptions withSaveDataSnapshot(Boolean saveDataSnapshot) {
         this.saveDataSnapshot = saveDataSnapshot;
         return this;
     }

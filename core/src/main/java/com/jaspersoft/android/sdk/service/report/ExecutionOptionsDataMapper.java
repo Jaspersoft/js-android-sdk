@@ -75,6 +75,8 @@ class ExecutionOptionsDataMapper {
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
             options.withBaseUrl(null);
             options.withAllowInlineScripts(null);
+            options.withFreshData(null);
+            options.withInteractive(null);
         } else {
             options.withBaseUrl(mBaseUrl);
         }

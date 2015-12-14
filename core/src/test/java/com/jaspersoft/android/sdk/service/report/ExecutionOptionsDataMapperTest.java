@@ -90,12 +90,14 @@ public class ExecutionOptionsDataMapperTest {
     }
 
     @Test
-    public void testBaseUrlReducedForServer5_5() throws Exception {
+    public void testReportExecutionFieldsReducedForServer5_5() throws Exception {
         RunReportCriteria criteria = RunReportCriteria.builder()
                 .create();
         ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
         assertThat(options.getBaseUrl(), is(nullValue()));
         assertThat(options.getAllowInlineScripts(), is(nullValue()));
+        assertThat(options.getFreshData(), is(nullValue()));
+        assertThat(options.getInteractive(), is(nullValue()));
     }
 
     private void assertOptions(ExecutionRequestOptions options) {
