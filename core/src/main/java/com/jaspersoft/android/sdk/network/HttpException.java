@@ -29,12 +29,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+import com.squareup.okhttp.ResponseBody;
+import retrofit.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import retrofit.Response;
 
 /**
  * Wrapper around exceptions which could pop up during request processing.
@@ -44,36 +44,30 @@ import retrofit.Response;
  * @since 2.0
  */
 public class HttpException extends Exception {
+    private final int mCode;
+    private final ResponseBody mBody;
+
+    HttpException(String responseMessage, int code, ResponseBody responseBody) {
+        super(responseMessage + " " + code);
+        mCode = code;
+        mBody = responseBody;
+    }
 
     static HttpException httpError(Response response) {
-        return httpError(response.raw());
+        return new HttpException(response.message(), response.code(), response.errorBody());
     }
 
     static HttpException httpError(com.squareup.okhttp.Response response) {
-        String message = response.code() + " " + response.message();
-        return new HttpException(message, response, null);
+        return new HttpException(response.message(), response.code(), response.body());
     }
 
-    private final com.squareup.okhttp.Response response;
-
-    HttpException(String message, com.squareup.okhttp.Response response, Throwable exception) {
-        super(message, exception);
-        this.response = response;
-    }
-
-    // HTTP status code.
     public int code() {
-        return response.code();
-    }
-
-    // HTTP status message.
-    public String message() {
-        return response.message();
+        return mCode;
     }
 
     public ErrorDescriptor getDescriptor() throws IOException {
         Gson gson = GsonFactory.create();
-        InputStream stream = response.body().byteStream();
+        InputStream stream = mBody.byteStream();
         InputStreamReader reader = new InputStreamReader(stream);
         try {
             return gson.fromJson(reader, ErrorDescriptor.class);
@@ -81,9 +75,4 @@ public class HttpException extends Exception {
             return null;
         }
     }
-
-    public String urlString() {
-        return response.request().urlString();
-    }
-
 }
