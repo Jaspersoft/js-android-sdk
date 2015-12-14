@@ -85,7 +85,7 @@ public final class ReportService {
                 new ReportExportUseCase(exportApi, callExecutor, cacheManager, executionOptionsMapper);
 
         return new ReportService(
-                TimeUnit.SECONDS.toMillis(1),
+                client.getPollTimeout(),
                 cacheManager,
                 reportExecutionUseCase,
                 reportExportUseCase);
