@@ -38,6 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -57,23 +58,25 @@ public class ReportAttachmentTest {
     ResourceOutput input;
     @Mock
     ReportExportUseCase mReportExportUseCase;
+    @Mock
+    RunExportCriteria mRunExportCriteria;
 
     private ReportAttachment objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mReportExportUseCase);
+        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mRunExportCriteria, mReportExportUseCase);
     }
 
     @Test
     public void testDownload() throws Exception {
-        when(mReportExportUseCase.requestExportAttachmentOutput(anyString(), anyString(), anyString())).thenReturn(input);
+        when(mReportExportUseCase.requestExportAttachmentOutput(any(RunExportCriteria.class), anyString(), anyString(), anyString())).thenReturn(input);
 
         ResourceOutput result = objectUnderTest.download();
         assertThat(result, is(notNullValue()));
 
-        verify(mReportExportUseCase).requestExportAttachmentOutput(eq("exec_id"), eq("export_id"), eq("1.jpg"));
+        verify(mReportExportUseCase).requestExportAttachmentOutput(eq(mRunExportCriteria), eq("exec_id"), eq("export_id"), eq("1.jpg"));
         verifyNoMoreInteractions(mReportExportUseCase);
     }
 }

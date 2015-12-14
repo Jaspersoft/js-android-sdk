@@ -40,14 +40,17 @@ public final class ReportExport {
     private final String mExecutionId;
     private final String mExportId;
     private final ReportExportUseCase mExportUseCase;
+    private final RunExportCriteria mCriteria;
 
     ReportExport(String executionId,
                  String exportId,
                  Collection<ReportAttachment> attachments,
+                 RunExportCriteria criteria,
                  ReportExportUseCase exportUseCase) {
         mExecutionId = executionId;
         mExportId = exportId;
         mAttachments = attachments;
+        mCriteria = criteria;
         mExportUseCase = exportUseCase;
     }
 
@@ -58,6 +61,6 @@ public final class ReportExport {
 
     @NotNull
     public ReportOutput download() throws ServiceException {
-        return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
+        return mExportUseCase.requestExportOutput(mCriteria, mExecutionId, mExportId);
     }
 }

@@ -108,12 +108,12 @@ public final class ReportExecution {
     @NotNull
     private ReportExport performExport(RunExportCriteria criteria) throws ServiceException {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
-        waitForExportReadyStatus(exportDetails);
+        waitForExportReadyStatus(criteria, exportDetails);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
-        return mExportFactory.create(currentDetails, exportDetails);
+        return mExportFactory.create(criteria, currentDetails, exportDetails);
     }
 
-    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) throws ServiceException {
+    private void waitForExportReadyStatus(RunExportCriteria criteria, ExportExecutionDescriptor exportDetails) throws ServiceException {
         final String exportId = exportDetails.getExportId();
 
         Status status = Status.wrap(exportDetails.getStatus());

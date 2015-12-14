@@ -176,10 +176,10 @@ public class ReportExportRestApiTest {
     public void shouldRequestExportOutput() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
-        restApiUnderTest.requestExportOutput("cookie", "execution_id", "export_id");
+        restApiUnderTest.requestExportOutput("cookie", "execution_id", "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/export_id/outputResource?suppressContentDisposition=true"));
+        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/outputResource?suppressContentDisposition=true"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
     }
 
@@ -201,10 +201,10 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.requestExportAttachment("cookie", "execution_id", "export_id", "attachment_id");
+        restApiUnderTest.requestExportAttachment("cookie", "execution_id", "html;pages=1", "attachment_id");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/export_id/attachments/attachment_id"));
+        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/attachments/attachment_id"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
     }
 
@@ -225,10 +225,10 @@ public class ReportExportRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.checkExportExecutionStatus("cookie", "execution_id", "export_id");
+        restApiUnderTest.checkExportExecutionStatus("cookie", "execution_id", "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/export_id/status"));
+        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/status"));
         assertThat(request.getHeader("Cookie"), is("cookie"));
     }
 

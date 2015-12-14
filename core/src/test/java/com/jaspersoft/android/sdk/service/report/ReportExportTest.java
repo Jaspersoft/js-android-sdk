@@ -42,19 +42,22 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class ReportExportTest {
     @Mock
     ReportExportUseCase mReportExportUseCase;
+    @Mock
+    RunExportCriteria mCriteria;
 
     private ReportExport objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportExport("report_execution_id", "export_id", Collections.<ReportAttachment>emptyList(), mReportExportUseCase);
+        objectUnderTest = new ReportExport("report_execution_id", "export_id",
+                Collections.<ReportAttachment>emptyList(), mCriteria, mReportExportUseCase);
     }
 
     @Test
     public void testDownload() throws Exception {
         objectUnderTest.download();
-        verify(mReportExportUseCase).requestExportOutput(eq("report_execution_id"), eq("export_id"));
+        verify(mReportExportUseCase).requestExportOutput(eq(mCriteria), eq("report_execution_id"), eq("export_id"));
         verifyNoMoreInteractions(mReportExportUseCase);
     }
 }

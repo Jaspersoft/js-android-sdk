@@ -54,7 +54,9 @@ class ReportExportUseCase {
     private final InfoCacheManager mCacheManager;
 
     ReportExportUseCase(ReportExportRestApi exportApi,
-                        CallExecutor callExecutor, InfoCacheManager cacheManager, ExecutionOptionsDataMapper executionOptionsMapper) {
+                        CallExecutor callExecutor,
+                        InfoCacheManager cacheManager,
+                        ExecutionOptionsDataMapper executionOptionsMapper) {
         mExportApi = exportApi;
         mCallExecutor = callExecutor;
         mCacheManager = cacheManager;
@@ -65,6 +67,7 @@ class ReportExportUseCase {
     public ExportExecutionDescriptor runExport(final String executionId, final RunExportCriteria criteria) throws ServiceException {
         ServerInfo info = mCacheManager.getInfo();
         final ServerVersion version = info.getVersion();
+
         Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
             @Override
             public ExportExecutionDescriptor perform(String token) throws IOException, HttpException {
@@ -76,7 +79,14 @@ class ReportExportUseCase {
     }
 
     @NotNull
-    public Status checkExportExecutionStatus(final String executionId, final String exportId) throws ServiceException {
+    public Status checkExportExecutionStatus(final String executionId,
+                                             final String exportId) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            return Status.wrap("ready");
+        }
+
         Call<Status> call = new Call<Status>() {
             @Override
             public Status perform(String token) throws IOException, HttpException {
@@ -89,11 +99,16 @@ class ReportExportUseCase {
     }
 
     @NotNull
-    public ReportOutput requestExportOutput(final String executionId, final String exportId) throws ServiceException {
+    public ReportOutput requestExportOutput(RunExportCriteria exportCriteria,
+                                            final String executionId,
+                                            String exportId) throws ServiceException {
+        exportId = adaptExportId(exportCriteria, exportId);
+        final String resultId = exportId;
+
         Call<ReportOutput> call = new Call<ReportOutput>() {
             @Override
             public ReportOutput perform(String token) throws IOException, HttpException {
-                ExportOutputResource result = mExportApi.requestExportOutput(token, executionId, exportId);
+                ExportOutputResource result = mExportApi.requestExportOutput(token, executionId, resultId);
                 return OutputDataMapper.transform(result);
             }
         };
@@ -101,16 +116,32 @@ class ReportExportUseCase {
     }
 
     @NotNull
-    public ResourceOutput requestExportAttachmentOutput(final String executionId, final String exportId,
+    public ResourceOutput requestExportAttachmentOutput(RunExportCriteria exportCriteria,
+                                                        final String executionId,
+                                                        String exportId,
                                                         final String fileName) throws ServiceException {
+        exportId = adaptExportId(exportCriteria, exportId);
+        final String resultId = exportId;
+
         Call<ResourceOutput> call = new Call<ResourceOutput>() {
             @Override
             public ResourceOutput perform(String token) throws IOException, HttpException {
                 OutputResource result = mExportApi.requestExportAttachment(
-                        token, executionId, exportId, fileName);
+                        token, executionId, resultId, fileName);
                 return OutputDataMapper.transform(result);
             }
         };
         return mCallExecutor.execute(call);
+    }
+
+    private String adaptExportId(RunExportCriteria exportCriteria, String exportId) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            exportId = String.format("%s;pages=%s", exportCriteria.getFormat(), exportCriteria.getPages());
+            exportId = exportId.toLowerCase();
+        }
+        return exportId;
     }
 }
