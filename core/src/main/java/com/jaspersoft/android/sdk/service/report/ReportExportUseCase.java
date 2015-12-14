@@ -31,11 +31,14 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.internal.Call;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -44,24 +47,28 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportExportUseCase {
+class ReportExportUseCase {
     private final ReportExportRestApi mExportApi;
     private final CallExecutor mCallExecutor;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+    private final InfoCacheManager mCacheManager;
 
     ReportExportUseCase(ReportExportRestApi exportApi,
-                        CallExecutor callExecutor, ExecutionOptionsDataMapper executionOptionsMapper) {
+                        CallExecutor callExecutor, InfoCacheManager cacheManager, ExecutionOptionsDataMapper executionOptionsMapper) {
         mExportApi = exportApi;
         mCallExecutor = callExecutor;
+        mCacheManager = cacheManager;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
     @NotNull
     public ExportExecutionDescriptor runExport(final String executionId, final RunExportCriteria criteria) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
         Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
             @Override
             public ExportExecutionDescriptor perform(String token) throws IOException, HttpException {
-                ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
+                ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria, version);
                 return mExportApi.runExportExecution(token, executionId, options);
             }
         };

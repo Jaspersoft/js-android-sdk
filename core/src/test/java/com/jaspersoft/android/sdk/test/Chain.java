@@ -27,24 +27,31 @@ package com.jaspersoft.android.sdk.test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.List;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Chain<Response> implements Answer<Response> {
-    private final Response[] mChain;
+public final class Chain<Value> implements Answer<Value> {
+    private final Value[] mChain;
     private int invocationCount = 0;
 
-    private Chain(Response... chain) {
+    private Chain(Value... chain) {
         mChain = chain;
     }
 
-    public static <Response> Chain<Response> of(Response... values) {
+    public static <Value> Chain<Value> of(Value... values) {
         return new Chain<>(values);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <Value> Chain<Value> of(List<Value> values) {
+        return new Chain<>((Value[]) values.toArray());
+    }
+
     @Override
-    public Response answer(InvocationOnMock invocation) throws Throwable {
+    public Value answer(InvocationOnMock invocation) throws Throwable {
         int statusIndex = invocationCount;
         if (statusIndex >= mChain.length) {
             statusIndex = mChain.length - 1;

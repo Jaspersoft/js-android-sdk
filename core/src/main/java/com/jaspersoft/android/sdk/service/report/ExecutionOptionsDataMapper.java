@@ -26,7 +26,8 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
@@ -36,29 +37,33 @@ import java.net.URLEncoder;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ExecutionOptionsDataMapper {
-
+class ExecutionOptionsDataMapper {
     private final String mBaseUrl;
 
-    public ExecutionOptionsDataMapper(String mBaseUrl) {
-        this.mBaseUrl = mBaseUrl;
+    ExecutionOptionsDataMapper(String baseUrl) {
+        mBaseUrl = baseUrl;
     }
 
-    public ReportExecutionRequestOptions transformRunReportOptions(@NotNull String reportUri, @NotNull RunReportCriteria criteria) {
+    public ReportExecutionRequestOptions transformRunReportOptions(@NotNull String reportUri,
+                                                                   @NotNull ServerVersion serverVersion,
+                                                                   @NotNull RunReportCriteria criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
-        mapCommonCriterion(criteria, options);
+        mapCommonCriterion(criteria, serverVersion, options);
         options.withAsync(true);
         options.withParameters(criteria.getParams());
         return options;
     }
 
-    public ExecutionRequestOptions transformExportOptions(@NotNull RunExportCriteria configuration) {
+    public ExecutionRequestOptions transformExportOptions(@NotNull RunExportCriteria configuration,
+                                                          @NotNull ServerVersion serverVersion) {
         ExecutionRequestOptions options = ExecutionRequestOptions.create();
-        mapCommonCriterion(configuration, options);
+        mapCommonCriterion(configuration, serverVersion, options);
         return options;
     }
 
-    private void mapCommonCriterion(@NotNull ExecutionCriteria criteria, ExecutionRequestOptions options) {
+    private void mapCommonCriterion(@NotNull ExecutionCriteria criteria,
+                                    @NotNull ServerVersion version,
+                                    @NotNull ExecutionRequestOptions options) {
         options.withOutputFormat(Helper.adaptFormat(criteria.getFormat()));
         options.withAttachmentsPrefix(Helper.adaptAttachmentPrefix(criteria.getAttachmentPrefix()));
 
@@ -67,7 +72,17 @@ final class ExecutionOptionsDataMapper {
         options.withInteractive(criteria.isInteractive());
         options.withPages(criteria.getPages());
 
-        options.withBaseUrl(mBaseUrl);
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            options.withBaseUrl(null);
+            options.withAllowInlineScripts(null);
+        } else {
+            options.withBaseUrl(mBaseUrl);
+        }
+    }
+
+    public static ExecutionOptionsDataMapper create(RestClient client) {
+        String baseUrl = client.getServerUrl();
+        return new ExecutionOptionsDataMapper(baseUrl);
     }
 
     static class Helper {

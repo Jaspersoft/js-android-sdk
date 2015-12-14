@@ -28,6 +28,9 @@ import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.FakeCallExecutor;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +45,7 @@ import java.util.List;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(PowerMockRunner.class)
@@ -55,6 +59,10 @@ public class ReportExecutionUseCaseTest {
     ReportExecutionRestApi mExecutionRestApi;
     @Mock
     ExecutionOptionsDataMapper mDataMapper;
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+    @Mock
+    ServerInfo mServerInfo;
 
     private ReportExecutionUseCase executionUseCase;
     private final FakeCallExecutor fakeCallExecutor = new FakeCallExecutor("token");
@@ -62,15 +70,17 @@ public class ReportExecutionUseCaseTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mServerInfo.getVersion()).thenReturn(ServerVersion.v6);
         executionUseCase =
-                new ReportExecutionUseCase(mExecutionRestApi, fakeCallExecutor, mDataMapper);
+                new ReportExecutionUseCase(mExecutionRestApi, fakeCallExecutor, mInfoCacheManager, mDataMapper);
     }
 
     @Test
     public void testRunReportExecution() throws Exception {
         RunReportCriteria criteria = RunReportCriteria.builder().create();
         executionUseCase.runReportExecution("/my/uri", criteria);
-        verify(mDataMapper).transformRunReportOptions("/my/uri", criteria);
+        verify(mDataMapper).transformRunReportOptions("/my/uri", ServerVersion.v6, criteria);
         verify(mExecutionRestApi).runReportExecution(eq("token"), any(ReportExecutionRequestOptions.class));
     }
 

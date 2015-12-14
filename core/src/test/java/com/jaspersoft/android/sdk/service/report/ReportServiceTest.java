@@ -24,13 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.test.Chain;
@@ -68,10 +64,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class ReportServiceTest {
 
     @Mock
-    ReportExecutionRestApi executionApi;
-    @Mock
-    ReportExportRestApi exportApi;
-    @Mock
     ErrorDescriptor mDescriptor;
 
     @Mock
@@ -80,6 +72,11 @@ public class ReportServiceTest {
     ReportExecutionDescriptor initDetails;
     @Mock
     ExecutionStatus statusDetails;
+
+    @Mock
+    ReportExecutionUseCase mReportExecutionUseCase;
+    @Mock
+    ReportExportUseCase mReportExportUseCase;
 
     ReportService objectUnderTest;
 
@@ -90,15 +87,10 @@ public class ReportServiceTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(executionApi, callExecutor, executionOptionsDataMapper);
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(exportApi, callExecutor, executionOptionsDataMapper);
-
         objectUnderTest = new ReportService(
                 TimeUnit.MILLISECONDS.toMillis(0),
-                reportExecutionUseCase,
-                exportUseCase);
+                mReportExecutionUseCase,
+                mReportExportUseCase);
     }
 
     @Test
@@ -109,8 +101,8 @@ public class ReportServiceTest {
         ReportExecution session = objectUnderTest.run("/report/uri", configuration);
         assertThat(session, is(notNullValue()));
 
-        verify(executionApi).runReportExecution(anyString(), any(ReportExecutionRequestOptions.class));
-        verifyNoMoreInteractions(executionApi);
+        verify(mReportExecutionUseCase).runReportExecution(anyString(), any(RunReportCriteria.class));
+        verifyNoMoreInteractions(mReportExecutionUseCase);
     }
 
     @Test
@@ -165,19 +157,19 @@ public class ReportServiceTest {
         mockReportExecutionStatus("queued", "execution");
 
         objectUnderTest.run("/report/uri", configuration);
-        verify(executionApi, times(2)).requestReportExecutionStatus(anyString(), eq("exec_id"));
+        verify(mReportExecutionUseCase, times(2)).requestStatus(eq("exec_id"));
     }
 
     private void mockReportExecutionStatus(String... statusChain) throws Exception {
         when(statusDetails.getStatus()).then(Chain.of(statusChain));
         when(statusDetails.getErrorDescriptor()).thenReturn(mDescriptor);
-        when(executionApi.requestReportExecutionStatus(anyString(), anyString())).thenReturn(statusDetails);
+        when(mReportExecutionUseCase.requestStatus(anyString())).thenReturn(statusDetails);
     }
 
     private void mockRunReportExecution(String execution) throws Exception {
         when(initDetails.getStatus()).thenReturn(execution);
         when(initDetails.getErrorDescriptor()).thenReturn(mDescriptor);
         when(initDetails.getExecutionId()).thenReturn("exec_id");
-        when(executionApi.runReportExecution(anyString(), any(ReportExecutionRequestOptions.class))).thenReturn(initDetails);
+        when(mReportExecutionUseCase.runReportExecution(anyString(), any(RunReportCriteria.class))).thenReturn(initDetails);
     }
 }

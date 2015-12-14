@@ -35,6 +35,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -72,12 +73,13 @@ public final class ReportService {
                 .baseUrl(client.getServerUrl())
                 .build();
         CallExecutor callExecutor = DefaultCallExecutor.create(client, session);
-        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(client.getServerUrl());
+        ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.create(client);
 
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
         ReportExecutionUseCase reportExecutionUseCase =
-                new ReportExecutionUseCase(executionApi, callExecutor, executionOptionsMapper);
+                new ReportExecutionUseCase(executionApi, callExecutor, cacheManager, executionOptionsMapper);
         ReportExportUseCase reportExportUseCase =
-                new ReportExportUseCase(exportApi, callExecutor, executionOptionsMapper);
+                new ReportExportUseCase(exportApi, callExecutor, cacheManager, executionOptionsMapper);
 
         return new ReportService(
                 TimeUnit.SECONDS.toMillis(1),

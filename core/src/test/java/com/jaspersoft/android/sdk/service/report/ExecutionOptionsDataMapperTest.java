@@ -27,8 +27,10 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,7 @@ public class ExecutionOptionsDataMapperTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         mapper = new ExecutionOptionsDataMapper(BASE_URL);
     }
 
@@ -65,7 +68,7 @@ public class ExecutionOptionsDataMapperTest {
                 .params(REPORT_PARAMS)
                 .attachmentPrefix("./")
                 .create();
-        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, criteria);
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, ServerVersion.v6, criteria);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
         assertThat(options.getParameters(), is(REPORT_PARAMS));
         assertThat(options.getAsync(), is(true));
@@ -82,8 +85,17 @@ public class ExecutionOptionsDataMapperTest {
                 .pages("1-100")
                 .attachmentPrefix("./")
                 .create();
-        ExecutionRequestOptions options = mapper.transformExportOptions(criteria);
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v6);
         assertOptions(options);
+    }
+
+    @Test
+    public void testBaseUrlReducedForServer5_5() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder()
+                .create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
+        assertThat(options.getBaseUrl(), is(nullValue()));
+        assertThat(options.getAllowInlineScripts(), is(nullValue()));
     }
 
     private void assertOptions(ExecutionRequestOptions options) {
