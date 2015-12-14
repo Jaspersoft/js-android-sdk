@@ -31,20 +31,20 @@ import org.mockito.stubbing.Answer;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Chain implements Answer<String> {
-    private final String[] mChain;
+public final class Chain<Response> implements Answer<Response> {
+    private final Response[] mChain;
     private int invocationCount = 0;
 
-    private Chain(String... chain) {
+    private Chain(Response... chain) {
         mChain = chain;
     }
 
-    public static Chain of(java.lang.String... values) {
-        return new Chain(values);
+    public static <Response> Chain<Response> of(Response... values) {
+        return new Chain<>(values);
     }
 
     @Override
-    public String answer(InvocationOnMock invocation) throws Throwable {
+    public Response answer(InvocationOnMock invocation) throws Throwable {
         int statusIndex = invocationCount;
         if (statusIndex >= mChain.length) {
             statusIndex = mChain.length - 1;

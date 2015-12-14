@@ -129,10 +129,10 @@ public final class ReportExecution {
     }
 
     @NotNull
-    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor details) throws ServiceException {
-        Status status = Status.wrap(details.getStatus());
-        ErrorDescriptor descriptor = details.getErrorDescriptor();
-        ReportExecutionDescriptor resultDetails = details;
+    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor firstRunDetails) throws ServiceException {
+        Status status = Status.wrap(firstRunDetails.getStatus());
+        ErrorDescriptor descriptor = firstRunDetails.getErrorDescriptor();
+        ReportExecutionDescriptor nextDetails = firstRunDetails;
         while (!status.isReady()) {
             if (status.isCancelled()) {
                 throw new ServiceException(
@@ -147,11 +147,11 @@ public final class ReportExecution {
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-            status = Status.wrap(details.getStatus());
-            descriptor = details.getErrorDescriptor();
-            resultDetails = requestExecutionDetails();
+            nextDetails = requestExecutionDetails();
+            status = Status.wrap(nextDetails.getStatus());
+            descriptor = nextDetails.getErrorDescriptor();
         }
-        return resultDetails;
+        return nextDetails;
     }
 
     @NotNull
