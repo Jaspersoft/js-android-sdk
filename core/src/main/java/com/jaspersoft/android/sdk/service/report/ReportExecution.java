@@ -28,12 +28,15 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
+
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -68,6 +71,12 @@ public final class ReportExecution {
     @NotNull
     public ReportMetadata waitForReportCompletion() throws ServiceException {
         return performAwaitFoReport();
+    }
+
+    @NotNull
+    public ReportExecution updateExecution(List<ReportParameter> newParameters) throws ServiceException {
+        mExecutionUseCase.updateExecution(mExecutionId, newParameters);
+        return this;
     }
 
     @NotNull
