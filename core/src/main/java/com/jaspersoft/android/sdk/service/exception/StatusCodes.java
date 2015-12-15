@@ -45,5 +45,8 @@ public final class StatusCodes {
     public static final int REPORT_EXECUTION_CANCELLED = 201;
     public static final int REPORT_EXECUTION_FAILED = 202;
 
+    // RESOURCE
+    public static final int RESOURCE_NOT_FOUND = 300;
+
     private StatusCodes() {}
 }

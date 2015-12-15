@@ -47,7 +47,7 @@ public final class ServiceExceptionMapper {
     public static ServiceException transform(HttpException e) {
         try {
             ErrorDescriptor descriptor = e.getDescriptor();
-            if (e.getDescriptor() == null) {
+            if (descriptor == null) {
                 return mapHttpCodesToState(e);
             } else {
                 return mapDescriptorToState(e, descriptor);
@@ -77,7 +77,9 @@ public final class ServiceExceptionMapper {
 
     @NotNull
     private static ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
-        if ("export.pages.out.of.range".equals(descriptor.getErrorCode())) {
+        if ("resource.not.found".equals(descriptor.getErrorCode())) {
+            return new ServiceException(descriptor.getMessage(), e, StatusCodes.RESOURCE_NOT_FOUND);
+        } else if ("export.pages.out.of.range".equals(descriptor.getErrorCode())) {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.EXPORT_PAGE_OUT_OF_RANGE);
         } else {
             return mapHttpCodesToState(e);
