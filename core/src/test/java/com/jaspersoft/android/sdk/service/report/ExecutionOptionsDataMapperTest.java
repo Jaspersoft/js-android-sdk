@@ -104,6 +104,24 @@ public class ExecutionOptionsDataMapperTest {
     }
 
     @Test
+    public void testInteractivenessDisabledForReportRun5_6() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder()
+                .interactive(true)
+                .create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_6, criteria);
+        assertThat("Should put false for 'interactive' option", options.getInteractive(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void testInteractivenessDisabledForExportRun5_6() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder()
+                .interactive(true)
+                .create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_6);
+        assertThat("Should put false for 'interactive' option", options.getInteractive(), is(Boolean.FALSE));
+    }
+
+    @Test
     public void testExportExecutionFieldsReducedForServer5_5() throws Exception {
         RunExportCriteria criteria = RunExportCriteria.builder()
                 .freshData(true)

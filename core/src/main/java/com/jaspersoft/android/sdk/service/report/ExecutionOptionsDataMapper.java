@@ -80,6 +80,8 @@ class ExecutionOptionsDataMapper {
             options.withAllowInlineScripts(null);
             options.withFreshData(null);
             options.withInteractive(null);
+        } else if (version.equals(ServerVersion.v5_6)) {
+            options.withInteractive(false);
         } else {
             options.withBaseUrl(mBaseUrl);
         }

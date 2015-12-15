@@ -90,6 +90,14 @@ public class RunReportCriteria extends ExecutionCriteria {
             return this;
         }
 
+        /**
+         * Configuration for report interactiveness
+         *
+         * NOTICE: This flag ignored for JRS 5.6 where we are forcing disable state
+         *
+         * @param interactive weather report should be interactive or not
+         * @return builder instance
+         */
         public Builder interactive(boolean interactive) {
             this.interactive = interactive;
             return this;
