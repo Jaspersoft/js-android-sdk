@@ -33,9 +33,7 @@ import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
-import com.jaspersoft.android.sdk.service.internal.DefaultCallExecutor;
-import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.internal.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -75,7 +73,11 @@ public final class ReportService {
                 .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .baseUrl(client.getServerUrl())
                 .build();
-        CallExecutor callExecutor = DefaultCallExecutor.create(client, session);
+
+        ServiceExceptionMapper defaultExMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper reportExMapper = new ReportExceptionMapper(defaultExMapper);
+        TokenCacheManager tokenCacheManager = TokenCacheManager.create(client, session);
+        CallExecutor callExecutor = new DefaultCallExecutor(tokenCacheManager, reportExMapper);
         ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.create(client);
 
         InfoCacheManager cacheManager = InfoCacheManager.create(client);

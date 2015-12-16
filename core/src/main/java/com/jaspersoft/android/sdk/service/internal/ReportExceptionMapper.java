@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -34,9 +35,26 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServiceExceptionMapper {
+public final class ReportExceptionMapper implements ServiceExceptionMapper {
+    private final ServiceExceptionMapper mDelegate;
+
+    public ReportExceptionMapper(ServiceExceptionMapper delegate) {
+        mDelegate = delegate;
+    }
+
     @NotNull
-    public ServiceException transform(HttpException e);
+    @Override
+    public ServiceException transform(HttpException e) {
+        ServiceException exception = mDelegate.transform(e);
+        if (exception.code() == StatusCodes.RESOURCE_NOT_FOUND) {
+            return new ServiceException(exception.getMessage(), exception.getCause(), StatusCodes.REPORT_EXECUTION_INVALID);
+        }
+        return exception;
+    }
+
     @NotNull
-    public ServiceException transform(IOException e);
+    @Override
+    public ServiceException transform(IOException e) {
+        return mDelegate.transform(e);
+    }
 }

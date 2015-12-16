@@ -36,6 +36,7 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
+import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +47,6 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -273,11 +273,8 @@ public class ReportExecutionTest {
 
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
-        List<Status> statuses = new ArrayList<>();
-        for (String state : statusChain) {
-            statuses.add(Status.wrap(state));
-        }
-        when(mReportExportUseCase.checkExportExecutionStatus(anyString(), anyString())).then(of(statuses));
+        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
+        when(mReportExportUseCase.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
 
     private void mockRunExportExecution(String... statusChain) throws Exception {
