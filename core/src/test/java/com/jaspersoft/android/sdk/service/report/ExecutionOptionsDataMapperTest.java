@@ -143,6 +143,13 @@ public class ExecutionOptionsDataMapperTest {
         assertThat("Should set 'HTML' format", options.getOutputFormat(), is("HTML"));
     }
 
+    @Test
+    public void testReportExecutionSetsHtmlFormatIfOneUnspecified5_5() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder().create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
+        assertThat("Should set 'HTML' format", options.getOutputFormat(), is("HTML"));
+    }
+
     private void assertOptions(ExecutionRequestOptions options) {
         assertThat(options.getFreshData(), is(true));
         assertThat(options.getSaveDataSnapshot(), is(true));

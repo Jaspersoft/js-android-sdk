@@ -82,7 +82,6 @@ public class RunReportCriteria extends ExecutionCriteria {
 
         public Builder() {
             interactive = true;
-            format = Format.HTML;
         }
 
         public Builder freshData(boolean freshData) {

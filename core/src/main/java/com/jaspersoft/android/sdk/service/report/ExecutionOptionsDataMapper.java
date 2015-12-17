@@ -60,9 +60,6 @@ class ExecutionOptionsDataMapper {
         mapCommonCriterion(configuration, serverVersion, options);
         if (serverVersion.lessThanOrEquals(ServerVersion.v5_5)) {
             options.withSaveDataSnapshot(null);
-            if (options.getOutputFormat() == null) {
-                options.withOutputFormat("HTML");
-            }
         }
         return options;
     }
@@ -83,6 +80,9 @@ class ExecutionOptionsDataMapper {
             options.withAllowInlineScripts(null);
             options.withFreshData(null);
             options.withInteractive(null);
+            if (options.getOutputFormat() == null) {
+                options.withOutputFormat("HTML");
+            }
         } else if (version.equals(ServerVersion.v5_6)) {
             options.withInteractive(false);
         } else {
