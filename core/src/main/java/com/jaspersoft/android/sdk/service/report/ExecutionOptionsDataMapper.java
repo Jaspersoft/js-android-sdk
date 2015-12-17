@@ -60,6 +60,9 @@ class ExecutionOptionsDataMapper {
         mapCommonCriterion(configuration, serverVersion, options);
         if (serverVersion.lessThanOrEquals(ServerVersion.v5_5)) {
             options.withSaveDataSnapshot(null);
+            if (options.getOutputFormat() == null) {
+                options.withOutputFormat("HTML");
+            }
         }
         return options;
     }

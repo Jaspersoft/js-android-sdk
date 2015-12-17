@@ -136,6 +136,13 @@ public class ExecutionOptionsDataMapperTest {
         assertThat("Should reduce 'saveDataSnapshot' from options",options.getSaveDataSnapshot(), is(nullValue()));
     }
 
+    @Test
+    public void testExportExecutionSetsHtmlFormatIfOneUnspecified5_5() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder().create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_5);
+        assertThat("Should set 'HTML' format", options.getOutputFormat(), is("HTML"));
+    }
+
     private void assertOptions(ExecutionRequestOptions options) {
         assertThat(options.getFreshData(), is(true));
         assertThat(options.getSaveDataSnapshot(), is(true));
