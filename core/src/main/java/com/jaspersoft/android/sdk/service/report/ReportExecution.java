@@ -123,8 +123,7 @@ public final class ReportExecution {
 
     @NotNull
     private ReportMetadata performAwaitFoReport() throws ServiceException {
-        ReportExecutionDescriptor details = requestExecutionDetails();
-        ReportExecutionDescriptor completeDetails = waitForReportReadyStart(details);
+        ReportExecutionDescriptor completeDetails = waitForReportReadyStart();
         return new ReportMetadata(mReportUri,
                 completeDetails.getTotalPages());
     }
@@ -132,17 +131,20 @@ public final class ReportExecution {
     @NotNull
     private ReportExport performExport(RunExportCriteria criteria) throws ServiceException {
         ExportExecutionDescriptor exportDetails = runExport(criteria);
-        waitForExportReadyStatus(exportDetails);
+        String exportId = exportDetails.getExportId();
+        waitForExportReadyStatus(exportId);
         ReportExecutionDescriptor currentDetails = requestExecutionDetails();
         return mExportFactory.create(criteria, currentDetails, exportDetails);
     }
 
-    private void waitForExportReadyStatus(ExportExecutionDescriptor exportDetails) throws ServiceException {
-        final String exportId = exportDetails.getExportId();
-
-        Status status = Status.wrap(exportDetails.getStatus());
-        ErrorDescriptor descriptor = exportDetails.getErrorDescriptor();
-        while (!status.isReady()) {
+    private void waitForExportReadyStatus(String exportId) throws ServiceException {
+        ExecutionStatus executionStatus;
+        ErrorDescriptor descriptor;
+        Status status;
+        do {
+            executionStatus = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
+            status = Status.wrap(executionStatus.getStatus());
+            descriptor = executionStatus.getErrorDescriptor();
             if (status.isCancelled()) {
                 throw new ServiceException(
                         String.format("Export for report '%s' execution cancelled", mReportUri), null,
@@ -160,19 +162,19 @@ public final class ReportExecution {
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-
-            ExecutionStatus executionStatus = mExportUseCase.checkExportExecutionStatus(mExecutionId, exportId);
-            status = Status.wrap(executionStatus.getStatus());
-            descriptor = executionStatus.getErrorDescriptor();
-        }
+        } while (!status.isReady());
     }
 
     @NotNull
-    private ReportExecutionDescriptor waitForReportReadyStart(final ReportExecutionDescriptor firstRunDetails) throws ServiceException {
-        Status status = Status.wrap(firstRunDetails.getStatus());
-        ErrorDescriptor descriptor = firstRunDetails.getErrorDescriptor();
-        ReportExecutionDescriptor nextDetails = firstRunDetails;
-        while (!status.isReady()) {
+    private ReportExecutionDescriptor waitForReportReadyStart() throws ServiceException {
+        ReportExecutionDescriptor nextDetails;
+        ErrorDescriptor descriptor;
+        Status status;
+        do {
+            nextDetails = requestExecutionDetails();
+            descriptor = nextDetails.getErrorDescriptor();
+            status = Status.wrap(nextDetails.getStatus());
+
             if (status.isCancelled()) {
                 throw new ServiceException(
                         String.format("Report '%s' execution cancelled", mReportUri), null,
@@ -190,10 +192,7 @@ public final class ReportExecution {
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-            nextDetails = requestExecutionDetails();
-            status = Status.wrap(nextDetails.getStatus());
-            descriptor = nextDetails.getErrorDescriptor();
-        }
+        } while (!status.isReady());
         return nextDetails;
     }
 

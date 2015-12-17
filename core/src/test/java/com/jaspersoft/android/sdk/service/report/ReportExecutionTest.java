@@ -138,8 +138,9 @@ public class ReportExecutionTest {
 
     @Test(timeout = 2000)
     public void testRequestExportIdealCase() throws Exception {
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("ready");
         mockReportExecutionDetails("ready");
-        mockRunExportExecution("ready");
 
         objectUnderTest.export(exportCriteria);
 
@@ -150,7 +151,8 @@ public class ReportExecutionTest {
     @Test(timeout = 2000)
     public void testRunThrowsFailedStatusImmediately() throws Exception {
         // export run request
-        mockRunExportExecution("failed");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("failed");
 
         try {
             objectUnderTest.export(exportCriteria);
@@ -175,7 +177,8 @@ public class ReportExecutionTest {
     @Test(timeout = 2000)
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
         // export run request
-        mockRunExportExecution("cancelled");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("cancelled");
 
         try {
             objectUnderTest.export(exportCriteria);
@@ -211,7 +214,8 @@ public class ReportExecutionTest {
 
     @Test(timeout = 2000)
     public void ensureThatExportCancelledEventWillBeResolved() throws Exception {
-        mockRunExportExecution("cancelled", "ready");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("cancelled", "ready");
         mockReportExecutionDetails("ready");
 
         objectUnderTest.export(exportCriteria);
