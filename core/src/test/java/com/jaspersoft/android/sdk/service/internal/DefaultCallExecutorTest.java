@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -56,23 +57,26 @@ public class DefaultCallExecutorTest {
     private DefaultCallExecutor resolver;
     private Object mResponse = new Object();
 
+    private final Cookies validCookies = Cookies.parse("key=value");
+    private final Cookies inValidCookies = Cookies.parse("key=value1");
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(_401Exception.code()).thenReturn(401);
-        when(mCall.perform(anyString())).thenReturn(mResponse);
+        when(mCall.perform(any(Cookies.class))).thenReturn(mResponse);
 
         resolver = new DefaultCallExecutor(mTokenCacheManager, new DefaultExceptionMapper());
     }
 
     @Test
     public void testExecuteWithValidCache() throws Exception {
-        when(mTokenCacheManager.loadToken()).thenReturn("token");
+        when(mTokenCacheManager.loadToken()).thenReturn(validCookies);
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
         verify(mTokenCacheManager).loadToken();
-        verify(mCall).perform("token");
+        verify(mCall).perform(validCookies);
         verifyNoMoreInteractions(mTokenCacheManager);
         verifyZeroInteractions(mTokenCacheManager);
     }
@@ -80,33 +84,33 @@ public class DefaultCallExecutorTest {
     @Test
     public void testExecuteWithEmptyCache() throws Exception {
         when(mTokenCacheManager.loadToken()).thenReturn(null);
-        when(mTokenCacheManager.loadToken()).thenReturn("token");
+        when(mTokenCacheManager.loadToken()).thenReturn(validCookies);
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
         verify(mTokenCacheManager).loadToken();
-        verify(mCall).perform("token");
+        verify(mCall).perform(validCookies);
     }
 
     @Test
     public void testExecuteWithInvalidCache() throws Exception {
-        when(mTokenCacheManager.loadToken()).then(Chain.of("invalid token", "valid token"));
+        when(mTokenCacheManager.loadToken()).then(Chain.of(inValidCookies, validCookies));
 
         when(_401Exception.code()).thenReturn(401);
-        when(mCall.perform(anyString())).thenAnswer(_401ResponseAtFirstInvokation());
+        when(mCall.perform(any(Cookies.class))).thenAnswer(_401ResponseAtFirstInvokation());
 
         assertThat("Failed to return response from call operation", resolver.execute(mCall), is(mResponse));
 
         verify(mTokenCacheManager, times(2)).loadToken();
-        verify(mCall).perform("invalid token");
+        verify(mCall).perform(inValidCookies);
         verify(mTokenCacheManager).invalidateToken();
-        verify(mCall).perform("valid token");
+        verify(mCall).perform(validCookies);
     }
 
     @Test
     public void testExecuteWithInvalidCredentials() throws Exception {
-        when(mTokenCacheManager.loadToken()).thenReturn("invalid token");
-        when(mCall.perform(anyString())).thenThrow(_401Exception);
+        when(mTokenCacheManager.loadToken()).thenReturn(inValidCookies);
+        when(mCall.perform(any(Cookies.class))).thenThrow(_401Exception);
 
         try {
             resolver.execute(mCall);
@@ -115,7 +119,7 @@ public class DefaultCallExecutorTest {
         }
 
         verify(mTokenCacheManager, times(2)).loadToken();
-        verify(mCall, times(2)).perform("invalid token");
+        verify(mCall, times(2)).perform(inValidCookies);
         verify(mTokenCacheManager).invalidateToken();
     }
 

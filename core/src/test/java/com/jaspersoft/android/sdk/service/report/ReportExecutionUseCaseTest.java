@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -53,7 +54,6 @@ import static org.mockito.Mockito.when;
 public class ReportExecutionUseCaseTest {
 
     private static final String EXECUTION_ID = "execution_id";
-    private static final String TOKEN = "token";
 
     @Mock
     ReportExecutionRestApi mExecutionRestApi;
@@ -65,7 +65,8 @@ public class ReportExecutionUseCaseTest {
     ServerInfo mServerInfo;
 
     private ReportExecutionUseCase executionUseCase;
-    private final FakeCallExecutor fakeCallExecutor = new FakeCallExecutor("token");
+    private final Cookies fakeCookies = Cookies.parse("key=value");
+    private final FakeCallExecutor fakeCallExecutor = new FakeCallExecutor(fakeCookies);
 
     @Before
     public void setUp() throws Exception {
@@ -81,25 +82,25 @@ public class ReportExecutionUseCaseTest {
         RunReportCriteria criteria = RunReportCriteria.builder().create();
         executionUseCase.runReportExecution("/my/uri", criteria);
         verify(mDataMapper).transformRunReportOptions("/my/uri", ServerVersion.v6, criteria);
-        verify(mExecutionRestApi).runReportExecution(eq("token"), any(ReportExecutionRequestOptions.class));
+        verify(mExecutionRestApi).runReportExecution(eq(fakeCookies), any(ReportExecutionRequestOptions.class));
     }
 
     @Test
     public void testRequestStatus() throws Exception {
         executionUseCase.requestStatus(EXECUTION_ID);
-        verify(mExecutionRestApi).requestReportExecutionStatus(TOKEN, EXECUTION_ID);
+        verify(mExecutionRestApi).requestReportExecutionStatus(fakeCookies, EXECUTION_ID);
     }
 
     @Test
     public void testRequestExecutionDetails() throws Exception {
         executionUseCase.requestExecutionDetails(EXECUTION_ID);
-        verify(mExecutionRestApi).requestReportExecutionDetails(TOKEN, EXECUTION_ID);
+        verify(mExecutionRestApi).requestReportExecutionDetails(fakeCookies, EXECUTION_ID);
     }
 
     @Test
     public void testUpdateExecution() throws Exception {
         List<ReportParameter> params = Collections.<ReportParameter>emptyList();
         executionUseCase.updateExecution(EXECUTION_ID, params);
-        verify(mExecutionRestApi).updateReportExecution(TOKEN, EXECUTION_ID, params);
+        verify(mExecutionRestApi).updateReportExecution(fakeCookies, EXECUTION_ID, params);
     }
 }

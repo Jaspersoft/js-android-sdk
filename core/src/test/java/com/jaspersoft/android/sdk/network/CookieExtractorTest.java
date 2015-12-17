@@ -24,11 +24,9 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.CookieExtractor;
 import com.squareup.okhttp.Protocol;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,14 +51,14 @@ public class CookieExtractorTest {
     @Test
     public void shouldExtractTokenFromNetworkResponse() {
         Response mockResponse = new Response.Builder()
-                .addHeader("Set-Cookie", "cookie1")
-                .addHeader("Set-Cookie", "cookie2")
+                .addHeader("Set-Cookie", "cookie1=12")
+                .addHeader("Set-Cookie", "cookie2=34")
                 .code(200)
                 .protocol(Protocol.HTTP_1_1)
                 .request(mRequest)
                 .build();
 
-        String token = CookieExtractor.extract(mockResponse);
-        assertThat(token, is("cookie1;cookie2"));
+        Cookies cookies = CookieExtractor.extract(mockResponse);
+        assertThat(cookies.toString(), is("cookie1=12;cookie2=34"));
     }
 }

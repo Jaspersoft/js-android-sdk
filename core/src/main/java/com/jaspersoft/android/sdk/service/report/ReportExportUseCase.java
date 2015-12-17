@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -31,13 +32,13 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
-import com.jaspersoft.android.sdk.service.internal.Call;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,9 +71,9 @@ class ReportExportUseCase {
 
         Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
             @Override
-            public ExportExecutionDescriptor perform(String token) throws IOException, HttpException {
+            public ExportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
                 ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria, version);
-                return mExportApi.runExportExecution(token, executionId, options);
+                return mExportApi.runExportExecution(cookies, executionId, options);
             }
         };
         return mCallExecutor.execute(call);
@@ -89,8 +90,8 @@ class ReportExportUseCase {
 
         Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
             @Override
-            public ExecutionStatus perform(String token) throws IOException, HttpException {
-                return mExportApi.checkExportExecutionStatus(token, executionId, exportId);
+            public ExecutionStatus perform(Cookies cookies) throws IOException, HttpException {
+                return mExportApi.checkExportExecutionStatus(cookies, executionId, exportId);
             }
         };
         return mCallExecutor.execute(call);
@@ -105,8 +106,8 @@ class ReportExportUseCase {
 
         Call<ReportOutput> call = new Call<ReportOutput>() {
             @Override
-            public ReportOutput perform(String token) throws IOException, HttpException {
-                ExportOutputResource result = mExportApi.requestExportOutput(token, executionId, resultId);
+            public ReportOutput perform(Cookies cookies) throws IOException, HttpException {
+                ExportOutputResource result = mExportApi.requestExportOutput(cookies, executionId, resultId);
                 return OutputDataMapper.transform(result);
             }
         };
@@ -123,9 +124,9 @@ class ReportExportUseCase {
 
         Call<ResourceOutput> call = new Call<ResourceOutput>() {
             @Override
-            public ResourceOutput perform(String token) throws IOException, HttpException {
+            public ResourceOutput perform(Cookies cookies) throws IOException, HttpException {
                 OutputResource result = mExportApi.requestExportAttachment(
-                        token, executionId, resultId, fileName);
+                        cookies, executionId, resultId, fileName);
                 return OutputDataMapper.transform(result);
             }
         };

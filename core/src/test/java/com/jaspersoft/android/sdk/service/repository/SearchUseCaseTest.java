@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
@@ -40,7 +41,6 @@ import org.mockito.MockitoAnnotations;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -76,6 +76,7 @@ public class SearchUseCaseTest {
     ResourceSearchResult mResult;
 
     private SearchUseCase objectUnderTest;
+    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     @Before
     public void setup() throws Exception {
@@ -88,14 +89,14 @@ public class SearchUseCaseTest {
                 mDataMapper,
                 mRepositoryRestApi,
                 mInfoCacheManager,
-                new FakeCallExecutor("cookie")
+                new FakeCallExecutor(fakeCookies)
         );
     }
 
     @Test
     public void shouldProvideAndAdaptSearchResult() throws Exception {
         when(mResult.getNextOffset()).thenReturn(100);
-        when(mRepositoryRestApi.searchResources(anyString(), any(Map.class))).thenReturn(mResult);
+        when(mRepositoryRestApi.searchResources(any(Cookies.class), anyMap())).thenReturn(mResult);
 
         Collection<Resource> resources = new ArrayList<Resource>();
         when(mDataMapper.transform(anyCollection(), any(SimpleDateFormat.class))).thenReturn(resources);
@@ -105,6 +106,6 @@ public class SearchUseCaseTest {
         assertThat(result.getNextOffset(), is(100));
         assertThat(result.getResources(), is(resources));
 
-        verify(mRepositoryRestApi).searchResources(anyString(), any(Map.class));
+        verify(mRepositoryRestApi).searchResources(any(Cookies.class), anyMap());
     }
 }

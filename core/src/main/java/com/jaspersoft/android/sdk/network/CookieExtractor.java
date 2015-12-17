@@ -26,7 +26,8 @@ package com.jaspersoft.android.sdk.network;
 
 import com.squareup.okhttp.Response;
 
-import java.util.Iterator;
+import java.net.HttpCookie;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,21 +39,21 @@ final class CookieExtractor {
     private CookieExtractor() {
     }
 
-    public static String extract(Response response) {
-        List<String> parts = response.headers().values("Set-Cookie");
-        return joinCookieParts(parts).toString();
+    public static Cookies extract(Response response) {
+        List<String> headers = response.headers().values("Set-Cookie");
+        List<String> cookies = joinCookieHeaders(headers);
+        return new Cookies(cookies);
     }
 
-    private static StringBuilder joinCookieParts(List<String> parts) {
-        StringBuilder stringBuilder = new StringBuilder();
-        Iterator<String> iterator = parts.iterator();
-        while (iterator.hasNext()) {
-            String cookie = iterator.next();
-            stringBuilder.append(cookie);
-            if (iterator.hasNext()) {
-                stringBuilder.append(";");
+    private static List<String> joinCookieHeaders(List<String> headers) {
+        List<HttpCookie> cookies;
+        List<String> result = new ArrayList<>(headers.size());
+        for (String header : headers) {
+            cookies = HttpCookie.parse(header);
+            if (!cookies.isEmpty()) {
+                result.add(cookies.get(0).toString());
             }
         }
-        return stringBuilder;
+        return result;
     }
 }

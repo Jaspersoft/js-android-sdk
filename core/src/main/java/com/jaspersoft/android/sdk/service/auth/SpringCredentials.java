@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
@@ -72,7 +73,7 @@ public final class SpringCredentials extends Credentials {
     }
 
     @Override
-    protected String applyPolicy(AuthPolicy policy) throws ServiceException {
+    protected Cookies applyPolicy(AuthPolicy policy) throws ServiceException {
         try {
             return policy.applyCredentials(this);
         } catch (HttpException e) {

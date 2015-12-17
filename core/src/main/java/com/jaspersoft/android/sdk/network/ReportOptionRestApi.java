@@ -39,21 +39,21 @@ import java.util.Set;
 public interface ReportOptionRestApi {
 
     @NotNull
-    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri,
-                                               @NotNull String token) throws HttpException, IOException;
+    Set<ReportOption> requestReportOptionsList(@NotNull Cookies cookies,
+                                               @NotNull String reportUnitUri) throws HttpException, IOException;
 
     @NotNull
-    ReportOption createReportOption(@NotNull String token, @NotNull String reportUnitUri,
+    ReportOption createReportOption(@NotNull Cookies cookies, @NotNull String reportUnitUri,
                                     @NotNull String optionLabel,
                                     @NotNull Map<String, Set<String>> controlsValues,
                                     boolean overwrite) throws HttpException, IOException;
 
-    void updateReportOption(@NotNull String token,
+    void updateReportOption(@NotNull Cookies cookies,
                             @NotNull String reportUnitUri,
                             @NotNull String optionId,
                             @NotNull Map<String, Set<String>> controlsValues) throws HttpException, IOException;
 
-    void deleteReportOption(@NotNull String token,
+    void deleteReportOption(@NotNull Cookies cookies,
                             @NotNull String reportUnitUri,
                             @NotNull String optionId) throws HttpException, IOException;
 

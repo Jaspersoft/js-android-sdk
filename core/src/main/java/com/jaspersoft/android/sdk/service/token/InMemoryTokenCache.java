@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.token;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,21 +36,21 @@ import java.util.WeakHashMap;
  * @since 2.0
  */
 public final class InMemoryTokenCache implements TokenCache {
-    private final Map<String, String> mCache = new WeakHashMap<String, String>();
+    private final Map<String, Cookies> mCache = new WeakHashMap<String, Cookies>();
 
     @Nullable
     @Override
-    public String get(@NotNull String key) {
-        return mCache.get(key);
+    public Cookies get(@NotNull String host) {
+        return mCache.get(host);
     }
 
     @Override
-    public void put(@NotNull String key, @NotNull String token) {
-        mCache.put(key, token);
+    public void put(@NotNull String host, @NotNull Cookies cookies) {
+        mCache.put(host, cookies);
     }
 
     @Override
-    public void remove(@NotNull String key) {
-        mCache.remove(key);
+    public void remove(@NotNull String host) {
+        mCache.remove(host);
     }
 }

@@ -42,22 +42,22 @@ import java.io.IOException;
 public interface ReportExportRestApi {
 
     @NotNull
-    ExportExecutionDescriptor runExportExecution(@NotNull String token,
+    ExportExecutionDescriptor runExportExecution(@NotNull Cookies cookies,
                                                  @NotNull String executionId,
                                                  @NotNull ExecutionRequestOptions executionOptions) throws HttpException, IOException;
 
     @NotNull
-    ExecutionStatus checkExportExecutionStatus(@NotNull String token,
+    ExecutionStatus checkExportExecutionStatus(@NotNull Cookies cookies,
                                                @NotNull String executionId,
                                                @NotNull String exportId) throws HttpException, IOException;
 
     @NotNull
-    ExportOutputResource requestExportOutput(@NotNull String token,
+    ExportOutputResource requestExportOutput(@NotNull Cookies cookies,
                                              @NotNull String executionId,
                                              @NotNull String exportId) throws HttpException, IOException;
 
     @NotNull
-    OutputResource requestExportAttachment(@NotNull String token,
+    OutputResource requestExportAttachment(@NotNull Cookies cookies,
                                            @NotNull String executionId,
                                            @NotNull String exportId,
                                            @NotNull String attachmentId) throws HttpException, IOException;

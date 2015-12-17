@@ -28,26 +28,16 @@ import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 import com.squareup.okhttp.Response;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import retrofit.Call;
-import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
 
 /**
  * @author Tom Koptel
@@ -62,12 +52,12 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NotNull
     @Override
-    public Set<ReportOption> requestReportOptionsList(@Nullable String token,
+    public Set<ReportOption> requestReportOptionsList(@Nullable Cookies cookies,
                                                       @Nullable String reportUnitUri) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri, token);
+        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri, cookies.toString());
         try {
             ReportOptionSet options = CallWrapper.wrap(call).body();
             return options.get();
@@ -83,7 +73,7 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
 
     @NotNull
     @Override
-    public ReportOption createReportOption(@Nullable String token,
+    public ReportOption createReportOption(@Nullable Cookies cookies,
                                            @Nullable String reportUnitUri,
                                            @Nullable String optionLabel,
                                            @Nullable Map<String, Set<String>> controlsValues,
@@ -91,35 +81,35 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionLabel, "Option label should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite, token);
+        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @Override
-    public void updateReportOption(@Nullable String token,
+    public void updateReportOption(@Nullable Cookies cookies,
                                    @Nullable String reportUnitUri,
                                    @Nullable String optionId,
                                    @Nullable Map<String, Set<String>> controlsValues) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues, token);
+        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues, cookies.toString());
         CallWrapper.wrap(call).body();
     }
 
     @Override
-    public void deleteReportOption(@Nullable String token,
+    public void deleteReportOption(@Nullable Cookies cookies,
                                    @Nullable String reportUnitUri,
                                    @Nullable String optionId) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId, token);
+        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId, cookies.toString());
         CallWrapper.wrap(call).body();
     }
 

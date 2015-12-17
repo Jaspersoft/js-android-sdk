@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
 import com.jaspersoft.android.sdk.service.auth.Credentials;
@@ -63,6 +64,7 @@ public class TokenCacheManagerTest {
     @Mock
     HttpException mHttpException;
 
+    private final Cookies fakeCookies = Cookies.parse("key=value");
     private final String baseUrl = "http://localhost/";
     private TokenCacheManager cacheManager;
 
@@ -80,20 +82,20 @@ public class TokenCacheManagerTest {
     @Test
     public void testLoadToken() throws Exception {
         when(mTokenCache.get(anyString())).thenReturn(null);
-        when(mAuthenticationService.authenticate(any(Credentials.class))).thenReturn("token");
+        when(mAuthenticationService.authenticate(any(Credentials.class))).thenReturn(fakeCookies);
 
-        assertThat("Cache manager has not returned 'token'", cacheManager.loadToken(), is("token"));
+        assertThat("Cache manager has not returned 'token'", cacheManager.loadToken(), is(fakeCookies));
 
         verify(mTokenCache).get(baseUrl);
-        verify(mTokenCache).put(baseUrl, "token");
+        verify(mTokenCache).put(baseUrl, fakeCookies);
         verify(mAuthenticationService).authenticate(mCredentials);
     }
 
     @Test
     public void testLoadTokenReturnsFromCache() throws Exception {
-        when(mTokenCache.get(anyString())).thenReturn("token");
+        when(mTokenCache.get(anyString())).thenReturn(fakeCookies);
 
-        assertThat("Cache manager has not returned 'token'", cacheManager.loadToken(), is("token"));
+        assertThat("Cache manager has not returned 'token'", cacheManager.loadToken(), is(fakeCookies));
         verify(mTokenCache).get(baseUrl);
         verifyNoMoreInteractions(mTokenCache);
         verifyZeroInteractions(mAuthenticationService);
