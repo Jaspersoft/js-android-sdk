@@ -28,14 +28,13 @@ import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,15 +61,15 @@ final class ExportFactory {
         if (export == null) {
             throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
-        Collection<ReportAttachment> attachments = adaptAttachments(criteria, export);
+        List<ReportAttachment> attachments = adaptAttachments(criteria, export);
         return new ReportExport(mExecutionId, exportId, attachments, criteria, mExportUseCase);
     }
 
     @NotNull
-    private Collection<ReportAttachment> adaptAttachments(RunExportCriteria criteria, ExportDescriptor export) {
+    private List<ReportAttachment> adaptAttachments(RunExportCriteria criteria, ExportDescriptor export) {
         String exportId = export.getId();
         Set<AttachmentDescriptor> rawAttachments = export.getAttachments();
-        Collection<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
+        List<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
         for (AttachmentDescriptor attachment : rawAttachments) {
             ReportAttachment reportAttachment = new ReportAttachment(
                     attachment.getFileName(),
