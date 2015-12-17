@@ -132,12 +132,14 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
          * 'suppressContentDisposition' used due to security implications this header has
          */
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
         Call<ResponseBody> requestReportExportOutput(@NotNull @Path("executionId") String executionId,
                                                      @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                      @Header("Cookie") String cookie);
 
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
         Call<ResponseBody> requestReportExportAttachmentOutput(@NotNull @Path("executionId") String executionId,
                                                                @NotNull @Path(value = "exportId", encoded = true) String exportId,
