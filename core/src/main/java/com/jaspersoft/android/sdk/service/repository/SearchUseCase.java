@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
@@ -65,9 +66,9 @@ class SearchUseCase {
         final SimpleDateFormat dateTimeFormat = mInfoCacheManager.getInfo().getDatetimeFormatPattern();
         Call<SearchResult> call = new Call<SearchResult>() {
             @Override
-            public SearchResult perform(String token) throws IOException, HttpException {
+            public SearchResult perform(Cookies cookies) throws IOException, HttpException {
                 Map<String, Object> criteria = CriteriaMapper.map(internalCriteria);
-                ResourceSearchResult response = mRestApi.searchResources(token, criteria);
+                ResourceSearchResult response = mRestApi.searchResources(cookies, criteria);
 
                 SearchResult searchResult = new SearchResult();
                 searchResult.setNextOffset(response.getNextOffset());

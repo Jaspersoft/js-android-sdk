@@ -64,6 +64,7 @@ public class RepositoryRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
 
     private RepositoryRestApi restApiUnderTest;
+    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     @Before
     public void setup() {
@@ -78,7 +79,7 @@ public class RepositoryRestApiTest {
     public void shouldReturnEmptyResponseForNoContentResponse() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create204());
 
-        ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(fakeCookies, null);
         assertThat(response.getResources(), is(empty()));
     }
 
@@ -89,7 +90,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Result-Count", "100");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(fakeCookies, null);
         assertThat(response.getResultCount(), is(100));
     }
 
@@ -100,7 +101,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Total-Count", "1000");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(fakeCookies, null);
         assertThat(response.getTotalCount(), is(1000));
     }
 
@@ -111,7 +112,7 @@ public class RepositoryRestApiTest {
                 .addHeader("Start-Index", "5");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(fakeCookies, null);
         assertThat(response.getStartIndex(), is(5));
     }
 
@@ -122,14 +123,14 @@ public class RepositoryRestApiTest {
                 .addHeader("Next-Offset", "10");
         mWebMockRule.enqueue(mockResponse);
 
-        ResourceSearchResult response = restApiUnderTest.searchResources("cookie", null);
+        ResourceSearchResult response = restApiUnderTest.searchResources(fakeCookies, null);
         assertThat(response.getNextOffset(), is(10));
     }
 
     @Test
-    public void searchResourcesShouldNotAcceptNullToken() throws Exception {
+    public void searchResourcesShouldNotAcceptNullCookies() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request token should not be null");
+        mExpectedException.expectMessage("Request cookies should not be null");
 
         restApiUnderTest.searchResources(null, null);
     }
@@ -139,13 +140,13 @@ public class RepositoryRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
 
-        restApiUnderTest.requestReportResource("cookie", null);
+        restApiUnderTest.requestReportResource(fakeCookies, null);
     }
 
     @Test
-    public void requestForReportResourceShouldNotAcceptNullToken() throws Exception {
+    public void requestForReportResourceShouldNotAcceptNullCookies() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request token should not be null");
+        mExpectedException.expectMessage("Request cookies should not be null");
 
         restApiUnderTest.requestReportResource(null, "/uri");
     }
@@ -155,13 +156,13 @@ public class RepositoryRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Folder uri should not be null");
 
-        restApiUnderTest.requestFolderResource("cookie", null);
+        restApiUnderTest.requestFolderResource(fakeCookies, null);
     }
 
     @Test
-    public void requestForFolderResourceShouldNotAcceptNullToken() throws Exception {
+    public void requestForFolderResourceShouldNotAcceptNullCookies() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request token should not be null");
+        mExpectedException.expectMessage("Request cookies should not be null");
 
         restApiUnderTest.requestFolderResource(null, "/my/uri");
     }
@@ -172,7 +173,7 @@ public class RepositoryRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.searchResources("cookie", null);
+        restApiUnderTest.searchResources(fakeCookies, null);
     }
 
     @Test
@@ -181,7 +182,7 @@ public class RepositoryRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.requestReportResource("cookie", "any_id");
+        restApiUnderTest.requestReportResource(fakeCookies, "any_id");
     }
 
     @Test
@@ -190,7 +191,7 @@ public class RepositoryRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.requestFolderResource("cookie", "any_id");
+        restApiUnderTest.requestFolderResource(fakeCookies, "any_id");
     }
 
     @Test
@@ -207,7 +208,7 @@ public class RepositoryRestApiTest {
         types.add("dashboard");
         params.put("type", types);
 
-        restApiUnderTest.searchResources("cookie", params);
+        restApiUnderTest.searchResources(fakeCookies, params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources?folderUri=/&type=reportUnit&type=dashboard"));
@@ -220,34 +221,34 @@ public class RepositoryRestApiTest {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("limit", 100);
         params.put("offset", 100);
-        restApiUnderTest.searchResources("cookie", params);
+        restApiUnderTest.searchResources(fakeCookies, params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources?limit=100&offset=100"));
-        assertThat(request.getHeader("Cookie"), is("cookie"));
+        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
     public void shouldRequestReportResources() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
-        restApiUnderTest.requestReportResource("cookie", "/my/uri");
+        restApiUnderTest.requestReportResource(fakeCookies, "/my/uri");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
         assertThat(request.getHeader("Accept"), is("application/repository.reportUnit+json"));
-        assertThat(request.getHeader("Cookie"), is("cookie"));
+        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
     public void shouldRequestFolderResource() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
-        restApiUnderTest.requestFolderResource("cookie", "/my/uri");
+        restApiUnderTest.requestFolderResource(fakeCookies, "/my/uri");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
         assertThat(request.getHeader("Accept"), is("application/repository.folder+json"));
-        assertThat(request.getHeader("Cookie"), is("cookie"));
+        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 }

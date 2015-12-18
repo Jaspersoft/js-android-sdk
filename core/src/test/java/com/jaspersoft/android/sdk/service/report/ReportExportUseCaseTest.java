@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
@@ -58,6 +59,8 @@ public class ReportExportUseCaseTest {
     InfoCacheManager mCacheManager;
     @Mock
     ServerInfo mServerInfo;
+    
+    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     private static final RunExportCriteria EXPORT_HTML_PAGE_1 = RunExportCriteria.builder()
             .format(ExecutionCriteria.Format.HTML)
@@ -73,7 +76,7 @@ public class ReportExportUseCaseTest {
         when(mCacheManager.getInfo()).thenReturn(mServerInfo);
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v6);
 
-        FakeCallExecutor callExecutor = new FakeCallExecutor("cookie");
+        FakeCallExecutor callExecutor = new FakeCallExecutor(fakeCookies);
         useCase = new ReportExportUseCase(mExportApi, callExecutor, mCacheManager, mExecutionOptionsMapper);
     }
 
@@ -81,7 +84,7 @@ public class ReportExportUseCaseTest {
     public void testRequestExportOutputOnServer5_5() throws Exception {
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_5);
         useCase.requestExportOutput(EXPORT_HTML_PAGE_1, EXEC_ID, EXPORT_ID);
-        verify(mExportApi).requestExportOutput(eq("cookie"), eq(EXEC_ID), eq(LEGACY_EXPORT_ID));
+        verify(mExportApi).requestExportOutput(eq(fakeCookies), eq(EXEC_ID), eq(LEGACY_EXPORT_ID));
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
     }
@@ -90,7 +93,7 @@ public class ReportExportUseCaseTest {
     public void testRequestExportOutputOnServer5_6() throws Exception {
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_6);
         useCase.requestExportOutput(EXPORT_HTML_PAGE_1, EXEC_ID, EXPORT_ID);
-        verify(mExportApi).requestExportOutput(eq("cookie"), eq(EXEC_ID), eq(EXPORT_ID));
+        verify(mExportApi).requestExportOutput(eq(fakeCookies), eq(EXEC_ID), eq(EXPORT_ID));
         verify(mCacheManager).getInfo();
     }
 
@@ -100,12 +103,12 @@ public class ReportExportUseCaseTest {
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
         verify(mExecutionOptionsMapper).transformExportOptions(EXPORT_HTML_PAGE_1, ServerVersion.v6);
-        verify(mExportApi).runExportExecution(eq("cookie"), eq(EXEC_ID), any(ExecutionRequestOptions.class));
+        verify(mExportApi).runExportExecution(eq(fakeCookies), eq(EXEC_ID), any(ExecutionRequestOptions.class));
     }
 
     @Test
     public void testCheckExportExecutionStatusOnServer5_5() throws Exception {
-        when(mExportApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(cancelledStatus());
+        when(mExportApi.checkExportExecutionStatus(any(Cookies.class), anyString(), anyString())).thenReturn(cancelledStatus());
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_5);
 
         ExecutionStatus execStatus = useCase.checkExportExecutionStatus(EXEC_ID, EXPORT_ID);
@@ -117,13 +120,13 @@ public class ReportExportUseCaseTest {
 
     @Test
     public void testCheckExportExecutionStatusOnServer5_6() throws Exception {
-        when(mExportApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(cancelledStatus());
+        when(mExportApi.checkExportExecutionStatus(any(Cookies.class), anyString(), anyString())).thenReturn(cancelledStatus());
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_6);
 
         useCase.checkExportExecutionStatus(EXEC_ID, EXPORT_ID);
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
-        verify(mExportApi).checkExportExecutionStatus(eq("cookie"), eq(EXEC_ID), eq(EXPORT_ID));
+        verify(mExportApi).checkExportExecutionStatus(eq(fakeCookies), eq(EXEC_ID), eq(EXPORT_ID));
     }
 
     @Test
@@ -131,7 +134,7 @@ public class ReportExportUseCaseTest {
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_5);
 
         useCase.requestExportAttachmentOutput(EXPORT_HTML_PAGE_1, EXEC_ID, EXPORT_ID, "nay");
-        verify(mExportApi).requestExportAttachment(eq("cookie"), eq(EXEC_ID), eq(LEGACY_EXPORT_ID), eq("nay"));
+        verify(mExportApi).requestExportAttachment(eq(fakeCookies), eq(EXEC_ID), eq(LEGACY_EXPORT_ID), eq("nay"));
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
     }
@@ -141,7 +144,7 @@ public class ReportExportUseCaseTest {
         when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_6);
 
         useCase.requestExportAttachmentOutput(EXPORT_HTML_PAGE_1, EXEC_ID, EXPORT_ID, "nay");
-        verify(mExportApi).requestExportAttachment(eq("cookie"), eq(EXEC_ID), eq(EXPORT_ID), eq("nay"));
+        verify(mExportApi).requestExportAttachment(eq(fakeCookies), eq(EXEC_ID), eq(EXPORT_ID), eq("nay"));
         verify(mCacheManager).getInfo();
         verify(mServerInfo).getVersion();
     }

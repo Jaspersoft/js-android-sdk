@@ -29,24 +29,16 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollection;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import retrofit.Call;
-import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Path;
-import retrofit.http.Query;
 
 /**
  * @author Tom Koptel
@@ -61,43 +53,43 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NotNull
     @Override
-    public Collection<InputControl> requestInputControls(@Nullable String token,
+    public Collection<InputControl> requestInputControls(@Nullable Cookies cookies,
                                                          @Nullable String reportUri,
                                                          boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
         String state = (excludeState ? "state" : null);
-        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state, token);
+        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state, cookies.toString());
         InputControlCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String token,
+    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable Cookies cookies,
                                                                            @Nullable String reportUri,
                                                                            boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData, token);
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData, cookies.toString());
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsStates(@Nullable String token,
+    public Collection<InputControlState> requestInputControlsStates(@Nullable Cookies cookies,
                                                                     @Nullable String reportUri,
                                                                     @Nullable Map<String, Set<String>> controlsValues,
                                                                     boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
         String ids = Utils.joinString(";", controlsValues.keySet());
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData, token);
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData, cookies.toString());
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }

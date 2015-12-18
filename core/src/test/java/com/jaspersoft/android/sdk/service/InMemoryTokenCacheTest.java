@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,8 +44,9 @@ public class InMemoryTokenCacheTest {
 
     @Test
     public void testCache() throws Exception {
-        cache.put("http://localhost", "token");
-        assertThat(cache.get("http://localhost"), is("token"));
+        Cookies cookies = Cookies.parse("key;name");
+        cache.put("http://localhost", cookies);
+        assertThat(cache.get("http://localhost"), is(cookies));
         cache.remove("http://localhost");
         assertThat(cache.get("http://localhost"), is(nullValue()));
     }

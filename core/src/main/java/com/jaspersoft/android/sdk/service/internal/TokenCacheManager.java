@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.Session;
@@ -65,16 +66,16 @@ public class TokenCacheManager {
     }
 
     @NotNull
-    public String loadToken() throws IOException, HttpException {
-        String token = mTokenCache.get(mBaseUrl);
-        if (token != null) {
-            return token;
+    public Cookies loadToken() throws IOException, HttpException {
+        Cookies cookies = mTokenCache.get(mBaseUrl);
+        if (cookies != null) {
+            return cookies;
         }
 
         try {
-            token = mAuthService.authenticate(mCredentials);
-            mTokenCache.put(mBaseUrl, token);
-            return token;
+            cookies = mAuthService.authenticate(mCredentials);
+            mTokenCache.put(mBaseUrl, cookies);
+            return cookies;
         } catch (ServiceException e) {
             if (e.getCause() instanceof HttpException) {
                 throw (HttpException) e.getCause();

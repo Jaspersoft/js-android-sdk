@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api.utils;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 public final class DummyTokenProvider {
 
     private final JrsMetadata mJrsMetadata;
-    private String mToken;
+    private Cookies mToken;
 
     public DummyTokenProvider(JrsMetadata jrsMetadata) {
         mJrsMetadata = jrsMetadata;
@@ -46,7 +47,7 @@ public final class DummyTokenProvider {
     }
 
     @NotNull
-    public String provideToken() throws Exception {
+    public Cookies provideCookies() throws Exception {
         if (mToken == null) {
             AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
                     .baseUrl(mJrsMetadata.getServerUrl())
@@ -57,7 +58,7 @@ public final class DummyTokenProvider {
         return mToken;
     }
 
-    public String token() throws Exception {
-        return provideToken();
+    public Cookies token() throws Exception {
+        return provideCookies();
     }
 }

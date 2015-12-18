@@ -54,59 +54,59 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor runReportExecution(@Nullable String token,
+    public ReportExecutionDescriptor runReportExecution(@Nullable Cookies cookies,
                                                         @Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions, token);
+        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String token,
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable Cookies cookies,
                                                                    @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId, token);
+        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ExecutionStatus requestReportExecutionStatus(@Nullable String token,
+    public ExecutionStatus requestReportExecutionStatus(@Nullable Cookies cookies,
                                                         @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId, token);
+        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @Override
-    public boolean cancelReportExecution(@Nullable String token,
+    public boolean cancelReportExecution(@Nullable Cookies cookies,
                                          @Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus(), token);
+        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus(), cookies.toString());
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status != 204;
     }
 
     @Override
-    public boolean updateReportExecution(@Nullable String token,
+    public boolean updateReportExecution(@Nullable Cookies cookies,
                                          @Nullable String executionId,
                                          @Nullable List<ReportParameter> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Object> call = mRestApi.updateReportExecution(executionId, params, token);
+        Call<Object> call = mRestApi.updateReportExecution(executionId, params, cookies.toString());
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status == 204;
@@ -114,13 +114,13 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable String token,
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable Cookies cookies,
                                                                @Nullable Map<String, String> params) throws IOException, HttpException {
         Utils.checkNotNull(params, "Search params should not be null");
         Utils.checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params, token);
+        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params, cookies.toString());
         ReportExecutionSearchResponse body = CallWrapper.wrap(call).body();
         if (body == null) {
             return ReportExecutionSearchResponse.empty();

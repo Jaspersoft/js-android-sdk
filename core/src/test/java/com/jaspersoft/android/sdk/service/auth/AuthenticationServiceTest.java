@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,11 +27,12 @@ public class AuthenticationServiceTest {
 
     @Rule
     public ExpectedException mExpectedException = ExpectedException.none();
+    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     @Before
     public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mCredentials.applyPolicy(any(AuthPolicy.class))).thenReturn("cookie");
+        when(mCredentials.applyPolicy(any(AuthPolicy.class))).thenReturn(fakeCookies);
         authenticatorUnderTest = new AuthenticationService(mAuthPolicy);
     }
 

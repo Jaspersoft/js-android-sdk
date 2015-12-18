@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 
 import java.io.IOException;
@@ -33,5 +34,5 @@ import java.io.IOException;
  * @since 2.0
  */
 public interface Call<T> {
-    T perform(String token) throws IOException, HttpException;
+    T perform(Cookies cookies) throws IOException, HttpException;
 }

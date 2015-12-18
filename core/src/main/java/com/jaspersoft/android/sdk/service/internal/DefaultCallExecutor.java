@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class DefaultCallExecutor implements CallExecutor {
     @NotNull
     public <T> T execute(Call<T> call) throws ServiceException {
         try {
-            String token = mTokenCacheManager.loadToken();
+            Cookies token = mTokenCacheManager.loadToken();
             return call.perform(token);
         } catch (IOException e) {
             throw mServiceExceptionMapper.transform(e);
@@ -57,7 +58,7 @@ public class DefaultCallExecutor implements CallExecutor {
                 mTokenCacheManager.invalidateToken();
 
                 try {
-                    String token = mTokenCacheManager.loadToken();
+                    Cookies token = mTokenCacheManager.loadToken();
                     return call.perform(token);
                 } catch (IOException e1) {
                     throw mServiceExceptionMapper.transform(e1);

@@ -42,27 +42,27 @@ import java.util.Map;
 public interface ReportExecutionRestApi {
 
     @NotNull
-    ReportExecutionDescriptor runReportExecution(@NotNull String token,
+    ReportExecutionDescriptor runReportExecution(@NotNull Cookies cookies,
                                                  @NotNull ReportExecutionRequestOptions executionOptions) throws HttpException, IOException;
 
     @NotNull
-    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String token,
+    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull Cookies cookies,
                                                             @NotNull String executionId) throws HttpException, IOException;
 
     @NotNull
-    ExecutionStatus requestReportExecutionStatus(@NotNull String token,
+    ExecutionStatus requestReportExecutionStatus(@NotNull Cookies cookies,
                                                  @NotNull String executionId) throws HttpException, IOException;
 
-    boolean cancelReportExecution(@NotNull String token,
+    boolean cancelReportExecution(@NotNull Cookies cookies,
                                   @NotNull String executionId) throws HttpException, IOException;
 
-    boolean updateReportExecution(@NotNull String token,
+    boolean updateReportExecution(@NotNull Cookies cookies,
                                   @NotNull String executionId,
                                   @NotNull List<ReportParameter> params) throws HttpException, IOException;
 
      // TODO: API is broken requires investigation before release
     @NotNull
-    ReportExecutionSearchResponse searchReportExecution(@NotNull String token, Map<String, String> params) throws HttpException, IOException;
+    ReportExecutionSearchResponse searchReportExecution(@NotNull Cookies cookies, Map<String, String> params) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override

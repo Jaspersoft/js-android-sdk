@@ -41,15 +41,15 @@ import java.util.Map;
  */
 public interface RepositoryRestApi {
     @NotNull
-    ResourceSearchResult searchResources(@NotNull String token,
+    ResourceSearchResult searchResources(@NotNull Cookies cookies,
                                          @Nullable Map<String, Object> searchParams) throws HttpException, IOException;
 
     @NotNull
-    ReportLookup requestReportResource(@NotNull String token,
+    ReportLookup requestReportResource(@NotNull Cookies cookies,
                                        @NotNull String resourceUri) throws HttpException, IOException;
 
     @NotNull
-    FolderLookup requestFolderResource(@NotNull String token,
+    FolderLookup requestFolderResource(@NotNull Cookies cookies,
                                        @NotNull String resourceUri) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {

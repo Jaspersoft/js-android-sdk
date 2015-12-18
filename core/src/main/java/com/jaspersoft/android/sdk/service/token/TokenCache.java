@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.token;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,9 +34,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface TokenCache {
     @Nullable
-    String get(@NotNull String key);
+    Cookies get(@NotNull String host);
 
-    void put(@NotNull String key, @NotNull String token);
+    void put(@NotNull String host, @NotNull Cookies cookies);
 
-    void remove(@NotNull String key);
+    void remove(@NotNull String host);
 }

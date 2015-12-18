@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public interface AuthenticationRestApi {
     @NotNull
-    String authenticate(@NotNull String username,
+    Cookies authenticate(@NotNull String username,
                         @NotNull String password,
                         @Nullable String organization,
                         @Nullable Map<String, String> params) throws HttpException, IOException;

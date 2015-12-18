@@ -70,11 +70,11 @@ public class AuthenticationRestApiTest {
     @Test
     public void shouldReturnResponseForSuccessRedirect() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create302()
-                .addHeader("Set-Cookie", "cookie1")
+                .addHeader("Set-Cookie", "cookie1=12")
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        String response = mRestApi.authenticate("joeuser", "joeuser", null, null);
+        Cookies response = mRestApi.authenticate("joeuser", "joeuser", null, null);
         assertThat(response, is(notNullValue()));
     }
 
@@ -103,7 +103,7 @@ public class AuthenticationRestApiTest {
     public void shouldReturnEncryptionKeyIfApiAvailable() throws Exception {
         MockResponse anonymousCookie = MockResponseFactory.create200()
                 .setBody("6.1")
-                .addHeader("Set-Cookie", "cookie1");
+                .addHeader("Set-Cookie", "cookie1=12");
         MockResponse encryptionKey = MockResponseFactory.create200()
                 .setBody(mKey.asString());
         mWebMockRule.enqueue(anonymousCookie);
@@ -117,7 +117,7 @@ public class AuthenticationRestApiTest {
     public void shouldReturnEmptyEncryptionKeyIfApiNotAvailable() throws Exception {
         MockResponse anonymousCookie = MockResponseFactory.create200()
                 .setBody("6.1")
-                .addHeader("Set-Cookie", "cookie1");
+                .addHeader("Set-Cookie", "cookie1=12");
 
         String malformedJson = "{Error: Key generation is off}";
         MockResponse encryptionKey = MockResponseFactory.create200()

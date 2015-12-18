@@ -26,23 +26,17 @@ package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-
+import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * TODO refactor following module in easy testable units
@@ -63,7 +57,7 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
 
     @NotNull
     @Override
-    public String authenticate(@NotNull final String username,
+    public Cookies authenticate(@NotNull final String username,
                                @NotNull final String password,
                                final String organization,
                                final Map<String, String> params) throws HttpException, IOException {
@@ -99,12 +93,12 @@ final class AuthenticationRestApiImpl implements AuthenticationRestApi {
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
         RestApi api = mRestAdapterBuilder.build().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
-        String anonymousToken = CookieExtractor.extract(response.raw());
+        Cookies anonymousCookies = CookieExtractor.extract(response.raw());
 
         RestApi modifiedApi = mRestAdapterBuilder.build().create(RestApi.class);
 
         try {
-            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata(anonymousToken)).body();
+            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata(anonymousCookies.toString())).body();
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when security option is disabled on JRS side.
