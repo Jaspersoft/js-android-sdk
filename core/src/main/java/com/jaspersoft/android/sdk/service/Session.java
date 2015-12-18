@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;

@@ -22,11 +22,33 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationService {
+class AuthPolicyImpl extends AuthPolicy {
+
+    private SpringAuthService springAuthService;
+
+    protected AuthPolicyImpl(AnonymousClient anonymousClient) {
+        super(anonymousClient);
+    }
+
+    @Override
+    Cookies applyCredentials(SpringCredentials credentials) throws IOException, HttpException {
+        if (springAuthService == null) {
+            springAuthService = createSpringAuthService();
+        }
+        return springAuthService.authenticate(credentials);
+    }
+
+    private SpringAuthService createSpringAuthService() {
+        AuthenticationRestApi restApi = new AuthenticationRestApi(mAnonymousClient);
+        JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
+        return new SpringAuthService(restApi, encryptionAlgorithm);
+    }
 }

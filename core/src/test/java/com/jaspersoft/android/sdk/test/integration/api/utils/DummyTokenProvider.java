@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.test.integration.api.utils;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 
 import com.jaspersoft.android.sdk.network.Cookies;
 import org.jetbrains.annotations.NotNull;
@@ -48,14 +47,7 @@ public final class DummyTokenProvider {
 
     @NotNull
     public Cookies provideCookies() throws Exception {
-        if (mToken == null) {
-            AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                    .baseUrl(mJrsMetadata.getServerUrl())
-                    .build();
-            mToken = restApi
-                    .authenticate(mJrsMetadata.getUsername(), mJrsMetadata.getPassword(), mJrsMetadata.getOrganization(), null);
-        }
-        return mToken;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Cookies token() throws Exception {

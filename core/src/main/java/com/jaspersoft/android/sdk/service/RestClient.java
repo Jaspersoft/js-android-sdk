@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.service.auth.Credentials;
+import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
 import com.jaspersoft.android.sdk.service.info.InfoCache;
 
@@ -41,7 +41,6 @@ public final class RestClient {
     private final long mPollTimeout;
     private final InfoCache mInfoCache;
 
-    private AnonymousSession mAnonymousSession;
 
     private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, long pollTimeout, InfoCache infoCache) {
         mServerUrl = serverUrl;
@@ -51,16 +50,6 @@ public final class RestClient {
         mInfoCache = infoCache;
     }
 
-    public Session.Builder newSession(Credentials credentials) {
-        return new Session.Builder(this, credentials);
-    }
-
-    public AnonymousSession getAnonymousSession() {
-        if (mAnonymousSession == null) {
-            mAnonymousSession = new AnonymousSession(this);
-        }
-        return mAnonymousSession;
-    }
 
     public String getServerUrl() {
         return mServerUrl;

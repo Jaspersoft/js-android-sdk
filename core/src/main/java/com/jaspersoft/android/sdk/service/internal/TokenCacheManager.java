@@ -28,10 +28,6 @@ import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.Session;
-import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
-import com.jaspersoft.android.sdk.service.auth.Credentials;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.token.TokenCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -41,53 +37,15 @@ import java.io.IOException;
  * @since 2.0
  */
 public class TokenCacheManager {
-    private final AuthenticationService mAuthService;
-    private final Credentials mCredentials;
-    private final TokenCache mTokenCache;
-    private final String mBaseUrl;
 
-    TokenCacheManager(AuthenticationService authService,
-                      Credentials credentials,
-                      TokenCache tokenCache,
-                      String baseUrl) {
-        mAuthService = authService;
-        mCredentials = credentials;
-        mTokenCache = tokenCache;
-        mBaseUrl = baseUrl;
-    }
 
     @NotNull
     public static TokenCacheManager create(RestClient restClient, Session session) {
-        AuthenticationService service = session.authApi();
-        Credentials credentials = session.getCredentials();
-        TokenCache cache = session.getTokenCache();
-        String baseUrl = restClient.getServerUrl();
-        return new TokenCacheManager(service, credentials, cache, baseUrl);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @NotNull
     public Cookies loadToken() throws IOException, HttpException {
-        Cookies cookies = mTokenCache.get(mBaseUrl);
-        if (cookies != null) {
-            return cookies;
-        }
-
-        try {
-            cookies = mAuthService.authenticate(mCredentials);
-            mTokenCache.put(mBaseUrl, cookies);
-            return cookies;
-        } catch (ServiceException e) {
-            if (e.getCause() instanceof HttpException) {
-                throw (HttpException) e.getCause();
-            }
-            if (e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
-            }
-            throw new RuntimeException("Failed to load token", e.getCause());
-        }
-    }
-
-    public void invalidateToken() {
-        mTokenCache.remove(mBaseUrl);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

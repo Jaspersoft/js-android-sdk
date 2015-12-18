@@ -22,11 +22,20 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
+
+import com.squareup.okhttp.OkHttpClient;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationService {
+public abstract class AuthorizedClient extends AnonymousClient {
+    AuthorizedClient(String baseUrl, OkHttpClient client) {
+        super(baseUrl, client);
+    }
+
+    public abstract void authorize() throws IOException, HttpException;
 }

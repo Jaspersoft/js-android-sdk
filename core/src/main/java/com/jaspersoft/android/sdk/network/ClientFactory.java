@@ -22,11 +22,39 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
+
+import com.squareup.okhttp.OkHttpClient;
+import org.jetbrains.annotations.TestOnly;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationService {
+public abstract class ClientFactory<Client> {
+    private long connectTimeout = 10000;
+    private long readTimeout = 10000;
+
+    final String mBaseUrl;
+    final OkHttpClient mOkHttpClient;
+
+    @TestOnly
+    ClientFactory(String baseUrl, OkHttpClient okHttpClient) {
+        mBaseUrl = baseUrl;
+        mOkHttpClient = okHttpClient;
+    }
+
+    public ClientFactory withConnectionTimeOut(long timeout, TimeUnit unit) {
+        connectTimeout = unit.toMillis(timeout);
+        return this;
+    }
+
+    public ClientFactory withReadTimeout(long timeout, TimeUnit unit) {
+        readTimeout = unit.toMillis(timeout);
+        return this;
+    }
+
+    public abstract Client create();
 }

@@ -1,6 +1,5 @@
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,21 +8,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Tom Koptel
  */
-public class AuthenticationServiceTest {
+public class AuthenticatorTest {
 
     @Mock
     AuthPolicy mAuthPolicy;
     @Mock
     Credentials mCredentials;
 
-    private AuthenticationService authenticatorUnderTest;
+    private Authenticator authenticatorUnderTest;
 
     @Rule
     public ExpectedException mExpectedException = ExpectedException.none();
@@ -33,7 +30,7 @@ public class AuthenticationServiceTest {
     public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(mCredentials.applyPolicy(any(AuthPolicy.class))).thenReturn(fakeCookies);
-        authenticatorUnderTest = new AuthenticationService(mAuthPolicy);
+        authenticatorUnderTest = new Authenticator(mAuthPolicy);
     }
 
     @Test

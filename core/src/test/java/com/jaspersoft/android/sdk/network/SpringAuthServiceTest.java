@@ -22,13 +22,9 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.Cookies;
-import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,10 +40,7 @@ import java.util.TimeZone;
 
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Tom Koptel
@@ -84,8 +77,8 @@ public class SpringAuthServiceTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         objectUnderTest = new SpringAuthService(
-                mAlgorithm,
-                mRestApi
+                mRestApi,
+                mAlgorithm
         );
 
         credentials = SpringCredentials.builder()
@@ -98,7 +91,7 @@ public class SpringAuthServiceTest {
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
-        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn(fakeCookies);
+        when(mRestApi.springAuth(anyString(), anyString(), anyString(), anyMap())).thenReturn(fakeCookies);
     }
 
     @Test
@@ -110,7 +103,7 @@ public class SpringAuthServiceTest {
 
         objectUnderTest.authenticate(credentials);
 
-        verify(mRestApi, times(1)).authenticate("user", "hashed password", "organization", sOptionals);
+        verify(mRestApi, times(1)).springAuth("user", "hashed password", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
         verify(mAlgorithm, times(1)).encrypt("m", "e", "1234");
     }
@@ -121,7 +114,7 @@ public class SpringAuthServiceTest {
 
         objectUnderTest.authenticate(credentials);
 
-        verify(mRestApi, times(1)).authenticate("user", "1234", "organization", sOptionals);
+        verify(mRestApi, times(1)).springAuth("user", "1234", "organization", sOptionals);
         verify(mRestApi, times(1)).requestEncryptionMetadata();
         verifyZeroInteractions(mAlgorithm);
     }

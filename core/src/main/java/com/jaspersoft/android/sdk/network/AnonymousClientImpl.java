@@ -22,11 +22,16 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
+
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationService {
+class AnonymousClientImpl extends AnonymousClient {
+    AnonymousClientImpl(String baseUrl, OkHttpClient okHttpClient) {
+        super(baseUrl, okHttpClient);
+    }
 }

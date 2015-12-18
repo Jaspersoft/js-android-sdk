@@ -31,7 +31,6 @@ import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,9 +61,9 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        mRestApi = new AuthenticationRestApi.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .build();
+        Server server = Server.create(mWebMockRule.getRootUrl());
+        AnonymousClient client = server.newClient().create();
+        mRestApi = new AuthenticationRestApi(client);
     }
 
     @Test
@@ -74,7 +73,7 @@ public class AuthenticationRestApiTest {
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        Cookies response = mRestApi.authenticate("joeuser", "joeuser", null, null);
+        Cookies response = mRestApi.springAuth("joeuser", "joeuser", null, null);
         assertThat(response, is(notNullValue()));
     }
 
@@ -87,7 +86,7 @@ public class AuthenticationRestApiTest {
                 .addHeader("Set-Cookie", "cookie1");
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        mRestApi.springAuth("joeuser", "joeuser", "null", null);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class AuthenticationRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        mRestApi.springAuth("joeuser", "joeuser", "null", null);
     }
 
     @Test

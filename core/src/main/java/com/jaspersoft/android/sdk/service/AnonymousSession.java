@@ -35,26 +35,17 @@ import org.jetbrains.annotations.NotNull;
 public class AnonymousSession {
     protected final RestClient mClient;
 
-    private AuthenticationService mAuthenticator;
-    private ServerInfoService mInfoService;
-
     protected AnonymousSession(RestClient client) {
         mClient = client;
     }
 
     @NotNull
     public final AuthenticationService authApi() {
-        if (mAuthenticator == null) {
-            mAuthenticator = AuthenticationService.create(mClient);
-        }
-        return mAuthenticator;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @NotNull
     public final ServerInfoService infoApi() {
-        if (mInfoService == null) {
-            mInfoService = ServerInfoService.create(mClient);
-        }
-        return mInfoService;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

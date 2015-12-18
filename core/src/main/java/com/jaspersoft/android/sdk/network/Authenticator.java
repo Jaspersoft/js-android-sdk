@@ -22,11 +22,28 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationService {
+class Authenticator {
+    private final AuthPolicy mPolicy;
+
+    Authenticator(AuthPolicy policy) {
+        mPolicy = policy;
+    }
+
+    @NotNull
+    public Cookies authenticate(@NotNull Credentials credentials) throws HttpException, IOException {
+        checkNotNull(credentials, "Credentials should not be null");
+        return credentials.applyPolicy(mPolicy);
+    }
 }
