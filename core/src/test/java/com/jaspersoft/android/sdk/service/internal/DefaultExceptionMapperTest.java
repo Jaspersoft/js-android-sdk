@@ -51,21 +51,24 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ErrorDescriptor.class})
-public class ServiceExceptionMapperTest {
+public class DefaultExceptionMapperTest {
     @Mock
     HttpException mHttpException;
     @Mock
     ErrorDescriptor mDescriptor;
 
+    private DefaultExceptionMapper defaultExceptionMapper;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        defaultExceptionMapper = new DefaultExceptionMapper();
     }
 
     @Test
     public void testTransformIOException() throws Exception {
         IOException ioException = new IOException("Socket timed out", new SocketTimeoutException());
-        ServiceException serviceException = ServiceExceptionMapper.transform(ioException);
+        ServiceException serviceException = defaultExceptionMapper.transform(ioException);
         assertThat(serviceException.code(), is(StatusCodes.NETWORK_ERROR));
         assertThat(serviceException.getMessage(), is("Failed to perform network request. Check network!"));
         assertThat(serviceException.getCause(), is(instanceOf(IOException.class)));
@@ -76,7 +79,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(500);
         when(mHttpException.getDescriptor()).thenReturn(null);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.INTERNAL_ERROR));
         assertThat(serviceException.getMessage(), is("Server encountered unexpected error"));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
@@ -87,7 +90,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(404);
         when(mHttpException.getDescriptor()).thenReturn(null);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.CLIENT_ERROR));
         assertThat(serviceException.getMessage(), is("Service exist but requested entity not found"));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
@@ -98,7 +101,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(400);
         when(mHttpException.getDescriptor()).thenReturn(null);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.CLIENT_ERROR));
         assertThat(serviceException.getMessage(), is("Some parameters in request not valid"));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
@@ -109,7 +112,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(403);
         when(mHttpException.getDescriptor()).thenReturn(null);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.PERMISSION_DENIED_ERROR));
         assertThat(serviceException.getMessage(), is("User has no access to resource"));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
@@ -120,7 +123,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(401);
         when(mHttpException.getDescriptor()).thenReturn(null);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.AUTHORIZATION_ERROR));
         assertThat(serviceException.getMessage(), is("User is not authorized"));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
@@ -132,7 +135,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(403);
         when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.PERMISSION_DENIED_ERROR));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
     }
@@ -143,7 +146,7 @@ public class ServiceExceptionMapperTest {
         when(mHttpException.code()).thenReturn(403);
         when(mHttpException.getDescriptor()).thenThrow(new IOException("Failed IO"));
 
-        ServiceException serviceException = ServiceExceptionMapper.transform(mHttpException);
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.NETWORK_ERROR));
         assertThat(serviceException.getCause(), is(instanceOf(IOException.class)));
     }

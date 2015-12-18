@@ -29,21 +29,25 @@ package com.jaspersoft.android.sdk.service.exception;
  * @since 2.0
  */
 public final class StatusCodes {
-    public static final int UNDEFINED_ERROR = 1;
-    public static final int NETWORK_ERROR = 2;
-    public static final int CLIENT_ERROR = 3;
-    public static final int INTERNAL_ERROR = 4;
-    public static final int PERMISSION_DENIED_ERROR = 5;
-    public static final int AUTHORIZATION_ERROR = 6;
+    public static final int UNDEFINED_ERROR = 100;
+    public static final int NETWORK_ERROR = 102;
+    public static final int CLIENT_ERROR = 103;
+    public static final int INTERNAL_ERROR = 104;
+    public static final int PERMISSION_DENIED_ERROR = 105;
+    public static final int AUTHORIZATION_ERROR = 106;
 
     // EXPORT
-    public static final int EXPORT_PAGE_OUT_OF_RANGE = 100;
-    public static final int EXPORT_EXECUTION_CANCELLED = 101;
-    public static final int EXPORT_EXECUTION_FAILED = 102;
+    public static final int EXPORT_PAGE_OUT_OF_RANGE = 200;
+    public static final int EXPORT_EXECUTION_CANCELLED = 201;
+    public static final int EXPORT_EXECUTION_FAILED = 202;
 
     // REPORT
-    public static final int REPORT_EXECUTION_CANCELLED = 201;
-    public static final int REPORT_EXECUTION_FAILED = 202;
+    public static final int REPORT_EXECUTION_CANCELLED = 301;
+    public static final int REPORT_EXECUTION_FAILED = 302;
+    public static final int REPORT_EXECUTION_INVALID = 303;
+
+    // RESOURCE
+    public static final int RESOURCE_NOT_FOUND = 400;
 
     private StatusCodes() {}
 }

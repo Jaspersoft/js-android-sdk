@@ -2,8 +2,8 @@ package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -24,19 +24,22 @@ public final class SpringCredentials extends Credentials {
     private final String mOrganization;
     private final Locale mLocale;
     private final TimeZone mTimeZone;
+    private final ServiceExceptionMapper mServiceExceptionMapper;
 
     @TestOnly
     SpringCredentials(
             @NotNull String username,
             @NotNull String password,
-            @NotNull String organization,
+            @Nullable String organization,
             @NotNull Locale locale,
-            @NotNull TimeZone timeZone) {
+            @NotNull TimeZone timeZone,
+            @NotNull ServiceExceptionMapper serviceExceptionMapper) {
         mUsername = username;
         mPassword = password;
         mOrganization = organization;
         mLocale = locale;
         mTimeZone = timeZone;
+        mServiceExceptionMapper = serviceExceptionMapper;
     }
 
     public static Builder builder() {
@@ -73,9 +76,9 @@ public final class SpringCredentials extends Credentials {
         try {
             return policy.applyCredentials(this);
         } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         }
     }
 
@@ -156,12 +159,14 @@ public final class SpringCredentials extends Credentials {
         public SpringCredentials build() {
             ensureValidState();
             ensureDefaults();
+            ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
             return new SpringCredentials(
                     mUsername,
                     mPassword,
                     mOrganization,
                     mLocale,
-                    mTimeZone);
+                    mTimeZone,
+                    serviceExceptionMapper);
         }
 
         private void ensureDefaults() {

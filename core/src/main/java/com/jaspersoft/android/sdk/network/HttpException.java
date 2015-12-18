@@ -30,6 +30,7 @@ import com.google.gson.JsonParseException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.ResponseBody;
+import org.jetbrains.annotations.Nullable;
 import retrofit.Response;
 
 import java.io.IOException;
@@ -46,6 +47,8 @@ import java.io.InputStreamReader;
 public class HttpException extends Exception {
     private final int mCode;
     private final ResponseBody mBody;
+
+    private ErrorDescriptor mDescriptor;
 
     HttpException(String responseMessage, int code, ResponseBody responseBody) {
         super(responseMessage + " " + code);
@@ -65,7 +68,15 @@ public class HttpException extends Exception {
         return mCode;
     }
 
+    @Nullable
     public ErrorDescriptor getDescriptor() throws IOException {
+        if (mDescriptor == null) {
+            mDescriptor = parseErrorDescriptor();
+        }
+        return mDescriptor;
+    }
+
+    private ErrorDescriptor parseErrorDescriptor() throws IOException {
         Gson gson = GsonFactory.create();
         InputStream stream = mBody.byteStream();
         InputStreamReader reader = new InputStreamReader(stream);

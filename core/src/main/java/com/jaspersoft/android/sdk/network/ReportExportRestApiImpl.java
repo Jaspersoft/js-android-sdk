@@ -30,21 +30,14 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.squareup.okhttp.ResponseBody;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Path;
+import retrofit.http.*;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -132,22 +125,24 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
         Call<ExecutionStatus> checkReportExportStatus(@NotNull @Path("executionId") String executionId,
-                                                      @NotNull @Path("exportId") String exportId,
+                                                      @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                       @Header("Cookie") String cookie);
 
         /**
          * 'suppressContentDisposition' used due to security implications this header has
          */
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
         Call<ResponseBody> requestReportExportOutput(@NotNull @Path("executionId") String executionId,
-                                                     @NotNull @Path("exportId") String exportId,
+                                                     @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                      @Header("Cookie") String cookie);
 
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
         Call<ResponseBody> requestReportExportAttachmentOutput(@NotNull @Path("executionId") String executionId,
-                                                               @NotNull @Path("exportId") String exportId,
+                                                               @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                                @NotNull @Path("attachmentId") String attachmentId,
                                                                @Header("Cookie") String cookie);
     }

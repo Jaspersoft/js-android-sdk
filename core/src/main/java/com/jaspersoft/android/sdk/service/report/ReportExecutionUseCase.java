@@ -30,9 +30,12 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.internal.Call;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -42,25 +45,31 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportExecutionUseCase {
+class ReportExecutionUseCase {
     private final ReportExecutionRestApi mExecutionApi;
     private final CallExecutor mCallExecutor;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+    private final InfoCacheManager mCacheManager;
 
     ReportExecutionUseCase(ReportExecutionRestApi executionApi,
                            CallExecutor callExecutor,
+                           InfoCacheManager cacheManager,
                            ExecutionOptionsDataMapper executionOptionsMapper) {
         mExecutionApi = executionApi;
         mCallExecutor = callExecutor;
+        mCacheManager = cacheManager;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
     @NotNull
     public ReportExecutionDescriptor runReportExecution(final String reportUri, final RunReportCriteria criteria) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
         Call<ReportExecutionDescriptor> call = new Call<ReportExecutionDescriptor>() {
             @Override
             public ReportExecutionDescriptor perform(String token) throws IOException, HttpException {
-                ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
+                ReportExecutionRequestOptions options =
+                        mExecutionOptionsMapper.transformRunReportOptions(reportUri, version, criteria);
                 return mExecutionApi.runReportExecution(token, options);
             }
         };

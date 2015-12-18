@@ -38,14 +38,16 @@ public final class RestClient {
     private final String mServerUrl;
     private final long mReadTimeOut;
     private final long mConnectionTimeOut;
+    private final long mPollTimeout;
     private final InfoCache mInfoCache;
 
     private AnonymousSession mAnonymousSession;
 
-    private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, InfoCache infoCache) {
+    private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, long pollTimeout, InfoCache infoCache) {
         mServerUrl = serverUrl;
         mReadTimeOut = readTimeOut;
         mConnectionTimeOut = connectionTimeOut;
+        mPollTimeout = pollTimeout;
         mInfoCache = infoCache;
     }
 
@@ -72,6 +74,10 @@ public final class RestClient {
         return mConnectionTimeOut;
     }
 
+    public long getPollTimeout() {
+        return mPollTimeout;
+    }
+
     public InfoCache getInfoCache() {
         return mInfoCache;
     }
@@ -93,10 +99,16 @@ public final class RestClient {
         private final String mServerUrl;
         private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
         private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);
+        private long mPollTimeOut = TimeUnit.SECONDS.toMillis(1);
         private InfoCache mInfoCache;
 
         private ConditionalBuilder(String serverUrl) {
             mServerUrl = serverUrl;
+        }
+
+        public ConditionalBuilder pollTimeOut(int timeOut, TimeUnit unit) {
+            mPollTimeOut = unit.toMillis(timeOut);
+            return this;
         }
 
         public ConditionalBuilder readTimeOut(int timeOut, TimeUnit unit) {
@@ -118,7 +130,7 @@ public final class RestClient {
             if (mInfoCache == null) {
                 mInfoCache = new InMemoryInfoCache();
             }
-            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mInfoCache);
+            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mPollTimeOut, mInfoCache);
         }
     }
 }

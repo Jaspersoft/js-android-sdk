@@ -50,6 +50,18 @@ public class RunReportCriteria extends ExecutionCriteria {
     }
 
     @NotNull
+    public Builder newBuilder() {
+        return new Builder()
+                .freshData(mFreshData)
+                .interactive(mInteractive)
+                .saveSnapshot(mSaveSnapshot)
+                .format(mFormat)
+                .pages(mPages)
+                .params(mParams)
+                .attachmentPrefix(mAttachmentPrefix);
+    }
+
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
@@ -77,6 +89,14 @@ public class RunReportCriteria extends ExecutionCriteria {
             return this;
         }
 
+        /**
+         * Configuration for report interactiveness
+         *
+         * NOTICE: This flag ignored for JRS 5.6 where we are forcing disable state
+         *
+         * @param interactive weather report should be interactive or not
+         * @return builder instance
+         */
         public Builder interactive(boolean interactive) {
             this.interactive = interactive;
             return this;

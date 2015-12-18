@@ -28,7 +28,7 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.internal.Call;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 
 import java.io.IOException;
 
@@ -38,9 +38,11 @@ import java.io.IOException;
  */
 public final class FakeCallExecutor implements CallExecutor {
     private final String mToken;
+    private final DefaultExceptionMapper mExMapper;
 
     public FakeCallExecutor(String token) {
         mToken = token;
+        mExMapper = new DefaultExceptionMapper();
     }
 
     @Override
@@ -48,9 +50,9 @@ public final class FakeCallExecutor implements CallExecutor {
         try {
             return call.perform(mToken);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mExMapper.transform(e);
         } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mExMapper.transform(e);
         }
     }
 }
