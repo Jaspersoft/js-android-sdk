@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import retrofit.Retrofit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -50,9 +51,11 @@ public class ServerRestApiTest {
 
     @Before
     public void setup() {
-        objectUnderTest = new ServerRestApi.Builder()
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mWebMockRule.getRootUrl())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        objectUnderTest = new ServerRestApiImpl(retrofit);
     }
 
     @Test

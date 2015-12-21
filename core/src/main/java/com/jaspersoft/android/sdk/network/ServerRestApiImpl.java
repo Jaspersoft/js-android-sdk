@@ -39,82 +39,71 @@ import java.io.IOException;
  */
 final class ServerRestApiImpl implements ServerRestApi {
 
-    private final Client mClient;
+    private final RestApi mApi;
 
-    private RestApi mApi;
-
-    public ServerRestApiImpl(Client client) {
-        mClient = client;
+    public ServerRestApiImpl(Retrofit retrofit) {
+        mApi = retrofit.create(RestApi.class);
     }
 
     @NotNull
     @Override
     public ServerInfoData requestServerInfo() throws IOException, HttpException {
-        Call<ServerInfoData> call = getApi().requestServerInfo();
+        Call<ServerInfoData> call = mApi.requestServerInfo();
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
     public String requestEdition() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestEdition()).body();
+        return CallWrapper.wrap(mApi.requestEdition()).body();
     }
 
     @NotNull
     @Override
     public String requestVersion() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestVersion()).body();
+        return CallWrapper.wrap(mApi.requestVersion()).body();
     }
 
     @NotNull
     @Override
     public String requestBuild() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestBuild()).body();
+        return CallWrapper.wrap(mApi.requestBuild()).body();
     }
 
     @NotNull
     @Override
     public String requestFeatures() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestFeatures()).body();
+        return CallWrapper.wrap(mApi.requestFeatures()).body();
     }
 
     @NotNull
     @Override
     public String requestEditionName() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestEditionName()).body();
+        return CallWrapper.wrap(mApi.requestEditionName()).body();
     }
 
     @NotNull
     @Override
     public String requestLicenseType() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestLicenseType()).body();
+        return CallWrapper.wrap(mApi.requestLicenseType()).body();
     }
 
     @NotNull
     @Override
     public String requestExpiration() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestExpiration()).body();
+        return CallWrapper.wrap(mApi.requestExpiration()).body();
     }
 
     @NotNull
     @Override
     public String requestDateFormatPattern() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestDateFormatPattern()).body();
+        return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
     }
 
     @NotNull
     @Override
     public String requestDateTimeFormatPattern() throws IOException, HttpException {
-        return CallWrapper.wrap(getApi().requestDateTimeFormatPattern()).body();
-    }
-
-    private RestApi getApi() {
-        if (mApi == null) {
-            RetrofitFactory retrofitFactory = mClient.getRetrofitFactory();
-            Retrofit retrofit = retrofitFactory.newRetrofit().build();
-            return retrofit.create(RestApi.class);
-        }
-        return mApi;
+        return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
     }
 
     private interface RestApi {

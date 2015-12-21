@@ -24,14 +24,11 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,36 +45,35 @@ import static org.junit.Assert.assertThat;
 public class RepositoryRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
-    private RepositoryRestApi api;
+
+    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private RepositoryRestApi apiUnderTest;
 
     @Before
     public void setup() {
-        if (api == null) {
-            api = new RepositoryRestApi.Builder()
-                    .baseUrl(mMetadata.getServerUrl())
-                    .logger(TestLogger.get(this))
-                    .build();
+        if (apiUnderTest == null) {
+            AuthorizedClient client = mLazyClient.get();
+            apiUnderTest = client.repositoryApi();
         }
     }
 
     @Test
     public void shouldRequestListOfResources() throws Exception {
-        ResourceSearchResult resourceSearchResult = api.searchResources(mAuthenticator.token(), null);
+        ResourceSearchResult resourceSearchResult = apiUnderTest.searchResources(null);
         assertThat(resourceSearchResult, is(notNullValue()));
         assertThat(resourceSearchResult.getResources(), is(not(empty())));
     }
 
     @Test
     public void shouldRequestReport() throws Exception {
-        ReportLookup report = api.requestReportResource(mAuthenticator.token(), "/public/Samples/Reports/AllAccounts");
+        ReportLookup report = apiUnderTest.requestReportResource("/public/Samples/Reports/AllAccounts");
         assertThat(report, is(notNullValue()));
         assertThat(report.getUri(), is("/public/Samples/Reports/AllAccounts"));
     }
 
     @Test
     public void shouldRequestRootFolder() throws Exception {
-        FolderLookup folder = api.requestFolderResource(mAuthenticator.token(), "/");
+        FolderLookup folder = apiUnderTest.requestFolderResource("/");
         assertThat(folder, is(notNullValue()));
     }
 }

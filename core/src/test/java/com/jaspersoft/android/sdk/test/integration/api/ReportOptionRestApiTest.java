@@ -24,11 +24,9 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import org.junit.Before;
 import org.junit.Ignore;
 
@@ -48,10 +46,6 @@ import static org.hamcrest.core.IsNot.not;
  */
 public class ReportOptionRestApiTest {
 
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
-    private ReportOptionRestApi apiUnderTest;
-
     private static final String REPORT_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
     public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
 
@@ -61,31 +55,32 @@ public class ReportOptionRestApiTest {
         CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
     }
 
+    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private ReportOptionRestApi apiUnderTest;
+
     @Before
     public void setup() {
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportOptionRestApi.Builder()
-                    .logger(TestLogger.get(this))
-                    .baseUrl(mMetadata.getServerUrl())
-                    .build();
+            AuthorizedClient client = mLazyClient.get();
+            apiUnderTest = client.reportOptionsApi();
         }
     }
 
     // TODO: fix this by providing proper integration tests
     @Ignore
     public void shouldRequestReportOptionsList() throws Exception {
-        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(mAuthenticator.token(), REPORT_URI);
+        Set<ReportOption> response = apiUnderTest.requestReportOptionsList(REPORT_URI);
         assertThat(response, is(not(nullValue())));
     }
 
     // TODO: fix this by providing proper integration tests
     @Ignore
     public void apiSupportsCrudForReportOption() throws Exception {
-        ReportOption response = apiUnderTest.createReportOption(mAuthenticator.token(), REPORT_URI, "label", CONTROL_PARAMETERS, true);
+        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
         assertThat(response.getLabel(), is("label"));
 
-        apiUnderTest.updateReportOption(mAuthenticator.token(), REPORT_URI, response.getId(), CONTROL_PARAMETERS);
+        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
 
-        apiUnderTest.deleteReportOption(mAuthenticator.token(), REPORT_URI, response.getId());
+        apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
     }
 }

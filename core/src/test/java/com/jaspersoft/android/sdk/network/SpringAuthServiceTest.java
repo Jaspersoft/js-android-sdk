@@ -65,7 +65,6 @@ public class SpringAuthServiceTest {
     private SpringAuthService objectUnderTest;
     private SpringCredentials credentials;
 
-    private final Cookies fakeCookies = Cookies.parse("key=value");
     private static final Map<String, String> sOptionals = new HashMap<>();
 
     static {
@@ -91,7 +90,6 @@ public class SpringAuthServiceTest {
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
-        when(mRestApi.springAuth(anyString(), anyString(), anyString(), anyMap())).thenReturn(fakeCookies);
     }
 
     @Test

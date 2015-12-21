@@ -22,7 +22,10 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test.integration.api.utils;
+package com.jaspersoft.android.sdk.test.integration.api;
+
+import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.SpringCredentials;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,7 +34,7 @@ import java.net.URL;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class JrsMetadata {
+final class JrsMetadata {
 
     private final String organization;
     private final String serverUrl;
@@ -67,20 +70,8 @@ public final class JrsMetadata {
         return new Builder();
     }
 
-    public String getOrganization() {
-        return organization;
-    }
-
     public String getServerUrl() {
         return serverUrl;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override
@@ -91,6 +82,14 @@ public final class JrsMetadata {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    public Credentials getCredentials() {
+        return SpringCredentials.builder()
+                .password(password)
+                .username(username)
+                .organization(organization)
+                .build();
     }
 
     public static class Builder {

@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import retrofit.Retrofit;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,6 +40,8 @@ public final class Client {
     private RetrofitFactory mRetrofitFactory;
     private HttpClientFactory mHttpClientFactory;
 
+    private ServerRestApi mServerRestApi;
+
     private Client(String baseUrl, long connectTimeout, long readTimeout) {
         mBaseUrl = baseUrl;
         mConnectTimeout = connectTimeout;
@@ -45,7 +49,14 @@ public final class Client {
     }
 
     public ServerRestApi infoApi() {
-        return new ServerRestApiImpl(this);
+        if (mServerRestApi == null) {
+            Retrofit retrofit = getRetrofitFactory()
+                    .newRetrofit()
+                    .build();
+
+            mServerRestApi = new ServerRestApiImpl(retrofit);
+        }
+        return mServerRestApi;
     }
 
     public AuthorizedClient.Builder makeAuthorizedClient(Credentials credentials) {

@@ -25,10 +25,9 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
+import com.jaspersoft.android.sdk.network.Client;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.test.TestLogger;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,10 +46,12 @@ public class ServerRestTest {
 
     @Before
     public void setup() {
-        apiUnderTest = new ServerRestApi.Builder()
-                .logger(TestLogger.get(this))
-                .baseUrl(mobileDemo2)
-                .build();
+        if (apiUnderTest == null) {
+            Client client = Client.newBuilder()
+                    .withBaseUrl(mobileDemo2)
+                    .create();
+            apiUnderTest = client.infoApi();
+        }
     }
 
     @Test

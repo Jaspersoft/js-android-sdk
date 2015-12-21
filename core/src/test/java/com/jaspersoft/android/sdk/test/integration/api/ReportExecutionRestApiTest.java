@@ -24,21 +24,22 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -55,18 +56,14 @@ public class ReportExecutionRestApiTest {
     private final String REPORT_URI = "/public/Samples/Reports/ProfitDetailReport";
     private final ReportParameter PRODUCT_FAMILY = new ReportParameter("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
 
-    ReportExecutionRestApi apiUnderTest;
-
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
+    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private ReportExecutionRestApi apiUnderTest;
 
     @Before
-    public void setup() {
+    public void setUp() throws Exception {
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportExecutionRestApi.Builder()
-                    .baseUrl(mMetadata.getServerUrl())
-                    .logger(TestLogger.get(this))
-                    .build();
+            AuthorizedClient client = mLazyClient.get();
+            apiUnderTest = client.reportExecutionApi();
         }
     }
 
@@ -83,7 +80,7 @@ public class ReportExecutionRestApiTest {
     @Ignore
     public void shouldCancelReportExecution() throws Exception {
         ReportExecutionDescriptor response = startExecution();
-        boolean cancelled = apiUnderTest.cancelReportExecution(mAuthenticator.token(), response.getExecutionId());
+        boolean cancelled = apiUnderTest.cancelReportExecution(response.getExecutionId());
         assertThat(cancelled, is(true));
     }
 
@@ -92,7 +89,7 @@ public class ReportExecutionRestApiTest {
         ReportExecutionDescriptor executionResponse = startExecution();
 
         String executionId = executionResponse.getExecutionId();
-        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(mAuthenticator.token(), executionResponse.getExecutionId());
+        ReportExecutionDescriptor response = apiUnderTest.requestReportExecutionDetails(executionResponse.getExecutionId());
         assertThat(response.getExecutionId(), is(executionId));
     }
 
@@ -100,7 +97,7 @@ public class ReportExecutionRestApiTest {
     public void shouldCheckReportExecutionStatus() throws Exception {
         ReportExecutionDescriptor executionResponse = startExecution();
 
-        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(mAuthenticator.token(), executionResponse.getExecutionId());
+        ExecutionStatus response = apiUnderTest.requestReportExecutionStatus(executionResponse.getExecutionId());
         assertThat(response.getStatus(), is(notNullValue()));
     }
 
@@ -114,14 +111,14 @@ public class ReportExecutionRestApiTest {
         Map<String, String> params = new HashMap<>();
         params.put("reportURI", executionResponse.getReportURI());
 
-        ReportExecutionSearchResponse response  = apiUnderTest.searchReportExecution(mAuthenticator.token(), params);
+        ReportExecutionSearchResponse response = apiUnderTest.searchReportExecution(params);
         assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() throws Exception {
         ReportExecutionDescriptor executionResponse = startExecution();
-        boolean success = apiUnderTest.updateReportExecution(mAuthenticator.token(), executionResponse.getExecutionId(),
+        boolean success = apiUnderTest.updateReportExecution(executionResponse.getExecutionId(),
                 Collections.singletonList(PRODUCT_FAMILY));
         assertThat(success, is(true));
     }
@@ -130,7 +127,7 @@ public class ReportExecutionRestApiTest {
      * Helper methods
      */
     @NotNull
-    private ReportExecutionDescriptor startExecution() throws Exception  {
+    private ReportExecutionDescriptor startExecution() throws Exception {
         return startExecution(REPORT_URI);
     }
 
@@ -139,6 +136,6 @@ public class ReportExecutionRestApiTest {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
         executionRequestOptions.withParameters(Collections.singletonList(PRODUCT_FAMILY));
 
-        return apiUnderTest.runReportExecution(mAuthenticator.token(), executionRequestOptions);
+        return apiUnderTest.runReportExecution(executionRequestOptions);
     }
 }

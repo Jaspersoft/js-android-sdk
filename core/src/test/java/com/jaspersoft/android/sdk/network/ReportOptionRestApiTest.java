@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import retrofit.Retrofit;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +61,6 @@ public class ReportOptionRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
 
     private ReportOptionRestApi restApiUnderTest;
-    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     @ResourceFile("json/report_option.json")
     TestResource reportOption;
@@ -70,100 +70,74 @@ public class ReportOptionRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        restApiUnderTest = new ReportOptionRestApi.Builder()
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mWebMockRule.getRootUrl())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        restApiUnderTest = new ReportOptionRestApiImpl(retrofit);
     }
 
     @Test
     public void requestReportOptionsListShouldNotAllowNullReportUnitUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.requestReportOptionsList(fakeCookies, null);
-    }
-
-    @Test
-    public void requestReportOptionsListShouldNotAllowNullCookies() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-        restApiUnderTest.requestReportOptionsList(null, "/my/uri");
+        restApiUnderTest.requestReportOptionsList(null);
     }
 
     @Test
     public void createReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.createReportOption(fakeCookies, null, "label", Collections.EMPTY_MAP, false);
-    }
-
-    @Test
-    public void createReportOptionShouldNotAllowNullCookies() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-        restApiUnderTest.createReportOption(null, "/my/uri", "label", Collections.EMPTY_MAP, false);
+        restApiUnderTest.createReportOption(null, "label", Collections.EMPTY_MAP, false);
     }
 
     @Test
     public void createReportOptionShouldNotAllowNullOptionLabel() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option label should not be null");
-        restApiUnderTest.createReportOption(fakeCookies, "any_id", null, Collections.EMPTY_MAP, false);
+        restApiUnderTest.createReportOption("any_id", null, Collections.EMPTY_MAP, false);
     }
 
     @Test
     public void createReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
-        restApiUnderTest.createReportOption(fakeCookies, "any_id", "label", null, false);
+        restApiUnderTest.createReportOption("any_id", "label", null, false);
     }
 
     @Test
     public void updateReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.updateReportOption(fakeCookies, null, "option_id", Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption(null, "option_id", Collections.EMPTY_MAP);
     }
 
     @Test
     public void updateReportOptionShouldNotAllowNullOptionId() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
-        restApiUnderTest.updateReportOption(fakeCookies, "any_id", null, Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption("any_id", null, Collections.EMPTY_MAP);
     }
 
     @Test
     public void updateReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Controls values should not be null");
-        restApiUnderTest.updateReportOption(fakeCookies, "any_id", "option_id", null);
-    }
-
-    @Test
-    public void updateReportOptionShouldNotAllowNullCookies() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-        restApiUnderTest.updateReportOption(null, "any_id", "option_id", Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption("any_id", "option_id", null);
     }
 
     @Test
     public void deleteReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.deleteReportOption(fakeCookies, null, "option_id");
+        restApiUnderTest.deleteReportOption(null, "option_id");
     }
 
     @Test
     public void deleteReportOptionShouldNotAllowNullOptionId() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
-        restApiUnderTest.deleteReportOption(fakeCookies, "any_id", null);
-    }
-
-    @Test
-    public void deleteReportOptionShouldNotAllowNullCookies() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-        restApiUnderTest.deleteReportOption(null, "any_id", "option_id");
+        restApiUnderTest.deleteReportOption("any_id", null);
     }
 
     @Test
@@ -171,7 +145,7 @@ public class ReportOptionRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200().setBody(reportOptionsList.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Set<ReportOption> response = restApiUnderTest.requestReportOptionsList(fakeCookies, "/any/uri");
+        Set<ReportOption> response = restApiUnderTest.requestReportOptionsList("/any/uri");
         assertThat(response, is(not(empty())));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
@@ -187,7 +161,7 @@ public class ReportOptionRestApiTest {
         Map<String, Set<String>> params = new HashMap<>();
         params.put("sales_fact_ALL__store_sales_2013_1", Collections.singleton("19"));
 
-        ReportOption reportOption = restApiUnderTest.createReportOption(fakeCookies, "/any/uri", "my label", params, true);
+        ReportOption reportOption = restApiUnderTest.createReportOption("/any/uri", "my label", params, true);
         assertThat(reportOption.getId(), is("my_label"));
         assertThat(reportOption.getLabel(), is("my label"));
         assertThat(reportOption.getUri(), is("/public/Samples/Reports/my_label"));
@@ -205,7 +179,7 @@ public class ReportOptionRestApiTest {
         Map<String, Set<String>> params = new HashMap<>();
         params.put("sales_fact_ALL__store_sales_2013_1", Collections.singleton("22"));
 
-        restApiUnderTest.updateReportOption(fakeCookies, "/any/uri", "option_id", params);
+        restApiUnderTest.updateReportOption("/any/uri", "option_id", params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options/option_id"));
@@ -217,7 +191,7 @@ public class ReportOptionRestApiTest {
     public void apiShouldDeleteReportOption() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
-        restApiUnderTest.deleteReportOption(fakeCookies, "/any/uri", "option_id");
+        restApiUnderTest.deleteReportOption("/any/uri", "option_id");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options/option_id"));
@@ -231,7 +205,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.requestReportOptionsList(fakeCookies, "any_id");
+        restApiUnderTest.requestReportOptionsList("any_id");
     }
 
     @Test
@@ -240,7 +214,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.updateReportOption(fakeCookies, "any_id", "option_id", Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption("any_id", "option_id", Collections.EMPTY_MAP);
     }
 
     @Test
@@ -249,6 +223,6 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.deleteReportOption(fakeCookies, "any_id", "option_id");
+        restApiUnderTest.deleteReportOption("any_id", "option_id");
     }
 }
