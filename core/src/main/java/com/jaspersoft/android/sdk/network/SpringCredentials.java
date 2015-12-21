@@ -1,7 +1,5 @@
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -67,7 +65,7 @@ public final class SpringCredentials extends Credentials {
     }
 
     @Override
-    protected Cookies applyPolicy(AuthPolicy policy) throws IOException, HttpException {
+    protected Cookies applyPolicy(AuthStrategy policy) throws IOException, HttpException {
         return policy.applyCredentials(this);
     }
 

@@ -54,7 +54,7 @@ public final class Server {
         return new ClientFactory<AuthorizedClient>(mBaseUrl, okHttpClient) {
             @Override
             public AuthorizedClient create() {
-                return new AuthorizedClientImpl(mBaseUrl, mOkHttpClient, credentials);
+                return new AuthorizedClientImpl(mBaseUrl, mOkHttpClient, mAuthPolicy, credentials);
             }
         };
     }

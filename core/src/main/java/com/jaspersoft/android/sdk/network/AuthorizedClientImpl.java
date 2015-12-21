@@ -33,16 +33,16 @@ import java.io.IOException;
  * @since 2.0
  */
 class AuthorizedClientImpl extends AuthorizedClient {
+    private final AuthPolicy mAuthPolicy;
     private final Credentials mCredentials;
 
-    AuthorizedClientImpl(String baseUrl, OkHttpClient client, Credentials credentials) {
+    AuthorizedClientImpl(String baseUrl, OkHttpClient client, AuthPolicy authPolicy, Credentials credentials) {
         super(baseUrl, client);
+        mAuthPolicy = authPolicy;
         mCredentials = credentials;
     }
 
     public void authorize() throws IOException, HttpException {
-        AuthPolicy authPolicy = new AuthPolicyImpl(this);
-        Authenticator authenticator = new Authenticator(authPolicy);
-        authenticator.authenticate(mCredentials);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

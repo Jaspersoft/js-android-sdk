@@ -34,25 +34,29 @@ import java.util.concurrent.TimeUnit;
  * @since 2.0
  */
 public abstract class ClientFactory<Client> {
-    private long connectTimeout = 10000;
-    private long readTimeout = 10000;
-
     final String mBaseUrl;
     final OkHttpClient mOkHttpClient;
+    AuthPolicy mAuthPolicy;
 
     @TestOnly
     ClientFactory(String baseUrl, OkHttpClient okHttpClient) {
         mBaseUrl = baseUrl;
         mOkHttpClient = okHttpClient;
+        mAuthPolicy = AuthPolicy.RETRY;
     }
 
-    public ClientFactory withConnectionTimeOut(long timeout, TimeUnit unit) {
-        connectTimeout = unit.toMillis(timeout);
+    public ClientFactory<Client> withConnectionTimeOut(long timeout, TimeUnit unit) {
+        mOkHttpClient.setConnectTimeout(timeout, unit);
         return this;
     }
 
-    public ClientFactory withReadTimeout(long timeout, TimeUnit unit) {
-        readTimeout = unit.toMillis(timeout);
+    public ClientFactory<Client> withReadTimeout(long timeout, TimeUnit unit) {
+        mOkHttpClient.setReadTimeout(timeout, unit);
+        return this;
+    }
+
+    public ClientFactory<Client> withRetryPolicy(final AuthPolicy authPolicy) {
+        mAuthPolicy = authPolicy;
         return this;
     }
 

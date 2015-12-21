@@ -7,5 +7,5 @@ import java.io.IOException;
  * @since 2.0
  */
 public abstract class Credentials {
-    protected abstract Cookies applyPolicy(AuthPolicy authPolicy) throws IOException, HttpException;
+    protected abstract Cookies applyPolicy(AuthStrategy authStrategy) throws IOException, HttpException;
 }

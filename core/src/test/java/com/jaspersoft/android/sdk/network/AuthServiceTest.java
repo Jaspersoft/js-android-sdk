@@ -13,14 +13,14 @@ import static org.mockito.Mockito.*;
 /**
  * @author Tom Koptel
  */
-public class AuthenticatorTest {
+public class AuthServiceTest {
 
     @Mock
-    AuthPolicy mAuthPolicy;
+    AuthStrategy mAuthStrategy;
     @Mock
     Credentials mCredentials;
 
-    private Authenticator authenticatorUnderTest;
+    private AuthService mAuthServiceUnderTest;
 
     @Rule
     public ExpectedException mExpectedException = ExpectedException.none();
@@ -29,16 +29,16 @@ public class AuthenticatorTest {
     @Before
     public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mCredentials.applyPolicy(any(AuthPolicy.class))).thenReturn(fakeCookies);
-        authenticatorUnderTest = new Authenticator(mAuthPolicy);
+        when(mCredentials.applyPolicy(any(AuthStrategy.class))).thenReturn(fakeCookies);
+        mAuthServiceUnderTest = new AuthService(mAuthStrategy);
     }
 
     @Test
     public void testAuthenticate() throws Exception {
-        authenticatorUnderTest.authenticate(mCredentials);
+        mAuthServiceUnderTest.authenticate(mCredentials);
 
-        verify(mCredentials).applyPolicy(mAuthPolicy);
+        verify(mCredentials).applyPolicy(mAuthStrategy);
         verifyNoMoreInteractions(mCredentials);
-        verifyNoMoreInteractions(mAuthPolicy);
+        verifyNoMoreInteractions(mAuthStrategy);
     }
 }

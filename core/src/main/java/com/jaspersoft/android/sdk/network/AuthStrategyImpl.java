@@ -24,26 +24,31 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
-
-import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class Authenticator {
-    private final AuthPolicy mPolicy;
+class AuthStrategyImpl extends AuthStrategy {
 
-    Authenticator(AuthPolicy policy) {
-        mPolicy = policy;
+    private SpringAuthService springAuthService;
+
+    protected AuthStrategyImpl(AnonymousClient anonymousClient) {
+        super(anonymousClient);
     }
 
-    @NotNull
-    public Cookies authenticate(@NotNull Credentials credentials) throws HttpException, IOException {
-        checkNotNull(credentials, "Credentials should not be null");
-        return credentials.applyPolicy(mPolicy);
+    @Override
+    Cookies applyCredentials(SpringCredentials credentials) throws IOException, HttpException {
+        if (springAuthService == null) {
+            springAuthService = createSpringAuthService();
+        }
+        return springAuthService.authenticate(credentials);
+    }
+
+    private SpringAuthService createSpringAuthService() {
+        AuthenticationRestApi restApi = new AuthenticationRestApi(mAnonymousClient);
+        JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
+        return new SpringAuthService(restApi, encryptionAlgorithm);
     }
 }
