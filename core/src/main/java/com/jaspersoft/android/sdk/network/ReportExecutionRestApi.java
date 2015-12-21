@@ -58,11 +58,4 @@ public interface ReportExecutionRestApi {
      // TODO: API is broken requires investigation before release
     @NotNull
     ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
-        @Override
-        ReportExecutionRestApi createApi() {
-            return new ReportExecutionRestApiImpl(getAdapter().build());
-        }
-    }
 }

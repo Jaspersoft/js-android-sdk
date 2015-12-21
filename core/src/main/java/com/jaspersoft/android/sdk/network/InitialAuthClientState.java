@@ -31,6 +31,8 @@ import java.io.IOException;
  * @since 2.0
  */
 final class InitialAuthClientState implements AuthClientState {
+    private static final String MESSAGE = "Unauthorized state. Please, connect client before usage";
+
     @Override
     public void connect(AuthorizedClient context) throws IOException, HttpException {
         AuthClientState state = new AuthorizedAuthClientState();
@@ -40,7 +42,11 @@ final class InitialAuthClientState implements AuthClientState {
 
     @Override
     public ReportExecutionRestApi makeReportExecutionApi() {
-        throw new IllegalStateException("Unauthorized state. Please, connect client before usage");
+        throw new IllegalStateException(MESSAGE);
     }
 
+    @Override
+    public ReportExportRestApi makeReportExportRestApi() {
+        throw new IllegalStateException(MESSAGE);
+    }
 }

@@ -40,32 +40,20 @@ import java.io.IOException;
  * @since 2.0
  */
 public interface ReportExportRestApi {
-
     @NotNull
-    ExportExecutionDescriptor runExportExecution(@NotNull Cookies cookies,
-                                                 @NotNull String executionId,
+    ExportExecutionDescriptor runExportExecution(@NotNull String executionId,
                                                  @NotNull ExecutionRequestOptions executionOptions) throws HttpException, IOException;
 
     @NotNull
-    ExecutionStatus checkExportExecutionStatus(@NotNull Cookies cookies,
-                                               @NotNull String executionId,
+    ExecutionStatus checkExportExecutionStatus(@NotNull String executionId,
                                                @NotNull String exportId) throws HttpException, IOException;
 
     @NotNull
-    ExportOutputResource requestExportOutput(@NotNull Cookies cookies,
-                                             @NotNull String executionId,
+    ExportOutputResource requestExportOutput(@NotNull String executionId,
                                              @NotNull String exportId) throws HttpException, IOException;
 
     @NotNull
-    OutputResource requestExportAttachment(@NotNull Cookies cookies,
-                                           @NotNull String executionId,
+    OutputResource requestExportAttachment(@NotNull String executionId,
                                            @NotNull String exportId,
                                            @NotNull String attachmentId) throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, ReportExportRestApi> {
-        @Override
-        ReportExportRestApi createApi() {
-            return new ReportExportRestApiImpl(getAdapter().build());
-        }
-    }
 }
