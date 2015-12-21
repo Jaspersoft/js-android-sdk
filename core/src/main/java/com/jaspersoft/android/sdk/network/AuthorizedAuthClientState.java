@@ -55,7 +55,7 @@ final class AuthorizedAuthClientState implements AuthClientState {
     }
 
     private void makeAuthCall() throws IOException, HttpException {
-        Server server = mClient.mAnonymousServer;
+        Server server = mClient.mServer;
         Credentials credentials = mClient.credentials;
         AuthStrategy authStrategy = new AuthStrategy(server);
         credentials.apply(authStrategy);
@@ -103,7 +103,7 @@ final class AuthorizedAuthClientState implements AuthClientState {
 
     Retrofit getRetrofit() {
         if (mRetrofit == null) {
-            RetrofitFactory retrofitFactory = new RetrofitFactory(mClient.mAnonymousServer);
+            RetrofitFactory retrofitFactory = new RetrofitFactory(mClient.mServer);
             Retrofit.Builder builder = retrofitFactory.newRetrofit();
 
             OkHttpClient okHttpClient = configureOkHttp();

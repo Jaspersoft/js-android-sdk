@@ -33,7 +33,7 @@ import java.io.IOException;
  * @since 2.0
  */
 public final class Client {
-    final Server mAnonymousServer;
+    final Server mServer;
     final Credentials credentials;
     final AuthPolicy authenticationPolicy;
 
@@ -41,7 +41,7 @@ public final class Client {
 
     @TestOnly
     Client(Server server, Credentials credentials, AuthPolicy authenticationPolicy, AuthClientState authClientState) {
-        mAnonymousServer = server;
+        mServer = server;
         this.credentials = credentials;
         this.authenticationPolicy = authenticationPolicy;
 
@@ -74,6 +74,10 @@ public final class Client {
 
     void setAuthClientState(AuthClientState authClientState) {
         mAuthClientState = authClientState;
+    }
+
+    public Server getServer() {
+        return mServer;
     }
 
     public static class Builder {

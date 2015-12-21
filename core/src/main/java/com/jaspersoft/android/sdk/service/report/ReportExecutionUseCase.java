@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
@@ -68,10 +67,10 @@ class ReportExecutionUseCase {
         final ServerVersion version = info.getVersion();
         Call<ReportExecutionDescriptor> call = new Call<ReportExecutionDescriptor>() {
             @Override
-            public ReportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
+            public ReportExecutionDescriptor perform() throws IOException, HttpException {
                 ReportExecutionRequestOptions options =
                         mExecutionOptionsMapper.transformRunReportOptions(reportUri, version, criteria);
-                return mExecutionApi.runReportExecution(cookies, options);
+                return mExecutionApi.runReportExecution(options);
             }
         };
         return mCallExecutor.execute(call);
@@ -81,8 +80,8 @@ class ReportExecutionUseCase {
     public ExecutionStatus requestStatus(final String executionId) throws ServiceException {
         Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
             @Override
-            public ExecutionStatus perform(Cookies cookies) throws IOException, HttpException {
-                return mExecutionApi.requestReportExecutionStatus(cookies, executionId);
+            public ExecutionStatus perform() throws IOException, HttpException {
+                return mExecutionApi.requestReportExecutionStatus(executionId);
             }
         };
         return mCallExecutor.execute(call);
@@ -92,8 +91,8 @@ class ReportExecutionUseCase {
     public ReportExecutionDescriptor requestExecutionDetails(final String executionId) throws ServiceException {
         Call<ReportExecutionDescriptor> call = new Call<ReportExecutionDescriptor>() {
             @Override
-            public ReportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
-                return mExecutionApi.requestReportExecutionDetails(cookies, executionId);
+            public ReportExecutionDescriptor perform() throws IOException, HttpException {
+                return mExecutionApi.requestReportExecutionDetails(executionId);
             }
         };
         return mCallExecutor.execute(call);
@@ -102,8 +101,8 @@ class ReportExecutionUseCase {
     public void updateExecution(final String executionId, final List<ReportParameter> newParameters) throws ServiceException {
         Call<Void> call = new Call<Void>() {
             @Override
-            public Void perform(Cookies cookies) throws IOException, HttpException {
-                mExecutionApi.updateReportExecution(cookies, executionId, newParameters);
+            public Void perform() throws IOException, HttpException {
+                mExecutionApi.updateReportExecution(executionId, newParameters);
                 return null;
             }
         };

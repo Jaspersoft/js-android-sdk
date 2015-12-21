@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -71,9 +70,9 @@ class ReportExportUseCase {
 
         Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
             @Override
-            public ExportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
+            public ExportExecutionDescriptor perform() throws IOException, HttpException {
                 ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria, version);
-                return mExportApi.runExportExecution(cookies, executionId, options);
+                return mExportApi.runExportExecution(executionId, options);
             }
         };
         return mCallExecutor.execute(call);
@@ -90,8 +89,8 @@ class ReportExportUseCase {
 
         Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
             @Override
-            public ExecutionStatus perform(Cookies cookies) throws IOException, HttpException {
-                return mExportApi.checkExportExecutionStatus(cookies, executionId, exportId);
+            public ExecutionStatus perform() throws IOException, HttpException {
+                return mExportApi.checkExportExecutionStatus(executionId, exportId);
             }
         };
         return mCallExecutor.execute(call);
@@ -106,8 +105,8 @@ class ReportExportUseCase {
 
         Call<ReportOutput> call = new Call<ReportOutput>() {
             @Override
-            public ReportOutput perform(Cookies cookies) throws IOException, HttpException {
-                ExportOutputResource result = mExportApi.requestExportOutput(cookies, executionId, resultId);
+            public ReportOutput perform() throws IOException, HttpException {
+                ExportOutputResource result = mExportApi.requestExportOutput(executionId, resultId);
                 return OutputDataMapper.transform(result);
             }
         };
@@ -124,9 +123,9 @@ class ReportExportUseCase {
 
         Call<ResourceOutput> call = new Call<ResourceOutput>() {
             @Override
-            public ResourceOutput perform(Cookies cookies) throws IOException, HttpException {
+            public ResourceOutput perform() throws IOException, HttpException {
                 OutputResource result = mExportApi.requestExportAttachment(
-                        cookies, executionId, resultId, fileName);
+                        executionId, resultId, fileName);
                 return OutputDataMapper.transform(result);
             }
         };

@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,11 +87,6 @@ class ExecutionOptionsDataMapper {
         } else {
             options.withBaseUrl(mBaseUrl);
         }
-    }
-
-    public static ExecutionOptionsDataMapper create(RestClient client) {
-        String baseUrl = client.getServerUrl();
-        return new ExecutionOptionsDataMapper(baseUrl);
     }
 
     static class Helper {

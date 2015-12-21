@@ -24,25 +24,31 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class DefaultCallExecutor implements CallExecutor {
-
-    private final TokenCacheManager mTokenCacheManager;
     private final ServiceExceptionMapper mServiceExceptionMapper;
 
-    public DefaultCallExecutor(TokenCacheManager tokenCacheManager, ServiceExceptionMapper serviceExceptionMapper) {
-        mTokenCacheManager = tokenCacheManager;
+    public DefaultCallExecutor(ServiceExceptionMapper serviceExceptionMapper) {
         mServiceExceptionMapper = serviceExceptionMapper;
     }
 
     @NotNull
     public <T> T execute(Call<T> call) throws ServiceException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        try {
+            return call.perform();
+        } catch (IOException e) {
+           throw mServiceExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw mServiceExceptionMapper.transform(e);
+        }
     }
 }

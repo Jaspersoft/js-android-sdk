@@ -24,11 +24,10 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.Client;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
-import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
-import com.jaspersoft.android.sdk.service.token.TokenCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -38,31 +37,21 @@ import org.jetbrains.annotations.TestOnly;
  */
 public final class Session extends AnonymousSession {
 
-    private final Credentials mCredentials;
-    private final TokenCache mTokenCache;
+    private final InfoCache mInfoCache;
 
     private ReportService mReportService;
     private RepositoryService mRepositoryService;
 
     @TestOnly
-    Session(RestClient client, Credentials credentials, TokenCache tokenCache) {
+    Session(Client client, InfoCache infoCache) {
         super(client);
-        mCredentials = credentials;
-        mTokenCache = tokenCache;
-    }
-
-    public TokenCache getTokenCache() {
-        return mTokenCache;
-    }
-
-    public Credentials getCredentials() {
-        return mCredentials;
+        mInfoCache = infoCache;
     }
 
     @NotNull
     public ReportService reportApi() {
         if (mReportService == null) {
-            mReportService = ReportService.create(mClient, this);
+            mReportService = ReportService.create(mClient, mInfoCache);
         }
         return mReportService;
     }
@@ -70,32 +59,8 @@ public final class Session extends AnonymousSession {
     @NotNull
     public RepositoryService repositoryApi() {
         if (mRepositoryService == null) {
-            mRepositoryService = RepositoryService.create(mClient, this);
+            mRepositoryService = RepositoryService.create(mClient, mInfoCache);
         }
         return mRepositoryService;
-    }
-
-    public static class Builder {
-        private final RestClient mClient;
-        private final Credentials mCredentials;
-
-        private TokenCache mTokenCache;
-
-        Builder(RestClient client, Credentials credentials) {
-            mClient = client;
-            mCredentials = credentials;
-        }
-
-        public Builder tokenCache(TokenCache tokenCache) {
-            mTokenCache = tokenCache;
-            return this;
-        }
-
-        public Session create() {
-            if (mTokenCache == null) {
-                mTokenCache = new InMemoryTokenCache();
-            }
-            return new Session(mClient, mCredentials, mTokenCache);
-        }
     }
 }

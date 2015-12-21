@@ -24,10 +24,16 @@
 
 package com.jaspersoft.android.sdk.service;
 
+import com.jaspersoft.android.sdk.network.Client;
 import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.network.Server;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.info.InMemoryInfoCache;
 import com.jaspersoft.android.sdk.service.info.InfoCache;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,40 +41,41 @@ import java.util.concurrent.TimeUnit;
  * @since 2.0
  */
 public final class RestClient {
-    private final String mServerUrl;
-    private final long mReadTimeOut;
-    private final long mConnectionTimeOut;
-    private final long mPollTimeout;
+    private final Server mServer;
     private final InfoCache mInfoCache;
 
-
-    private RestClient(String serverUrl, long readTimeOut, long connectionTimeOut, long pollTimeout, InfoCache infoCache) {
-        mServerUrl = serverUrl;
-        mReadTimeOut = readTimeOut;
-        mConnectionTimeOut = connectionTimeOut;
-        mPollTimeout = pollTimeout;
+    private RestClient(Server server, InfoCache infoCache) {
+        mServer = server;
         mInfoCache = infoCache;
     }
 
-
     public String getServerUrl() {
-        return mServerUrl;
+        return mServer.getBaseUrl();
     }
 
     public long getReadTimeOut() {
-        return mReadTimeOut;
+        return mServer.getReadTimeout();
     }
 
     public long getConnectionTimeOut() {
-        return mConnectionTimeOut;
-    }
-
-    public long getPollTimeout() {
-        return mPollTimeout;
+        return mServer.getConnectTimeout();
     }
 
     public InfoCache getInfoCache() {
         return mInfoCache;
+    }
+
+    public Session authorize(Credentials credentials) throws ServiceException {
+        DefaultExceptionMapper exceptionMapper = new DefaultExceptionMapper();
+        Client client = mServer.makeAuthorizedClient(credentials).create();
+        try {
+            client.connect();
+        } catch (IOException e) {
+            throw exceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw exceptionMapper.transform(e);
+        }
+        return new Session(client, mInfoCache);
     }
 
     public static Builder builder() {
@@ -85,32 +92,24 @@ public final class RestClient {
     }
 
     public static class ConditionalBuilder {
-        private final String mServerUrl;
-        private long mConnectionReadTimeOut = TimeUnit.SECONDS.toMillis(10);
-        private long mConnectionTimeOut = TimeUnit.SECONDS.toMillis(10);
-        private long mPollTimeOut = TimeUnit.SECONDS.toMillis(1);
+        private final Server.OptionalBuilder mServerBuilder;
         private InfoCache mInfoCache;
 
         private ConditionalBuilder(String serverUrl) {
-            mServerUrl = serverUrl;
+            mServerBuilder = Server.newBuilder().withBaseUrl(serverUrl);
         }
 
-        public ConditionalBuilder pollTimeOut(int timeOut, TimeUnit unit) {
-            mPollTimeOut = unit.toMillis(timeOut);
+        public ConditionalBuilder withReadTimeout(int timeOut, TimeUnit unit) {
+            mServerBuilder.withReadTimeout(timeOut, unit);
             return this;
         }
 
-        public ConditionalBuilder readTimeOut(int timeOut, TimeUnit unit) {
-            mConnectionReadTimeOut = unit.toMillis(timeOut);
+        public ConditionalBuilder withConnectionTimeOut(int timeOut, TimeUnit unit) {
+            mServerBuilder.withConnectionTimeOut(timeOut, unit);
             return this;
         }
 
-        public ConditionalBuilder connectionTimeOut(int timeOut, TimeUnit unit) {
-            mConnectionTimeOut = unit.toMillis(timeOut);
-            return this;
-        }
-
-        public ConditionalBuilder infoCache(InfoCache infoCache) {
+        public ConditionalBuilder withInfoCache(InfoCache infoCache) {
             mInfoCache = infoCache;
             return this;
         }
@@ -119,7 +118,8 @@ public final class RestClient {
             if (mInfoCache == null) {
                 mInfoCache = new InMemoryInfoCache();
             }
-            return new RestClient(mServerUrl, mConnectionReadTimeOut, mConnectionTimeOut, mPollTimeOut, mInfoCache);
+            Server server = mServerBuilder.create();
+            return new RestClient(server, mInfoCache);
         }
     }
 }

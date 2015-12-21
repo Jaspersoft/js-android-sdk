@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
+import com.jaspersoft.android.sdk.network.Client;
 import com.jaspersoft.android.sdk.service.server.ServerInfoService;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,15 +33,10 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.0
  */
 public class AnonymousSession {
-    protected final RestClient mClient;
+    protected final Client mClient;
 
-    protected AnonymousSession(RestClient client) {
+    protected AnonymousSession(Client client) {
         mClient = client;
-    }
-
-    @NotNull
-    public final AuthenticationService authApi() {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @NotNull
