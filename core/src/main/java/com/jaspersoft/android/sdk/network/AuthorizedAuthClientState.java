@@ -38,8 +38,10 @@ import java.net.Proxy;
  * @since 2.0
  */
 final class AuthorizedAuthClientState implements AuthClientState {
-    private AuthorizedClient mAuthorizedClient;
+
     private Retrofit mRetrofit;
+    private AuthorizedClient mAuthorizedClient;
+    private ReportExecutionRestApi mReportExecutionRestApi;
 
     @Override
     public void connect(AuthorizedClient context) throws IOException, HttpException {
@@ -56,7 +58,10 @@ final class AuthorizedAuthClientState implements AuthClientState {
 
     @Override
     public ReportExecutionRestApi makeReportExecutionApi() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (mReportExecutionRestApi == null) {
+            mReportExecutionRestApi = new ReportExecutionRestApiImpl(getRetrofit());
+        }
+        return mReportExecutionRestApi;
     }
 
     Retrofit getRetrofit() {
