@@ -39,28 +39,18 @@ import java.util.Set;
 public interface ReportOptionRestApi {
 
     @NotNull
-    Set<ReportOption> requestReportOptionsList(@NotNull Cookies cookies,
-                                               @NotNull String reportUnitUri) throws HttpException, IOException;
+    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri) throws HttpException, IOException;
 
     @NotNull
-    ReportOption createReportOption(@NotNull Cookies cookies, @NotNull String reportUnitUri,
+    ReportOption createReportOption(@NotNull String reportUnitUri,
                                     @NotNull String optionLabel,
                                     @NotNull Map<String, Set<String>> controlsValues,
                                     boolean overwrite) throws HttpException, IOException;
 
-    void updateReportOption(@NotNull Cookies cookies,
-                            @NotNull String reportUnitUri,
+    void updateReportOption(@NotNull String reportUnitUri,
                             @NotNull String optionId,
                             @NotNull Map<String, Set<String>> controlsValues) throws HttpException, IOException;
 
-    void deleteReportOption(@NotNull Cookies cookies,
-                            @NotNull String reportUnitUri,
+    void deleteReportOption(@NotNull String reportUnitUri,
                             @NotNull String optionId) throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, ReportOptionRestApi> {
-        @Override
-        ReportOptionRestApi createApi() {
-            return new ReportOptionRestApiImpl(getAdapter().build());
-        }
-    }
 }

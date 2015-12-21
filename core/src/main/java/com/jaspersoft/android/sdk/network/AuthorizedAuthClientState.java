@@ -44,6 +44,7 @@ final class AuthorizedAuthClientState implements AuthClientState {
 
     private ReportExecutionRestApi mReportExecutionRestApi;
     private ReportExportRestApi mReportExportRestApi;
+    private ReportOptionRestApi mReportOptionRestApi;
 
     @Override
     public void connect(AuthorizedClient context) throws IOException, HttpException {
@@ -72,6 +73,14 @@ final class AuthorizedAuthClientState implements AuthClientState {
             mReportExportRestApi = new ReportExportRestApiImpl(getRetrofit());
         }
         return mReportExportRestApi;
+    }
+
+    @Override
+    public ReportOptionRestApi makeReportOptionRestApi() {
+        if (mReportOptionRestApi == null) {
+            mReportOptionRestApi = new ReportOptionRestApiImpl(getRetrofit());
+        }
+        return mReportOptionRestApi;
     }
 
     Retrofit getRetrofit() {
