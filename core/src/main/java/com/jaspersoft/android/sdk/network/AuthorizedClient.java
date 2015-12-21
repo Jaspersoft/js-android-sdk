@@ -34,15 +34,15 @@ import java.lang.reflect.Proxy;
  * @since 2.0
  */
 public final class AuthorizedClient {
-    private final Client mClient;
-    private final Credentials mCredentials;
+    final Client anonymousClient;
+    final Credentials credentials;
 
     private AuthClientState mAuthClientState;
 
     @TestOnly
     AuthorizedClient(Client client, Credentials credentials, AuthClientState authClientState) {
-        mClient = client;
-        mCredentials = credentials;
+        anonymousClient = client;
+        this.credentials = credentials;
 
         mAuthClientState = authClientState;
     }

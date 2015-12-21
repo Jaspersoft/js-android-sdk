@@ -24,14 +24,22 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import java.io.IOException;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 final class InitialAuthClientState implements AuthClientState {
     @Override
-    public void connect(AuthorizedClient client) {
-        client.setAuthClientState(new AuthorizedAuthClientState());
+    public void connect(AuthorizedClient context) throws IOException, HttpException {
+        Client client = context.anonymousClient;
+        Credentials credentials = context.credentials;
+
+        AuthStrategy authStrategy = new AuthStrategy(client);
+        credentials.apply(authStrategy);
+
+        context.setAuthClientState(new AuthorizedAuthClientState());
     }
 
     @Override

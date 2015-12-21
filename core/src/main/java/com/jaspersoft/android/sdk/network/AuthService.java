@@ -44,6 +44,6 @@ class AuthService {
     @NotNull
     public Cookies authenticate(@NotNull Credentials credentials) throws HttpException, IOException {
         checkNotNull(credentials, "Credentials should not be null");
-        return credentials.applyPolicy(mPolicy);
+        return credentials.apply(mPolicy);
     }
 }

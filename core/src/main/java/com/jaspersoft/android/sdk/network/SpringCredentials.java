@@ -65,8 +65,8 @@ public final class SpringCredentials extends Credentials {
     }
 
     @Override
-    protected Cookies applyPolicy(AuthStrategy policy) throws IOException, HttpException {
-        return policy.applyCredentials(this);
+    protected Cookies apply(AuthStrategy policy) throws IOException, HttpException {
+        return policy.authorize(this);
     }
 
     @Override

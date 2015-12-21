@@ -29,7 +29,7 @@ public class AuthServiceTest {
     @Before
     public void setupMocks() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mCredentials.applyPolicy(any(AuthStrategy.class))).thenReturn(fakeCookies);
+        when(mCredentials.apply(any(AuthStrategy.class))).thenReturn(fakeCookies);
         mAuthServiceUnderTest = new AuthService(mAuthStrategy);
     }
 
@@ -37,7 +37,7 @@ public class AuthServiceTest {
     public void testAuthenticate() throws Exception {
         mAuthServiceUnderTest.authenticate(mCredentials);
 
-        verify(mCredentials).applyPolicy(mAuthStrategy);
+        verify(mCredentials).apply(mAuthStrategy);
         verifyNoMoreInteractions(mCredentials);
         verifyNoMoreInteractions(mAuthStrategy);
     }

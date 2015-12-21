@@ -51,8 +51,7 @@ final class SpringAuthService {
         mRestApi = restApi;
     }
 
-    @NotNull
-    public Cookies authenticate(SpringCredentials credentials) throws IOException, HttpException {
+    public void authenticate(SpringCredentials credentials) throws IOException, HttpException {
         String password = credentials.getPassword();
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
@@ -61,7 +60,7 @@ final class SpringAuthService {
         }
 
         Map<String, String> params = prepareOptionals(credentials);
-        return mRestApi.springAuth(
+        mRestApi.springAuth(
                 credentials.getUsername(),
                 password,
                 credentials.getOrganization(),

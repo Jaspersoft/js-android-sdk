@@ -28,6 +28,7 @@ import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
@@ -45,10 +46,16 @@ import java.util.Set;
  * @since 2.0
  */
 class AuthenticationRestApi {
-    private final AnonymousClient mClient;
+    @NotNull
+    private final Client mClient;
 
-    AuthenticationRestApi(AnonymousClient anonymousClient) {
-        mClient = anonymousClient;
+    @Nullable
+    private OkHttpClient mOkHttpClient;
+    @Nullable
+    private Retrofit mRetrofit;
+
+    AuthenticationRestApi(@NotNull Client client) {
+        mClient = client;
     }
 
     @NotNull
@@ -57,7 +64,7 @@ class AuthenticationRestApi {
                               final String organization,
                               final Map<String, String> params) throws HttpException, IOException {
         Request request = createAuthRequest(username, password, organization, params);
-        Call call = mClient.getClient().newCall(request);
+        Call call = getHttpClient().newCall(request);
         com.squareup.okhttp.Response response = call.execute();
         int statusCode = response.code();
         if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
@@ -85,12 +92,11 @@ class AuthenticationRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        Retrofit retrofit = mClient.getRetrofit();
-        RestApi api = retrofit.create(RestApi.class);
+        RestApi api = getRetrofit().create(RestApi.class);
         Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
         Cookies anonymousCookies = CookieExtractor.extract(response.raw());
 
-        RestApi modifiedApi = retrofit.create(RestApi.class);
+        RestApi modifiedApi = getRetrofit().create(RestApi.class);
 
         try {
             return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata(anonymousCookies.toString())).body();
@@ -102,6 +108,26 @@ class AuthenticationRestApi {
              */
             return EncryptionKey.empty();
         }
+    }
+
+    private OkHttpClient getHttpClient() {
+        if (mOkHttpClient == null) {
+            HttpClientFactory clientFactory = mClient.getClientFactory();
+            OkHttpClient okHttpClient = clientFactory.newHttpClient();
+            okHttpClient.setFollowRedirects(false);
+            mOkHttpClient = okHttpClient;
+        }
+        return mOkHttpClient;
+    }
+
+    private Retrofit getRetrofit() {
+        if (mRetrofit == null) {
+            RetrofitFactory retrofitFactory = mClient.getRetrofitFactory();
+            Retrofit retrofit = retrofitFactory.newRetrofit().build();
+            mRetrofit = retrofit;
+        }
+
+        return mRetrofit;
     }
 
     private Request createAuthRequest(
