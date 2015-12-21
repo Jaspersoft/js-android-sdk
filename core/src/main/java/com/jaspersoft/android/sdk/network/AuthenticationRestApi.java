@@ -52,17 +52,15 @@ class AuthenticationRestApi {
         mServer = server;
     }
 
-    @NotNull
     public void springAuth(@NotNull final String username,
                            @NotNull final String password,
                            final String organization,
                            final Map<String, String> params) throws HttpException, IOException {
-        HttpClientFactory clientFactory = mServer.getClientFactory();
-        OkHttpClient okHttpClient = clientFactory.newHttpClient();
-        okHttpClient.setFollowRedirects(false);
+        OkHttpClient client = new OkHttpClient();
+        client.setFollowRedirects(false);
 
         Request request = createAuthRequest(username, password, organization, params);
-        Call call = okHttpClient.newCall(request);
+        Call call = client.newCall(request);
 
         com.squareup.okhttp.Response response = call.execute();
 
@@ -88,11 +86,10 @@ class AuthenticationRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        RetrofitFactory retrofitFactory = mServer.getRetrofitFactory();
-        HttpClientFactory clientFactory = mServer.getClientFactory();
-        OkHttpClient client = clientFactory.newHttpClient();
+        OkHttpClient client = new OkHttpClient();
         client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        Retrofit retrofit = retrofitFactory.newRetrofit()
+
+        Retrofit retrofit = mServer.newRetrofit()
                 .client(client)
                 .build();
 

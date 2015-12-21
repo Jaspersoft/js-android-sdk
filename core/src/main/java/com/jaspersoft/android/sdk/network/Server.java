@@ -24,8 +24,11 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.google.gson.Gson;
+import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import retrofit.Retrofit;
 
+import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,27 +37,28 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Server {
     private final String mBaseUrl;
+    private final Proxy mProxy;
     private final long mConnectTimeout;
     private final long mReadTimeout;
-
-    private RetrofitFactory mRetrofitFactory;
-    private HttpClientFactory mHttpClientFactory;
+    private final long mWriteTimeout;
 
     private ServerRestApi mServerRestApi;
 
-    private Server(String baseUrl, long connectTimeout, long readTimeout) {
+    private Server(String baseUrl,
+                   Proxy proxy,
+                   long connectTimeout,
+                   long readTimeout,
+                   long writeTimeout) {
         mBaseUrl = baseUrl;
+        mProxy = proxy;
         mConnectTimeout = connectTimeout;
         mReadTimeout = readTimeout;
+        mWriteTimeout = writeTimeout;
     }
 
     public ServerRestApi infoApi() {
         if (mServerRestApi == null) {
-            Retrofit retrofit = getRetrofitFactory()
-                    .newRetrofit()
-                    .build();
-
-            mServerRestApi = new ServerRestApiImpl(retrofit);
+            mServerRestApi = new ServerRestApiImpl(newRetrofit().build());
         }
         return mServerRestApi;
     }
@@ -79,18 +83,23 @@ public final class Server {
         return mReadTimeout;
     }
 
-    RetrofitFactory getRetrofitFactory() {
-        if (mRetrofitFactory == null) {
-            mRetrofitFactory = new RetrofitFactory(this);
-        }
-        return mRetrofitFactory;
+    public long getWriteTimeout() {
+        return mWriteTimeout;
     }
 
-    HttpClientFactory getClientFactory() {
-        if (mHttpClientFactory == null) {
-            mHttpClientFactory = new HttpClientFactory(this);
-        }
-        return mHttpClientFactory;
+    public Proxy getProxy() {
+        return mProxy;
+    }
+
+    Retrofit.Builder newRetrofit() {
+        Gson configuredGson = GsonFactory.create();
+        GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(configuredGson);
+        StringConverterFactory stringConverterFactory = StringConverterFactory.create();
+
+        return new Retrofit.Builder()
+                .baseUrl(mBaseUrl)
+                .addConverterFactory(gsonConverterFactory)
+                .addConverterFactory(stringConverterFactory);
     }
 
     public static class GenericBuilder {
@@ -102,8 +111,11 @@ public final class Server {
     public static class OptionalBuilder {
         private final String mBaseUrl;
 
+        private Proxy mProxy;
+
         private long connectTimeout = 10000;
         private long readTimeout = 10000;
+        private long writeTimeout = 10000;
 
         private OptionalBuilder(String baseUrl) {
             mBaseUrl = baseUrl;
@@ -119,8 +131,18 @@ public final class Server {
             return this;
         }
 
+        public OptionalBuilder withWriteTimeout(long timeout, TimeUnit unit) {
+            writeTimeout = unit.toMillis(timeout);
+            return this;
+        }
+
+        public OptionalBuilder withProxy(Proxy proxy) {
+            mProxy = proxy;
+            return this;
+        }
+
         public Server create() {
-            return new Server(mBaseUrl, connectTimeout, readTimeout);
+            return new Server(mBaseUrl, mProxy, connectTimeout, readTimeout, writeTimeout);
         }
     }
 }

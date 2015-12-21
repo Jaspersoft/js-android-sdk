@@ -27,24 +27,32 @@ package com.jaspersoft.android.sdk.network;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class Client {
-    final Server mServer;
-    final Credentials credentials;
-    final AuthPolicy authenticationPolicy;
+    private final Server mServer;
+    private final Credentials mCredentials;
+    private final AuthPolicy mAuthPolicy;
+    private final CookieHandler mCookieHandler;
 
     private AuthClientState mAuthClientState;
 
     @TestOnly
-    Client(Server server, Credentials credentials, AuthPolicy authenticationPolicy, AuthClientState authClientState) {
+    Client(Server server,
+           Credentials credentials,
+           AuthPolicy authPolicy,
+           CookieHandler cookieHandler,
+           AuthClientState authClientState) {
         mServer = server;
-        this.credentials = credentials;
-        this.authenticationPolicy = authenticationPolicy;
-
+        mCredentials = credentials;
+        mAuthPolicy = authPolicy;
+        mCookieHandler = cookieHandler;
         mAuthClientState = authClientState;
     }
 
@@ -72,12 +80,24 @@ public final class Client {
         return mAuthClientState.makeRepositoryRestApi();
     }
 
-    void setAuthClientState(AuthClientState authClientState) {
-        mAuthClientState = authClientState;
-    }
-
     public Server getServer() {
         return mServer;
+    }
+
+    public Credentials getCredentials() {
+        return mCredentials;
+    }
+
+    public AuthPolicy getAuthPolicy() {
+        return mAuthPolicy;
+    }
+
+    public CookieHandler getCookieHandler() {
+        return mCookieHandler;
+    }
+
+    void setAuthClientState(AuthClientState authClientState) {
+        mAuthClientState = authClientState;
     }
 
     public static class Builder {
@@ -85,6 +105,7 @@ public final class Client {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
+        private CookieHandler mCookieHandler;
 
         Builder(Server server, Credentials credentials) {
             mServer = server;
@@ -96,14 +117,24 @@ public final class Client {
             return this;
         }
 
+        public Builder withCookieHandler(CookieHandler cookieHandler) {
+            mCookieHandler = cookieHandler;
+            return this;
+        }
+
         public Client create() {
             ensureSaneDefaults();
             AuthClientState state = new InitialAuthClientState();
-            return new Client(mServer, mCredentials, mAuthenticationPolicy, state);
+            return new Client(mServer, mCredentials, mAuthenticationPolicy, mCookieHandler, state);
         }
 
         private void ensureSaneDefaults() {
-            mAuthenticationPolicy = AuthPolicy.RETRY;
+            if (mAuthenticationPolicy == null) {
+                mAuthenticationPolicy = AuthPolicy.RETRY;
+            }
+            if (mCookieHandler == null) {
+                mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+            }
         }
     }
 }
