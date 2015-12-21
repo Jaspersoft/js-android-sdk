@@ -61,7 +61,7 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Server server = Server.create(mWebMockRule.getRootUrl());
+        Client server = Client.create(mWebMockRule.getRootUrl());
         AnonymousClient client = server.newClient().create();
         mRestApi = new AuthenticationRestApi(client);
     }

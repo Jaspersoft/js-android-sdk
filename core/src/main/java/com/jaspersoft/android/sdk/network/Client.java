@@ -24,42 +24,36 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.squareup.okhttp.OkHttpClient;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Server {
-
+public final class Client {
     private final String mBaseUrl;
 
-    public Server(String baseUrl) {
+    public Client(String baseUrl) {
         mBaseUrl = baseUrl;
     }
 
-    public ClientFactory<AnonymousClient> newClient() {
-        final OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.setFollowRedirects(false);
-        return new ClientFactory<AnonymousClient>(mBaseUrl, okHttpClient) {
-            @Override
-            public AnonymousClient create() {
-                return new AnonymousClientImpl(mBaseUrl, okHttpClient);
-            }
-        };
+    public static GenericBuilder newBuilder() {
+        return new GenericBuilder();
     }
 
-    public ClientFactory<AuthorizedClient> newClient(final Credentials credentials) {
-        final OkHttpClient okHttpClient = new OkHttpClient();
-        return new ClientFactory<AuthorizedClient>(mBaseUrl, okHttpClient) {
-            @Override
-            public AuthorizedClient create() {
-                return new AuthorizedClientImpl(mBaseUrl, mOkHttpClient, mAuthPolicy, credentials);
-            }
-        };
+    public static class GenericBuilder {
+        public OptionalBuilder withBaseUrl(String baseUrl) {
+            return new OptionalBuilder(baseUrl);
+        }
     }
 
-    public static Server create(String baseUrl) {
-        return new Server(baseUrl);
+    public static class OptionalBuilder {
+        private final String mBaseUrl;
+
+        private OptionalBuilder(String baseUrl) {
+            mBaseUrl = baseUrl;
+        }
+
+        public Client create() {
+            return new Client(mBaseUrl);
+        }
     }
 }
