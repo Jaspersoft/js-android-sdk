@@ -24,18 +24,57 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.squareup.okhttp.OkHttpClient;
+import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class AuthorizedClient extends AnonymousClient {
-    AuthorizedClient(String baseUrl, OkHttpClient client) {
-        super(baseUrl, client);
+public final class AuthorizedClient {
+    private final Client mClient;
+    private final Credentials mCredentials;
+
+    private AuthClientState mAuthClientState;
+
+    @TestOnly
+    AuthorizedClient(Client client, Credentials credentials, AuthClientState authClientState) {
+        mClient = client;
+        mCredentials = credentials;
+
+        mAuthClientState = authClientState;
     }
 
-    public abstract void authorize() throws IOException, HttpException;
+    public void connect() throws IOException, HttpException {
+        mAuthClientState.connect(this);
+    }
+
+    public ReportExecutionRestApi reportExecutionApi() {
+        return mAuthClientState.makeReportExecutionApi();
+    }
+
+    void setAuthClientState(AuthClientState authClientState) {
+        mAuthClientState = authClientState;
+    }
+
+    public static class GenericBuilder {
+        private final Client mClient;
+        private final Credentials mCredentials;
+
+        GenericBuilder(Client client, Credentials credentials) {
+            mClient = client;
+            mCredentials = credentials;
+        }
+
+        public GenericBuilder withProxy(Proxy proxy) {
+            return this;
+        }
+
+        public AuthorizedClient create() {
+            AuthClientState state = new InitialAuthClientState();
+            return new AuthorizedClient(mClient, mCredentials, state);
+        }
+    }
 }
