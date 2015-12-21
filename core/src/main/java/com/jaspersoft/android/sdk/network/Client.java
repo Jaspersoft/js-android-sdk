@@ -24,18 +24,24 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class Client {
     private final String mBaseUrl;
+    private final long mConnectTimeout;
+    private final long mReadTimeout;
 
     private RetrofitFactory mRetrofitFactory;
     private HttpClientFactory mHttpClientFactory;
 
-    public Client(String baseUrl) {
+    private Client(String baseUrl, long connectTimeout, long readTimeout) {
         mBaseUrl = baseUrl;
+        mConnectTimeout = connectTimeout;
+        mReadTimeout = readTimeout;
     }
 
     public ServerRestApi infoApi() {
@@ -52,6 +58,14 @@ public final class Client {
 
     public String getBaseUrl() {
         return mBaseUrl;
+    }
+
+    public long getConnectTimeout() {
+        return mConnectTimeout;
+    }
+
+    public long getReadTimeout() {
+        return mReadTimeout;
     }
 
     RetrofitFactory getRetrofitFactory() {
@@ -77,12 +91,25 @@ public final class Client {
     public static class OptionalBuilder {
         private final String mBaseUrl;
 
+        private long connectTimeout = 10000;
+        private long readTimeout = 10000;
+
         private OptionalBuilder(String baseUrl) {
             mBaseUrl = baseUrl;
         }
 
+        public OptionalBuilder withConnectionTimeOut(long timeout, TimeUnit unit) {
+            connectTimeout = unit.toMillis(timeout);
+            return this;
+        }
+
+        public OptionalBuilder withReadTimeout(long timeout, TimeUnit unit) {
+            readTimeout = unit.toMillis(timeout);
+            return this;
+        }
+
         public Client create() {
-            return new Client(mBaseUrl);
+            return new Client(mBaseUrl, connectTimeout, readTimeout);
         }
     }
 }

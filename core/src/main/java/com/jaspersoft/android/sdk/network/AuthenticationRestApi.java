@@ -29,13 +29,13 @@ import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
-import retrofit.http.Header;
 import retrofit.http.Headers;
 
 import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,33 +49,30 @@ class AuthenticationRestApi {
     @NotNull
     private final Client mClient;
 
-    @Nullable
-    private OkHttpClient mOkHttpClient;
-    @Nullable
-    private Retrofit mRetrofit;
-
     AuthenticationRestApi(@NotNull Client client) {
         mClient = client;
     }
 
     @NotNull
-    public Cookies springAuth(@NotNull final String username,
-                              @NotNull final String password,
-                              final String organization,
-                              final Map<String, String> params) throws HttpException, IOException {
+    public void springAuth(@NotNull final String username,
+                           @NotNull final String password,
+                           final String organization,
+                           final Map<String, String> params) throws HttpException, IOException {
+        HttpClientFactory clientFactory = mClient.getClientFactory();
+        OkHttpClient okHttpClient = clientFactory.newHttpClient();
+        okHttpClient.setFollowRedirects(false);
+
         Request request = createAuthRequest(username, password, organization, params);
-        Call call = getHttpClient().newCall(request);
+        Call call = okHttpClient.newCall(request);
+
         com.squareup.okhttp.Response response = call.execute();
+
         int statusCode = response.code();
-        if (statusCode >= 200 && statusCode < 300) { // 2XX == successful request
-            return CookieExtractor.extract(response);
-        } else if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+        if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
             String location = response.headers().get("Location");
             HttpUrl url = HttpUrl.parse(location);
             String errorQueryParameter = url.queryParameter("error");
-            if (errorQueryParameter == null) {
-                return CookieExtractor.extract(response);
-            } else {
+            if (errorQueryParameter != null) {
                 com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
                         .protocol(response.protocol())
                         .request(response.request())
@@ -92,14 +89,19 @@ class AuthenticationRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        RestApi api = getRetrofit().create(RestApi.class);
-        Response response = CallWrapper.wrap(api.requestAnonymousCookie()).response();
-        Cookies anonymousCookies = CookieExtractor.extract(response.raw());
+        RetrofitFactory retrofitFactory = mClient.getRetrofitFactory();
+        HttpClientFactory clientFactory = mClient.getClientFactory();
+        OkHttpClient client = clientFactory.newHttpClient();
+        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        Retrofit retrofit = retrofitFactory.newRetrofit()
+                .client(client)
+                .build();
 
-        RestApi modifiedApi = getRetrofit().create(RestApi.class);
+        RestApi api = retrofit.create(RestApi.class);
+        CallWrapper.wrap(api.requestAnonymousCookie());
 
         try {
-            return CallWrapper.wrap(modifiedApi.requestEncryptionMetadata(anonymousCookies.toString())).body();
+            return CallWrapper.wrap(api.requestEncryptionMetadata()).body();
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when security option is disabled on JRS side.
@@ -108,26 +110,6 @@ class AuthenticationRestApi {
              */
             return EncryptionKey.empty();
         }
-    }
-
-    private OkHttpClient getHttpClient() {
-        if (mOkHttpClient == null) {
-            HttpClientFactory clientFactory = mClient.getClientFactory();
-            OkHttpClient okHttpClient = clientFactory.newHttpClient();
-            okHttpClient.setFollowRedirects(false);
-            mOkHttpClient = okHttpClient;
-        }
-        return mOkHttpClient;
-    }
-
-    private Retrofit getRetrofit() {
-        if (mRetrofit == null) {
-            RetrofitFactory retrofitFactory = mClient.getRetrofitFactory();
-            Retrofit retrofit = retrofitFactory.newRetrofit().build();
-            mRetrofit = retrofit;
-        }
-
-        return mRetrofit;
     }
 
     private Request createAuthRequest(
@@ -170,6 +152,6 @@ class AuthenticationRestApi {
 
         @NotNull
         @GET("GetEncryptionKey")
-        retrofit.Call<EncryptionKey> requestEncryptionMetadata(@NotNull @Header("Cookie") String cookie);
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata();
     }
 }
