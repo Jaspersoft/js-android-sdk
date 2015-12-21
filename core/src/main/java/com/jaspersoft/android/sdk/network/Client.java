@@ -31,12 +31,37 @@ package com.jaspersoft.android.sdk.network;
 public final class Client {
     private final String mBaseUrl;
 
+    private RetrofitFactory mRetrofitFactory;
+    private HttpClientFactory mHttpClientFactory;
+
     public Client(String baseUrl) {
         mBaseUrl = baseUrl;
     }
 
+    public ServerRestApi infoApi() {
+        return new ServerRestApiImpl(this);
+    }
+
     public static GenericBuilder newBuilder() {
         return new GenericBuilder();
+    }
+
+    public String getBaseUrl() {
+        return mBaseUrl;
+    }
+
+    RetrofitFactory getRetrofitFactory() {
+        if (mRetrofitFactory == null) {
+            mRetrofitFactory = new RetrofitFactory(this);
+        }
+        return mRetrofitFactory;
+    }
+
+    HttpClientFactory getClientFactory() {
+        if (mHttpClientFactory == null) {
+            mHttpClientFactory = new HttpClientFactory(this);
+        }
+        return mHttpClientFactory;
     }
 
     public static class GenericBuilder {
