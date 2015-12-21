@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.network;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 
 /**
  * @author Tom Koptel
@@ -36,13 +35,15 @@ import java.lang.reflect.Proxy;
 public final class AuthorizedClient {
     final Client anonymousClient;
     final Credentials credentials;
+    final AuthPolicy authenticationPolicy;
 
     private AuthClientState mAuthClientState;
 
     @TestOnly
-    AuthorizedClient(Client client, Credentials credentials, AuthClientState authClientState) {
+    AuthorizedClient(Client client, Credentials credentials, AuthPolicy authenticationPolicy, AuthClientState authClientState) {
         anonymousClient = client;
         this.credentials = credentials;
+        this.authenticationPolicy = authenticationPolicy;
 
         mAuthClientState = authClientState;
     }
@@ -63,18 +64,26 @@ public final class AuthorizedClient {
         private final Client mClient;
         private final Credentials mCredentials;
 
+        private AuthPolicy mAuthenticationPolicy;
+
         Builder(Client client, Credentials credentials) {
             mClient = client;
             mCredentials = credentials;
         }
 
-        public Builder withProxy(Proxy proxy) {
+        public Builder withAuthenticationPolicy(AuthPolicy authenticationPolicy) {
+            mAuthenticationPolicy = authenticationPolicy;
             return this;
         }
 
         public AuthorizedClient create() {
+            ensureSaneDefaults();
             AuthClientState state = new InitialAuthClientState();
-            return new AuthorizedClient(mClient, mCredentials, state);
+            return new AuthorizedClient(mClient, mCredentials, mAuthenticationPolicy, state);
+        }
+
+        private void ensureSaneDefaults() {
+            mAuthenticationPolicy = AuthPolicy.RETRY;
         }
     }
 }

@@ -33,17 +33,14 @@ import java.io.IOException;
 final class InitialAuthClientState implements AuthClientState {
     @Override
     public void connect(AuthorizedClient context) throws IOException, HttpException {
-        Client client = context.anonymousClient;
-        Credentials credentials = context.credentials;
-
-        AuthStrategy authStrategy = new AuthStrategy(client);
-        credentials.apply(authStrategy);
-
-        context.setAuthClientState(new AuthorizedAuthClientState());
+        AuthClientState state = new AuthorizedAuthClientState();
+        state.connect(context);
+        context.setAuthClientState(state);
     }
 
     @Override
     public ReportExecutionRestApi makeReportExecutionApi() {
         throw new IllegalStateException("Unauthorized state. Please, connect client before usage");
     }
+
 }
