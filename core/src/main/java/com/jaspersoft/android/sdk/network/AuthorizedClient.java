@@ -68,6 +68,10 @@ public final class AuthorizedClient {
         return mAuthClientState.makeInputControlRestApi();
     }
 
+    public RepositoryRestApi repositoryApi() {
+        return mAuthClientState.makeRepositoryRestApi();
+    }
+
     void setAuthClientState(AuthClientState authClientState) {
         mAuthClientState = authClientState;
     }
