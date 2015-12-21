@@ -53,43 +53,37 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NotNull
     @Override
-    public Collection<InputControl> requestInputControls(@Nullable Cookies cookies,
-                                                         @Nullable String reportUri,
+    public Collection<InputControl> requestInputControls(@Nullable String reportUri,
                                                          boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
         String state = (excludeState ? "state" : null);
-        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state, cookies.toString());
+        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state);
         InputControlCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable Cookies cookies,
-                                                                           @Nullable String reportUri,
+    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
                                                                            boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData, cookies.toString());
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsStates(@Nullable Cookies cookies,
-                                                                    @Nullable String reportUri,
+    public Collection<InputControlState> requestInputControlsStates(@Nullable String reportUri,
                                                                     @Nullable Map<String, Set<String>> controlsValues,
                                                                     boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(controlsValues, "Controls values should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
         String ids = Utils.joinString(";", controlsValues.keySet());
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData, cookies.toString());
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
@@ -100,16 +94,14 @@ final class InputControlRestApiImpl implements InputControlRestApi {
         @GET("rest_v2/reports{reportUnitURI}/inputControls")
         Call<InputControlCollection> requestInputControls(
                 @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("exclude") String state,
-                @Header("Cookie") String cookie);
+                @Query("exclude") String state);
 
         @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
         Call<InputControlStateCollection> requestInputControlsInitialValues(
                 @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
-                @Query("freshData") boolean freshData,
-                @Header("Cookie") String cookie);
+                @Query("freshData") boolean freshData);
 
         @NotNull
         @Headers("Accept: application/json")
@@ -118,7 +110,6 @@ final class InputControlRestApiImpl implements InputControlRestApi {
                 @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
                 @NotNull @Path(value = "controlsId", encoded = true) String ids,
                 @NotNull @Body Map<String, Set<String>> controlsValues,
-                @Query("freshData") boolean freshData,
-                @Header("Cookie") String cookie);
+                @Query("freshData") boolean freshData);
     }
 }

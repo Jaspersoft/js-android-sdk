@@ -35,4 +35,5 @@ interface AuthClientState {
     ReportExecutionRestApi makeReportExecutionApi();
     ReportExportRestApi makeReportExportRestApi();
     ReportOptionRestApi makeReportOptionRestApi();
+    InputControlRestApi makeInputControlRestApi();
 }

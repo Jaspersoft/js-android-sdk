@@ -54,4 +54,9 @@ final class InitialAuthClientState implements AuthClientState {
     public ReportOptionRestApi makeReportOptionRestApi() {
         throw new IllegalStateException(MESSAGE);
     }
+
+    @Override
+    public InputControlRestApi makeInputControlRestApi() {
+        throw new IllegalStateException(MESSAGE);
+    }
 }

@@ -60,6 +60,14 @@ public final class AuthorizedClient {
         return mAuthClientState.makeReportExportRestApi();
     }
 
+    public ReportOptionRestApi reportOptionsApi() {
+        return mAuthClientState.makeReportOptionRestApi();
+    }
+
+    public InputControlRestApi inputControlApi() {
+        return mAuthClientState.makeInputControlRestApi();
+    }
+
     void setAuthClientState(AuthClientState authClientState) {
         mAuthClientState = authClientState;
     }
