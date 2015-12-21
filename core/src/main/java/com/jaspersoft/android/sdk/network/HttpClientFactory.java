@@ -31,10 +31,10 @@ import com.squareup.okhttp.OkHttpClient;
  * @since 2.0
  */
 final class HttpClientFactory {
-    private final Client mClient;
+    private final Server mServer;
 
-    HttpClientFactory(Client client) {
-        mClient = client;
+    HttpClientFactory(Server server) {
+        mServer = server;
     }
 
     public OkHttpClient newHttpClient() {

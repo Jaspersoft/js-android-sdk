@@ -34,7 +34,7 @@ final class InitialAuthClientState implements AuthClientState {
     private static final String MESSAGE = "Unauthorized state. Please, connect client before usage";
 
     @Override
-    public void connect(AuthorizedClient context) throws IOException, HttpException {
+    public void connect(Client context) throws IOException, HttpException {
         AuthClientState state = new AuthorizedAuthClientState();
         state.connect(context);
         context.setAuthClientState(state);

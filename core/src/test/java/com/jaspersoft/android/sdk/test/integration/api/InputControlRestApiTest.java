@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.Client;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
@@ -58,7 +58,7 @@ public class InputControlRestApiTest {
     @Before
     public void setUp() throws Exception {
         if (apiUnderTest == null) {
-            AuthorizedClient client = mLazyClient.get();
+            Client client = mLazyClient.get();
             apiUnderTest = client.inputControlApi();
         }
     }

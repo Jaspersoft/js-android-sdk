@@ -35,13 +35,13 @@ import java.io.IOException;
  */
 class AuthStrategy {
     @NotNull
-    private final Client mClient;
+    private final Server mServer;
 
     @Nullable
     private SpringAuthService springAuthService;
 
-    AuthStrategy(@NotNull Client client) {
-        mClient = client;
+    AuthStrategy(@NotNull Server server) {
+        mServer = server;
     }
 
     void apply(SpringCredentials credentials) throws IOException, HttpException {
@@ -52,7 +52,7 @@ class AuthStrategy {
     }
 
     private SpringAuthService createSpringAuthService() {
-        AuthenticationRestApi restApi = new AuthenticationRestApi(mClient);
+        AuthenticationRestApi restApi = new AuthenticationRestApi(mServer);
         JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
         return new SpringAuthService(restApi, encryptionAlgorithm);
     }

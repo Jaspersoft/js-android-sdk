@@ -24,8 +24,8 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Client;
+import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.HttpException;
 
 import java.io.IOException;
@@ -36,25 +36,25 @@ import java.io.IOException;
  */
 final class LazyClient {
     private final JrsMetadata mJrsMetadata;
-    private AuthorizedClient authorizedClient;
+    private Client mClient;
 
     public LazyClient(JrsMetadata jrsMetadata) {
         mJrsMetadata = jrsMetadata;
     }
 
-    public AuthorizedClient get() {
-        if (authorizedClient == null) {
-            Client client = Client.newBuilder()
+    public Client get() {
+        if (mClient == null) {
+            Server server = Server.newBuilder()
                     .withBaseUrl(mJrsMetadata.getServerUrl())
                     .create();
-            authorizedClient = client.makeAuthorizedClient(mJrsMetadata.getCredentials())
+            mClient = server.makeAuthorizedClient(mJrsMetadata.getCredentials())
                     .create();
             try {
-                authorizedClient.connect();
+                mClient.connect();
             } catch (IOException | HttpException e) {
                 throw new RuntimeException(e);
             }
         }
-        return authorizedClient;
+        return mClient;
     }
 }

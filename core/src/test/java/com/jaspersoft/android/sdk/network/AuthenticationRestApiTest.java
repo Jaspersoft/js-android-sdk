@@ -61,10 +61,10 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Client client = Client.newBuilder()
+        Server server = Server.newBuilder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .create();
-        apiUnderTest = new AuthenticationRestApi(client);
+        apiUnderTest = new AuthenticationRestApi(server);
     }
 
     @Test

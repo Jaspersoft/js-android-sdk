@@ -31,7 +31,7 @@ import java.io.IOException;
  * @since 2.0
  */
 interface AuthClientState {
-    void connect(AuthorizedClient context) throws IOException, HttpException;
+    void connect(Client context) throws IOException, HttpException;
     ReportExecutionRestApi makeReportExecutionApi();
     ReportExportRestApi makeReportExportRestApi();
     ReportOptionRestApi makeReportOptionRestApi();

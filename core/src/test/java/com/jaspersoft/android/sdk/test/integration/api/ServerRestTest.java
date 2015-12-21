@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 
-import com.jaspersoft.android.sdk.network.Client;
+import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import org.junit.Before;
@@ -47,10 +47,10 @@ public class ServerRestTest {
     @Before
     public void setup() {
         if (apiUnderTest == null) {
-            Client client = Client.newBuilder()
+            Server server = Server.newBuilder()
                     .withBaseUrl(mobileDemo2)
                     .create();
-            apiUnderTest = client.infoApi();
+            apiUnderTest = server.infoApi();
         }
     }
 

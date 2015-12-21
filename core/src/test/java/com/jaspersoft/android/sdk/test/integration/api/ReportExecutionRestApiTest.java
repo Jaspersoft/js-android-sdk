@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.Client;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
@@ -62,7 +62,7 @@ public class ReportExecutionRestApiTest {
     @Before
     public void setUp() throws Exception {
         if (apiUnderTest == null) {
-            AuthorizedClient client = mLazyClient.get();
+            Client client = mLazyClient.get();
             apiUnderTest = client.reportExecutionApi();
         }
     }

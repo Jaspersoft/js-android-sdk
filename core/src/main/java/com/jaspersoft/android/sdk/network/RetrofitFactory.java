@@ -34,11 +34,11 @@ import retrofit.Retrofit;
  * @since 2.0
  */
 final class RetrofitFactory {
-    private final Client mClient;
+    private final Server mServer;
 
     @TestOnly
-    RetrofitFactory(Client client) {
-        mClient = client;
+    RetrofitFactory(Server server) {
+        mServer = server;
     }
 
     public Retrofit.Builder newRetrofit() {
@@ -47,7 +47,7 @@ final class RetrofitFactory {
         StringConverterFactory stringConverterFactory = StringConverterFactory.create();
 
         return new Retrofit.Builder()
-                .baseUrl(mClient.getBaseUrl())
+                .baseUrl(mServer.getBaseUrl())
                 .addConverterFactory(gsonConverterFactory)
                 .addConverterFactory(stringConverterFactory);
     }

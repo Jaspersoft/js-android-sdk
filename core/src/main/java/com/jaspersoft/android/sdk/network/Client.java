@@ -24,103 +24,82 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import retrofit.Retrofit;
+import org.jetbrains.annotations.TestOnly;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class Client {
-    private final String mBaseUrl;
-    private final long mConnectTimeout;
-    private final long mReadTimeout;
+    final Server mAnonymousServer;
+    final Credentials credentials;
+    final AuthPolicy authenticationPolicy;
 
-    private RetrofitFactory mRetrofitFactory;
-    private HttpClientFactory mHttpClientFactory;
+    private AuthClientState mAuthClientState;
 
-    private ServerRestApi mServerRestApi;
+    @TestOnly
+    Client(Server server, Credentials credentials, AuthPolicy authenticationPolicy, AuthClientState authClientState) {
+        mAnonymousServer = server;
+        this.credentials = credentials;
+        this.authenticationPolicy = authenticationPolicy;
 
-    private Client(String baseUrl, long connectTimeout, long readTimeout) {
-        mBaseUrl = baseUrl;
-        mConnectTimeout = connectTimeout;
-        mReadTimeout = readTimeout;
+        mAuthClientState = authClientState;
     }
 
-    public ServerRestApi infoApi() {
-        if (mServerRestApi == null) {
-            Retrofit retrofit = getRetrofitFactory()
-                    .newRetrofit()
-                    .build();
-
-            mServerRestApi = new ServerRestApiImpl(retrofit);
-        }
-        return mServerRestApi;
+    public void connect() throws IOException, HttpException {
+        mAuthClientState.connect(this);
     }
 
-    public AuthorizedClient.Builder makeAuthorizedClient(Credentials credentials) {
-        return new AuthorizedClient.Builder(this, credentials);
+    public ReportExecutionRestApi reportExecutionApi() {
+        return mAuthClientState.makeReportExecutionApi();
     }
 
-    public static GenericBuilder newBuilder() {
-        return new GenericBuilder();
+    public ReportExportRestApi reportExportApi() {
+        return mAuthClientState.makeReportExportRestApi();
     }
 
-    public String getBaseUrl() {
-        return mBaseUrl;
+    public ReportOptionRestApi reportOptionsApi() {
+        return mAuthClientState.makeReportOptionRestApi();
     }
 
-    public long getConnectTimeout() {
-        return mConnectTimeout;
+    public InputControlRestApi inputControlApi() {
+        return mAuthClientState.makeInputControlRestApi();
     }
 
-    public long getReadTimeout() {
-        return mReadTimeout;
+    public RepositoryRestApi repositoryApi() {
+        return mAuthClientState.makeRepositoryRestApi();
     }
 
-    RetrofitFactory getRetrofitFactory() {
-        if (mRetrofitFactory == null) {
-            mRetrofitFactory = new RetrofitFactory(this);
-        }
-        return mRetrofitFactory;
+    void setAuthClientState(AuthClientState authClientState) {
+        mAuthClientState = authClientState;
     }
 
-    HttpClientFactory getClientFactory() {
-        if (mHttpClientFactory == null) {
-            mHttpClientFactory = new HttpClientFactory(this);
-        }
-        return mHttpClientFactory;
-    }
+    public static class Builder {
+        private final Server mServer;
+        private final Credentials mCredentials;
 
-    public static class GenericBuilder {
-        public OptionalBuilder withBaseUrl(String baseUrl) {
-            return new OptionalBuilder(baseUrl);
-        }
-    }
+        private AuthPolicy mAuthenticationPolicy;
 
-    public static class OptionalBuilder {
-        private final String mBaseUrl;
-
-        private long connectTimeout = 10000;
-        private long readTimeout = 10000;
-
-        private OptionalBuilder(String baseUrl) {
-            mBaseUrl = baseUrl;
+        Builder(Server server, Credentials credentials) {
+            mServer = server;
+            mCredentials = credentials;
         }
 
-        public OptionalBuilder withConnectionTimeOut(long timeout, TimeUnit unit) {
-            connectTimeout = unit.toMillis(timeout);
-            return this;
-        }
-
-        public OptionalBuilder withReadTimeout(long timeout, TimeUnit unit) {
-            readTimeout = unit.toMillis(timeout);
+        public Builder withAuthenticationPolicy(AuthPolicy authenticationPolicy) {
+            mAuthenticationPolicy = authenticationPolicy;
             return this;
         }
 
         public Client create() {
-            return new Client(mBaseUrl, connectTimeout, readTimeout);
+            ensureSaneDefaults();
+            AuthClientState state = new InitialAuthClientState();
+            return new Client(mServer, mCredentials, mAuthenticationPolicy, state);
+        }
+
+        private void ensureSaneDefaults() {
+            mAuthenticationPolicy = AuthPolicy.RETRY;
         }
     }
 }

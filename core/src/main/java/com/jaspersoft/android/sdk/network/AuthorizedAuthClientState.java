@@ -40,7 +40,7 @@ import java.net.Proxy;
 final class AuthorizedAuthClientState implements AuthClientState {
 
     private Retrofit mRetrofit;
-    private AuthorizedClient mAuthorizedClient;
+    private Client mClient;
 
     private ReportExecutionRestApi mReportExecutionRestApi;
     private ReportExportRestApi mReportExportRestApi;
@@ -49,15 +49,15 @@ final class AuthorizedAuthClientState implements AuthClientState {
     private RepositoryRestApi mRepositoryRestApi;
 
     @Override
-    public void connect(AuthorizedClient context) throws IOException, HttpException {
-        mAuthorizedClient = context;
+    public void connect(Client context) throws IOException, HttpException {
+        mClient = context;
         makeAuthCall();
     }
 
     private void makeAuthCall() throws IOException, HttpException {
-        Client client = mAuthorizedClient.anonymousClient;
-        Credentials credentials = mAuthorizedClient.credentials;
-        AuthStrategy authStrategy = new AuthStrategy(client);
+        Server server = mClient.mAnonymousServer;
+        Credentials credentials = mClient.credentials;
+        AuthStrategy authStrategy = new AuthStrategy(server);
         credentials.apply(authStrategy);
     }
 
@@ -103,7 +103,7 @@ final class AuthorizedAuthClientState implements AuthClientState {
 
     Retrofit getRetrofit() {
         if (mRetrofit == null) {
-            RetrofitFactory retrofitFactory = new RetrofitFactory(mAuthorizedClient.anonymousClient);
+            RetrofitFactory retrofitFactory = new RetrofitFactory(mClient.mAnonymousServer);
             Retrofit.Builder builder = retrofitFactory.newRetrofit();
 
             OkHttpClient okHttpClient = configureOkHttp();
@@ -117,7 +117,7 @@ final class AuthorizedAuthClientState implements AuthClientState {
 
     private OkHttpClient configureOkHttp() {
         OkHttpClient okHttpClient = new OkHttpClient();
-        if (mAuthorizedClient.authenticationPolicy == AuthPolicy.RETRY) {
+        if (mClient.authenticationPolicy == AuthPolicy.RETRY) {
             okHttpClient.setAuthenticator(new Authenticator() {
                 @Override
                 public Request authenticate(Proxy proxy, Response response) throws IOException {

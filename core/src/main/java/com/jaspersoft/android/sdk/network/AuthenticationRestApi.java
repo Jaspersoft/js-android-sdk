@@ -28,7 +28,6 @@ import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
@@ -47,10 +46,10 @@ import java.util.Set;
  */
 class AuthenticationRestApi {
     @NotNull
-    private final Client mClient;
+    private final Server mServer;
 
-    AuthenticationRestApi(@NotNull Client client) {
-        mClient = client;
+    AuthenticationRestApi(@NotNull Server server) {
+        mServer = server;
     }
 
     @NotNull
@@ -58,7 +57,7 @@ class AuthenticationRestApi {
                            @NotNull final String password,
                            final String organization,
                            final Map<String, String> params) throws HttpException, IOException {
-        HttpClientFactory clientFactory = mClient.getClientFactory();
+        HttpClientFactory clientFactory = mServer.getClientFactory();
         OkHttpClient okHttpClient = clientFactory.newHttpClient();
         okHttpClient.setFollowRedirects(false);
 
@@ -89,8 +88,8 @@ class AuthenticationRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        RetrofitFactory retrofitFactory = mClient.getRetrofitFactory();
-        HttpClientFactory clientFactory = mClient.getClientFactory();
+        RetrofitFactory retrofitFactory = mServer.getRetrofitFactory();
+        HttpClientFactory clientFactory = mServer.getClientFactory();
         OkHttpClient client = clientFactory.newHttpClient();
         client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         Retrofit retrofit = retrofitFactory.newRetrofit()
@@ -139,7 +138,7 @@ class AuthenticationRestApi {
          * Constructs url http[s]://some.jrs/j_spring_security_check
          */
         return new Request.Builder()
-                .url(mClient.getBaseUrl() + "j_spring_security_check")
+                .url(mServer.getBaseUrl() + "j_spring_security_check")
                 .post(formBody.build())
                 .build();
     }
