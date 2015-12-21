@@ -42,6 +42,10 @@ public final class Client {
         return new ServerRestApiImpl(this);
     }
 
+    public AuthorizedClient.Builder makeAuthorizedClient(Credentials credentials) {
+        return new AuthorizedClient.Builder(this, credentials);
+    }
+
     public static GenericBuilder newBuilder() {
         return new GenericBuilder();
     }

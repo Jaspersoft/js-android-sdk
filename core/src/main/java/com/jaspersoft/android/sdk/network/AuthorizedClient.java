@@ -59,16 +59,16 @@ public final class AuthorizedClient {
         mAuthClientState = authClientState;
     }
 
-    public static class GenericBuilder {
+    public static class Builder {
         private final Client mClient;
         private final Credentials mCredentials;
 
-        GenericBuilder(Client client, Credentials credentials) {
+        Builder(Client client, Credentials credentials) {
             mClient = client;
             mCredentials = credentials;
         }
 
-        public GenericBuilder withProxy(Proxy proxy) {
+        public Builder withProxy(Proxy proxy) {
             return this;
         }
 
