@@ -25,10 +25,12 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.Client;
-import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.network.Server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 /**
  * @author Tom Koptel
@@ -42,12 +44,17 @@ final class LazyClient {
         mJrsMetadata = jrsMetadata;
     }
 
+    public static Server getServer(String serverUrl) {
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("0.0.0.0", 8888));
+        return Server.newBuilder()
+                .withBaseUrl(serverUrl)
+                .withProxy(proxy)
+                .create();
+    }
+
     public Client get() {
         if (mClient == null) {
-            Server server = Server.newBuilder()
-                    .withBaseUrl(mJrsMetadata.getServerUrl())
-                    .create();
-            mClient = server.makeAuthorizedClient(mJrsMetadata.getCredentials())
+            mClient = getServer(mJrsMetadata.getServerUrl()).makeAuthorizedClient(mJrsMetadata.getCredentials())
                     .create();
             try {
                 mClient.connect();

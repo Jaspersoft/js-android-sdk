@@ -28,7 +28,6 @@ import com.squareup.okhttp.OkHttpClient;
 import retrofit.Retrofit;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -106,21 +105,12 @@ final class AuthorizedAuthClientState implements AuthClientState {
     }
 
     private OkHttpClient configureOkHttp() {
-        OkHttpClient okHttpClient = new OkHttpClient();
+        Server server = mClient.getServer();
+        OkHttpClient okHttpClient = server.newOkHttp();
         if (mClient.getAuthPolicy() == AuthPolicy.RETRY) {
             okHttpClient.setAuthenticator(mAuthenticationHandler);
         }
         okHttpClient.setCookieHandler(mClient.getCookieHandler());
-
-        Server server = mClient.getServer();
-        okHttpClient.setConnectTimeout(server.getConnectTimeout(), TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(server.getReadTimeout(), TimeUnit.MILLISECONDS);
-        okHttpClient.setWriteTimeout(server.getWriteTimeout(), TimeUnit.MILLISECONDS);
-
-        if (server.getProxy() != null) {
-            okHttpClient.setProxy(server.getProxy());
-        }
-
         return okHttpClient;
     }
 }

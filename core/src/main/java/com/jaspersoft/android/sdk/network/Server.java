@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
+import com.squareup.okhttp.OkHttpClient;
 import retrofit.Retrofit;
 
 import java.net.Proxy;
@@ -58,7 +59,10 @@ public final class Server {
 
     public ServerRestApi infoApi() {
         if (mServerRestApi == null) {
-            mServerRestApi = new ServerRestApiImpl(newRetrofit().build());
+            Retrofit retrofit = newRetrofit()
+                    .client(newOkHttp())
+                    .build();
+            mServerRestApi = new ServerRestApiImpl(retrofit);
         }
         return mServerRestApi;
     }
@@ -98,8 +102,19 @@ public final class Server {
 
         return new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
-                .addConverterFactory(gsonConverterFactory)
-                .addConverterFactory(stringConverterFactory);
+                .addConverterFactory(stringConverterFactory)
+                .addConverterFactory(gsonConverterFactory);
+    }
+
+    OkHttpClient newOkHttp() {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.setConnectTimeout(mConnectTimeout, TimeUnit.MILLISECONDS);
+        okHttpClient.setReadTimeout(mReadTimeout, TimeUnit.MILLISECONDS);
+        okHttpClient.setWriteTimeout(mWriteTimeout, TimeUnit.MILLISECONDS);
+        if (mProxy != null) {
+            okHttpClient.setProxy(mProxy);
+        }
+        return okHttpClient;
     }
 
     public static class GenericBuilder {
