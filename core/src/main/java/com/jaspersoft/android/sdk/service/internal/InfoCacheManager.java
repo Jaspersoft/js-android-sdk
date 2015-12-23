@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
-import com.jaspersoft.android.sdk.network.Server;
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.info.InfoCache;
@@ -47,9 +47,9 @@ public class InfoCacheManager {
         mInfoCache = infoCache;
     }
 
-    public static InfoCacheManager create(Server server, InfoCache cache) {
-        ServerInfoService serverInfoService = ServerInfoService.create(server);
-        String baseUrl = server.getBaseUrl();
+    public static InfoCacheManager create(AuthorizedClient client, InfoCache cache) {
+        ServerInfoService serverInfoService = ServerInfoService.create(client);
+        String baseUrl = client.getBaseUrl();
         return new InfoCacheManager(baseUrl, serverInfoService, cache);
     }
 

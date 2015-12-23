@@ -22,45 +22,45 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.Client;
-import com.jaspersoft.android.sdk.service.info.InfoCache;
-import com.jaspersoft.android.sdk.service.report.ReportService;
-import com.jaspersoft.android.sdk.service.repository.RepositoryService;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.net.Proxy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class Session extends AnonymousSession {
+final class RecoverableAuthenticator implements Authenticator {
+    private final Server mServer;
+    private final Credentials mCredentials;
 
-    private final InfoCache mInfoCache;
-
-    private ReportService mReportService;
-    private RepositoryService mRepositoryService;
-
-    @TestOnly
-    Session(Client client, InfoCache infoCache) {
-        super(client);
-        mInfoCache = infoCache;
+    RecoverableAuthenticator(Server server, Credentials credentials) {
+        mServer = server;
+        mCredentials = credentials;
     }
 
-    @NotNull
-    public ReportService reportApi() {
-        if (mReportService == null) {
-            mReportService = ReportService.create(mClient, mInfoCache);
+    @Override
+    public Request authenticate(Proxy proxy, Response response) throws IOException {
+        try {
+            authenticate();
+            return response.request();
+        } catch (HttpException code) {
+            return null;
         }
-        return mReportService;
     }
 
-    @NotNull
-    public RepositoryService repositoryApi() {
-        if (mRepositoryService == null) {
-            mRepositoryService = RepositoryService.create(mClient, mInfoCache);
-        }
-        return mRepositoryService;
+    @Override
+    public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+        return null;
+    }
+
+    private void authenticate() throws IOException, HttpException {
+        AuthStrategy authStrategy = new AuthStrategy(mServer);
+        mCredentials.apply(authStrategy);
     }
 }

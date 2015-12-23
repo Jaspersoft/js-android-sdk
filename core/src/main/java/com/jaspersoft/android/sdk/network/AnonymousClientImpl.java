@@ -22,25 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.Client;
-import com.jaspersoft.android.sdk.service.server.ServerInfoService;
-import org.jetbrains.annotations.NotNull;
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AnonymousSession {
-    protected final Client mClient;
+final class AnonymousClientImpl extends AbstractClient implements AnonymousClient {
+    private ServerRestApiImpl mServerRestApi;
 
-    protected AnonymousSession(Client client) {
-        mClient = client;
+    AnonymousClientImpl(Retrofit retrofit) {
+        super(retrofit);
     }
 
-    @NotNull
-    public final ServerInfoService infoApi() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public ServerRestApi infoApi() {
+        if (mServerRestApi == null) {
+            mServerRestApi = new ServerRestApiImpl(mRetrofit);
+        }
+        return mServerRestApi;
     }
 }

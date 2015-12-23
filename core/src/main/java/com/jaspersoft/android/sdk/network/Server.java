@@ -26,9 +26,13 @@ package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
-import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.*;
 import retrofit.Retrofit;
 
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
@@ -38,61 +42,27 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Server {
     private final String mBaseUrl;
-    private final Proxy mProxy;
-    private final long mConnectTimeout;
-    private final long mReadTimeout;
-    private final long mWriteTimeout;
+    private final OkHttpClient mOkHttpClient;
 
-    private ServerRestApi mServerRestApi;
-
-    private Server(String baseUrl,
-                   Proxy proxy,
-                   long connectTimeout,
-                   long readTimeout,
-                   long writeTimeout) {
+    private Server(String baseUrl, OkHttpClient okHttpClient) {
         mBaseUrl = baseUrl;
-        mProxy = proxy;
-        mConnectTimeout = connectTimeout;
-        mReadTimeout = readTimeout;
-        mWriteTimeout = writeTimeout;
+        mOkHttpClient = okHttpClient;
     }
 
-    public ServerRestApi infoApi() {
-        if (mServerRestApi == null) {
-            Retrofit retrofit = newRetrofit()
-                    .client(newOkHttp())
-                    .build();
-            mServerRestApi = new ServerRestApiImpl(retrofit);
-        }
-        return mServerRestApi;
+    public AnonymousClient newClient() {
+        return new AnonymousClientImpl(
+                newRetrofit()
+                        .client(mOkHttpClient)
+                        .build()
+        );
     }
 
-    public Client.Builder makeAuthorizedClient(Credentials credentials) {
-        return new Client.Builder(this, credentials);
-    }
-
-    public static GenericBuilder newBuilder() {
-        return new GenericBuilder();
+    public AuthorizedClientBuilder newClient(Credentials credentials) {
+        return new AuthorizedClientBuilder(this, credentials);
     }
 
     public String getBaseUrl() {
         return mBaseUrl;
-    }
-
-    public long getConnectTimeout() {
-        return mConnectTimeout;
-    }
-
-    public long getReadTimeout() {
-        return mReadTimeout;
-    }
-
-    public long getWriteTimeout() {
-        return mWriteTimeout;
-    }
-
-    public Proxy getProxy() {
-        return mProxy;
     }
 
     Retrofit.Builder newRetrofit() {
@@ -106,18 +76,17 @@ public final class Server {
                 .addConverterFactory(gsonConverterFactory);
     }
 
-    OkHttpClient newOkHttp() {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.setConnectTimeout(mConnectTimeout, TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(mReadTimeout, TimeUnit.MILLISECONDS);
-        okHttpClient.setWriteTimeout(mWriteTimeout, TimeUnit.MILLISECONDS);
-        if (mProxy != null) {
-            okHttpClient.setProxy(mProxy);
-        }
-        return okHttpClient;
+    OkHttpClient getClient() {
+        return mOkHttpClient;
     }
 
-    public static class GenericBuilder {
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Builder() {}
+
         public OptionalBuilder withBaseUrl(String baseUrl) {
             return new OptionalBuilder(baseUrl);
         }
@@ -125,39 +94,116 @@ public final class Server {
 
     public static class OptionalBuilder {
         private final String mBaseUrl;
-
-        private Proxy mProxy;
-
-        private long connectTimeout = 10000;
-        private long readTimeout = 10000;
-        private long writeTimeout = 10000;
+        private final OkHttpClient mOkHttpClient = new OkHttpClient();
 
         private OptionalBuilder(String baseUrl) {
             mBaseUrl = baseUrl;
         }
 
         public OptionalBuilder withConnectionTimeOut(long timeout, TimeUnit unit) {
-            connectTimeout = unit.toMillis(timeout);
+            mOkHttpClient.setConnectTimeout(timeout, unit);
             return this;
         }
 
         public OptionalBuilder withReadTimeout(long timeout, TimeUnit unit) {
-            readTimeout = unit.toMillis(timeout);
-            return this;
-        }
-
-        public OptionalBuilder withWriteTimeout(long timeout, TimeUnit unit) {
-            writeTimeout = unit.toMillis(timeout);
+            mOkHttpClient.setReadTimeout(timeout, unit);
             return this;
         }
 
         public OptionalBuilder withProxy(Proxy proxy) {
-            mProxy = proxy;
+            mOkHttpClient.setProxy(proxy);
             return this;
         }
 
-        public Server create() {
-            return new Server(mBaseUrl, mProxy, connectTimeout, readTimeout, writeTimeout);
+        public Server build() {
+            return new Server(mBaseUrl, mOkHttpClient);
+        }
+    }
+
+    public static class AuthorizedClientBuilder {
+        private final Server mServer;
+        private final Credentials mCredentials;
+
+        private AuthPolicy mAuthenticationPolicy;
+        private CookieHandler mCookieHandler;
+
+        AuthorizedClientBuilder(Server server, Credentials credentials) {
+            mServer = server;
+            mCredentials = credentials;
+        }
+
+        public AuthorizedClientBuilder withAuthenticationPolicy(AuthPolicy authenticationPolicy) {
+            mAuthenticationPolicy = authenticationPolicy;
+            return this;
+        }
+
+        public AuthorizedClientBuilder withCookieHandler(CookieHandler cookieHandler) {
+            mCookieHandler = cookieHandler;
+            return this;
+        }
+
+        public AuthorizedClient create() {
+            ensureSaneDefaults();
+
+            OkHttpClient authClient = configureAuthClient(mServer.getClient().clone());
+            OkHttpClient anonymClient = configureAnonymClient(mServer.getClient().clone());
+
+            Retrofit authRetrofit = mServer.newRetrofit()
+                    .client(authClient)
+                    .build();
+            Retrofit anonymRetrofit = mServer.newRetrofit()
+                    .client(anonymClient)
+                    .build();
+
+            AnonymousClient anonymousClient = new AnonymousClientImpl(anonymRetrofit);
+            return new AuthorizedClientImpl(authRetrofit, anonymousClient);
+        }
+
+        private OkHttpClient configureAnonymClient(OkHttpClient client) {
+            client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+            return client;
+        }
+
+        private OkHttpClient configureAuthClient(OkHttpClient client) {
+            client.setCookieHandler(mCookieHandler);
+
+            if (mAuthenticationPolicy == AuthPolicy.FAIL_FAST) {
+                client.interceptors().add(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Headers headers = chain.request().headers();
+                        boolean hasCookies = headers.names().contains("Cookie");
+                        if (!hasCookies) {
+                            Response response401 = new Response.Builder()
+                                    .protocol(Protocol.HTTP_1_1)
+                                    .request(chain.request())
+                                    .headers(chain.request().headers())
+                                    .code(401)
+                                    .build();
+                            return response401;
+                        }
+                        return chain.proceed(chain.request());
+                    }
+                });
+
+                RecoverableAuthenticator recoverableAuthenticator = new RecoverableAuthenticator(mServer, mCredentials);
+                SingleTimeAuthenticator singleTimeAuthenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
+                client.setAuthenticator(singleTimeAuthenticator);
+            } else {
+                RecoverableAuthenticator recoverableAuthenticator = new RecoverableAuthenticator(mServer, mCredentials);
+                client.setAuthenticator(recoverableAuthenticator);
+            }
+
+            return client;
+        }
+
+        private void ensureSaneDefaults() {
+            if (mAuthenticationPolicy == null) {
+                mAuthenticationPolicy = AuthPolicy.RETRY;
+            }
+            if (mCookieHandler == null) {
+                mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+            }
         }
     }
 }

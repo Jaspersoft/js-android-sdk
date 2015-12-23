@@ -24,8 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
@@ -54,9 +54,9 @@ public class ServerInfoService {
         mServiceExceptionMapper = serviceExceptionMapper;
     }
 
-    public static ServerInfoService create(Server server) {
+    public static ServerInfoService create(AnonymousClient client) {
         ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
-        return new ServerInfoService(server.infoApi(), ServerInfoTransformer.get(), serviceExceptionMapper);
+        return new ServerInfoService(client.infoApi(), ServerInfoTransformer.get(), serviceExceptionMapper);
     }
 
     public ServerInfo requestServerInfo() throws ServiceException {

@@ -24,10 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.Client;
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
-import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
@@ -63,7 +62,7 @@ public final class ReportService {
         mExportUseCase = exportUseCase;
     }
 
-    public static ReportService create(Client client, InfoCache infoCache) {
+    public static ReportService create(AuthorizedClient client, InfoCache infoCache) {
         ReportExecutionRestApi executionApi = client.reportExecutionApi();
         ReportExportRestApi exportApi = client.reportExportApi();
 
@@ -71,10 +70,9 @@ public final class ReportService {
         ServiceExceptionMapper reportExMapper = new ReportExceptionMapper(defaultExMapper);
         CallExecutor callExecutor = new DefaultCallExecutor(reportExMapper);
 
-        Server server = client.getServer();
-        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(server.getBaseUrl());
+        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(client.getBaseUrl());
 
-        InfoCacheManager cacheManager = InfoCacheManager.create(server, infoCache);
+        InfoCacheManager cacheManager = InfoCacheManager.create(client, infoCache);
         ReportExecutionUseCase reportExecutionUseCase =
                 new ReportExecutionUseCase(executionApi, callExecutor, cacheManager, executionOptionsMapper);
         ReportExportUseCase reportExportUseCase =

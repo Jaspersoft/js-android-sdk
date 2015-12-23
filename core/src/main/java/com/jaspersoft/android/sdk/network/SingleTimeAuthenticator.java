@@ -24,44 +24,36 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import java.io.IOException;
+import java.net.Proxy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class InitialAuthClientState implements AuthClientState {
-    private static final String MESSAGE = "Unauthorized state. Please, connect client before usage";
+final class SingleTimeAuthenticator implements Authenticator {
+    private Authenticator mDelegate;
 
-    @Override
-    public void connect(Client context) throws IOException, HttpException {
-        AuthClientState state = new AuthorizedAuthClientState();
-        state.connect(context);
-        context.setAuthClientState(state);
+    public SingleTimeAuthenticator(Authenticator delegate) {
+        mDelegate = delegate;
     }
 
     @Override
-    public ReportExecutionRestApi makeReportExecutionApi() {
-        throw new IllegalStateException(MESSAGE);
+    public Request authenticate(Proxy proxy, Response response) throws IOException {
+        if (mDelegate != null) {
+            Request request = mDelegate.authenticate(proxy, response);
+            mDelegate = null;
+            return request;
+        }
+        return null;
     }
 
     @Override
-    public ReportExportRestApi makeReportExportRestApi() {
-        throw new IllegalStateException(MESSAGE);
-    }
-
-    @Override
-    public ReportOptionRestApi makeReportOptionRestApi() {
-        throw new IllegalStateException(MESSAGE);
-    }
-
-    @Override
-    public InputControlRestApi makeInputControlRestApi() {
-        throw new IllegalStateException(MESSAGE);
-    }
-
-    @Override
-    public RepositoryRestApi makeRepositoryRestApi() {
-        throw new IllegalStateException(MESSAGE);
+    public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+        return null;
     }
 }

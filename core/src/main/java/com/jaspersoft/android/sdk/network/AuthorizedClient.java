@@ -24,43 +24,19 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.squareup.okhttp.Authenticator;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
-import java.net.Proxy;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class AuthenticationHandler implements Authenticator {
-    private final Client mClient;
+public interface AuthorizedClient extends AnonymousClient {
 
-    AuthenticationHandler(Client client) {
-        mClient = client;
-    }
+    ReportExecutionRestApi reportExecutionApi();
 
-    public void authenticate() throws IOException, HttpException {
-        Server server = mClient.getServer();
-        Credentials credentials = mClient.getCredentials();
-        AuthStrategy authStrategy = new AuthStrategy(server);
-        credentials.apply(authStrategy);
-    }
+    ReportExportRestApi reportExportApi();
 
-    @Override
-    public Request authenticate(Proxy proxy, Response response) throws IOException {
-        try {
-            authenticate();
-            return response.request();
-        } catch (HttpException code) {
-            return null;
-        }
-    }
+    ReportOptionRestApi reportOptionsApi();
 
-    @Override
-    public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
-        return null;
-    }
+    InputControlRestApi inputControlApi();
+
+    RepositoryRestApi repositoryApi();
 }

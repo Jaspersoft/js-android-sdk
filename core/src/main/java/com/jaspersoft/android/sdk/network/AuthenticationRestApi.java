@@ -56,7 +56,7 @@ class AuthenticationRestApi {
                            @NotNull final String password,
                            final String organization,
                            final Map<String, String> params) throws HttpException, IOException {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = mServer.getClient();
         client.setFollowRedirects(false);
 
         Request request = createAuthRequest(username, password, organization, params);

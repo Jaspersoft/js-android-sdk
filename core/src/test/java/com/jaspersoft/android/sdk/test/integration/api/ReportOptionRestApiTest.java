@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.Client;
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class ReportOptionRestApiTest {
     @Before
     public void setup() {
         if (apiUnderTest == null) {
-            Client client = mLazyClient.get();
+            AuthorizedClient client = mLazyClient.getAuthorizedClient();
             apiUnderTest = client.reportOptionsApi();
         }
     }

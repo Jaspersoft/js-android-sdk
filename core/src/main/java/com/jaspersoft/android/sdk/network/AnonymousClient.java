@@ -24,17 +24,10 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import java.io.IOException;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-interface AuthClientState {
-    void connect(Client context) throws IOException, HttpException;
-    ReportExecutionRestApi makeReportExecutionApi();
-    ReportExportRestApi makeReportExportRestApi();
-    ReportOptionRestApi makeReportOptionRestApi();
-    InputControlRestApi makeInputControlRestApi();
-    RepositoryRestApi makeRepositoryRestApi();
+public interface AnonymousClient extends Client {
+    ServerRestApi infoApi();
 }

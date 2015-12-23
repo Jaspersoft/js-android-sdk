@@ -63,7 +63,7 @@ public class AuthenticationRestApiTest {
         TestResourceInjector.inject(this);
         Server server = Server.newBuilder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
-                .create();
+                .build();
         apiUnderTest = new AuthenticationRestApi(server);
     }
 

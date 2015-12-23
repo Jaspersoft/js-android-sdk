@@ -39,14 +39,14 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ServerRestTest {
-
-    private String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
     private ServerRestApi apiUnderTest;
+
+    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
 
     @Before
     public void setup() {
         if (apiUnderTest == null) {
-            apiUnderTest = LazyClient.getServer(mobileDemo2).infoApi();
+            apiUnderTest = mLazyClient.getAuthorizedClient().infoApi();
         }
     }
 
