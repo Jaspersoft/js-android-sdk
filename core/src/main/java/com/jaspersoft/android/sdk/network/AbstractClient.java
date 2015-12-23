@@ -22,16 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.HttpException;
-
-import java.io.IOException;
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Call<T> {
-    T perform() throws IOException, HttpException;
+abstract class AbstractClient implements Client {
+    protected final Retrofit mRetrofit;
+
+    protected AbstractClient(Retrofit retrofit) {
+        mRetrofit = retrofit;
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return mRetrofit.baseUrl().url().toString();
+    }
 }

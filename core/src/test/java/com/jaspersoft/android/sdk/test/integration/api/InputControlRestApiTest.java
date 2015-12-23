@@ -24,28 +24,17 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNot.not;
 
 /**
@@ -54,9 +43,7 @@ import static org.hamcrest.core.IsNot.not;
  */
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
-    private InputControlRestApi mRestApi;
+
     public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
 
     static {
@@ -65,17 +52,20 @@ public class InputControlRestApiTest {
         CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
     }
 
-    @Before
-    public void setup() {
-        mRestApi = new InputControlRestApi.Builder()
-                .baseUrl(mMetadata.getServerUrl())
-                .logger(TestLogger.get(this))
-                .build();
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static InputControlRestApi apiUnderTest;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        if (apiUnderTest == null) {
+            AuthorizedClient client = mLazyClient.getAuthorizedClient();
+            apiUnderTest = client.inputControlApi();
+        }
     }
 
     @Test
     public void shouldProvideInputControlsList() throws Exception {
-        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, false);
+        Collection<InputControl> controls = apiUnderTest.requestInputControls(REPORT_URI, false);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -87,7 +77,7 @@ public class InputControlRestApiTest {
      */
     @Test
     public void shouldProvideInputControlsListIfStateExcluded() throws Exception {
-        Collection<InputControl> controls = mRestApi.requestInputControls(mAuthenticator.token(), REPORT_URI, true);
+        Collection<InputControl> controls = apiUnderTest.requestInputControls(REPORT_URI, true);
         assertThat(controls, is(not(empty())));
 
         InputControl control = new ArrayList<>(controls).get(0);
@@ -96,13 +86,13 @@ public class InputControlRestApiTest {
 
     @Test
     public void shouldProvideFreshInitialInputControlsValues() throws Exception {
-        Collection<InputControlState> states = mRestApi.requestInputControlsInitialStates(mAuthenticator.token(), REPORT_URI, true);
+        Collection<InputControlState> states = apiUnderTest.requestInputControlsInitialStates(REPORT_URI, true);
         assertThat(states, is(not(empty())));
     }
 
     @Test
     public void shouldProvideFreshStatesForInputControls() throws Exception {
-        Collection<InputControlState> states = mRestApi.requestInputControlsStates(mAuthenticator.token(), REPORT_URI, CONTROL_PARAMETERS, true);
+        Collection<InputControlState> states = apiUnderTest.requestInputControlsStates(REPORT_URI, CONTROL_PARAMETERS, true);
         assertThat(states, is(not(empty())));
     }
 }

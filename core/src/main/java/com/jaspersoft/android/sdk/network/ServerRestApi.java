@@ -65,11 +65,4 @@ public interface ServerRestApi {
 
     @NotNull
     String requestExpiration() throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, ServerRestApi> {
-        @Override
-        ServerRestApi createApi() {
-            return new ServerRestApiImpl(getAdapter().build());
-        }
-    }
 }

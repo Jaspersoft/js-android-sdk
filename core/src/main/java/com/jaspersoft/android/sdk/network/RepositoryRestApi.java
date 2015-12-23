@@ -41,21 +41,11 @@ import java.util.Map;
  */
 public interface RepositoryRestApi {
     @NotNull
-    ResourceSearchResult searchResources(@NotNull Cookies cookies,
-                                         @Nullable Map<String, Object> searchParams) throws HttpException, IOException;
+    ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams) throws HttpException, IOException;
 
     @NotNull
-    ReportLookup requestReportResource(@NotNull Cookies cookies,
-                                       @NotNull String resourceUri) throws HttpException, IOException;
+    ReportLookup requestReportResource(@NotNull String resourceUri) throws HttpException, IOException;
 
     @NotNull
-    FolderLookup requestFolderResource(@NotNull Cookies cookies,
-                                       @NotNull String resourceUri) throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, RepositoryRestApi> {
-        @Override
-        RepositoryRestApi createApi() {
-            return new RepositoryRestApiImpl(getAdapter().build());
-        }
-    }
+    FolderLookup requestFolderResource(@NotNull String resourceUri) throws HttpException, IOException;
 }

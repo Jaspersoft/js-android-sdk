@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -32,12 +33,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescri
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
-import com.jaspersoft.android.sdk.test.TestLogger;
-import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
-import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -51,26 +48,16 @@ import static org.junit.Assert.assertThat;
 public class ReportExportRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/AllAccounts";
 
-    ReportExecutionRestApi mExecApi;
-    ReportExportRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static ReportExecutionRestApi mExecApi;
+    private static ReportExportRestApi apiUnderTest;
 
-    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private final DummyTokenProvider mAuthenticator = DummyTokenProvider.create(mMetadata);
-
-    @Before
-    public void setup() {
-        if (mExecApi == null) {
-            mExecApi = new ReportExecutionRestApi.Builder()
-                    .baseUrl(mMetadata.getServerUrl())
-                    .logger(TestLogger.get(this))
-                    .build();
-        }
-
+    @BeforeClass
+    public static void setup() {
         if (apiUnderTest == null) {
-            apiUnderTest = new ReportExportRestApi.Builder()
-                    .baseUrl(mMetadata.getServerUrl())
-                    .logger(TestLogger.get(this))
-                    .build();
+            AuthorizedClient client = mLazyClient.getAuthorizedClient();
+            mExecApi = client.reportExecutionApi();
+            apiUnderTest = client.reportExportApi();
         }
     }
 
@@ -85,7 +72,7 @@ public class ReportExportRestApiTest {
     public void checkExportRequestStatusShouldReturnResult() throws Exception {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
+        ExecutionStatus response = apiUnderTest.checkExportExecutionStatus(exec.getExecutionId(), execDetails.getExportId());
         assertThat(response, is(notNullValue()));
     }
 
@@ -93,7 +80,7 @@ public class ReportExportRestApiTest {
     public void requestExportOutputShouldReturnResult() throws Exception {
         ReportExecutionDescriptor exec = startExecution();
         ExportExecutionDescriptor execDetails = startExportExecution(exec);
-        ExportOutputResource output = apiUnderTest.requestExportOutput(mAuthenticator.token(), exec.getExecutionId(), execDetails.getExportId());
+        ExportOutputResource output = apiUnderTest.requestExportOutput(exec.getExecutionId(), execDetails.getExportId());
 
         assertThat(output.getOutputResource(), is(notNullValue()));
         assertThat(output.getPages(), is("1-2"));
@@ -108,12 +95,12 @@ public class ReportExportRestApiTest {
         ExecutionRequestOptions options = ExecutionRequestOptions.create()
                 .withPages("1-2")
                 .withOutputFormat("PDF");
-        return apiUnderTest.runExportExecution(mAuthenticator.token(), exec.getExecutionId(), options);
+        return apiUnderTest.runExportExecution(exec.getExecutionId(), options);
     }
 
     @NotNull
     private ReportExecutionDescriptor startExecution() throws Exception {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(REPORT_URI);
-        return mExecApi.runReportExecution(mAuthenticator.token(), executionRequestOptions);
+        return mExecApi.runReportExecution(executionRequestOptions);
     }
 }

@@ -54,59 +54,49 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor runReportExecution(@Nullable Cookies cookies,
-                                                        @Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
+    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions, cookies.toString());
+        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions);
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable Cookies cookies,
-                                                                   @Nullable String executionId) throws IOException, HttpException {
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId, cookies.toString());
+        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId);
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ExecutionStatus requestReportExecutionStatus(@Nullable Cookies cookies,
-                                                        @Nullable String executionId) throws IOException, HttpException {
+    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId, cookies.toString());
+        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId);
         return CallWrapper.wrap(call).body();
     }
 
     @Override
-    public boolean cancelReportExecution(@Nullable Cookies cookies,
-                                         @Nullable String executionId) throws IOException, HttpException {
+    public boolean cancelReportExecution(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus(), cookies.toString());
+        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus());
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status != 204;
     }
 
     @Override
-    public boolean updateReportExecution(@Nullable Cookies cookies,
-                                         @Nullable String executionId,
+    public boolean updateReportExecution(@Nullable String executionId,
                                          @Nullable List<ReportParameter> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<Object> call = mRestApi.updateReportExecution(executionId, params, cookies.toString());
+        Call<Object> call = mRestApi.updateReportExecution(executionId, params);
         Response<Object> response = CallWrapper.wrap(call).response();
         int status = response.code();
         return status == 204;
@@ -114,13 +104,11 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
 
     @NotNull
     @Override
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable Cookies cookies,
-                                                               @Nullable Map<String, String> params) throws IOException, HttpException {
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params) throws IOException, HttpException {
         Utils.checkNotNull(params, "Search params should not be null");
         Utils.checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params, cookies.toString());
+        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params);
         ReportExecutionSearchResponse body = CallWrapper.wrap(call).body();
         if (body == null) {
             return ReportExecutionSearchResponse.empty();
@@ -132,38 +120,32 @@ final class ReportExecutionRestApiImpl implements ReportExecutionRestApi {
         @NotNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions")
-        Call<ReportExecutionDescriptor> runReportExecution(@NotNull @Body ReportExecutionRequestOptions executionOptions,
-                                                           @Header("Cookie") String cookie);
+        Call<ReportExecutionDescriptor> runReportExecution(@NotNull @Body ReportExecutionRequestOptions executionOptions);
 
         @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}")
-        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                                                      @Header("Cookie") String cookie);
+        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NotNull @Path(value = "executionId", encoded = true) String executionId);
 
         @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/status")
-        Call<ExecutionStatus> requestReportExecutionStatus(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                                           @Header("Cookie") String cookie);
+        Call<ExecutionStatus> requestReportExecutionStatus(@NotNull @Path(value = "executionId", encoded = true) String executionId);
 
         @NotNull
         @Headers("Accept: application/json")
         @POST("rest_v2/reportExecutions/{executionId}/parameters")
         Call<Object> updateReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                           @NotNull @Body List<ReportParameter> params,
-                                           @Header("Cookie") String cookie);
+                                           @NotNull @Body List<ReportParameter> params);
 
         @NotNull
         @Headers("Accept: application/json")
         @PUT("rest_v2/reportExecutions/{executionId}/status")
         Call<Object> cancelReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                           @NotNull @Body ExecutionStatus statusResponse,
-                                           @Header("Cookie") String cookie);
+                                           @NotNull @Body ExecutionStatus statusResponse);
 
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions")
-        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params,
-                                                                  @Header("Cookie") String cookie);
+        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params);
     }
 }

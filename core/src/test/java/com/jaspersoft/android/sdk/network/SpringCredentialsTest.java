@@ -22,10 +22,11 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 
+import com.jaspersoft.android.sdk.network.SpringCredentials;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import retrofit.Retrofit;
 
 import java.io.InputStream;
 
@@ -58,7 +59,6 @@ public class ReportExportRestApiTest {
     public final ExpectedException mExpectedException = ExpectedException.none();
 
     private ReportExportRestApi restApiUnderTest;
-    private final Cookies fakeCookies = Cookies.parse("key=value");
 
     @ResourceFile("json/root_folder.json")
     TestResource mResource;
@@ -66,9 +66,11 @@ public class ReportExportRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        restApiUnderTest = new ReportExportRestApi.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
+        restApiUnderTest = new ReportExportRestApiImpl(retrofit);
     }
 
     @Test
@@ -76,7 +78,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.runExportExecution(fakeCookies, null, ExecutionRequestOptions.create());
+        restApiUnderTest.runExportExecution(null, ExecutionRequestOptions.create());
     }
 
     @Test
@@ -84,15 +86,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution options should not be null");
 
-        restApiUnderTest.runExportExecution(fakeCookies, "any_id", null);
-    }
-
-    @Test
-    public void cookiesShouldNotBeNullForRunRequestExecution() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-
-        restApiUnderTest.runExportExecution(null, "any_id", ExecutionRequestOptions.create());
+        restApiUnderTest.runExportExecution("any_id", null);
     }
 
     @Test
@@ -100,7 +94,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.checkExportExecutionStatus(fakeCookies, null, "any_id");
+        restApiUnderTest.checkExportExecutionStatus(null, "any_id");
     }
 
     @Test
@@ -108,15 +102,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Export id should not be null");
 
-        restApiUnderTest.checkExportExecutionStatus(fakeCookies, "any_id", null);
-    }
-
-    @Test
-    public void cookiesShouldNotBeNullForCheckRequestExecutionStatus() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-
-        restApiUnderTest.checkExportExecutionStatus(null, "any_id", "any_id");
+        restApiUnderTest.checkExportExecutionStatus("any_id", null);
     }
 
     @Test
@@ -124,7 +110,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Execution id should not be null");
 
-        restApiUnderTest.requestExportAttachment(fakeCookies, null, "any_id", "any_id");
+        restApiUnderTest.requestExportAttachment(null, "any_id", "any_id");
     }
 
     @Test
@@ -132,7 +118,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Export id should not be null");
 
-        restApiUnderTest.requestExportAttachment(fakeCookies, "any_id", null, "any_id");
+        restApiUnderTest.requestExportAttachment("any_id", null, "any_id");
     }
 
     @Test
@@ -140,15 +126,7 @@ public class ReportExportRestApiTest {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Attachment id should not be null");
 
-        restApiUnderTest.requestExportAttachment(fakeCookies, "any_id", "any_id", null);
-    }
-
-    @Test
-    public void cookiesIdParameterShouldNotBeNullForAttachmentRequest() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Request cookies should not be null");
-
-        restApiUnderTest.requestExportAttachment(null, "any_id", "any_id", "any_id");
+        restApiUnderTest.requestExportAttachment("any_id", "any_id", null);
     }
 
     @Test
@@ -158,7 +136,7 @@ public class ReportExportRestApiTest {
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportOutputResource resource = restApiUnderTest.requestExportOutput(fakeCookies, "any_id", "any_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
         assertThat(resource.getPages(), is("1-10"));
     }
 
@@ -169,7 +147,7 @@ public class ReportExportRestApiTest {
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportOutputResource resource = restApiUnderTest.requestExportOutput(fakeCookies, "execution_id", "export_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput("execution_id", "export_id");
         assertThat(resource.isFinal(), is(true));
     }
 
@@ -177,11 +155,10 @@ public class ReportExportRestApiTest {
     public void shouldRequestExportOutput() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
-        restApiUnderTest.requestExportOutput(fakeCookies, "execution_id", "html;pages=1");
+        restApiUnderTest.requestExportOutput("execution_id", "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/outputResource?suppressContentDisposition=true"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -190,7 +167,7 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        OutputResource resource = restApiUnderTest.requestExportAttachment(fakeCookies, "any_id", "any_id", "any_id");
+        OutputResource resource = restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
         InputStream stream = resource.getStream();
         assertThat(stream, is(notNullValue()));
         stream.close();
@@ -202,11 +179,10 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.requestExportAttachment(fakeCookies, "execution_id", "html;pages=1", "attachment_id");
+        restApiUnderTest.requestExportAttachment("execution_id", "html;pages=1", "attachment_id");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/attachments/attachment_id"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -214,11 +190,10 @@ public class ReportExportRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.runExportExecution(fakeCookies, "execution_id", ExecutionRequestOptions.create());
+        restApiUnderTest.runExportExecution("execution_id", ExecutionRequestOptions.create());
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -226,11 +201,10 @@ public class ReportExportRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.checkExportExecutionStatus(fakeCookies, "execution_id", "html;pages=1");
+        restApiUnderTest.checkExportExecutionStatus("execution_id", "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/status"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -239,7 +213,7 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.runExportExecution(fakeCookies, "any_id", ExecutionRequestOptions.create());
+        restApiUnderTest.runExportExecution("any_id", ExecutionRequestOptions.create());
     }
 
     @Test
@@ -248,7 +222,7 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.checkExportExecutionStatus(fakeCookies, "any_id", "any_id");
+        restApiUnderTest.checkExportExecutionStatus("any_id", "any_id");
     }
 
     @Test
@@ -257,7 +231,7 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.requestExportOutput(fakeCookies, "any_id", "any_id");
+        restApiUnderTest.requestExportOutput("any_id", "any_id");
     }
 
     @Test
@@ -266,6 +240,6 @@ public class ReportExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.requestExportAttachment(fakeCookies, "any_id", "any_id", "any_id");
+        restApiUnderTest.requestExportAttachment("any_id", "any_id", "any_id");
     }
 }

@@ -24,11 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.internal;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 
@@ -37,37 +35,20 @@ import java.io.IOException;
  * @since 2.0
  */
 public class DefaultCallExecutor implements CallExecutor {
-
-    private final TokenCacheManager mTokenCacheManager;
     private final ServiceExceptionMapper mServiceExceptionMapper;
 
-    public DefaultCallExecutor(TokenCacheManager tokenCacheManager, ServiceExceptionMapper serviceExceptionMapper) {
-        mTokenCacheManager = tokenCacheManager;
+    public DefaultCallExecutor(ServiceExceptionMapper serviceExceptionMapper) {
         mServiceExceptionMapper = serviceExceptionMapper;
     }
 
     @NotNull
     public <T> T execute(Call<T> call) throws ServiceException {
         try {
-            Cookies token = mTokenCacheManager.loadToken();
-            return call.perform(token);
+            return call.perform();
         } catch (IOException e) {
-            throw mServiceExceptionMapper.transform(e);
+           throw mServiceExceptionMapper.transform(e);
         } catch (HttpException e) {
-            if (e.code() == 401) {
-                mTokenCacheManager.invalidateToken();
-
-                try {
-                    Cookies token = mTokenCacheManager.loadToken();
-                    return call.perform(token);
-                } catch (IOException e1) {
-                    throw mServiceExceptionMapper.transform(e1);
-                } catch (HttpException e1) {
-                    throw mServiceExceptionMapper.transform(e1);
-                }
-            } else {
-                throw mServiceExceptionMapper.transform(e);
-            }
+            throw mServiceExceptionMapper.transform(e);
         }
     }
 }

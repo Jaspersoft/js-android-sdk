@@ -22,16 +22,17 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.HttpException;
-
-import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Call<T> {
-    T perform() throws IOException, HttpException;
+public final class TestCookieManager extends CookieManager {
+    public TestCookieManager() {
+        super(new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+    }
 }

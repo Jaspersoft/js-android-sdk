@@ -22,12 +22,8 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.auth;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.Cookies;
-import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -49,29 +45,13 @@ final class SpringAuthService {
 
     @TestOnly
     SpringAuthService(
-            @NotNull JSEncryptionAlgorithm generator,
-            @NotNull AuthenticationRestApi restApi) {
+            @NotNull AuthenticationRestApi restApi,
+            @NotNull JSEncryptionAlgorithm generator) {
         mEncryptionAlgorithm = generator;
         mRestApi = restApi;
     }
 
-    @NotNull
-    public static SpringAuthService create(@NotNull String baseUrl) {
-        JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
-        AuthenticationRestApi restApi = new AuthenticationRestApi.Builder()
-                .baseUrl(baseUrl)
-                .build();
-        return new SpringAuthService(algorithm, restApi);
-    }
-
-    @NotNull
-    public static SpringAuthService create(@NotNull AuthenticationRestApi restApi) {
-        JSEncryptionAlgorithm algorithm = JSEncryptionAlgorithm.create();
-        return new SpringAuthService(algorithm, restApi);
-    }
-
-    @NotNull
-    public Cookies authenticate(SpringCredentials credentials) throws IOException, HttpException {
+    public void authenticate(SpringCredentials credentials) throws IOException, HttpException {
         String password = credentials.getPassword();
         EncryptionKey encryptionKey = mRestApi.requestEncryptionMetadata();
 
@@ -80,7 +60,7 @@ final class SpringAuthService {
         }
 
         Map<String, String> params = prepareOptionals(credentials);
-        return mRestApi.authenticate(
+        mRestApi.springAuth(
                 credentials.getUsername(),
                 password,
                 credentials.getOrganization(),

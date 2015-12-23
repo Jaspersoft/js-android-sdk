@@ -22,16 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.HttpException;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.Proxy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Call<T> {
-    T perform() throws IOException, HttpException;
+final class SingleTimeAuthenticator implements Authenticator {
+    private Authenticator mDelegate;
+
+    public SingleTimeAuthenticator(Authenticator delegate) {
+        mDelegate = delegate;
+    }
+
+    @Override
+    public Request authenticate(Proxy proxy, Response response) throws IOException {
+        if (mDelegate != null) {
+            Request request = mDelegate.authenticate(proxy, response);
+            mDelegate = null;
+            return request;
+        }
+        return null;
+    }
+
+    @Override
+    public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+        return null;
+    }
 }

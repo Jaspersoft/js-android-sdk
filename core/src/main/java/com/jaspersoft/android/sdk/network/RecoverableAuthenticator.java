@@ -22,16 +22,45 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.internal;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.HttpException;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.Proxy;
+import java.net.URI;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Call<T> {
-    T perform() throws IOException, HttpException;
+final class RecoverableAuthenticator implements Authenticator {
+    private final AuthStrategy mAuthStrategy;
+    private final Credentials mCredentials;
+
+    RecoverableAuthenticator(AuthStrategy authStrategy, Credentials credentials) {
+        mAuthStrategy = authStrategy;
+        mCredentials = credentials;
+    }
+
+    @Override
+    public Request authenticate(Proxy proxy, Response response) throws IOException {
+        try {
+            mCredentials.apply(mAuthStrategy);
+            return response.request();
+        } catch (HttpException code) {
+            return null;
+        }
+    }
+
+    @Override
+    public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+        return null;
+    }
 }

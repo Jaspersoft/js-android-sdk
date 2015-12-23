@@ -22,32 +22,25 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.Cookies;
-import com.jaspersoft.android.sdk.service.token.InMemoryTokenCache;
-import org.junit.Before;
-import org.junit.Test;
+import retrofit.Retrofit;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+final class AnonymousClientImpl extends AbstractClient implements AnonymousClient {
+    private ServerRestApiImpl mServerRestApi;
 
-public class InMemoryTokenCacheTest {
-
-    private InMemoryTokenCache cache;
-
-    @Before
-    public void setUp() throws Exception {
-        cache = new InMemoryTokenCache();
+    AnonymousClientImpl(Retrofit retrofit) {
+        super(retrofit);
     }
 
-    @Test
-    public void testCache() throws Exception {
-        Cookies cookies = Cookies.parse("key;name");
-        cache.put("http://localhost", cookies);
-        assertThat(cache.get("http://localhost"), is(cookies));
-        cache.remove("http://localhost");
-        assertThat(cache.get("http://localhost"), is(nullValue()));
+    public ServerRestApi infoApi() {
+        if (mServerRestApi == null) {
+            mServerRestApi = new ServerRestApiImpl(mRetrofit);
+        }
+        return mServerRestApi;
     }
 }

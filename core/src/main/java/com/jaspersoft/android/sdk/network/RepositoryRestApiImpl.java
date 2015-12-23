@@ -51,15 +51,12 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ResourceSearchResult searchResources(@Nullable Cookies cookies,
-                                                @Nullable Map<String, Object> searchParams) throws IOException, HttpException {
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
-
+    public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
         Iterable<?> types = null;
         Call<ResourceSearchResult> call;
 
         if (searchParams == null) {
-            call = mRestApi.searchResources(null, null, cookies.toString());
+            call = mRestApi.searchResources(null, null);
         } else {
             Map<String, Object> copy = new HashMap<>(searchParams);
             Object typeValues = copy.get("type");
@@ -72,7 +69,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
                 types = (Iterable<?>) typeValues;
             }
 
-            call = mRestApi.searchResources(copy, types, cookies.toString());
+            call = mRestApi.searchResources(copy, types);
         }
 
         Response<ResourceSearchResult> rawResponse = CallWrapper.wrap(call).response();
@@ -100,23 +97,19 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ReportLookup requestReportResource(@Nullable Cookies cookies,
-                                              @Nullable String resourceUri) throws IOException, HttpException {
+    public ReportLookup requestReportResource(@Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Report uri should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri, cookies.toString());
+        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri);
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public FolderLookup requestFolderResource(@Nullable Cookies cookies,
-                                              @Nullable String resourceUri) throws IOException, HttpException {
+    public FolderLookup requestFolderResource(@Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Folder uri should not be null");
-        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri, cookies.toString());
+        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri);
         return CallWrapper.wrap(call).body();
     }
 
@@ -126,21 +119,18 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
         @GET("rest_v2/resources")
         Call<ResourceSearchResult> searchResources(
                 @Nullable @QueryMap Map<String, Object> searchParams,
-                @Nullable @Query("type") Iterable<?> types,
-                @Header("Cookie") String cookie);
+                @Nullable @Query("type") Iterable<?> types);
 
         @NotNull
         @Headers("Accept: application/repository.reportUnit+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<ReportLookup> requestReportResource(
-                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri,
-                @Header("Cookie") String cookie);
+                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri);
 
         @NotNull
         @Headers("Accept: application/repository.folder+json")
         @GET("rest_v2/resources{resourceUri}")
         Call<FolderLookup> requestFolderResource(
-                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri,
-                @Header("Cookie") String cookie);
+                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri);
     }
 }

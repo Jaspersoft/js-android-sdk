@@ -22,39 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service;
-
-import com.jaspersoft.android.sdk.service.auth.AuthenticationService;
-import com.jaspersoft.android.sdk.service.server.ServerInfoService;
-import org.jetbrains.annotations.NotNull;
+package com.jaspersoft.android.sdk.network;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AnonymousSession {
-    protected final RestClient mClient;
+public interface AuthorizedClient extends AnonymousClient {
 
-    private AuthenticationService mAuthenticator;
-    private ServerInfoService mInfoService;
+    ReportExecutionRestApi reportExecutionApi();
 
-    protected AnonymousSession(RestClient client) {
-        mClient = client;
-    }
+    ReportExportRestApi reportExportApi();
 
-    @NotNull
-    public final AuthenticationService authApi() {
-        if (mAuthenticator == null) {
-            mAuthenticator = AuthenticationService.create(mClient);
-        }
-        return mAuthenticator;
-    }
+    ReportOptionRestApi reportOptionsApi();
 
-    @NotNull
-    public final ServerInfoService infoApi() {
-        if (mInfoService == null) {
-            mInfoService = ServerInfoService.create(mClient);
-        }
-        return mInfoService;
-    }
+    InputControlRestApi inputControlApi();
+
+    RepositoryRestApi repositoryApi();
 }

@@ -27,9 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.test.TestLogger;
-
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -41,16 +39,14 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ServerRestTest {
+    private static ServerRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
 
-    private String mobileDemo2 = "http://mobiledemo2.jaspersoft.com/jasperserver-pro/";
-    private ServerRestApi apiUnderTest;
-
-    @Before
-    public void setup() {
-        apiUnderTest = new ServerRestApi.Builder()
-                .logger(TestLogger.get(this))
-                .baseUrl(mobileDemo2)
-                .build();
+    @BeforeClass
+    public static void setup() {
+        if (apiUnderTest == null) {
+            apiUnderTest = mLazyClient.getAnonymousClient().infoApi();
+        }
     }
 
     @Test

@@ -24,11 +24,10 @@
 
 package com.jaspersoft.android.sdk.service;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Call;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 
 import java.io.IOException;
@@ -38,18 +37,16 @@ import java.io.IOException;
  * @since 2.0
  */
 public final class FakeCallExecutor implements CallExecutor {
-    private final Cookies mCookies;
     private final DefaultExceptionMapper mExMapper;
 
-    public FakeCallExecutor(Cookies cookies) {
-        mCookies = cookies;
+    public FakeCallExecutor() {
         mExMapper = new DefaultExceptionMapper();
     }
 
     @Override
     public <T> T execute(Call<T> call) throws ServiceException {
         try {
-            return call.perform(mCookies);
+            return call.perform();
         } catch (IOException e) {
             throw mExMapper.transform(e);
         } catch (HttpException e) {

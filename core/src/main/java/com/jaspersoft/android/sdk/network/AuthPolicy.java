@@ -22,35 +22,12 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.token;
-
-import com.jaspersoft.android.sdk.network.Cookies;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
-import java.util.WeakHashMap;
+package com.jaspersoft.android.sdk.network;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class InMemoryTokenCache implements TokenCache {
-    private final Map<String, Cookies> mCache = new WeakHashMap<String, Cookies>();
-
-    @Nullable
-    @Override
-    public Cookies get(@NotNull String host) {
-        return mCache.get(host);
-    }
-
-    @Override
-    public void put(@NotNull String host, @NotNull Cookies cookies) {
-        mCache.put(host, cookies);
-    }
-
-    @Override
-    public void remove(@NotNull String host) {
-        mCache.remove(host);
-    }
+public enum AuthPolicy {
+    FAIL_FAST, RETRY;
 }

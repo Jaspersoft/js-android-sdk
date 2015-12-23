@@ -24,37 +24,119 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-
+import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Headers;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
+ * TODO refactor following module in easy testable units
+ *
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthenticationRestApi {
+class AuthenticationRestApi {
     @NotNull
-    Cookies authenticate(@NotNull String username,
-                        @NotNull String password,
-                        @Nullable String organization,
-                        @Nullable Map<String, String> params) throws HttpException, IOException;
+    private final Retrofit mRetrofit;
 
-    @NotNull
-    EncryptionKey requestEncryptionMetadata() throws HttpException, IOException;
+    AuthenticationRestApi(@NotNull Retrofit retrofit) {
+        mRetrofit = retrofit;
+    }
 
-    final class Builder extends GenericBuilder<Builder, AuthenticationRestApi> {
-        @Override
-        AuthenticationRestApi createApi() {
-            HttpUrl baseUrl = adapterBuilder.baseUrl;
-            OkHttpClient okHttpClient = clientBuilder.getClient();
-            okHttpClient.setFollowRedirects(false);
-            return new AuthenticationRestApiImpl(baseUrl, okHttpClient, getAdapter());
+    public void springAuth(@NotNull final String username,
+                           @NotNull final String password,
+                           final String organization,
+                           final Map<String, String> params) throws HttpException, IOException {
+        Request request = createAuthRequest(username, password, organization, params);
+        Call call = mRetrofit.client().newCall(request);
+
+        com.squareup.okhttp.Response response = call.execute();
+
+        int statusCode = response.code();
+        if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+            String location = response.headers().get("Location");
+            HttpUrl url = HttpUrl.parse(location);
+            String errorQueryParameter = url.queryParameter("error");
+            if (errorQueryParameter != null) {
+                com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                        .protocol(response.protocol())
+                        .request(response.request())
+                        .headers(response.headers())
+                        .body(response.body())
+                        .code(401)
+                        .build();
+                throw HttpException.httpError(response401);
+            }
+        } else {
+            throw HttpException.httpError(response);
         }
+    }
+
+    @NotNull
+    public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
+        RestApi api = mRetrofit.create(RestApi.class);
+        CallWrapper.wrap(api.requestAnonymousCookie());
+
+        try {
+            return CallWrapper.wrap(api.requestEncryptionMetadata()).body();
+        } catch (JsonSyntaxException ex) {
+            /**
+             * This possible when security option is disabled on JRS side.
+             * API responds with malformed json. E.g. {Error: Key generation is off}. As you can see no quotes
+             * As soon as there 2 options to resolve this we decide to swallow exception and return empty object
+             */
+            return EncryptionKey.empty();
+        }
+    }
+
+    private Request createAuthRequest(
+            @NotNull final String username,
+            @NotNull final String password,
+            final String organization,
+            final Map<String, String> params) {
+
+        OkHttpClient client = new OkHttpClient();
+        client.setFollowRedirects(false);
+
+        FormEncodingBuilder formBody = new FormEncodingBuilder()
+                .add("j_password", password)
+                .add("j_username", username);
+
+        if (organization != null) {
+            formBody.add("orgId", organization);
+        }
+
+        if (params != null) {
+            Set<Map.Entry<String, String>> entrySet = params.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                formBody.add(entry.getKey(), entry.getValue());
+            }
+        }
+        /**
+         * Constructs url http[s]://some.jrs/j_spring_security_check
+         */
+        String baseUrl = mRetrofit.baseUrl().url().toString();
+        return new Request.Builder()
+                .url(baseUrl + "j_spring_security_check")
+                .post(formBody.build())
+                .build();
+    }
+
+    private interface RestApi {
+        @NotNull
+        @Headers("Accept: text/plain")
+        @GET("rest_v2/serverInfo/edition")
+        retrofit.Call<String> requestAnonymousCookie();
+
+        @NotNull
+        @GET("GetEncryptionKey")
+        retrofit.Call<EncryptionKey> requestEncryptionMetadata();
     }
 }

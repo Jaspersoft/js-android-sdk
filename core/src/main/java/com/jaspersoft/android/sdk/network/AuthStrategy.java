@@ -22,21 +22,38 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.token;
+package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.Cookies;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import retrofit.Retrofit;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface TokenCache {
+class AuthStrategy {
+    @NotNull
+    private final Retrofit mRetrofit;
     @Nullable
-    Cookies get(@NotNull String host);
+    private SpringAuthService springAuthService;
 
-    void put(@NotNull String host, @NotNull Cookies cookies);
+    AuthStrategy(@NotNull Retrofit retrofit) {
+        mRetrofit = retrofit;
+    }
 
-    void remove(@NotNull String host);
+    void apply(SpringCredentials credentials) throws IOException, HttpException {
+        if (springAuthService == null) {
+            springAuthService = createSpringAuthService();
+        }
+        springAuthService.authenticate(credentials);
+    }
+
+    private SpringAuthService createSpringAuthService() {
+        AuthenticationRestApi restApi = new AuthenticationRestApi(mRetrofit);
+        JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
+        return new SpringAuthService(restApi, encryptionAlgorithm);
+    }
 }

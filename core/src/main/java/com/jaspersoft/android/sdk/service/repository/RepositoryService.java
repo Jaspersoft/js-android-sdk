@@ -24,13 +24,11 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.RestClient;
-import com.jaspersoft.android.sdk.service.Session;
+import com.jaspersoft.android.sdk.service.info.InfoCache;
 import com.jaspersoft.android.sdk.service.internal.*;
 import org.jetbrains.annotations.TestOnly;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -46,17 +44,11 @@ public class RepositoryService {
         mInfoCacheManager = infoCacheManager;
     }
 
-    public static RepositoryService create(RestClient client, Session session) {
-        RepositoryRestApi repositoryRestApi = new RepositoryRestApi.Builder()
-                .baseUrl(client.getServerUrl())
-                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                .build();
+    public static RepositoryService create(AuthorizedClient client, InfoCache cache) {
+        RepositoryRestApi repositoryRestApi = client.repositoryApi();
         ServiceExceptionMapper defaultExMapper = new DefaultExceptionMapper();
-        TokenCacheManager tokenCacheManager = TokenCacheManager.create(client, session);
-        CallExecutor callExecutor = new DefaultCallExecutor(tokenCacheManager, defaultExMapper);
-
-        InfoCacheManager cacheManager = InfoCacheManager.create(client);
+        CallExecutor callExecutor = new DefaultCallExecutor(defaultExMapper);
+        InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
 
         ResourceMapper resourceMapper = new ResourceMapper();
         SearchUseCase searchUseCase = new SearchUseCase(

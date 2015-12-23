@@ -42,32 +42,20 @@ import java.util.Map;
 public interface ReportExecutionRestApi {
 
     @NotNull
-    ReportExecutionDescriptor runReportExecution(@NotNull Cookies cookies,
-                                                 @NotNull ReportExecutionRequestOptions executionOptions) throws HttpException, IOException;
+    ReportExecutionDescriptor runReportExecution(@NotNull ReportExecutionRequestOptions executionOptions) throws HttpException, IOException;
 
     @NotNull
-    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull Cookies cookies,
-                                                            @NotNull String executionId) throws HttpException, IOException;
+    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String executionId) throws HttpException, IOException;
 
     @NotNull
-    ExecutionStatus requestReportExecutionStatus(@NotNull Cookies cookies,
-                                                 @NotNull String executionId) throws HttpException, IOException;
+    ExecutionStatus requestReportExecutionStatus(@NotNull String executionId) throws HttpException, IOException;
 
-    boolean cancelReportExecution(@NotNull Cookies cookies,
-                                  @NotNull String executionId) throws HttpException, IOException;
+    boolean cancelReportExecution(@NotNull String executionId) throws HttpException, IOException;
 
-    boolean updateReportExecution(@NotNull Cookies cookies,
-                                  @NotNull String executionId,
+    boolean updateReportExecution(@NotNull String executionId,
                                   @NotNull List<ReportParameter> params) throws HttpException, IOException;
 
      // TODO: API is broken requires investigation before release
     @NotNull
-    ReportExecutionSearchResponse searchReportExecution(@NotNull Cookies cookies, Map<String, String> params) throws HttpException, IOException;
-
-    final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
-        @Override
-        ReportExecutionRestApi createApi() {
-            return new ReportExecutionRestApiImpl(getAdapter().build());
-        }
-    }
+    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) throws HttpException, IOException;
 }

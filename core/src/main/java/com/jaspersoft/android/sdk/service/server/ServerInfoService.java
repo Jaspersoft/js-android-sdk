@@ -24,21 +24,19 @@
 
 package com.jaspersoft.android.sdk.service.server;
 
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
-
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -56,20 +54,9 @@ public class ServerInfoService {
         mServiceExceptionMapper = serviceExceptionMapper;
     }
 
-    public static ServerInfoService create(RestClient client) {
-        ServerRestApi restApi = new ServerRestApi.Builder()
-                .baseUrl(client.getServerUrl())
-                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
-                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
-                .build();
+    public static ServerInfoService create(AnonymousClient client) {
         ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
-
-        return new ServerInfoService(restApi, ServerInfoTransformer.get(), serviceExceptionMapper);
-    }
-
-    public static ServerInfoService create(ServerRestApi restApi) {
-        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
-        return new ServerInfoService(restApi, ServerInfoTransformer.get(), serviceExceptionMapper);
+        return new ServerInfoService(client.infoApi(), ServerInfoTransformer.get(), serviceExceptionMapper);
     }
 
     public ServerInfo requestServerInfo() throws ServiceException {

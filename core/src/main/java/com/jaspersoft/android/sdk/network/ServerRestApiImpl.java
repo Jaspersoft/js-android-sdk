@@ -25,15 +25,13 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-
 import retrofit.Call;
 import retrofit.Retrofit;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -113,30 +111,39 @@ final class ServerRestApiImpl implements ServerRestApi {
         @Headers("Accept: application/json")
         @GET(value = "rest_v2/serverInfo")
         Call<ServerInfoData> requestServerInfo();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/edition")
         Call<String> requestEdition();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/version")
         Call<String> requestVersion();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/build")
         Call<String> requestBuild();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/features")
         Call<String> requestFeatures();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/editionName")
         Call<String> requestEditionName();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/licenseType")
         Call<String> requestLicenseType();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/expiration")
         Call<String> requestExpiration();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/dateFormatPattern")
         Call<String> requestDateFormatPattern();
+
         @Headers("Accept: text/plain")
         @GET(value = "rest_v2/serverInfo/datetimeFormatPattern")
         Call<String> requestDateTimeFormatPattern();

@@ -31,11 +31,11 @@ import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import retrofit.Retrofit;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -54,7 +54,7 @@ public class AuthenticationRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
-    private AuthenticationRestApi mRestApi;
+    private AuthenticationRestApi apiUnderTest;
 
     @ResourceFile("json/encryption_key.json")
     TestResource mKey;
@@ -62,9 +62,12 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        mRestApi = new AuthenticationRestApi.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
+        retrofit.client().setFollowRedirects(false);
+        apiUnderTest = new AuthenticationRestApi(retrofit);
     }
 
     @Test
@@ -74,8 +77,7 @@ public class AuthenticationRestApiTest {
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
         mWebMockRule.enqueue(mockResponse);
 
-        Cookies response = mRestApi.authenticate("joeuser", "joeuser", null, null);
-        assertThat(response, is(notNullValue()));
+        apiUnderTest.springAuth("joeuser", "joeuser", null, null);
     }
 
     @Test
@@ -87,7 +89,7 @@ public class AuthenticationRestApiTest {
                 .addHeader("Set-Cookie", "cookie1");
         mWebMockRule.enqueue(mockResponse);
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        apiUnderTest.springAuth("joeuser", "joeuser", "null", null);
     }
 
     @Test
@@ -96,7 +98,7 @@ public class AuthenticationRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        mRestApi.authenticate("joeuser", "joeuser", "null", null);
+        apiUnderTest.springAuth("joeuser", "joeuser", "null", null);
     }
 
     @Test
@@ -109,7 +111,7 @@ public class AuthenticationRestApiTest {
         mWebMockRule.enqueue(anonymousCookie);
         mWebMockRule.enqueue(encryptionKey);
 
-        EncryptionKey keyResponse = mRestApi.requestEncryptionMetadata();
+        EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
         assertThat(keyResponse, is(notNullValue()));
     }
 
@@ -126,7 +128,7 @@ public class AuthenticationRestApiTest {
         mWebMockRule.enqueue(anonymousCookie);
         mWebMockRule.enqueue(encryptionKey);
 
-        EncryptionKey keyResponse = mRestApi.requestEncryptionMetadata();
+        EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
         assertThat(keyResponse.isAvailable(), is(false));
     }
 }
