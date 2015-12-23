@@ -45,7 +45,7 @@ public class ServerRestTest {
     @BeforeClass
     public static void setup() {
         if (apiUnderTest == null) {
-            apiUnderTest = mLazyClient.getAuthorizedClient().infoApi();
+            apiUnderTest = mLazyClient.getAnonymousClient().infoApi();
         }
     }
 

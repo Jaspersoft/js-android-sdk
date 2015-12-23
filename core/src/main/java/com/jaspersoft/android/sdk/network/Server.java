@@ -28,12 +28,11 @@ import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import retrofit.Retrofit;
 
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.Proxy;
+import java.net.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,23 +50,23 @@ public final class Server {
         mRetrofitBuilder = retrofitBuilder;
     }
 
-    public AnonymousClient newClient() {
-        OkHttpClient anonymousClient = mOkHttpClient.clone();
-        CookieManager cookieHandler = new CookieManager(
-                new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
-        anonymousClient.setCookieHandler(cookieHandler);
-
-        Retrofit anonymousRetrofit = newRetrofit()
-                .client(anonymousClient)
-                .build();
-
-        return new AnonymousClientImpl(anonymousRetrofit);
+    @NotNull
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
-    public AuthorizedClientBuilder newClient(Credentials credentials) {
+    @NotNull
+    public AnonymousClientBuilder newClient() {
+        return new AnonymousClientBuilder(this);
+    }
+
+    @NotNull
+    public AuthorizedClientBuilder newClient(@Nullable Credentials credentials) {
+        Utils.checkNotNull(credentials, "Credentials should not be null");
         return new AuthorizedClientBuilder(this, credentials);
     }
 
+    @NotNull
     public String getBaseUrl() {
         return mBaseUrl;
     }
@@ -78,15 +77,6 @@ public final class Server {
 
     OkHttpClient client() {
         return mOkHttpClient;
-    }
-
-    private OkHttpClient configureAnonymosClient(OkHttpClient client) {
-        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        return client;
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
     }
 
     public static class Builder {
@@ -135,6 +125,31 @@ public final class Server {
         }
     }
 
+    public static class AnonymousClientBuilder {
+        private final Server mServer;
+        private CookieHandler mCookieHandler =
+                new CookieManager(new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+
+        AnonymousClientBuilder(Server server) {
+            mServer = server;
+        }
+
+        public AnonymousClientBuilder withCookieHandler(CookieHandler cookieHandler) {
+            mCookieHandler = cookieHandler;
+            return this;
+        }
+
+        public AnonymousClient create() {
+            OkHttpClient anonymousClient = mServer.client().clone();
+            anonymousClient.setCookieHandler(mCookieHandler);
+
+            Retrofit anonymousRetrofit = mServer.newRetrofit()
+                    .client(anonymousClient)
+                    .build();
+            return new AnonymousClientImpl(anonymousRetrofit);
+        }
+    }
+
     public static class AuthorizedClientBuilder {
         private final Server mServer;
         private final Credentials mCredentials;
@@ -163,7 +178,7 @@ public final class Server {
                     .client(authClient)
                     .build();
 
-            AnonymousClient anonymousClient = mServer.newClient();
+            AnonymousClient anonymousClient = mServer.newClient().create();
             return new AuthorizedClientImpl(authRetrofit, anonymousClient);
         }
 

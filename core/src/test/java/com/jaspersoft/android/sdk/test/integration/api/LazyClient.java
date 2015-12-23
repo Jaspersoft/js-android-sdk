@@ -24,12 +24,13 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.TestCookieManager;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.io.IOException;
+import java.net.*;
 
 /**
  * @author Tom Koptel
@@ -37,27 +38,52 @@ import java.net.Proxy;
  */
 final class LazyClient {
     private final JrsMetadata mJrsMetadata;
-    private AuthorizedClient mClient;
+    private AuthorizedClient mAuthorizedClient;
+    private AnonymousClient mAnonymousClient;
+    public static final InetSocketAddress CHARLES_ADDRESS = new InetSocketAddress("0.0.0.0", 8888);
 
     public LazyClient(JrsMetadata jrsMetadata) {
         mJrsMetadata = jrsMetadata;
     }
 
     public static Server getServer(String serverUrl) {
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("0.0.0.0", 8888));
-        return Server.newBuilder()
-                .withBaseUrl(serverUrl)
-                .withProxy(proxy)
-                .build();
+        Server.OptionalBuilder serverBuilder = Server.newBuilder()
+                .withBaseUrl(serverUrl);
+        if (isProxyReachable()) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, CHARLES_ADDRESS);
+            serverBuilder.withProxy(proxy);
+        }
+        return serverBuilder.build();
+    }
+
+    private static boolean isProxyReachable() {
+        try {
+            Socket socket = new Socket();
+            socket.connect(CHARLES_ADDRESS);
+            socket.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public AnonymousClient getAnonymousClient() {
+        if (mAnonymousClient == null) {
+            mAnonymousClient = getServer(mJrsMetadata.getServerUrl())
+                    .newClient()
+                    .withCookieHandler(new TestCookieManager())
+                    .create();
+        }
+        return mAnonymousClient;
     }
 
     public AuthorizedClient getAuthorizedClient() {
-        if (mClient == null) {
-            mClient = getServer(mJrsMetadata.getServerUrl())
+        if (mAuthorizedClient == null) {
+            mAuthorizedClient = getServer(mJrsMetadata.getServerUrl())
                     .newClient(mJrsMetadata.getCredentials())
                     .withCookieHandler(new TestCookieManager())
                     .create();
         }
-        return mClient;
+        return mAuthorizedClient;
     }
 }
