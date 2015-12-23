@@ -26,6 +26,12 @@ package com.jaspersoft.android.sdk.service.server;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -48,12 +54,28 @@ class ServerInfoTransformer {
     public ServerInfo transform(ServerInfoData response) {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setBuild(response.getBuild());
-        serverInfo.setDateFormatPattern(response.getDateFormatPattern());
-        serverInfo.setDatetimeFormatPattern(response.getDatetimeFormatPattern());
-        serverInfo.setVersion(response.getVersion());
+
+        SimpleDateFormat dateDateFormat = new SimpleDateFormat(response.getDateFormatPattern());
+        serverInfo.setDateFormatPattern(dateDateFormat);
+
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat(response.getDatetimeFormatPattern());
+        serverInfo.setDatetimeFormatPattern(dateTimeFormat);
+
+        ServerVersion version = ServerVersion.valueOf(response.getVersion());
+        serverInfo.setVersion(version);
+
         serverInfo.setEdition(response.getEdition());
         serverInfo.setEditionName(response.getEditionName());
-        serverInfo.setFeatures(response.getFeatures());
+
+        Set<String> features = parseFeatureSet(response.getFeatures());
+        serverInfo.setFeatures(features);
+        serverInfo.setLicenseType(response.getLicenseType());
+
         return serverInfo;
+    }
+
+    private Set<String> parseFeatureSet(String features) {
+        String[] split = features.split(" ");
+        return new HashSet<String>(Arrays.asList(split));
     }
 }

@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
@@ -31,12 +32,14 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -45,67 +48,99 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportExportUseCase {
+class ReportExportUseCase {
     private final ReportExportRestApi mExportApi;
-    private final TokenProvider mTokenProvider;
+    private final CallExecutor mCallExecutor;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+    private final InfoCacheManager mCacheManager;
 
-    ReportExportUseCase(ReportExportRestApi exportApi, TokenProvider tokenProvider,
+    ReportExportUseCase(ReportExportRestApi exportApi,
+                        CallExecutor callExecutor,
+                        InfoCacheManager cacheManager,
                         ExecutionOptionsDataMapper executionOptionsMapper) {
         mExportApi = exportApi;
-        mTokenProvider = tokenProvider;
+        mCallExecutor = callExecutor;
+        mCacheManager = cacheManager;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
     @NotNull
-    public ExportExecutionDescriptor runExport(String executionId, RunExportCriteria criteria) throws ServiceException {
-        ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria);
-        try {
-            return mExportApi.runExportExecution(mTokenProvider.provideToken(), executionId, options);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ExportExecutionDescriptor runExport(final String executionId, final RunExportCriteria criteria) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+
+        Call<ExportExecutionDescriptor> call = new Call<ExportExecutionDescriptor>() {
+            @Override
+            public ExportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
+                ExecutionRequestOptions options = mExecutionOptionsMapper.transformExportOptions(criteria, version);
+                return mExportApi.runExportExecution(cookies, executionId, options);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public Status checkExportExecutionStatus(String executionId, String exportId) throws ServiceException {
-        try {
-            ExecutionStatus exportStatus = mExportApi
-                    .checkExportExecutionStatus(mTokenProvider.provideToken(), executionId, exportId);
-            return Status.wrap(exportStatus.getStatus());
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+    public ExecutionStatus checkExportExecutionStatus(final String executionId,
+                                             final String exportId) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            return ExecutionStatus.readyStatus();
         }
+
+        Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
+            @Override
+            public ExecutionStatus perform(Cookies cookies) throws IOException, HttpException {
+                return mExportApi.checkExportExecutionStatus(cookies, executionId, exportId);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ReportOutput requestExportOutput(String executionId, String exportId) throws ServiceException {
-        try {
-            ExportOutputResource result = mExportApi.requestExportOutput(mTokenProvider.provideToken(), executionId, exportId);
-            return OutputDataMapper.transform(result);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ReportOutput requestExportOutput(RunExportCriteria exportCriteria,
+                                            final String executionId,
+                                            String exportId) throws ServiceException {
+        exportId = adaptExportId(exportCriteria, exportId);
+        final String resultId = exportId;
+
+        Call<ReportOutput> call = new Call<ReportOutput>() {
+            @Override
+            public ReportOutput perform(Cookies cookies) throws IOException, HttpException {
+                ExportOutputResource result = mExportApi.requestExportOutput(cookies, executionId, resultId);
+                return OutputDataMapper.transform(result);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ResourceOutput requestExportAttachmentOutput(String executionId, String exportId,
-                                                        String fileName) throws ServiceException {
-        try {
-            OutputResource result = mExportApi.requestExportAttachment(
-                    mTokenProvider.provideToken(),
-                    executionId, exportId, fileName);
-            return OutputDataMapper.transform(result);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+    public ResourceOutput requestExportAttachmentOutput(RunExportCriteria exportCriteria,
+                                                        final String executionId,
+                                                        String exportId,
+                                                        final String fileName) throws ServiceException {
+        exportId = adaptExportId(exportCriteria, exportId);
+        final String resultId = exportId;
+
+        Call<ResourceOutput> call = new Call<ResourceOutput>() {
+            @Override
+            public ResourceOutput perform(Cookies cookies) throws IOException, HttpException {
+                OutputResource result = mExportApi.requestExportAttachment(
+                        cookies, executionId, resultId, fileName);
+                return OutputDataMapper.transform(result);
+            }
+        };
+        return mCallExecutor.execute(call);
+    }
+
+    private String adaptExportId(RunExportCriteria exportCriteria, String exportId) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+
+        if (version.lessThanOrEquals(ServerVersion.v5_5)) {
+            exportId = String.format("%s;pages=%s", exportCriteria.getFormat(), exportCriteria.getPages());
+            exportId = exportId.toLowerCase();
         }
+        return exportId;
     }
 }

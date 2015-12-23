@@ -38,21 +38,28 @@ public final class ReportAttachment {
     private final String mExecutionId;
     private final String mExportId;
 
+    private final RunExportCriteria mCriteria;
     private final ReportExportUseCase mExportUseCase;
 
     ReportAttachment(String fileName,
                      String executionId,
                      String exportId,
+                     RunExportCriteria criteria,
                      ReportExportUseCase exportUseCase) {
         mFileName = fileName;
         mExecutionId = executionId;
         mExportId = exportId;
+        mCriteria = criteria;
         mExportUseCase = exportUseCase;
     }
 
     @NotNull
     public ResourceOutput download() throws ServiceException {
         return mExportUseCase.requestExportAttachmentOutput(
-                mExecutionId, mExportId, mFileName);
+                mCriteria,
+                mExecutionId,
+                mExportId,
+                mFileName
+        );
     }
 }

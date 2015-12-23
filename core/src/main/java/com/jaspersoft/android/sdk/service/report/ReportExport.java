@@ -26,38 +26,40 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.service.data.report.ReportOutput;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public final class ReportExport {
-    private final Collection<ReportAttachment> mAttachments;
+    private final List<ReportAttachment> mAttachments;
     private final String mExecutionId;
     private final String mExportId;
     private final ReportExportUseCase mExportUseCase;
+    private final RunExportCriteria mCriteria;
 
     ReportExport(String executionId,
                  String exportId,
-                 Collection<ReportAttachment> attachments,
+                 List<ReportAttachment> attachments,
+                 RunExportCriteria criteria,
                  ReportExportUseCase exportUseCase) {
         mExecutionId = executionId;
         mExportId = exportId;
         mAttachments = attachments;
+        mCriteria = criteria;
         mExportUseCase = exportUseCase;
     }
 
     @NotNull
-    public Collection<ReportAttachment> getAttachments() {
+    public List<ReportAttachment> getAttachments() {
         return mAttachments;
     }
 
     @NotNull
     public ReportOutput download() throws ServiceException {
-        return mExportUseCase.requestExportOutput(mExecutionId, mExportId);
+        return mExportUseCase.requestExportOutput(mCriteria, mExecutionId, mExportId);
     }
 }

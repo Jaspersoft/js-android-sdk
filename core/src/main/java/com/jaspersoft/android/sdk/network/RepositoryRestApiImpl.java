@@ -27,23 +27,16 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import retrofit.Call;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import retrofit.http.QueryMap;
 
 /**
  * @author Tom Koptel
@@ -58,15 +51,15 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ResourceSearchResult searchResources(@Nullable String token,
+    public ResourceSearchResult searchResources(@Nullable Cookies cookies,
                                                 @Nullable Map<String, Object> searchParams) throws IOException, HttpException {
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
         Iterable<?> types = null;
         Call<ResourceSearchResult> call;
 
         if (searchParams == null) {
-            call = mRestApi.searchResources(null, null, token);
+            call = mRestApi.searchResources(null, null, cookies.toString());
         } else {
             Map<String, Object> copy = new HashMap<>(searchParams);
             Object typeValues = copy.get("type");
@@ -79,7 +72,7 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
                 types = (Iterable<?>) typeValues;
             }
 
-            call = mRestApi.searchResources(copy, types, token);
+            call = mRestApi.searchResources(copy, types, cookies.toString());
         }
 
         Response<ResourceSearchResult> rawResponse = CallWrapper.wrap(call).response();
@@ -107,23 +100,23 @@ final class RepositoryRestApiImpl implements RepositoryRestApi {
 
     @NotNull
     @Override
-    public ReportLookup requestReportResource(@Nullable String token,
+    public ReportLookup requestReportResource(@Nullable Cookies cookies,
                                               @Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Report uri should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri, token);
+        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public FolderLookup requestFolderResource(@Nullable String token,
+    public FolderLookup requestFolderResource(@Nullable Cookies cookies,
                                               @Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Folder uri should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri, token);
+        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 

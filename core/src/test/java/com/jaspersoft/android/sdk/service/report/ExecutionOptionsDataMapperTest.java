@@ -26,13 +26,14 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,12 +47,13 @@ public class ExecutionOptionsDataMapperTest {
 
     private static final String REPORT_URI = "/report/uri";
     private static final String BASE_URL = "http:://localhost";
-    public static final Map<String, Set<String>> REPORT_PARAMS = Collections.emptyMap();
+    public static final List<ReportParameter> REPORT_PARAMS = Collections.singletonList(null);
 
     private ExecutionOptionsDataMapper mapper;
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         mapper = new ExecutionOptionsDataMapper(BASE_URL);
     }
 
@@ -66,7 +68,7 @@ public class ExecutionOptionsDataMapperTest {
                 .params(REPORT_PARAMS)
                 .attachmentPrefix("./")
                 .create();
-        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, criteria);
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions(REPORT_URI, ServerVersion.v6, criteria);
         assertThat(options.getReportUnitUri(), is(REPORT_URI));
         assertThat(options.getParameters(), is(REPORT_PARAMS));
         assertThat(options.getAsync(), is(true));
@@ -83,8 +85,67 @@ public class ExecutionOptionsDataMapperTest {
                 .pages("1-100")
                 .attachmentPrefix("./")
                 .create();
-        ExecutionRequestOptions options = mapper.transformExportOptions(criteria);
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v6);
         assertOptions(options);
+    }
+
+    @Test
+    public void testReportExecutionFieldsReducedForServer5_5() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder()
+                .freshData(true)
+                .interactive(false)
+                .saveSnapshot(true)
+                .create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
+        assertThat("Should reduce 'baseUrl' from options", options.getBaseUrl(), is(nullValue()));
+        assertThat("Should reduce 'allowInteractive' from options", options.getAllowInlineScripts(), is(nullValue()));
+    }
+
+    @Test
+    public void testInteractivenessDisabledForReportRun5_6() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder()
+                .interactive(true)
+                .create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_6, criteria);
+        assertThat("Should put false for 'interactive' option", options.getInteractive(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void testInteractivenessDisabledForExportRun5_6() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder()
+                .interactive(true)
+                .create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_6);
+        assertThat("Should put false for 'interactive' option", options.getInteractive(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void testExportExecutionFieldsReducedForServer5_5() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder()
+                .freshData(true)
+                .interactive(false)
+                .saveSnapshot(true)
+                .create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_5);
+        assertThat("Should reduce 'baseUrl' from options", options.getBaseUrl(), is(nullValue()));
+        assertThat("Should reduce 'allowInteractive' from options", options.getAllowInlineScripts(), is(nullValue()));
+        assertThat("Should reduce 'freshData' from options",options.getFreshData(), is(nullValue()));
+        assertThat("Should reduce 'interactive' from options",options.getInteractive(), is(nullValue()));
+        assertThat("Should reduce 'saveDataSnapshot' from options",options.getSaveDataSnapshot(), is(nullValue()));
+    }
+
+    @Test
+    public void testExportExecutionSetsHtmlFormatIfOneUnspecified5_5() throws Exception {
+        RunExportCriteria criteria = RunExportCriteria.builder().create();
+        ExecutionRequestOptions options = mapper.transformExportOptions(criteria, ServerVersion.v5_5);
+        assertThat("Should set 'HTML' format", options.getOutputFormat(), is("HTML"));
+    }
+
+    @Test
+    public void testReportExecutionSetsHtmlFormatIfOneUnspecified5_5() throws Exception {
+        RunReportCriteria criteria = RunReportCriteria.builder().create();
+        ReportExecutionRequestOptions options = mapper.transformRunReportOptions("/my/uri", ServerVersion.v5_5, criteria);
+        assertThat("Should set 'HTML' format", options.getOutputFormat(), is("HTML"));
     }
 
     private void assertOptions(ExecutionRequestOptions options) {

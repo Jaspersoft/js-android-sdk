@@ -24,67 +24,89 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-
+import com.jaspersoft.android.sdk.service.internal.Call;
+import com.jaspersoft.android.sdk.service.internal.CallExecutor;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ReportExecutionUseCase {
+class ReportExecutionUseCase {
     private final ReportExecutionRestApi mExecutionApi;
-    private final TokenProvider mTokenProvider;
+    private final CallExecutor mCallExecutor;
     private final ExecutionOptionsDataMapper mExecutionOptionsMapper;
+    private final InfoCacheManager mCacheManager;
 
     ReportExecutionUseCase(ReportExecutionRestApi executionApi,
-                           TokenProvider tokenProvider,
+                           CallExecutor callExecutor,
+                           InfoCacheManager cacheManager,
                            ExecutionOptionsDataMapper executionOptionsMapper) {
         mExecutionApi = executionApi;
-        mTokenProvider = tokenProvider;
+        mCallExecutor = callExecutor;
+        mCacheManager = cacheManager;
         mExecutionOptionsMapper = executionOptionsMapper;
     }
 
     @NotNull
-    public ReportExecutionDescriptor runReportExecution(String reportUri, RunReportCriteria criteria) throws ServiceException {
-        ReportExecutionRequestOptions options = mExecutionOptionsMapper.transformRunReportOptions(reportUri, criteria);
-        try {
-            return mExecutionApi.runReportExecution(mTokenProvider.provideToken(), options);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ReportExecutionDescriptor runReportExecution(final String reportUri, final RunReportCriteria criteria) throws ServiceException {
+        ServerInfo info = mCacheManager.getInfo();
+        final ServerVersion version = info.getVersion();
+        Call<ReportExecutionDescriptor> call = new Call<ReportExecutionDescriptor>() {
+            @Override
+            public ReportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
+                ReportExecutionRequestOptions options =
+                        mExecutionOptionsMapper.transformRunReportOptions(reportUri, version, criteria);
+                return mExecutionApi.runReportExecution(cookies, options);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ExecutionStatus requestStatus(String executionId) throws ServiceException {
-        try {
-            return mExecutionApi.requestReportExecutionStatus(mTokenProvider.provideToken(), executionId);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ExecutionStatus requestStatus(final String executionId) throws ServiceException {
+        Call<ExecutionStatus> call = new Call<ExecutionStatus>() {
+            @Override
+            public ExecutionStatus perform(Cookies cookies) throws IOException, HttpException {
+                return mExecutionApi.requestReportExecutionStatus(cookies, executionId);
+            }
+        };
+        return mCallExecutor.execute(call);
     }
 
     @NotNull
-    public ReportExecutionDescriptor requestExecutionDetails(String executionId) throws ServiceException {
-        try {
-            return mExecutionApi.requestReportExecutionDetails(mTokenProvider.provideToken(), executionId);
-        } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
-        }
+    public ReportExecutionDescriptor requestExecutionDetails(final String executionId) throws ServiceException {
+        Call<ReportExecutionDescriptor> call = new Call<ReportExecutionDescriptor>() {
+            @Override
+            public ReportExecutionDescriptor perform(Cookies cookies) throws IOException, HttpException {
+                return mExecutionApi.requestReportExecutionDetails(cookies, executionId);
+            }
+        };
+        return mCallExecutor.execute(call);
+    }
+
+    public void updateExecution(final String executionId, final List<ReportParameter> newParameters) throws ServiceException {
+        Call<Void> call = new Call<Void>() {
+            @Override
+            public Void perform(Cookies cookies) throws IOException, HttpException {
+                mExecutionApi.updateReportExecution(cookies, executionId, newParameters);
+                return null;
+            }
+        };
+        mCallExecutor.execute(call);
     }
 }

@@ -32,12 +32,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class ExecutionCriteria {
 
-    private final boolean mFreshData;
-    private final boolean mInteractive;
-    private final boolean mSaveSnapshot;
-    private final Format mFormat;
-    private final String mPages;
-    private final String mAttachmentPrefix;
+    protected final boolean mFreshData;
+    protected final boolean mInteractive;
+    protected final boolean mSaveSnapshot;
+    protected final Format mFormat;
+    protected final String mPages;
+    protected final String mAttachmentPrefix;
 
     protected ExecutionCriteria(boolean freshData,
                                 boolean interactive,

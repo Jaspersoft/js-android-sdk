@@ -24,12 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.util.Collection;
 
@@ -42,22 +39,14 @@ interface SearchStrategy {
     boolean hasNext();
 
     class Factory {
-        public static SearchStrategy get(InternalCriteria criteria,
-                                         RepositoryRestApi repositoryRestApi,
-                                         InfoProvider infoProvider,
-                                         TokenProvider tokenProvider) {
-            ServerVersion version = infoProvider.provideVersion();
-            ResourceMapper resourceMapper = new ResourceMapper();
-            SearchUseCase searchUseCase = new SearchUseCase(resourceMapper, repositoryRestApi, tokenProvider, infoProvider);
-
-            if (version.getVersionCode() <= ServerVersion.EMERALD_MR2.getVersionCode()) {
+        public static SearchStrategy get(SearchUseCase searchUseCase, InternalCriteria criteria, ServerVersion version) {
+            if (version.lessThanOrEquals(ServerVersion.v5_5)) {
                 return new EmeraldMR2SearchStrategy(criteria, searchUseCase);
             }
-            if (version.getVersionCode() >= ServerVersion.EMERALD_MR3.getVersionCode()) {
+            if (version.greaterThanOrEquals(ServerVersion.v5_6)) {
                 return new EmeraldMR3SearchStrategy(criteria, searchUseCase);
             }
-            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version.getRawValue());
+            throw new UnsupportedOperationException("Could not resolve searchNext strategy for serverVersion: " + version);
         }
-
     }
 }

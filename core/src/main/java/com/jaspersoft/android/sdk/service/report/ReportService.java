@@ -29,11 +29,11 @@ import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.Session;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.internal.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -46,36 +46,49 @@ import java.util.concurrent.TimeUnit;
 public final class ReportService {
 
     private final ReportExecutionUseCase mExecutionUseCase;
+    private final InfoCacheManager mInfoCacheManager;
     private final ReportExportUseCase mExportUseCase;
     private final long mDelay;
 
     @TestOnly
     ReportService(
             long delay,
+            InfoCacheManager infoCacheManager,
             ReportExecutionUseCase executionUseCase,
             ReportExportUseCase exportUseCase) {
         mDelay = delay;
+        mInfoCacheManager = infoCacheManager;
         mExecutionUseCase = executionUseCase;
         mExportUseCase = exportUseCase;
     }
 
-    public static ReportService create(TokenProvider tokenProvider, InfoProvider infoProvider) {
-        String baseUrl = infoProvider.getBaseUrl();
+    public static ReportService create(RestClient client, Session session) {
         ReportExecutionRestApi executionApi = new ReportExecutionRestApi.Builder()
-                .baseUrl(baseUrl)
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .baseUrl(client.getServerUrl())
                 .build();
         ReportExportRestApi exportApi = new ReportExportRestApi.Builder()
-                .baseUrl(baseUrl)
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .baseUrl(client.getServerUrl())
                 .build();
-        ExecutionOptionsDataMapper executionOptionsMapper = new ExecutionOptionsDataMapper(baseUrl);
 
+        ServiceExceptionMapper defaultExMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper reportExMapper = new ReportExceptionMapper(defaultExMapper);
+        TokenCacheManager tokenCacheManager = TokenCacheManager.create(client, session);
+        CallExecutor callExecutor = new DefaultCallExecutor(tokenCacheManager, reportExMapper);
+        ExecutionOptionsDataMapper executionOptionsMapper = ExecutionOptionsDataMapper.create(client);
+
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
         ReportExecutionUseCase reportExecutionUseCase =
-                new ReportExecutionUseCase(executionApi, tokenProvider, executionOptionsMapper);
+                new ReportExecutionUseCase(executionApi, callExecutor, cacheManager, executionOptionsMapper);
         ReportExportUseCase reportExportUseCase =
-                new ReportExportUseCase(exportApi, tokenProvider, executionOptionsMapper);
+                new ReportExportUseCase(exportApi, callExecutor, cacheManager, executionOptionsMapper);
 
         return new ReportService(
-                TimeUnit.SECONDS.toMillis(1),
+                client.getPollTimeout(),
+                cacheManager,
                 reportExecutionUseCase,
                 reportExportUseCase);
     }
@@ -88,9 +101,12 @@ public final class ReportService {
     private ReportExecution performRun(String reportUri, RunReportCriteria criteria) throws ServiceException {
         ReportExecutionDescriptor details = mExecutionUseCase.runReportExecution(reportUri, criteria);
 
-        waitForReportExecutionStart(reportUri, details);
+        waitForReportExecutionStart(reportUri, details.getExecutionId());
 
         return new ReportExecution(
+                this,
+                criteria,
+                mInfoCacheManager,
                 mDelay,
                 mExecutionUseCase,
                 mExportUseCase,
@@ -98,12 +114,13 @@ public final class ReportService {
                 details.getReportURI());
     }
 
-    private void waitForReportExecutionStart(String reportUri, ReportExecutionDescriptor details) throws ServiceException {
-        String executionId = details.getExecutionId();
-        Status status = Status.wrap(details.getStatus());
-        ErrorDescriptor descriptor = details.getErrorDescriptor();
+    void waitForReportExecutionStart(String reportUri, String executionId) throws ServiceException {
+        Status status;
+        do {
+            ExecutionStatus statusDetails = mExecutionUseCase.requestStatus(executionId);
+            status = Status.wrap(statusDetails.getStatus());
+            ErrorDescriptor descriptor = statusDetails.getErrorDescriptor();
 
-        while (!status.isReady() && !status.isExecution()) {
             if (status.isCancelled()) {
                 throw new ServiceException(
                         String.format("Report '%s' execution cancelled", reportUri), null,
@@ -117,9 +134,7 @@ public final class ReportService {
             } catch (InterruptedException ex) {
                 throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
-            ExecutionStatus statusDetails = mExecutionUseCase.requestStatus(executionId);
-            status = Status.wrap(statusDetails.getStatus());
-            descriptor = statusDetails.getErrorDescriptor();
-        }
+
+        } while (!status.isReady() && !status.isExecution());
     }
 }

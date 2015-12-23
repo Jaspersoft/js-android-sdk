@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 import com.jaspersoft.android.sdk.test.TestLogger;
@@ -55,7 +56,7 @@ public class AuthenticationRestApiTest {
         JSEncryptionAlgorithm generator = JSEncryptionAlgorithm.create(new BouncyCastleProvider());
         String cipher = generator.encrypt(key.getModulus(), key.getExponent(), "superuser");
 
-        String authResponse = restApi.authenticate("superuser", cipher, null, null);
+        Cookies authResponse = restApi.authenticate("superuser", cipher, null, null);
         assertThat(authResponse, is(notNullValue()));
     }
 
@@ -65,7 +66,7 @@ public class AuthenticationRestApiTest {
                 .baseUrl(mobileDemo2)
                 .logger(TestLogger.get(this))
                 .build();
-        String response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
+        Cookies response = authApi.authenticate("joeuser", "joeuser", "organization_1", null);
         assertThat(response, is(notNullValue()));
     }
 }

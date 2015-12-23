@@ -26,14 +26,18 @@ package com.jaspersoft.android.sdk.network.entity.type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.hamcrest.core.Is.is;
+import java.util.Collections;
+
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
@@ -66,6 +70,14 @@ public class GsonFactoryTest {
     @Test
     public void shouldCreateInstanceOfGson() {
         Gson gson = GsonFactory.create();
-        assertThat(gson, is(notNullValue()));
+        assertThat(gson, Is.is(notNullValue()));
+    }
+
+    @Test
+    public void shouldModifyReportExecutionParametersField() throws Exception {
+        ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest("/my/uri");
+        options.withParameters(Collections.singletonList(new ReportParameter("key", Collections.singleton("value"))));
+        Gson gson = GsonFactory.create();
+        assertThat(gson.toJson(options), is("{\"reportUnitUri\":\"/my/uri\",\"parameters\":{\"reportParameter\":[{\"name\":\"key\",\"value\":[\"value\"]}]}}"));
     }
 }

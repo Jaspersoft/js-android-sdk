@@ -51,12 +51,12 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NotNull
-    Collection<InputControl> requestInputControls(@NotNull String token,
+    Collection<InputControl> requestInputControls(@NotNull Cookies cookies,
                                                   @NotNull String reportUri,
                                                   boolean excludeState) throws HttpException, IOException;
 
     @NotNull
-    Collection<InputControlState> requestInputControlsInitialStates(@NotNull String token,
+    Collection<InputControlState> requestInputControlsInitialStates(@NotNull Cookies cookies,
                                                                     @NotNull String reportUri,
                                                                     boolean freshData) throws HttpException, IOException;
 
@@ -71,7 +71,7 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NotNull
-    Collection<InputControlState> requestInputControlsStates(@NotNull String token,
+    Collection<InputControlState> requestInputControlsStates(@NotNull Cookies cookies,
                                                              @NotNull String reportUri,
                                                              @NotNull Map<String, Set<String>> controlsValues,
                                                              boolean freshData) throws HttpException, IOException;

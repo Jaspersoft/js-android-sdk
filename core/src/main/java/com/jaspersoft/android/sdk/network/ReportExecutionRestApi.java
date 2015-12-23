@@ -28,13 +28,12 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -43,27 +42,27 @@ import java.util.Set;
 public interface ReportExecutionRestApi {
 
     @NotNull
-    ReportExecutionDescriptor runReportExecution(@NotNull String token,
+    ReportExecutionDescriptor runReportExecution(@NotNull Cookies cookies,
                                                  @NotNull ReportExecutionRequestOptions executionOptions) throws HttpException, IOException;
 
     @NotNull
-    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String token,
+    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull Cookies cookies,
                                                             @NotNull String executionId) throws HttpException, IOException;
 
     @NotNull
-    ExecutionStatus requestReportExecutionStatus(@NotNull String token,
+    ExecutionStatus requestReportExecutionStatus(@NotNull Cookies cookies,
                                                  @NotNull String executionId) throws HttpException, IOException;
 
-    boolean cancelReportExecution(@NotNull String token,
+    boolean cancelReportExecution(@NotNull Cookies cookies,
                                   @NotNull String executionId) throws HttpException, IOException;
 
-    boolean updateReportExecution(@NotNull String token,
+    boolean updateReportExecution(@NotNull Cookies cookies,
                                   @NotNull String executionId,
-                                  @NotNull Collection<Map<String, Set<String>>> params) throws HttpException, IOException;
+                                  @NotNull List<ReportParameter> params) throws HttpException, IOException;
 
      // TODO: API is broken requires investigation before release
     @NotNull
-    ReportExecutionSearchResponse searchReportExecution(@NotNull String token, Map<String, String> params) throws HttpException, IOException;
+    ReportExecutionSearchResponse searchReportExecution(@NotNull Cookies cookies, Map<String, String> params) throws HttpException, IOException;
 
     final class Builder extends GenericBuilder<Builder, ReportExecutionRestApi> {
         @Override

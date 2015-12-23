@@ -25,27 +25,50 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.server.InfoProvider;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.service.RestClient;
+import com.jaspersoft.android.sdk.service.Session;
+import com.jaspersoft.android.sdk.service.internal.*;
+import org.jetbrains.annotations.TestOnly;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class RepositoryService {
-    private final RepositoryRestApi mRepositoryRestApi;
-    private final TokenProvider mTokenProvider;
-    private final InfoProvider mInfoProvider;
+    private final SearchUseCase mSearchUseCase;
+    private final InfoCacheManager mInfoCacheManager;
 
-    public RepositoryService(RepositoryRestApi repositoryRestApi,
-                             TokenProvider tokenProvider,
-                             InfoProvider infoProvider) {
-        mRepositoryRestApi = repositoryRestApi;
-        mTokenProvider = tokenProvider;
-        mInfoProvider = infoProvider;
+    @TestOnly
+    RepositoryService(SearchUseCase searchUseCase, InfoCacheManager infoCacheManager) {
+        mSearchUseCase = searchUseCase;
+        mInfoCacheManager = infoCacheManager;
+    }
+
+    public static RepositoryService create(RestClient client, Session session) {
+        RepositoryRestApi repositoryRestApi = new RepositoryRestApi.Builder()
+                .baseUrl(client.getServerUrl())
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
+                .build();
+        ServiceExceptionMapper defaultExMapper = new DefaultExceptionMapper();
+        TokenCacheManager tokenCacheManager = TokenCacheManager.create(client, session);
+        CallExecutor callExecutor = new DefaultCallExecutor(tokenCacheManager, defaultExMapper);
+
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
+
+        ResourceMapper resourceMapper = new ResourceMapper();
+        SearchUseCase searchUseCase = new SearchUseCase(
+                resourceMapper,
+                repositoryRestApi,
+                cacheManager,
+                callExecutor
+        );
+        return new RepositoryService(searchUseCase, cacheManager);
     }
 
     public SearchTask search(SearchCriteria criteria) {
-        return new SearchTaskImpl(InternalCriteria.from(criteria), mRepositoryRestApi, mTokenProvider, mInfoProvider);
+        return new SearchTaskImpl(InternalCriteria.from(criteria), mSearchUseCase, mInfoCacheManager);
     }
 }

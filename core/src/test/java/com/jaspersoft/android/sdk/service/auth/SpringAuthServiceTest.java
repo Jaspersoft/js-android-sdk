@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
 import com.jaspersoft.android.sdk.network.entity.server.EncryptionKey;
 
@@ -71,6 +72,7 @@ public class SpringAuthServiceTest {
     private SpringAuthService objectUnderTest;
     private SpringCredentials credentials;
 
+    private final Cookies fakeCookies = Cookies.parse("key=value");
     private static final Map<String, String> sOptionals = new HashMap<>();
 
     static {
@@ -96,7 +98,7 @@ public class SpringAuthServiceTest {
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);
         when(mTimeZone.getID()).thenReturn("Europe/Helsinki");
-        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn("cookie");
+        when(mRestApi.authenticate(anyString(), anyString(), anyString(), anyMap())).thenReturn(fakeCookies);
     }
 
     @Test

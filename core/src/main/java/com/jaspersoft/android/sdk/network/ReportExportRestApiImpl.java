@@ -30,21 +30,14 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
 import com.squareup.okhttp.ResponseBody;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Path;
+import retrofit.http.*;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -59,40 +52,40 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NotNull
     @Override
-    public ExportExecutionDescriptor runExportExecution(@Nullable String token,
+    public ExportExecutionDescriptor runExportExecution(@Nullable Cookies cookies,
                                                         @Nullable String executionId,
                                                         @Nullable ExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ExportExecutionDescriptor> call = mRestApi.runReportExportExecution(executionId, executionOptions, token);
+        Call<ExportExecutionDescriptor> call = mRestApi.runReportExportExecution(executionId, executionOptions, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ExecutionStatus checkExportExecutionStatus(@Nullable String token,
+    public ExecutionStatus checkExportExecutionStatus(@Nullable Cookies cookies,
                                                       @Nullable String executionId,
                                                       @Nullable String exportId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ExecutionStatus> call = mRestApi.checkReportExportStatus(executionId, exportId, token);
+        Call<ExecutionStatus> call = mRestApi.checkReportExportStatus(executionId, exportId, cookies.toString());
         return CallWrapper.wrap(call).body();
     }
 
     @NotNull
     @Override
-    public ExportOutputResource requestExportOutput(@Nullable String token,
+    public ExportOutputResource requestExportOutput(@Nullable Cookies cookies,
                                                     @Nullable String executionId,
                                                     @Nullable String exportId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ResponseBody> call = mRestApi.requestReportExportOutput(executionId, exportId, token);
+        Call<ResponseBody> call = mRestApi.requestReportExportOutput(executionId, exportId, cookies.toString());
         Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
         com.squareup.okhttp.Headers headers = rawResponse.headers();
 
@@ -105,16 +98,16 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
 
     @NotNull
     @Override
-    public OutputResource requestExportAttachment(@Nullable String token,
+    public OutputResource requestExportAttachment(@Nullable Cookies cookies,
                                                   @Nullable String executionId,
                                                   @Nullable String exportId,
                                                   @Nullable String attachmentId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
         Utils.checkNotNull(attachmentId, "Attachment id should not be null");
-        Utils.checkNotNull(token, "Request token should not be null");
+        Utils.checkNotNull(cookies, "Request cookies should not be null");
 
-        Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId, token);
+        Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId, cookies.toString());
         Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
         ResponseBody body = rawResponse.body();
         return new RetrofitOutputResource(body);
@@ -132,22 +125,24 @@ final class ReportExportRestApiImpl implements ReportExportRestApi {
         @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
         Call<ExecutionStatus> checkReportExportStatus(@NotNull @Path("executionId") String executionId,
-                                                      @NotNull @Path("exportId") String exportId,
+                                                      @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                       @Header("Cookie") String cookie);
 
         /**
          * 'suppressContentDisposition' used due to security implications this header has
          */
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
         Call<ResponseBody> requestReportExportOutput(@NotNull @Path("executionId") String executionId,
-                                                     @NotNull @Path("exportId") String exportId,
+                                                     @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                      @Header("Cookie") String cookie);
 
         @NotNull
+        @Headers("Accept: application/json")
         @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
         Call<ResponseBody> requestReportExportAttachmentOutput(@NotNull @Path("executionId") String executionId,
-                                                               @NotNull @Path("exportId") String exportId,
+                                                               @NotNull @Path(value = "exportId", encoded = true) String exportId,
                                                                @NotNull @Path("attachmentId") String attachmentId,
                                                                @Header("Cookie") String cookie);
     }

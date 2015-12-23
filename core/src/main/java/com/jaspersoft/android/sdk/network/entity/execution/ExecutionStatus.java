@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
@@ -33,24 +35,35 @@ import com.google.gson.annotations.Expose;
 public final class ExecutionStatus {
 
     @Expose
+    @NotNull
     private String value;
     @Expose
+    @Nullable
     private ErrorDescriptor errorDescriptor;
 
-    public ExecutionStatus() {}
+    public ExecutionStatus() {
+    }
 
-    private ExecutionStatus(String value) {
+    private ExecutionStatus(@NotNull String value) {
         this.value = value;
     }
 
+    @NotNull
     public static ExecutionStatus cancelledStatus() {
         return new ExecutionStatus("cancelled");
     }
 
+    @NotNull
+    public static ExecutionStatus readyStatus() {
+        return new ExecutionStatus("ready");
+    }
+
+    @NotNull
     public String getStatus() {
         return value;
     }
 
+    @Nullable
     public ErrorDescriptor getErrorDescriptor() {
         return errorDescriptor;
     }

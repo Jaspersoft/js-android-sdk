@@ -29,22 +29,16 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.test.TestLogger;
 import com.jaspersoft.android.sdk.test.integration.api.utils.DummyTokenProvider;
 import com.jaspersoft.android.sdk.test.integration.api.utils.JrsMetadata;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
@@ -59,6 +53,7 @@ import static org.junit.Assert.assertThat;
 public class ReportExecutionRestApiTest {
 
     private final String REPORT_URI = "/public/Samples/Reports/ProfitDetailReport";
+    private final ReportParameter PRODUCT_FAMILY = new ReportParameter("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
 
     ReportExecutionRestApi apiUnderTest;
 
@@ -125,14 +120,9 @@ public class ReportExecutionRestApiTest {
 
     @Test
     public void updateOfParametersForExecutionShouldReturnResult() throws Exception {
-        List<Map<String, Set<String>>> list = new ArrayList<>();
-
-        Map<String, Set<String>> reportParameter = new HashMap<>();
-        reportParameter.put("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
-        list.add(reportParameter);
-
         ReportExecutionDescriptor executionResponse = startExecution();
-        boolean success = apiUnderTest.updateReportExecution(mAuthenticator.token(), executionResponse.getExecutionId(), list);
+        boolean success = apiUnderTest.updateReportExecution(mAuthenticator.token(), executionResponse.getExecutionId(),
+                Collections.singletonList(PRODUCT_FAMILY));
         assertThat(success, is(true));
     }
 
@@ -147,9 +137,7 @@ public class ReportExecutionRestApiTest {
     @NotNull
     private ReportExecutionDescriptor startExecution(String uri) throws Exception {
         ReportExecutionRequestOptions executionRequestOptions = ReportExecutionRequestOptions.newRequest(uri);
-        Map<String, Set<String>> params = new HashMap<>();
-        params.put("ProductFamily", new HashSet<String>(Collections.singletonList("Food")));
-        executionRequestOptions.withParameters(params);
+        executionRequestOptions.withParameters(Collections.singletonList(PRODUCT_FAMILY));
 
         return apiUnderTest.runReportExecution(mAuthenticator.token(), executionRequestOptions);
     }

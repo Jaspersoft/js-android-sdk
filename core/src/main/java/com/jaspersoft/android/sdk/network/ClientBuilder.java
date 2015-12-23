@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.network;
 
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -33,6 +35,8 @@ import com.squareup.okhttp.OkHttpClient;
 final class ClientBuilder {
     private final OkHttpClient mOkHttpClient;
     private RestApiLog mLog = RestApiLog.NONE;
+    private long connectTimeout = 10000;
+    private long readTimeout = 10000;
 
     public ClientBuilder() {
         mOkHttpClient = new OkHttpClient();
@@ -43,7 +47,19 @@ final class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder connectionTimeOut(long timeout, TimeUnit unit) {
+        connectTimeout = unit.toMillis(timeout);
+        return this;
+    }
+
+    public ClientBuilder readTimeout(long timeout, TimeUnit unit) {
+        readTimeout = unit.toMillis(timeout);
+        return this;
+    }
+
     public OkHttpClient build() {
+        mOkHttpClient.setReadTimeout(readTimeout, TimeUnit.MILLISECONDS);
+        mOkHttpClient.setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         mOkHttpClient.interceptors().add(new LoggingInterceptor(mLog));
         return mOkHttpClient;
     }

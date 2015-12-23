@@ -26,9 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -56,30 +55,28 @@ public class ReportAttachmentTest {
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    TokenProvider mTokenProvider;
+    ResourceOutput input;
     @Mock
-    OutputResource input;
+    ReportExportUseCase mReportExportUseCase;
+    @Mock
+    RunExportCriteria mRunExportCriteria;
 
     private ReportAttachment objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mTokenProvider.provideToken()).thenReturn("cookie");
-
-        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/my/uri");
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", exportUseCase);
+        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mRunExportCriteria, mReportExportUseCase);
     }
 
     @Test
     public void testDownload() throws Exception {
-        when(mExportRestApi.requestExportAttachment(anyString(), anyString(), anyString(), anyString())).thenReturn(input);
+        when(mReportExportUseCase.requestExportAttachmentOutput(any(RunExportCriteria.class), anyString(), anyString(), anyString())).thenReturn(input);
 
         ResourceOutput result = objectUnderTest.download();
         assertThat(result, is(notNullValue()));
 
-        verify(mExportRestApi).requestExportAttachment(eq("cookie"), eq("exec_id"), eq("export_id"), eq("1.jpg"));
-        verifyNoMoreInteractions(mExportRestApi);
+        verify(mReportExportUseCase).requestExportAttachmentOutput(eq(mRunExportCriteria), eq("exec_id"), eq("export_id"), eq("1.jpg"));
+        verifyNoMoreInteractions(mReportExportUseCase);
     }
 }

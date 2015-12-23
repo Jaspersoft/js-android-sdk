@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.network;
 
 import retrofit.Retrofit;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -42,12 +44,24 @@ abstract class GenericBuilder<TargetBuilder, Api> {
     @SuppressWarnings("unchecked")
     public TargetBuilder baseUrl(String baseUrl) {
         adapterBuilder.baseUrl(baseUrl);
-        return  (TargetBuilder) this;
+        return (TargetBuilder) this;
     }
 
     @SuppressWarnings("unchecked")
     public TargetBuilder logger(RestApiLog log) {
         clientBuilder.setLog(log);
+        return (TargetBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TargetBuilder connectionTimeOut(long timeout, TimeUnit unit) {
+        clientBuilder.connectionTimeOut(timeout, unit);
+        return (TargetBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TargetBuilder readTimeout(long timeout, TimeUnit unit) {
+        clientBuilder.readTimeout(timeout, unit);
         return (TargetBuilder) this;
     }
 

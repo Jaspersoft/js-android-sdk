@@ -24,21 +24,21 @@
 
 package com.jaspersoft.android.sdk.service.data.server;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class DefaultVersionParserTest {
+public class VersionParserTest {
     @Test
     @Parameters({
             "5.0.0, 5",
@@ -54,8 +54,19 @@ public class DefaultVersionParserTest {
     })
     public void shouldParseSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = DefaultVersionParser.INSTANCE.convertToDouble(versionCode);
-        assertThat(resultCode, is(expectedCode));
+        double resultCode = VersionParser.toDouble(versionCode);
+        assertThat(resultCode, Is.is(expectedCode));
+    }
+
+    @Test
+    @Parameters({
+            "5.61, 5.61",
+            "6.01, 6.01"
+    })
+    public void shouldParseValidDouble(String versionCode, String expected) {
+        double expectedCode = Double.valueOf(expected);
+        double resultCode = VersionParser.toDouble(versionCode);
+        assertThat(resultCode, Is.is(expectedCode));
     }
 
     @Test
@@ -69,7 +80,31 @@ public class DefaultVersionParserTest {
     })
     public void shouldParseLongSemanticVersioning(String versionCode, String expected) {
         double expectedCode = Double.valueOf(expected);
-        double resultCode = DefaultVersionParser.INSTANCE.convertToDouble(versionCode);
-        assertThat(resultCode, is(expectedCode));
+        double resultCode = VersionParser.toDouble(versionCode);
+        assertThat(resultCode, Is.is(expectedCode));
+    }
+
+    @Test
+    @Parameters({
+            "0, 0",
+            "0.0, 0",
+            "1-asdasdsad, 1",
+            "1-asdasdsad2, 1",
+            "12-asdasdsad2, 12",
+    })
+    public void shouldParseIfHasNumber(String version, String result) {
+        double resultCode = VersionParser.toDouble(version);
+        assertThat(resultCode, Is.is(Double.valueOf(result)));
+    }
+
+    @Test
+    @Parameters({
+            "invalid",
+            ".-",
+            ""
+    })
+    public void shouldReturnZeroForIncorrectVersion(String invalidVersion) {
+        assertThat(String.format("Version '%s' should be treated as zero", invalidVersion),
+                VersionParser.toDouble(invalidVersion), is(-1d));
     }
 }

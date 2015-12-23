@@ -38,6 +38,7 @@ public final class GsonFactory {
         gsonBuilder.disableHtmlEscaping();
         gsonBuilder.registerTypeAdapterFactory(new ReportLookupTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new InputControlTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new ReportExecutionRequestOptionsFactory());
         return gsonBuilder.create();
     }
 }

@@ -27,36 +27,49 @@ package com.jaspersoft.android.sdk.service.server;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+import com.jaspersoft.android.sdk.service.RestClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ServerInfoService {
+public class ServerInfoService {
     private final ServerRestApi mRestApi;
     private final ServerInfoTransformer mTransformer;
+    private final ServiceExceptionMapper mServiceExceptionMapper;
 
     @TestOnly
-    ServerInfoService(ServerRestApi restApi, ServerInfoTransformer transformer) {
+    ServerInfoService(ServerRestApi restApi, ServerInfoTransformer transformer, ServiceExceptionMapper serviceExceptionMapper) {
         mRestApi = restApi;
         mTransformer = transformer;
+        mServiceExceptionMapper = serviceExceptionMapper;
     }
 
-    public static ServerInfoService create(String baseUrl) {
+    public static ServerInfoService create(RestClient client) {
         ServerRestApi restApi = new ServerRestApi.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(client.getServerUrl())
+                .connectionTimeOut(client.getConnectionTimeOut(), TimeUnit.MILLISECONDS)
+                .readTimeout(client.getReadTimeOut(), TimeUnit.MILLISECONDS)
                 .build();
+        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
 
-        return new ServerInfoService(restApi, ServerInfoTransformer.get());
+        return new ServerInfoService(restApi, ServerInfoTransformer.get(), serviceExceptionMapper);
+    }
+
+    public static ServerInfoService create(ServerRestApi restApi) {
+        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
+        return new ServerInfoService(restApi, ServerInfoTransformer.get(), serviceExceptionMapper);
     }
 
     public ServerInfo requestServerInfo() throws ServiceException {
@@ -64,20 +77,20 @@ public final class ServerInfoService {
             ServerInfoData response = mRestApi.requestServerInfo();
             return mTransformer.transform(response);
         } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         }
     }
 
     public ServerVersion requestServerVersion() throws ServiceException {
         try {
             String version = mRestApi.requestVersion();
-            return ServerVersion.defaultParser().parse(version);
+            return ServerVersion.valueOf(version);
         } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         }
     }
 
@@ -86,9 +99,9 @@ public final class ServerInfoService {
             String dateTimeFormat = mRestApi.requestDateTimeFormatPattern();
             return new SimpleDateFormat(dateTimeFormat);
         } catch (HttpException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {
-            throw ServiceExceptionMapper.transform(e);
+            throw mServiceExceptionMapper.transform(e);
         }
     }
 }

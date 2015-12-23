@@ -24,19 +24,19 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
-import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
-import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
-import com.jaspersoft.android.sdk.service.auth.TokenProvider;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
+import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,18 +48,18 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.jaspersoft.android.sdk.test.Chain.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -71,10 +71,13 @@ import static org.powermock.api.mockito.PowerMockito.when;
         ReportExecutionDescriptor.class,
         ExecutionOptionsDataMapper.class,
         ExportExecutionDescriptor.class,
+        ReportExecutionUseCase.class,
         ExportDescriptor.class,
         ExecutionStatus.class,
         ErrorDescriptor.class,
-        ExecutionOptionsDataMapper.class})
+        ExecutionOptionsDataMapper.class,
+        ReportService.class,
+})
 public class ReportExecutionTest {
 
     @Mock
@@ -82,7 +85,9 @@ public class ReportExecutionTest {
     @Mock
     ExportExecutionDescriptor mExportExecDetails;
     @Mock
-    ReportExecutionDescriptor mExecDetails;
+    ReportExecutionDescriptor mReportExecDetails1;
+    @Mock
+    ReportExecutionDescriptor mReportExecDetails2;
     @Mock
     ExportDescriptor mExportExecution;
     @Mock
@@ -91,14 +96,21 @@ public class ReportExecutionTest {
     ErrorDescriptor mDescriptor;
 
     @Mock
-    ReportExportRestApi mExportRestApi;
+    ReportExecutionUseCase mReportExecutionUseCase;
     @Mock
-    ReportExecutionRestApi mExecutionRestApi;
+    ReportExportUseCase mReportExportUseCase;
+
     @Mock
-    TokenProvider mTokenProvider;
+    ReportService mReportService;
+    @Mock
+    RunReportCriteria mReportCriteria;
+
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+    @Mock
+    ServerInfo mServerInfo;
 
     private ReportExecution objectUnderTest;
-
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
@@ -107,36 +119,40 @@ public class ReportExecutionTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(mTokenProvider.provideToken()).thenReturn("cookie");
-        when(mExecDetails.getExecutionId()).thenReturn("execution_id");
-        when(mExecDetails.getReportURI()).thenReturn("/report/uri");
+        when(mReportExecDetails1.getExecutionId()).thenReturn("execution_id");
+        when(mReportExecDetails1.getReportURI()).thenReturn("/report/uri");
 
-        ExecutionOptionsDataMapper executionOptionsDataMapper = new ExecutionOptionsDataMapper("/report/uri");
-        ReportExecutionUseCase reportExecutionUseCase = new ReportExecutionUseCase(mExecutionRestApi, mTokenProvider, executionOptionsDataMapper);
-        ReportExportUseCase exportUseCase = new ReportExportUseCase(mExportRestApi, mTokenProvider, executionOptionsDataMapper);
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mServerInfo.getVersion()).thenReturn(ServerVersion.v6);
+
         objectUnderTest = new ReportExecution(
+                mReportService,
+                mReportCriteria,
+                mInfoCacheManager,
                 TimeUnit.SECONDS.toMillis(0),
-                reportExecutionUseCase,
-                exportUseCase,
+                mReportExecutionUseCase,
+                mReportExportUseCase,
                 "execution_id",
                 "/report/uri");
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRequestExportIdealCase() throws Exception {
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("ready");
         mockReportExecutionDetails("ready");
-        mockRunExportExecution("ready");
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mExportRestApi).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
-        verify(mExecutionRestApi).requestReportExecutionDetails(eq("cookie"), eq("execution_id"));
+        verify(mReportExportUseCase).runExport(eq("execution_id"), any(RunExportCriteria.class));
+        verify(mReportExecutionUseCase).requestExecutionDetails(eq("execution_id"));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunThrowsFailedStatusImmediately() throws Exception {
         // export run request
-        mockRunExportExecution("failed");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("failed");
 
         try {
             objectUnderTest.export(exportCriteria);
@@ -146,7 +162,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunShouldThrowFailedIfStatusFailed() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("failed");
@@ -158,10 +174,11 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunThrowsCancelledStatusImmediately() throws Exception {
         // export run request
-        mockRunExportExecution("cancelled");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("cancelled");
 
         try {
             objectUnderTest.export(exportCriteria);
@@ -171,7 +188,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunShouldThrowCancelledIfStatusCancelled() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("cancelled");
@@ -184,7 +201,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testRunReportPendingCase() throws Exception {
         mockRunExportExecution("queued");
         mockCheckExportExecStatus("queued", "ready");
@@ -192,43 +209,44 @@ public class ReportExecutionTest {
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mExportRestApi, times(2)).checkExportExecutionStatus(eq("cookie"), eq("execution_id"), eq("export_id"));
+        verify(mReportExportUseCase, times(2)).checkExportExecutionStatus(eq("execution_id"), eq("export_id"));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void ensureThatExportCancelledEventWillBeResolved() throws Exception {
-        mockRunExportExecution("cancelled", "ready");
+        mockRunExportExecution("queued");
+        mockCheckExportExecStatus("cancelled", "ready");
         mockReportExecutionDetails("ready");
 
         objectUnderTest.export(exportCriteria);
 
-        verify(mExportRestApi, times(2)).runExportExecution(eq("cookie"), eq("execution_id"), any(ExecutionRequestOptions.class));
+        verify(mReportExportUseCase, times(2)).runExport(eq("execution_id"), any(RunExportCriteria.class));
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReport() throws Exception {
-        when(mExecDetails.getTotalPages()).thenReturn(100);
+        when(mReportExecDetails1.getTotalPages()).thenReturn(100);
         mockReportExecutionDetails("ready");
 
         ReportMetadata metadata = objectUnderTest.waitForReportCompletion();
         assertThat(metadata.getTotalPages(), is(100));
         assertThat(metadata.getUri(), is("/report/uri"));
 
-        verify(mExecutionRestApi).requestReportExecutionDetails(anyString(), anyString());
-        verifyNoMoreInteractions(mExecutionRestApi);
+        verify(mReportExecutionUseCase).requestExecutionDetails(anyString());
+        verifyNoMoreInteractions(mReportExecutionUseCase);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportShouldLoopCalls() throws Exception {
         mockReportExecutionDetails("execution", "ready");
 
         objectUnderTest.waitForReportCompletion();
 
-        verify(mExecutionRestApi, times(2)).requestReportExecutionDetails(anyString(), anyString());
-        verifyNoMoreInteractions(mExecutionRestApi);
+        verify(mReportExecutionUseCase, times(2)).requestExecutionDetails(anyString());
+        verifyNoMoreInteractions(mReportExecutionUseCase);
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportThrowCancelledIfStatusCancelled() throws Exception {
         mockReportExecutionDetails("execution", "cancelled");
 
@@ -239,7 +257,7 @@ public class ReportExecutionTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testAwaitCompleteReportThrowFailedIfStatusFailed() throws Exception {
         mockReportExecutionDetails("execution", "failed");
 
@@ -250,30 +268,42 @@ public class ReportExecutionTest {
         }
    }
 
+    @Test(timeout = 2000)
+    public void testUpdateExecution() throws Exception {
+        List<ReportParameter> params = Collections.<ReportParameter>emptyList();
+        objectUnderTest.updateExecution(params);
+        verify(mReportExecutionUseCase).updateExecution("execution_id", params);
+    }
+
     private void mockCheckExportExecStatus(String... statusChain) throws Exception {
         ensureChain(statusChain);
-        when(mExecutionStatusResponse.getStatus()).then(StatusChain.of(statusChain));
-        when(mExecutionStatusResponse.getErrorDescriptor()).thenReturn(mDescriptor);
-        when(mExportRestApi.checkExportExecutionStatus(anyString(), anyString(), anyString())).thenReturn(mExecutionStatusResponse);
+        when(mExecutionStatusResponse.getStatus()).then(Chain.of(statusChain));
+        when(mReportExportUseCase.checkExportExecutionStatus(anyString(), anyString())).thenReturn(mExecutionStatusResponse);
     }
 
     private void mockRunExportExecution(String... statusChain) throws Exception {
         ensureChain(statusChain);
         when(mExportExecDetails.getExportId()).thenReturn("export_id");
-        when(mExportExecDetails.getStatus()).then(StatusChain.of(statusChain));
+        when(mExportExecDetails.getStatus()).then(of(statusChain));
         when(mExportExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
-        when(mExportRestApi.runExportExecution(anyString(), anyString(), any(ExecutionRequestOptions.class))).thenReturn(mExportExecDetails);
+        when(mReportExportUseCase.runExport(anyString(), any(RunExportCriteria.class))).thenReturn(mExportExecDetails);
     }
 
-    private void mockReportExecutionDetails(String... statusChain) throws Exception {
-        ensureChain(statusChain);
+    private void mockReportExecutionDetails(String firstStatus, String... statusChain) throws Exception {
         Set<ExportDescriptor> exports = Collections.singleton(mExportExecution);
         when(mExportExecution.getStatus()).thenReturn("execution");
         when(mExportExecution.getId()).thenReturn("export_id");
-        when(mExecDetails.getExports()).thenReturn(exports);
-        when(mExecDetails.getStatus()).then(StatusChain.of(statusChain));
-        when(mExecDetails.getErrorDescriptor()).thenReturn(mDescriptor);
-        when(mExecutionRestApi.requestReportExecutionDetails(anyString(), anyString())).thenReturn(mExecDetails);
+
+        when(mReportExecDetails1.getStatus()).thenReturn(firstStatus);
+        when(mReportExecDetails1.getExports()).thenReturn(exports);
+        when(mReportExecDetails1.getErrorDescriptor()).thenReturn(mDescriptor);
+
+        when(mReportExecDetails2.getStatus()).then(of(statusChain));
+        when(mReportExecDetails2.getExports()).thenReturn(exports);
+        when(mReportExecDetails2.getErrorDescriptor()).thenReturn(mDescriptor);
+
+        when(mReportExecutionUseCase.requestExecutionDetails(anyString()))
+                .then(of(mReportExecDetails1, mReportExecDetails2));
     }
 
     private void ensureChain(String[] statusChain) {

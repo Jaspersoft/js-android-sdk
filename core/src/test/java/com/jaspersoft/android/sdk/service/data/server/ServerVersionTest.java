@@ -1,85 +1,137 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
- * http://community.jaspersoft.com/project/mobile-sdk-android
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
  * the following license terms apply:
  *
- * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ * This program is part of TIBCO Jaspersoft Mobile for Android.
  *
- * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * TIBCO Jaspersoft Mobile is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * TIBCO Jaspersoft Mobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * along with TIBCO Jaspersoft Mobile for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
 package com.jaspersoft.android.sdk.service.data.server;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.is;
 
-/**
- * @author Tom Koptel
- * @since 2.0
- */
 @RunWith(JUnitParamsRunner.class)
 public class ServerVersionTest {
+
     @Test
     @Parameters({
-            "5.0.0, EMERALD",
-            "5.2.0, EMERALD_MR1",
-            "5.5.0, EMERALD_MR2",
-            "5.6.0, EMERALD_MR3",
-            "5.6.1, EMERALD_MR4",
-            "6.0, AMBER",
-            "6.0.1, AMBER_MR1",
-            "6.1, AMBER_MR2",
+            "v5_6, v5_5",
+            "v5_6_1, v5_6",
+            "v6, v5_6_1",
+            "v6_0_1, v6",
+            "v6_1, v6",
+            "v6_1_1, v6_1",
+            "v6_2, v6_1_1"
     })
-    public void shouldParseSemanticVersioning(String versionCode, String enumName) {
-        ServerVersion expectedRelease = ServerVersion.valueOf(enumName);
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(versionCode);
-        assertThat(resultRelease, is(expectedRelease));
+    public void testGreaterThan(String greater, String lesser) throws Exception {
+        ServerVersion v1 = (ServerVersion) ServerVersion.class.getField(greater).get(null);
+        ServerVersion v2 = (ServerVersion) ServerVersion.class.getField(lesser).get(null);
+        assertThat(String.format("%s should be greater than %s", greater, lesser), v1.greaterThan(v2));
     }
 
     @Test
     @Parameters({
-            "5.0, EMERALD",
-            "5.2, EMERALD_MR1",
-            "5.5, EMERALD_MR2",
-            "5.6, EMERALD_MR3",
-            "5.6.1, EMERALD_MR4",
-            "6.0, AMBER",
-            "6.0.1, AMBER_MR1",
-            "6.1, AMBER_MR2",
+            "v5_6, v5_5",
+            "v5_6_1, v5_6",
+            "v6, v5_6_1",
+            "v6_0_1, v6",
+            "v6_1, v6",
+            "v6_1_1, v6_1",
+            "v6_2, v6_1_1"
     })
-    public void shouldParseCode(String versionCode, String enumName) {
-        ServerVersion expectedRelease = ServerVersion.valueOf(enumName);
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(versionCode);
-        assertThat(resultRelease, is(expectedRelease));
+    public void testGreaterThanOrEquals(String greater, String lesser) throws Exception {
+        ServerVersion v1 = (ServerVersion) ServerVersion.class.getField(greater).get(null);
+        ServerVersion v2 = (ServerVersion) ServerVersion.class.getField(lesser).get(null);
+        assertThat(String.format("%s should be greater than %s", greater, lesser), v1.greaterThan(v2));
+        assertThat(String.format("%s should be greater than or equal %s", greater, lesser), v1.greaterThanOrEquals(v2));
     }
 
     @Test
     @Parameters({
-            "5.6.0 Preview",
-            "5.6.0-BETA",
+            "v5_6, v5_5",
+            "v5_6_1, v5_6",
+            "v6, v5_6_1",
+            "v6_0_1, v6",
+            "v6_1, v6",
+            "v6_1_1, v6_1",
+            "v6_2, v6_1_1"
     })
-    public void shouldParseNonSemanticVersioning(String nonSemanticVersion) {
-        ServerVersion resultRelease = ServerVersion.defaultParser().parse(nonSemanticVersion);
-        assertThat(resultRelease, is(ServerVersion.EMERALD_MR3));
+    public void testLessThan(String greater, String lesser) throws Exception {
+        ServerVersion v1 = (ServerVersion) ServerVersion.class.getField(lesser).get(null);
+        ServerVersion v2 = (ServerVersion) ServerVersion.class.getField(greater).get(null);
+        assertThat(String.format("%s should be less than %s", lesser, greater), v1.lessThan(v2));
+    }
+
+    @Test
+    @Parameters({
+            "v5_6, v5_5",
+            "v5_6_1, v5_6",
+            "v6, v5_6_1",
+            "v6_0_1, v6",
+            "v6_1, v6",
+            "v6_1_1, v6_1",
+            "v6_2, v6_1_1"
+    })
+    public void testLessThanOrEquals(String greater, String lesser) throws Exception {
+        ServerVersion v1 = (ServerVersion) ServerVersion.class.getField(lesser).get(null);
+        ServerVersion v2 = (ServerVersion) ServerVersion.class.getField(greater).get(null);
+        assertThat(String.format("%s should be less than %s", lesser, greater), v1.lessThan(v2));
+        assertThat(String.format("%s should be less than or equals %s", lesser, greater), v1.lessThanOrEquals(v2));
+    }
+
+    @Test
+    @Parameters({
+            "v5_5, 5.5",
+            "v5_6, 5.6",
+            "v5_6_1, 5.6.1",
+            "v6, 6.0",
+            "v6_0_1, 6.0.1",
+            "v6_1, 6.1",
+            "v6_1_1, 6.1.1",
+            "v6_2, 6.2",
+    })
+    public void testToString(String version, String expected) throws Exception {
+        ServerVersion v1 = (ServerVersion) ServerVersion.class.getField(version).get(null);
+        assertThat(String.format("Raw version should be %s", expected), expected, is(v1.toString()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionIfVersionMakeNoSense() {
+        ServerVersion.valueOf("make no sense");
+    }
+
+    @Test
+    @Parameters({"0", "0.0"})
+    public void shouldAcceptZeroAsArgument(String version) {
+        ServerVersion.valueOf(version);
+    }
+
+    @Test
+    public void testEquals() {
+        EqualsVerifier.forClass(ServerVersion.class)
+                .verify();
     }
 }

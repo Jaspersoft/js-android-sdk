@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.Cookies;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
@@ -7,5 +8,5 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
  * @since 2.0
  */
 public abstract class Credentials {
-    protected abstract String applyPolicy(AuthPolicy authPolicy) throws ServiceException;
+    protected abstract Cookies applyPolicy(AuthPolicy authPolicy) throws ServiceException;
 }
