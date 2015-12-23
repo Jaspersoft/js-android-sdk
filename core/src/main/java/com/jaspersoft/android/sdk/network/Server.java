@@ -50,11 +50,12 @@ public final class Server {
     }
 
     public AnonymousClient newClient() {
-        return new AnonymousClientImpl(
-                newRetrofit()
-                        .client(mOkHttpClient)
-                        .build()
-        );
+        OkHttpClient anonymousClient = configureAnonymosClient(mOkHttpClient.clone());
+        Retrofit anonymousRetrofit = newRetrofit()
+                .client(anonymousClient)
+                .build();
+
+        return new AnonymousClientImpl(anonymousRetrofit);
     }
 
     public AuthorizedClientBuilder newClient(Credentials credentials) {
@@ -78,6 +79,11 @@ public final class Server {
 
     OkHttpClient getClient() {
         return mOkHttpClient;
+    }
+
+    private OkHttpClient configureAnonymosClient(OkHttpClient client) {
+        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        return client;
     }
 
     public static Builder newBuilder() {
@@ -144,24 +150,14 @@ public final class Server {
 
         public AuthorizedClient create() {
             ensureSaneDefaults();
-
             OkHttpClient authClient = configureAuthClient(mServer.getClient().clone());
-            OkHttpClient anonymClient = configureAnonymClient(mServer.getClient().clone());
 
             Retrofit authRetrofit = mServer.newRetrofit()
                     .client(authClient)
                     .build();
-            Retrofit anonymRetrofit = mServer.newRetrofit()
-                    .client(anonymClient)
-                    .build();
 
-            AnonymousClient anonymousClient = new AnonymousClientImpl(anonymRetrofit);
+            AnonymousClient anonymousClient = mServer.newClient();
             return new AuthorizedClientImpl(authRetrofit, anonymousClient);
-        }
-
-        private OkHttpClient configureAnonymClient(OkHttpClient client) {
-            client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-            return client;
         }
 
         private OkHttpClient configureAuthClient(OkHttpClient client) {

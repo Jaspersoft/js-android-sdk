@@ -51,7 +51,7 @@ final class JrsMetadata {
     public static JrsMetadata createMobileDemo() {
         return builder()
                 .setOrganization("")
-                .setServerUrl("http://mobiledemo.jaspersoft.com/jasperserver-pro")
+                .setServerUrl("http://mobiledemo.jaspersoft.com/jasperserver-pro/")
                 .setUsername("superuser")
                 .setPassword("superuser")
                 .build();
@@ -60,7 +60,7 @@ final class JrsMetadata {
     public static JrsMetadata createMobileDemo2() {
         return builder()
                 .setOrganization("organization_1")
-                .setServerUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro")
+                .setServerUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
                 .setUsername("phoneuser")
                 .setPassword("phoneuser")
                 .build();

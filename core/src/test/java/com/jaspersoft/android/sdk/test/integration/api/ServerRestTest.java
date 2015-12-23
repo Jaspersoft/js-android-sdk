@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.ServerRestApi;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -39,12 +39,11 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ServerRestTest {
-    private ServerRestApi apiUnderTest;
+    private static ServerRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
 
-    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
-
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         if (apiUnderTest == null) {
             apiUnderTest = mLazyClient.getAuthorizedClient().infoApi();
         }
