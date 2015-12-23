@@ -30,7 +30,6 @@ import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,10 +62,11 @@ public class AuthenticationRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .client(new OkHttpClient())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
+        retrofit.client().setFollowRedirects(false);
         apiUnderTest = new AuthenticationRestApi(retrofit);
     }
 

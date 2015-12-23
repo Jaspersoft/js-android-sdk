@@ -83,10 +83,10 @@ public class ReportExecutionRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         restApiUnderTest = new ReportExecutionRestApiImpl(retrofit);
     }
 
@@ -158,7 +158,6 @@ public class ReportExecutionRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions"));
         assertThat(request.getBody().readUtf8(), is("{\"reportUnitUri\":\"/my/uri\"}"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
         assertThat(request.getMethod(), is("POST"));
     }
 
@@ -172,7 +171,6 @@ public class ReportExecutionRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
         assertThat(request.getMethod(), is("GET"));
     }
 
@@ -186,7 +184,6 @@ public class ReportExecutionRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/status"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
         assertThat(request.getMethod(), is("GET"));
     }
 
@@ -199,7 +196,6 @@ public class ReportExecutionRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/status"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
         assertThat(request.getBody().readUtf8(), is("{\"value\":\"cancelled\"}"));
         assertThat(request.getMethod(), is("PUT"));
     }
@@ -213,7 +209,6 @@ public class ReportExecutionRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/parameters"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
         assertThat(request.getBody().readUtf8(), is("[{\"name\":\"key\",\"value\":[\"value\"]}]"));
         assertThat(request.getMethod(), is("POST"));
     }

@@ -66,10 +66,10 @@ public class ReportExportRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         restApiUnderTest = new ReportExportRestApiImpl(retrofit);
     }
 
@@ -159,7 +159,6 @@ public class ReportExportRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/outputResource?suppressContentDisposition=true"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -184,7 +183,6 @@ public class ReportExportRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/attachments/attachment_id"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -196,7 +194,6 @@ public class ReportExportRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -208,7 +205,6 @@ public class ReportExportRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/status"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test

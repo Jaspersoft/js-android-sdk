@@ -70,10 +70,10 @@ public class RepositoryRestApiTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         restApiUnderTest = new RepositoryRestApiImpl(retrofit);
     }
 
@@ -203,7 +203,6 @@ public class RepositoryRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources?limit=100&offset=100"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -215,7 +214,6 @@ public class RepositoryRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
         assertThat(request.getHeader("Accept"), is("application/repository.reportUnit+json"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -227,6 +225,5 @@ public class RepositoryRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
         assertThat(request.getHeader("Accept"), is("application/repository.folder+json"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 }

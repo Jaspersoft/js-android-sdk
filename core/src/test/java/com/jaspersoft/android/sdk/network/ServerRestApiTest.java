@@ -51,10 +51,10 @@ public class ServerRestApiTest {
 
     @Before
     public void setup() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         objectUnderTest = new ServerRestApiImpl(retrofit);
     }
 

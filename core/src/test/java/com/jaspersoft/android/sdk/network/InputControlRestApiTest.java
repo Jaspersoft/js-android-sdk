@@ -24,10 +24,8 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -74,10 +72,10 @@ public class InputControlRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         restApiUnderTest = new InputControlRestApiImpl(retrofit);
     }
 
@@ -134,7 +132,6 @@ public class InputControlRestApiTest {
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
         assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls/values?freshData=true"));
-        assertThat(response.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -153,7 +150,6 @@ public class InputControlRestApiTest {
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
         assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls/sales_fact_ALL__store_sales_2013_1/values?freshData=true"));
-        assertThat(response.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -168,7 +164,6 @@ public class InputControlRestApiTest {
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
         assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls?exclude=state"));
-        assertThat(response.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -183,6 +178,5 @@ public class InputControlRestApiTest {
 
         RecordedRequest response = mWebMockRule.get().takeRequest();
         assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls"));
-        assertThat(response.getHeader("Cookie"), is("key=value"));
     }
 }

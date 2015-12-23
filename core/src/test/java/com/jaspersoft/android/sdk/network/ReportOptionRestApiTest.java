@@ -70,10 +70,10 @@ public class ReportOptionRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(mWebMockRule.getRootUrl())
-                .addConverterFactory(GsonConverterFactory.create())
+        Server server = Server.newBuilder()
+                .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
+        Retrofit retrofit = server.newRetrofit().build();
         restApiUnderTest = new ReportOptionRestApiImpl(retrofit);
     }
 
@@ -150,7 +150,6 @@ public class ReportOptionRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -169,7 +168,6 @@ public class ReportOptionRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options?label=my%20label&overwrite=true"));
         assertThat(request.getBody().readUtf8(), is("{\"sales_fact_ALL__store_sales_2013_1\":[\"19\"]}"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -184,7 +182,6 @@ public class ReportOptionRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options/option_id"));
         assertThat(request.getMethod(), is("PUT"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
@@ -196,7 +193,6 @@ public class ReportOptionRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options/option_id"));
         assertThat(request.getMethod(), is("DELETE"));
-        assertThat(request.getHeader("Cookie"), is("key=value"));
     }
 
     @Test
