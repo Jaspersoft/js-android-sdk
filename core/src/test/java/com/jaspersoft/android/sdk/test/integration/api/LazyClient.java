@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Server;
+import com.jaspersoft.android.sdk.network.TestCookieManager;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -54,6 +55,7 @@ final class LazyClient {
         if (mClient == null) {
             mClient = getServer(mJrsMetadata.getServerUrl())
                     .newClient(mJrsMetadata.getCredentials())
+                    .withCookieHandler(new TestCookieManager())
                     .create();
         }
         return mClient;

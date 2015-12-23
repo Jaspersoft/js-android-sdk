@@ -28,7 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.*;
@@ -52,11 +52,11 @@ public class InputControlRestApiTest {
         CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
     }
 
-    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
-    private InputControlRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static InputControlRestApi apiUnderTest;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         if (apiUnderTest == null) {
             AuthorizedClient client = mLazyClient.getAuthorizedClient();
             apiUnderTest = client.inputControlApi();

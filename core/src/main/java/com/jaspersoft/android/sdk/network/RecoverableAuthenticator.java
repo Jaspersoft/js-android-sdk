@@ -25,29 +25,34 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.Proxy;
+import java.net.URI;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 final class RecoverableAuthenticator implements Authenticator {
-    private final Server mServer;
+    private final AuthStrategy mAuthStrategy;
     private final Credentials mCredentials;
 
-    RecoverableAuthenticator(Server server, Credentials credentials) {
-        mServer = server;
+    RecoverableAuthenticator(AuthStrategy authStrategy, Credentials credentials) {
+        mAuthStrategy = authStrategy;
         mCredentials = credentials;
     }
 
     @Override
     public Request authenticate(Proxy proxy, Response response) throws IOException {
         try {
-            authenticate();
+            mCredentials.apply(mAuthStrategy);
             return response.request();
         } catch (HttpException code) {
             return null;
@@ -57,10 +62,5 @@ final class RecoverableAuthenticator implements Authenticator {
     @Override
     public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
         return null;
-    }
-
-    private void authenticate() throws IOException, HttpException {
-        AuthStrategy authStrategy = new AuthStrategy(mServer);
-        mCredentials.apply(authStrategy);
     }
 }

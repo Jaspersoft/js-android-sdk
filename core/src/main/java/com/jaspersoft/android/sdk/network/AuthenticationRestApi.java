@@ -33,8 +33,6 @@ import retrofit.http.GET;
 import retrofit.http.Headers;
 
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,21 +44,18 @@ import java.util.Set;
  */
 class AuthenticationRestApi {
     @NotNull
-    private final Server mServer;
+    private final Retrofit mRetrofit;
 
-    AuthenticationRestApi(@NotNull Server server) {
-        mServer = server;
+    AuthenticationRestApi(@NotNull Retrofit retrofit) {
+        mRetrofit = retrofit;
     }
 
     public void springAuth(@NotNull final String username,
                            @NotNull final String password,
                            final String organization,
                            final Map<String, String> params) throws HttpException, IOException {
-        OkHttpClient client = mServer.getClient();
-        client.setFollowRedirects(false);
-
         Request request = createAuthRequest(username, password, organization, params);
-        Call call = client.newCall(request);
+        Call call = mRetrofit.client().newCall(request);
 
         com.squareup.okhttp.Response response = call.execute();
 
@@ -86,14 +81,7 @@ class AuthenticationRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        OkHttpClient client = new OkHttpClient();
-        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-
-        Retrofit retrofit = mServer.newRetrofit()
-                .client(client)
-                .build();
-
-        RestApi api = retrofit.create(RestApi.class);
+        RestApi api = mRetrofit.create(RestApi.class);
         CallWrapper.wrap(api.requestAnonymousCookie());
 
         try {
@@ -134,8 +122,9 @@ class AuthenticationRestApi {
         /**
          * Constructs url http[s]://some.jrs/j_spring_security_check
          */
+        String baseUrl = mRetrofit.baseUrl().url().toString();
         return new Request.Builder()
-                .url(mServer.getBaseUrl() + "j_spring_security_check")
+                .url(baseUrl + "j_spring_security_check")
                 .post(formBody.build())
                 .build();
     }

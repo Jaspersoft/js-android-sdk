@@ -26,10 +26,10 @@ package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
-import com.squareup.okhttp.*;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.OkHttpClient;
 import retrofit.Retrofit;
 
-import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -43,14 +43,20 @@ import java.util.concurrent.TimeUnit;
 public final class Server {
     private final String mBaseUrl;
     private final OkHttpClient mOkHttpClient;
+    private final Retrofit.Builder mRetrofitBuilder;
 
-    private Server(String baseUrl, OkHttpClient okHttpClient) {
+    private Server(String baseUrl, OkHttpClient okHttpClient, Retrofit.Builder retrofitBuilder) {
         mBaseUrl = baseUrl;
         mOkHttpClient = okHttpClient;
+        mRetrofitBuilder = retrofitBuilder;
     }
 
     public AnonymousClient newClient() {
-        OkHttpClient anonymousClient = configureAnonymosClient(mOkHttpClient.clone());
+        OkHttpClient anonymousClient = mOkHttpClient.clone();
+        CookieManager cookieHandler = new CookieManager(
+                new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+        anonymousClient.setCookieHandler(cookieHandler);
+
         Retrofit anonymousRetrofit = newRetrofit()
                 .client(anonymousClient)
                 .build();
@@ -67,17 +73,10 @@ public final class Server {
     }
 
     Retrofit.Builder newRetrofit() {
-        Gson configuredGson = GsonFactory.create();
-        GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(configuredGson);
-        StringConverterFactory stringConverterFactory = StringConverterFactory.create();
-
-        return new Retrofit.Builder()
-                .baseUrl(mBaseUrl)
-                .addConverterFactory(stringConverterFactory)
-                .addConverterFactory(gsonConverterFactory);
+        return mRetrofitBuilder;
     }
 
-    OkHttpClient getClient() {
+    OkHttpClient client() {
         return mOkHttpClient;
     }
 
@@ -91,7 +90,8 @@ public final class Server {
     }
 
     public static class Builder {
-        private Builder() {}
+        private Builder() {
+        }
 
         public OptionalBuilder withBaseUrl(String baseUrl) {
             return new OptionalBuilder(baseUrl);
@@ -122,7 +122,16 @@ public final class Server {
         }
 
         public Server build() {
-            return new Server(mBaseUrl, mOkHttpClient);
+            Gson configuredGson = GsonFactory.create();
+            GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(configuredGson);
+            StringConverterFactory stringConverterFactory = StringConverterFactory.create();
+
+            Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+                    .baseUrl(mBaseUrl)
+                    .addConverterFactory(stringConverterFactory)
+                    .addConverterFactory(gsonConverterFactory);
+
+            return new Server(mBaseUrl, mOkHttpClient, retrofitBuilder);
         }
     }
 
@@ -131,7 +140,7 @@ public final class Server {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
-        private CookieHandler mCookieHandler;
+        private CookieHandler mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
 
         AuthorizedClientBuilder(Server server, Credentials credentials) {
             mServer = server;
@@ -149,9 +158,7 @@ public final class Server {
         }
 
         public AuthorizedClient create() {
-            ensureSaneDefaults();
-            OkHttpClient authClient = configureAuthClient(mServer.getClient().clone());
-
+            OkHttpClient authClient = configureAuthClient(mServer.client().clone());
             Retrofit authRetrofit = mServer.newRetrofit()
                     .client(authClient)
                     .build();
@@ -162,44 +169,29 @@ public final class Server {
 
         private OkHttpClient configureAuthClient(OkHttpClient client) {
             client.setCookieHandler(mCookieHandler);
-
-            if (mAuthenticationPolicy == AuthPolicy.FAIL_FAST) {
-                client.interceptors().add(new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
-                        Headers headers = chain.request().headers();
-                        boolean hasCookies = headers.names().contains("Cookie");
-                        if (!hasCookies) {
-                            Response response401 = new Response.Builder()
-                                    .protocol(Protocol.HTTP_1_1)
-                                    .request(chain.request())
-                                    .headers(chain.request().headers())
-                                    .code(401)
-                                    .build();
-                            return response401;
-                        }
-                        return chain.proceed(chain.request());
-                    }
-                });
-
-                RecoverableAuthenticator recoverableAuthenticator = new RecoverableAuthenticator(mServer, mCredentials);
-                SingleTimeAuthenticator singleTimeAuthenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
-                client.setAuthenticator(singleTimeAuthenticator);
-            } else {
-                RecoverableAuthenticator recoverableAuthenticator = new RecoverableAuthenticator(mServer, mCredentials);
-                client.setAuthenticator(recoverableAuthenticator);
-            }
-
+            AuthStrategy authStrategy = configureAuthStrategy(client);
+            configureAuthenticator(client, authStrategy);
             return client;
         }
 
-        private void ensureSaneDefaults() {
-            if (mAuthenticationPolicy == null) {
-                mAuthenticationPolicy = AuthPolicy.RETRY;
+        private AuthStrategy configureAuthStrategy(OkHttpClient client) {
+            OkHttpClient authClient = client.clone();
+            authClient.setFollowRedirects(false);
+            Retrofit authRetrofit = mServer.newRetrofit()
+                    .client(authClient)
+                    .build();
+            return new AuthStrategy(authRetrofit);
+        }
+
+        private void configureAuthenticator(OkHttpClient client, AuthStrategy authStrategy) {
+            Authenticator recoverableAuthenticator =
+                    new RecoverableAuthenticator(authStrategy, mCredentials);
+
+            Authenticator authenticator = recoverableAuthenticator;
+            if (mAuthenticationPolicy == AuthPolicy.FAIL_FAST) {
+                authenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
             }
-            if (mCookieHandler == null) {
-                mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-            }
+            client.setAuthenticator(authenticator);
         }
     }
 }

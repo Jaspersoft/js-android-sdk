@@ -24,36 +24,15 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import retrofit.Retrofit;
-
-import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
-    @NotNull
-    private final Retrofit mRetrofit;
-    @Nullable
-    private SpringAuthService springAuthService;
-
-    AuthStrategy(@NotNull Retrofit retrofit) {
-        mRetrofit = retrofit;
-    }
-
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = createSpringAuthService();
-        }
-        springAuthService.authenticate(credentials);
-    }
-
-    private SpringAuthService createSpringAuthService() {
-        AuthenticationRestApi restApi = new AuthenticationRestApi(mRetrofit);
-        JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
-        return new SpringAuthService(restApi, encryptionAlgorithm);
+public final class TestCookieManager extends CookieManager {
+    public TestCookieManager() {
+        super(new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
     }
 }
