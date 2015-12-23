@@ -34,7 +34,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -48,12 +48,12 @@ import static org.junit.Assert.assertThat;
 public class ReportExportRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/AllAccounts";
 
-    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
-    private ReportExecutionRestApi mExecApi;
-    private ReportExportRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static ReportExecutionRestApi mExecApi;
+    private static ReportExportRestApi apiUnderTest;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         if (apiUnderTest == null) {
             AuthorizedClient client = mLazyClient.getAuthorizedClient();
             mExecApi = client.reportExecutionApi();

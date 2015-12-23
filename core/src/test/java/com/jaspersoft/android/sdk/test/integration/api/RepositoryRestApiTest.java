@@ -29,7 +29,7 @@ import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -46,11 +46,11 @@ public class RepositoryRestApiTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
 
-    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
-    private RepositoryRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static RepositoryRestApi apiUnderTest;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         if (apiUnderTest == null) {
             AuthorizedClient client = mLazyClient.getAuthorizedClient();
             apiUnderTest = client.repositoryApi();

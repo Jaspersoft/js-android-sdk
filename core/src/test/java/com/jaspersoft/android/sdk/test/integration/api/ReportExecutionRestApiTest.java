@@ -32,7 +32,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -56,11 +56,11 @@ public class ReportExecutionRestApiTest {
     private final String REPORT_URI = "/public/Samples/Reports/ProfitDetailReport";
     private final ReportParameter PRODUCT_FAMILY = new ReportParameter("ProductFamily", new HashSet<String>(Collections.singletonList("Drink")));
 
-    private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
-    private ReportExecutionRestApi apiUnderTest;
+    private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
+    private static ReportExecutionRestApi apiUnderTest;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         if (apiUnderTest == null) {
             AuthorizedClient client = mLazyClient.getAuthorizedClient();
             apiUnderTest = client.reportExecutionApi();
