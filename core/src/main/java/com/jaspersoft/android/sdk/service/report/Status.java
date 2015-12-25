@@ -39,6 +39,14 @@ final class Status {
         return new Status(status);
     }
 
+    public static Status execution() {
+        return new Status("execution");
+    }
+
+    public static Status ready() {
+        return new Status("ready");
+    }
+
     public boolean isQueued() {
         return mStatus.equals("queued");
     }

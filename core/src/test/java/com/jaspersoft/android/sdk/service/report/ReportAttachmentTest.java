@@ -38,9 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -52,31 +50,34 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({OutputResource.class})
 public class ReportAttachmentTest {
+
+    private static final String EXEC_ID = "exec_id";
+    private static final String EXPORT_ID = "export_id";
+    private static final String ATTACHMENT_ID = "img.png";
+
     @Mock
     ReportExportRestApi mExportRestApi;
     @Mock
-    ResourceOutput input;
+    ResourceOutput attachment;
     @Mock
-    ReportExportUseCase mReportExportUseCase;
-    @Mock
-    RunExportCriteria mRunExportCriteria;
+    ExportExecutionApi mExportExecutionApi;
 
-    private ReportAttachment objectUnderTest;
+    private ReportAttachmentImpl objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportAttachment("1.jpg", "exec_id", "export_id", mRunExportCriteria, mReportExportUseCase);
+        objectUnderTest = new ReportAttachmentImpl(mExportExecutionApi, EXEC_ID, EXPORT_ID, ATTACHMENT_ID);
     }
 
     @Test
     public void testDownload() throws Exception {
-        when(mReportExportUseCase.requestExportAttachmentOutput(any(RunExportCriteria.class), anyString(), anyString(), anyString())).thenReturn(input);
+        when(mExportExecutionApi.downloadAttachment(anyString(), anyString(), anyString())).thenReturn(attachment);
 
         ResourceOutput result = objectUnderTest.download();
         assertThat(result, is(notNullValue()));
 
-        verify(mReportExportUseCase).requestExportAttachmentOutput(eq(mRunExportCriteria), eq("exec_id"), eq("export_id"), eq("1.jpg"));
-        verifyNoMoreInteractions(mReportExportUseCase);
+        verify(mExportExecutionApi).downloadAttachment(EXEC_ID, EXPORT_ID, ATTACHMENT_ID);
+        verifyNoMoreInteractions(mExportExecutionApi);
     }
 }

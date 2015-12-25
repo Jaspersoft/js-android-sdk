@@ -31,7 +31,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -40,24 +39,26 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @since 2.0
  */
 public class ReportExportTest {
-    @Mock
-    ReportExportUseCase mReportExportUseCase;
-    @Mock
-    RunExportCriteria mCriteria;
 
-    private ReportExport objectUnderTest;
+    private static final String EXEC_ID = "exec_id";
+    private static final String EXPORT_ID = "export_id";
+
+    @Mock
+    ExportExecutionApi mExportExecutionApi;
+
+    private ReportExportImpl objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportExport("report_execution_id", "export_id",
-                Collections.<ReportAttachment>emptyList(), mCriteria, mReportExportUseCase);
+        objectUnderTest = new ReportExportImpl(mExportExecutionApi,
+                Collections.<ReportAttachment>emptyList(), EXEC_ID, EXPORT_ID);
     }
 
     @Test
     public void testDownload() throws Exception {
         objectUnderTest.download();
-        verify(mReportExportUseCase).requestExportOutput(eq(mCriteria), eq("report_execution_id"), eq("export_id"));
-        verifyNoMoreInteractions(mReportExportUseCase);
+        verify(mExportExecutionApi).downloadExport(EXEC_ID, EXPORT_ID);
+        verifyNoMoreInteractions(mExportExecutionApi);
     }
 }

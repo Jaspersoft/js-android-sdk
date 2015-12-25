@@ -117,27 +117,27 @@ public final class SpringCredentials extends Credentials {
 
         private Builder() {}
 
-        public Builder username(@NotNull String username) {
+        public Builder withUsername(@NotNull String username) {
             mUsername = checkNotNull(username, "username == null");
             return this;
         }
 
-        public Builder password(@NotNull String password) {
+        public Builder withPassword(@NotNull String password) {
             mPassword = checkNotNull(password, "password == null");
             return this;
         }
 
-        public Builder organization(@Nullable String organization) {
+        public Builder withOrganization(@Nullable String organization) {
             mOrganization = organization;
             return this;
         }
 
-        public Builder timeZone(@NotNull TimeZone timeZone) {
+        public Builder withTimeZone(@NotNull TimeZone timeZone) {
             mTimeZone = checkNotNull(timeZone, "timeZone == null");
             return this;
         }
 
-        public Builder locale(@NotNull Locale locale) {
+        public Builder withLocale(@NotNull Locale locale) {
             mLocale = checkNotNull(locale, "locale == null");
             return this;
         }

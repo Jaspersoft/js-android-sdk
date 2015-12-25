@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -81,11 +80,11 @@ public class SpringAuthServiceTest {
         );
 
         credentials = SpringCredentials.builder()
-                .username("user")
-                .password("1234")
-                .organization("organization")
-                .locale(Locale.US)
-                .timeZone(mTimeZone)
+                .withUsername("user")
+                .withPassword("1234")
+                .withOrganization("organization")
+                .withLocale(Locale.US)
+                .withTimeZone(mTimeZone)
                 .build();
 
         when(mRestApi.requestEncryptionMetadata()).thenReturn(mKey);

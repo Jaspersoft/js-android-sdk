@@ -66,7 +66,7 @@ public class ReportExportRestApiTest {
     @Before
     public void setup() {
         TestResourceInjector.inject(this);
-        Server server = Server.newBuilder()
+        Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();

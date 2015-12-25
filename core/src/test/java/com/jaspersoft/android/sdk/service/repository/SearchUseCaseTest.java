@@ -27,25 +27,27 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
-import com.jaspersoft.android.sdk.service.FakeCallExecutor;
+import com.jaspersoft.android.sdk.service.internal.FakeCallExecutor;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,16 +96,16 @@ public class SearchUseCaseTest {
     @Test
     public void shouldProvideAndAdaptSearchResult() throws Exception {
         when(mResult.getNextOffset()).thenReturn(100);
-        when(mRepositoryRestApi.searchResources(anyMap())).thenReturn(mResult);
+        when(mRepositoryRestApi.searchResources(anyMapOf(String.class, Object.class))).thenReturn(mResult);
 
-        Collection<Resource> resources = new ArrayList<Resource>();
-        when(mDataMapper.transform(anyCollection(), any(SimpleDateFormat.class))).thenReturn(resources);
+        List<Resource> resources = new ArrayList<Resource>();
+        when(mDataMapper.transform(anyCollectionOf(ResourceLookup.class), Matchers.any(SimpleDateFormat.class))).thenReturn(resources);
 
         SearchResult result = objectUnderTest.performSearch(mCriteria);
         assertThat(result, is(not(nullValue())));
         assertThat(result.getNextOffset(), is(100));
         assertThat(result.getResources(), is(resources));
 
-        verify(mRepositoryRestApi).searchResources(anyMap());
+        verify(mRepositoryRestApi).searchResources(anyMapOf(String.class, Object.class));
     }
 }

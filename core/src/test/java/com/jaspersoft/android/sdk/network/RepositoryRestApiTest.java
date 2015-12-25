@@ -70,7 +70,7 @@ public class RepositoryRestApiTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         TestResourceInjector.inject(this);
-        Server server = Server.newBuilder()
+        Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();

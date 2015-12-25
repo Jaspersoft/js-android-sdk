@@ -47,7 +47,7 @@ final class LazyClient {
     }
 
     public static Server getServer(String serverUrl) {
-        Server.OptionalBuilder serverBuilder = Server.newBuilder()
+        Server.OptionalBuilder serverBuilder = Server.builder()
                 .withBaseUrl(serverUrl);
         if (isProxyReachable()) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, CHARLES_ADDRESS);

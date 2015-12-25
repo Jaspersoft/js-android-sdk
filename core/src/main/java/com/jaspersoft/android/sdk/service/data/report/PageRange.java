@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.data.report;
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -32,9 +35,9 @@ public final class PageRange {
     private final int mLowerBound;
     private final int mUpperBound;
 
-    public PageRange(String rawRange) {
-        mLowerBound = parseLowerBound(rawRange);
-        mUpperBound = parseUpperBound(rawRange);
+    private PageRange(int lowerBound, int upperBound) {
+        mLowerBound = lowerBound;
+        mUpperBound = upperBound;
     }
 
     public int getLowerBound() {
@@ -49,17 +52,53 @@ public final class PageRange {
         return mUpperBound != Integer.MAX_VALUE;
     }
 
-    private int parseLowerBound(String rawRange) {
+    @NotNull
+    public static PageRange parse(@NotNull String pages) {
+        Preconditions.checkNotNull(pages, "Pages should not be null");
+        int lowerBound = parseLowerBound(pages);
+        int upperBound = parseUpperBound(pages);
+        return new PageRange(lowerBound, upperBound);
+    }
+
+    private static int parseLowerBound(String rawRange) {
         String[] split = rawRange.split("-");
         return Integer.parseInt(split[0]);
     }
 
-    private int parseUpperBound(String rawRange) {
+    private static int parseUpperBound(String rawRange) {
         String[] split = rawRange.split("-");
         if (split.length == 1) {
             return Integer.MAX_VALUE;
         }
 
         return Integer.parseInt(split[1]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PageRange pageRange = (PageRange) o;
+
+        if (mLowerBound != pageRange.mLowerBound) return false;
+        if (mUpperBound != pageRange.mUpperBound) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mLowerBound;
+        result = 31 * result + mUpperBound;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        if (isRange()) {
+            return String.format("%d-%d", mLowerBound, mUpperBound);
+        }
+        return String.valueOf(mLowerBound);
     }
 }

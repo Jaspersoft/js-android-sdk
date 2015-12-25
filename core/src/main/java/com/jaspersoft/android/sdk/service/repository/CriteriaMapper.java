@@ -76,7 +76,7 @@ final class CriteriaMapper {
         }
 
         if (criteria.getSortBy() != null) {
-            params.put("sortBy", criteria.getSortBy());
+            params.put("sortBy", criteria.getSortBy().toString());
         }
 
         if (criteria.getFolderUri() != null) {

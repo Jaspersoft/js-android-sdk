@@ -51,7 +51,7 @@ public final class Server {
     }
 
     @NotNull
-    public static Builder newBuilder() {
+    public static Builder builder() {
         return new Builder();
     }
 

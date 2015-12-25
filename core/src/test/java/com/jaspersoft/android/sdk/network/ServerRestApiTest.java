@@ -51,7 +51,7 @@ public class ServerRestApiTest {
 
     @Before
     public void setup() {
-        Server server = Server.newBuilder()
+        Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();

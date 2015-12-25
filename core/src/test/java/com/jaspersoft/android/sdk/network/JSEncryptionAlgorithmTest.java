@@ -24,12 +24,11 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.JSEncryptionAlgorithm;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
@@ -45,6 +44,6 @@ public class JSEncryptionAlgorithmTest {
         JSEncryptionAlgorithm keyGenerator = JSEncryptionAlgorithm.
                 create(new BouncyCastleProvider());
         String encryptedPass = keyGenerator.encrypt(MODULUS, PUBLIC_EXPONENT, "superuser");
-        assertTrue(RESULT.equals(encryptedPass));
+        assertThat("Failed to decrypt result", RESULT, is(encryptedPass));
     }
 }

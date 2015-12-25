@@ -28,7 +28,6 @@ package com.jaspersoft.android.sdk.service.repository;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -45,8 +45,8 @@ import java.util.LinkedList;
 class ResourceMapper {
 
     @NotNull
-    public Collection<Resource> transform(Collection<ResourceLookup> resources, SimpleDateFormat dateTimeFormat) {
-        Collection<Resource> result = new LinkedList<>();
+    public List<Resource> transform(Collection<ResourceLookup> resources, SimpleDateFormat dateTimeFormat) {
+        List<Resource> result = new LinkedList<>();
         for (ResourceLookup lookup : resources) {
             if (lookup != null) {
                 result.add(transform(lookup, dateTimeFormat));

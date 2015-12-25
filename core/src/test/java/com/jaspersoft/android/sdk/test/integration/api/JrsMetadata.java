@@ -86,9 +86,9 @@ final class JrsMetadata {
 
     public Credentials getCredentials() {
         return SpringCredentials.builder()
-                .password(password)
-                .username(username)
-                .organization(organization)
+                .withPassword(password)
+                .withUsername(username)
+                .withOrganization(organization)
                 .build();
     }
 
