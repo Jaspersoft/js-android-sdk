@@ -22,34 +22,27 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network;
+package com.jaspersoft.android.sdk.service.auth;
 
+import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
-
-import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
+public abstract class AuthorizationService {
+    public abstract void authorize(Credentials credentials) throws ServiceException;
+
     @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
-
-    @Nullable
-    private SpringAuthService springAuthService;
-
-    @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
-    }
-
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
-        }
-        springAuthService.authenticate(credentials);
+    public static AuthorizationService newService(@NotNull AuthorizationClient client) {
+        Preconditions.checkNotNull(client, "Client should not be null");
+        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
+        return new ProxyAuthorizationService(client, serviceExceptionMapper);
     }
 }

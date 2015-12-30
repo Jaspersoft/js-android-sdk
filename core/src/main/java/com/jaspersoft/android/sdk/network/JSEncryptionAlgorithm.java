@@ -24,18 +24,13 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 
 /**
  * @author Tom Koptel
@@ -96,8 +91,8 @@ public final class JSEncryptionAlgorithm {
     /**
      * Convert byteArr to hex sting.
      *
-     * @param byteArr
-     * @return
+     * @param byteArr The byte array to convert.
+     * @return The hex string.
      */
     private static String byteArrayToHexString(byte[] byteArr) {
         StringBuffer sb = new StringBuffer();

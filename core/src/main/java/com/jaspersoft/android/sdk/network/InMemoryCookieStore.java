@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Implementation cf {@link java.net.CookieStore} copied from internal sources.
  * Used exclusively for anonymous session handling
  */
-final class InMemoryCookieStore implements CookieStore {
+public final class InMemoryCookieStore implements CookieStore {
     // the in-memory representation of cookies
     private List<HttpCookie> cookieJar = null;
 

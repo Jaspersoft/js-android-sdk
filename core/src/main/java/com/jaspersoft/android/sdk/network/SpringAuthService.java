@@ -38,7 +38,7 @@ import java.util.TimeZone;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SpringAuthService {
+class SpringAuthService {
 
     private final AuthenticationRestApi mRestApi;
     private final JSEncryptionAlgorithm mEncryptionAlgorithm;

@@ -22,34 +22,32 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network;
+package com.jaspersoft.android.sdk.test.integration.api;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
-
-import java.io.IOException;
+import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.Server;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
-    @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
+public class AuthorizationClientTest {
 
-    @Nullable
-    private SpringAuthService springAuthService;
+    private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
+    private AuthorizationClient mClient;
 
-    @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
+    @Before
+    public void setUp() throws Exception {
+        Server server = Server.builder()
+                .withBaseUrl(mMetadata.getServerUrl())
+                .build();
+        mClient = server.newAuthorizationClient().create();
     }
 
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
-        }
-        springAuthService.authenticate(credentials);
+    @Test
+    public void testAuthorize() throws Exception {
+        mClient.authorize(mMetadata.getCredentials());
     }
 }
