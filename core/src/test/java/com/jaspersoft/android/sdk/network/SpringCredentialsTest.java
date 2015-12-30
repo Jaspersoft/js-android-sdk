@@ -24,9 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-
-import com.jaspersoft.android.sdk.network.SpringCredentials;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +58,7 @@ public class SpringCredentialsTest {
         mException.expect(NullPointerException.class);
         mException.expectMessage("username == null");
 
-        objectUnderTest.username(null);
+        objectUnderTest.withUsername(null);
     }
 
     @Test
@@ -69,7 +66,7 @@ public class SpringCredentialsTest {
         mException.expect(NullPointerException.class);
         mException.expectMessage("password == null");
 
-        objectUnderTest.password(null);
+        objectUnderTest.withPassword(null);
     }
 
     @Test
@@ -77,7 +74,7 @@ public class SpringCredentialsTest {
         mException.expect(NullPointerException.class);
         mException.expectMessage("locale == null");
 
-        objectUnderTest.locale(null);
+        objectUnderTest.withLocale(null);
     }
 
     @Test
@@ -85,7 +82,7 @@ public class SpringCredentialsTest {
         mException.expect(NullPointerException.class);
         mException.expectMessage("timeZone == null");
 
-        objectUnderTest.timeZone(null);
+        objectUnderTest.withTimeZone(null);
     }
 
     @Test

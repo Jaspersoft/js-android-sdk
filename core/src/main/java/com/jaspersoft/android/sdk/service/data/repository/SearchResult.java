@@ -24,21 +24,21 @@
 
 package com.jaspersoft.android.sdk.service.data.repository;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class SearchResult {
-    private Collection<Resource> mResources;
+    private List<Resource> mResources;
     private int mNextOffset;
 
-    public Collection<Resource> getResources() {
+    public List<Resource> getResources() {
         return mResources;
     }
 
-    public void setResources(Collection<Resource> resources) {
+    public void setResources(List<Resource> resources) {
         mResources = resources;
     }
 

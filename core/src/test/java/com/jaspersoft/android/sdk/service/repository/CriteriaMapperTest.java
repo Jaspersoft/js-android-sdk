@@ -24,17 +24,12 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -133,7 +128,7 @@ public class CriteriaMapperTest {
     @Test
     public void shouldIncludeSortByInParams() {
         InternalCriteria criteria = InternalCriteria.builder()
-                .sortBy("description")
+                .sortBy(SortType.DESCRIPTION)
                 .create();
 
         Map<String, Object> resultMap = new HashMap<>();

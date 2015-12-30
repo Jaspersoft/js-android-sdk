@@ -24,62 +24,36 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.entity.execution.AttachmentDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ExportDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
-import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-final class ExportFactory {
-    private final ReportExportUseCase mExportUseCase;
+class ExportFactory {
+    private final ExportExecutionApi mExportExecutionApi;
+    private final AttachmentsFactory mAttachmentsFactory;
 
-    private final String mExecutionId;
-
-    ExportFactory(ReportExportUseCase exportUseCase, String executionId) {
-        mExportUseCase = exportUseCase;
-        mExecutionId = executionId;
+    ExportFactory(ExportExecutionApi exportExecutionApi, AttachmentsFactory attachmentsFactory) {
+        mExportExecutionApi = exportExecutionApi;
+        mAttachmentsFactory = attachmentsFactory;
     }
 
     @NotNull
-    public ReportExport create(
-            RunExportCriteria criteria,
-            ReportExecutionDescriptor executionDetails,
-            ExportExecutionDescriptor exportExecutionDetails) throws ServiceException {
-        String exportId = exportExecutionDetails.getExportId();
-        ExportDescriptor export = findExportDescriptor(executionDetails, exportId);
+    public ReportExport create(ReportExecutionDescriptor descriptor, String execId, String exportId) throws ServiceException {
+        ExportDescriptor export = findExportDescriptor(descriptor, exportId);
         if (export == null) {
             throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
-        List<ReportAttachment> attachments = adaptAttachments(criteria, export);
-        return new ReportExport(mExecutionId, exportId, attachments, criteria, mExportUseCase);
-    }
-
-    @NotNull
-    private List<ReportAttachment> adaptAttachments(RunExportCriteria criteria, ExportDescriptor export) {
-        String exportId = export.getId();
-        Set<AttachmentDescriptor> rawAttachments = export.getAttachments();
-        List<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
-        for (AttachmentDescriptor attachment : rawAttachments) {
-            ReportAttachment reportAttachment = new ReportAttachment(
-                    attachment.getFileName(),
-                    mExecutionId,
-                    exportId,
-                    criteria,
-                    mExportUseCase);
-            attachments.add(reportAttachment);
-        }
-        return attachments;
+        List<ReportAttachment> attachments = mAttachmentsFactory.create(export, execId);
+        return new ReportExportImpl(mExportExecutionApi, attachments, execId, exportId);
     }
 
     @Nullable

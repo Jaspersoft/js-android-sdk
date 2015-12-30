@@ -44,4 +44,12 @@ public final class ReportMetadata {
     public int getTotalPages() {
         return totalPages;
     }
+
+    @Override
+    public String toString() {
+        return "ReportMetadata{" +
+                "uri='" + uri + '\'' +
+                ", totalPages=" + totalPages +
+                '}';
+    }
 }

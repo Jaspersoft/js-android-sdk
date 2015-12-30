@@ -87,10 +87,10 @@ public class InternalSearchCriteriaTest {
     @Test
     public void newBuilderShouldCopySortBy() {
         InternalCriteria searchCriteria = InternalCriteria.builder()
-                .sortBy("creationDate")
+                .sortBy(SortType.CREATION_DATE)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
-        assertThat(newCriteria.getSortBy(), is("creationDate"));
+        assertThat(newCriteria.getSortBy(), is(SortType.CREATION_DATE));
     }
 
     @Test
@@ -122,50 +122,50 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldLimit() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().limit(1).create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withLimit(1).build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getLimit(), is(1));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldOffset() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().offset(2).create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withOffset(2).build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getOffset(), is(2));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldResourceMask() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().resourceMask(SearchCriteria.REPORT).create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withResourceMask(SearchCriteria.REPORT).build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getResourceMask(), is(SearchCriteria.REPORT));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldRecursive() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().recursive(true).create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withRecursive(true).build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getRecursive(), is(true));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldFolderUri() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().folderUri("/").create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withFolderUri("/").build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getFolderUri(), is("/"));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldQuery() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().query("query").create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withQuery("query").build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
         assertThat(criteria.getQuery(), is("query"));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldSortBy() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().sortByCreationDate().create();
+        SearchCriteria searchCriteria = SearchCriteria.builder().withSortType(SortType.CREATION_DATE).build();
         InternalCriteria criteria = InternalCriteria.from(searchCriteria);
-        assertThat(criteria.getSortBy(), is("creationDate"));
+        assertThat(criteria.getSortBy(), is(SortType.CREATION_DATE));
     }
 }

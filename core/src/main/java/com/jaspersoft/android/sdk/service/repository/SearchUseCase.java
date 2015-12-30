@@ -32,12 +32,12 @@ import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Call;
 import com.jaspersoft.android.sdk.service.internal.CallExecutor;
-import com.jaspersoft.android.sdk.service.internal.InfoCacheManager;
+import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +72,7 @@ class SearchUseCase {
                 SearchResult searchResult = new SearchResult();
                 searchResult.setNextOffset(response.getNextOffset());
 
-                Collection<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+                List<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
                 searchResult.setResources(resources);
 
                 return searchResult;

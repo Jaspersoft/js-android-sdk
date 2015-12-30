@@ -42,7 +42,7 @@ class InternalCriteria {
     private final Boolean mForceFullPage;
     private final Boolean mForceTotalCount;
     private final String mQuery;
-    private final String mSortBy;
+    private final SortType mSortBy;
     private final String mFolderUri;
 
     private InternalCriteria(Builder builder) {
@@ -112,7 +112,8 @@ class InternalCriteria {
         return mResourceMask;
     }
 
-    public String getSortBy() {
+    @Nullable
+    public SortType getSortBy() {
         return mSortBy;
     }
 
@@ -212,7 +213,7 @@ class InternalCriteria {
         @Nullable
         private String query;
         @Nullable
-        private String sort;
+        private SortType sort;
         @Nullable
         private String folderUri;
 
@@ -251,7 +252,7 @@ class InternalCriteria {
          * @param sort either 'label' or 'creationDate'
          * @return chain builder instance
          */
-        public Builder sortBy(String sort) {
+        public Builder sortBy(SortType sort) {
             this.sort = sort;
             return this;
         }

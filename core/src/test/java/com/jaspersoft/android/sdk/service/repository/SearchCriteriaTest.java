@@ -42,30 +42,30 @@ public class SearchCriteriaTest {
     @Test
     public void shouldIncludeSortByLabelInParams() {
         SearchCriteria criteria = SearchCriteria.builder()
-                .sortByLabel()
-                .create();
-        assertThat(criteria.getSortBy(), is("label"));
+                .withSortType(SortType.LABEL)
+                .build();
+        assertThat(criteria.getSortBy(), is(SortType.LABEL));
     }
 
     @Test
     public void shouldIncludeSortByCreationDateInParams() {
         SearchCriteria criteria = SearchCriteria.builder()
-                .sortByCreationDate()
-                .create();
-        assertThat(criteria.getSortBy(), is("creationDate"));
+                .withSortType(SortType.CREATION_DATE)
+                .build();
+        assertThat(criteria.getSortBy(), is(SortType.CREATION_DATE));
     }
 
     @Test
     public void shouldNotAcceptNegativeOffset() {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Offset should be positive");
-        SearchCriteria.builder().offset(-1).create();
+        SearchCriteria.builder().withOffset(-1).build();
     }
 
     @Test
     public void shouldNotAcceptNegativeLimit() {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Limit should be positive");
-        SearchCriteria.builder().limit(-1).create();
+        SearchCriteria.builder().withLimit(-1).build();
     }
 }

@@ -34,8 +34,8 @@ import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkArg
  * @since 2.0
  */
 public final class SearchCriteria {
-    static final int DEFAULT_OFFSET = 0;
-    static final int DEFAULT_LIMIT = 100;
+    public static final int DEFAULT_OFFSET = 0;
+    public static final int DEFAULT_LIMIT = 100;
 
     public static int ALL = 1;
     public static int REPORT = (1 << 1);
@@ -48,7 +48,7 @@ public final class SearchCriteria {
     private final Boolean mRecursive;
 
     private final String mQuery;
-    private final String mSortBy;
+    private final SortType mSort;
     private final String mFolderUri;
 
     private SearchCriteria(Builder builder) {
@@ -57,7 +57,7 @@ public final class SearchCriteria {
         mResourceMask = builder.resourceMask;
         mRecursive = builder.recursive;
         mQuery = builder.query;
-        mSortBy = builder.sort;
+        mSort = builder.sortType;
         mFolderUri = builder.folderUri;
     }
 
@@ -68,7 +68,7 @@ public final class SearchCriteria {
 
     @NotNull
     public static SearchCriteria none() {
-        return builder().create();
+        return builder().build();
     }
 
     public int getLimit() {
@@ -90,8 +90,8 @@ public final class SearchCriteria {
     }
 
     @Nullable
-    public String getSortBy() {
-        return mSortBy;
+    public SortType getSortBy() {
+        return mSort;
     }
 
     public int getResourceMask() {
@@ -113,53 +113,48 @@ public final class SearchCriteria {
         @Nullable
         private String query;
         @Nullable
-        private String sort;
-        @Nullable
         private String folderUri;
+        @Nullable
+        private SortType sortType;
 
-        public Builder limit(int limit) {
+        public Builder withLimit(int limit) {
             checkArgument(limit >= 0, "Limit should be positive");
             this.limit = limit;
             return this;
         }
 
-        public Builder offset(int offset) {
+        public Builder withOffset(int offset) {
             checkArgument(offset >= 0, "Offset should be positive");
             this.offset = offset;
             return this;
         }
 
-        public Builder resourceMask(int resourceMask) {
+        public Builder withResourceMask(int resourceMask) {
             this.resourceMask = resourceMask;
             return this;
         }
 
-        public Builder recursive(boolean recursive) {
+        public Builder withRecursive(boolean recursive) {
             this.recursive = recursive;
             return this;
         }
 
-        public Builder query(@Nullable String query) {
+        public Builder withQuery(@Nullable String query) {
             this.query = query;
             return this;
         }
 
-        public Builder sortByLabel() {
-            this.sort = "label";
+        public Builder withSortType(@Nullable SortType sortType) {
+            this.sortType = sortType;
             return this;
         }
 
-        public Builder sortByCreationDate() {
-            this.sort = "creationDate";
-            return this;
-        }
-
-        public Builder folderUri(@Nullable String folderUri) {
+        public Builder withFolderUri(@Nullable String folderUri) {
             this.folderUri = folderUri;
             return this;
         }
 
-        public SearchCriteria create() {
+        public SearchCriteria build() {
             return new SearchCriteria(this);
         }
     }

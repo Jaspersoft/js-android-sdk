@@ -60,6 +60,8 @@ public class ExecutionRequestOptions {
     @Expose
     protected String attachmentsPrefix;
     @Expose
+    protected String markupType;
+    @Expose
     protected List<ReportParameter> parameters;
 
     protected ExecutionRequestOptions() {}
@@ -100,6 +102,11 @@ public class ExecutionRequestOptions {
 
     public ExecutionRequestOptions withAttachmentsPrefix(String attachmentsPrefix) {
         this.attachmentsPrefix = attachmentsPrefix;
+        return this;
+    }
+
+    public ExecutionRequestOptions withMarkupType(String markupType) {
+        this.markupType = markupType;
         return this;
     }
 
@@ -183,6 +190,10 @@ public class ExecutionRequestOptions {
 
     public String getTransformerKey() {
         return transformerKey;
+    }
+
+    public String getMarkupType() {
+        return markupType;
     }
 
     @Override
