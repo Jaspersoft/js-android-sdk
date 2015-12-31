@@ -26,7 +26,9 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
@@ -49,7 +51,12 @@ abstract class AbstractReportService extends ReportService {
 
     @NotNull
     @Override
-    public ReportExecution run(@NotNull String reportUri, @NotNull ReportExecutionOptions execOptions) throws ServiceException {
+    public ReportExecution run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        if (execOptions == null) {
+            execOptions = ReportExecutionOptions.builder().build();
+        }
+
         ReportExecutionDescriptor descriptor = mReportExecutionApi.start(reportUri, execOptions);
         String executionId = descriptor.getExecutionId();
         mReportExecutionApi.awaitStatus(executionId, reportUri, mDelay, Status.execution(), Status.ready());

@@ -24,8 +24,11 @@
 
 apply plugin: 'java'
 
-description = 'js-android-sdk-client'
+description = 'js-android-sdk-rx'
 version = clientModuleVersion
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 ext {
     PUBLISH_GROUP_ID = group
@@ -34,7 +37,16 @@ ext {
 }
 
 dependencies {
-    compile project(':js-android-sdk-rx')
+    compile project(':js-android-sdk-core')
+    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'junit:junit:4.12'
+
+
+    testCompile 'org.hamcrest:hamcrest-integration:1.3'
+    testCompile('org.mockito:mockito-core:1.10.19') {
+        exclude group: 'org.hamcrest'
+        exclude group: 'org.objenesis'
+    }
 }
 
 apply from: '../scripts/release-artifact.gradle'

@@ -31,6 +31,7 @@ import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
@@ -38,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class RepositoryService {
     @NotNull
-    public abstract SearchTask search(@NotNull SearchCriteria criteria);
+    public abstract SearchTask search(@Nullable SearchCriteria criteria);
 
     @NotNull
     public static RepositoryService newService(@NotNull AuthorizedClient client) {

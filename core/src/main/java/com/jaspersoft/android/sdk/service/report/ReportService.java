@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ReportService {
     @NotNull
-    public abstract ReportExecution run(@NotNull String reportUri, @NotNull ReportExecutionOptions execOptions) throws ServiceException;
+    public abstract ReportExecution run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions) throws ServiceException;
 
     @NotNull
     public static ReportService newService(@NotNull AuthorizedClient client) {

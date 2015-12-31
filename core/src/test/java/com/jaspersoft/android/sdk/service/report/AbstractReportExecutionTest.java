@@ -31,17 +31,22 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -61,19 +66,22 @@ public class AbstractReportExecutionTest {
 
     private AbstractReportExecution abstractReportExecution;
 
+    @Rule
+    public ExpectedException expected = none();
+
     @Before
     public void setUp() throws Exception {
         initMocks(this);
         abstractReportExecution = new AbstractReportExecution(mReportExecutionApi, EXEC_ID, REPORT_URI, 0) {
             @NotNull
             @Override
-            public ReportExport export(@NotNull ReportExportOptions options) throws ServiceException {
+            public ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException {
                 return null;
             }
 
             @NotNull
             @Override
-            public ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
+            public ReportExecution doUpdateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
                 return null;
             }
         };
@@ -88,5 +96,20 @@ public class AbstractReportExecutionTest {
         assertThat("Failed to create report metadata with exact report uri", metadata.getTotalPages(), is(TOTAL_PAGES));
         verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, Status.ready());
         verify(mReportExecutionApi).getDetails(EXEC_ID);
+    }
+
+    @Test
+    public void should_not_run_export_with_null_options() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Export options should not be null");
+
+        abstractReportExecution.export(null);
+    }
+
+    @Test
+    public void should_accept_null_params_for_update() throws Exception {
+        AbstractReportExecution spy = spy(abstractReportExecution);
+        spy.updateExecution(null);
+        verify(spy).doUpdateExecution(Collections.<ReportParameter>emptyList());
     }
 }

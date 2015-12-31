@@ -62,4 +62,10 @@ public class ProxyRepositoryServiceTest {
         SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
         assertThat(searchTask, is(notNullValue()));
     }
+
+    @Test
+    public void should_accept_null_criteria() {
+        SearchTask searchTask = objectUnderTest.search(null);
+        assertThat(searchTask, is(notNullValue()));
+    }
 }

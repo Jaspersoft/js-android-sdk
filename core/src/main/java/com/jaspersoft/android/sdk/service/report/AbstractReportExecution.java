@@ -25,9 +25,15 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.report.ReportMetadata;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -40,9 +46,9 @@ abstract class AbstractReportExecution implements ReportExecution {
     protected final long mDelay;
 
     protected AbstractReportExecution(ReportExecutionApi reportExecutionApi,
-                                   String execId,
-                                   String reportUri,
-                                   long delay) {
+                                      String execId,
+                                      String reportUri,
+                                      long delay) {
         mReportExecutionApi = reportExecutionApi;
         mExecId = execId;
         mReportUri = reportUri;
@@ -56,4 +62,25 @@ abstract class AbstractReportExecution implements ReportExecution {
         ReportExecutionDescriptor reportDescriptor = mReportExecutionApi.getDetails(mExecId);
         return new ReportMetadata(mReportUri, reportDescriptor.getTotalPages());
     }
+
+    @NotNull
+    @Override
+    public final ReportExport export(@NotNull ReportExportOptions options) throws ServiceException {
+        Preconditions.checkNotNull(options, "Export options should not be null");
+        return doExport(options);
+    }
+
+    @NotNull
+    public final ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
+        if (newParameters == null) {
+            newParameters = Collections.emptyList();
+        }
+        return doUpdateExecution(newParameters);
+    }
+
+    @NotNull
+    protected abstract ReportExecution doUpdateExecution(@NotNull List<ReportParameter> newParameters) throws ServiceException;
+
+    @NotNull
+    protected abstract ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException;
 }
