@@ -24,32 +24,12 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
-
 import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
-    @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
-
-    @Nullable
-    private SpringAuthService springAuthService;
-
-    @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
-    }
-
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
-        }
-        springAuthService.authenticate(credentials);
-    }
+public interface AuthorizationClient {
+    public void authorize(Credentials credentials) throws IOException, HttpException;
 }

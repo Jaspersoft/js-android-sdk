@@ -22,10 +22,13 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network;
+package com.jaspersoft.android.sdk.service.auth;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
@@ -34,22 +37,25 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
-    @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
-
-    @Nullable
-    private SpringAuthService springAuthService;
+final class ProxyAuthorizationService extends AuthorizationService {
+    private final AuthorizationClient mClient;
+    private final ServiceExceptionMapper mServiceExceptionMapper;
 
     @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
+    ProxyAuthorizationService(AuthorizationClient client,
+                              ServiceExceptionMapper mapper) {
+        mServiceExceptionMapper = mapper;
+        mClient = client;
     }
 
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
+    @Override
+    public void authorize(Credentials credentials) throws ServiceException {
+        try {
+            mClient.authorize(credentials);
+        } catch (IOException e) {
+            throw mServiceExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw mServiceExceptionMapper.transform(e);
         }
-        springAuthService.authenticate(credentials);
     }
 }

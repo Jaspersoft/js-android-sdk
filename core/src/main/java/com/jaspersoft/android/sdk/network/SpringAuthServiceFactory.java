@@ -24,32 +24,22 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
-
-import java.io.IOException;
+import retrofit.Retrofit;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-class AuthStrategy {
-    @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
+class SpringAuthServiceFactory {
+    private final Retrofit mRetrofit;
 
-    @Nullable
-    private SpringAuthService springAuthService;
-
-    @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
+    SpringAuthServiceFactory(Retrofit retrofit) {
+        mRetrofit = retrofit;
     }
 
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
-        }
-        springAuthService.authenticate(credentials);
+    public SpringAuthService create() {
+        AuthenticationRestApi restApi = new AuthenticationRestApi(mRetrofit);
+        JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
+        return new SpringAuthService(restApi, encryptionAlgorithm);
     }
 }

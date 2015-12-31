@@ -24,32 +24,31 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
-import java.io.IOException;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * @author Tom Koptel
- * @since 2.0
- */
-class AuthStrategy {
-    @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
+public class AuthorizationClientTestImplTest {
 
-    @Nullable
-    private SpringAuthService springAuthService;
+    @Mock
+    AuthStrategy mAuthStrategy;
+    @Mock
+    Credentials mCredentials;
 
-    @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
+    private AuthorizationClientImpl authorization;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        authorization = new AuthorizationClientImpl(mAuthStrategy);
     }
 
-    void apply(SpringCredentials credentials) throws IOException, HttpException {
-        if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
-        }
-        springAuthService.authenticate(credentials);
+    @Test
+    public void testAuthorize() throws Exception {
+        authorization.authorize(mCredentials);
+        verify(mCredentials).apply(mAuthStrategy);
     }
 }
