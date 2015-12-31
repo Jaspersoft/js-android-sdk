@@ -29,7 +29,6 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
 
     @NotNull
     @Override
-    public ReportExport export(@NotNull ReportExportOptions options) throws ServiceException {
+    protected ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException {
         ExportExecutionDescriptor exportDetails = mExportExecutionApi.start(mExecId, options);
         String exportId = exportDetails.getExportId();
 
@@ -66,7 +65,7 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
 
     @NotNull
     @Override
-    public ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
+    protected ReportExecution doUpdateExecution(@NotNull List<ReportParameter> newParameters) throws ServiceException {
         mReportExecutionApi.update(mExecId, newParameters);
         mReportExecutionApi.awaitStatus(mExecId, mReportUri, mDelay, Status.execution(), Status.ready());
         return this;

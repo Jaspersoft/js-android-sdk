@@ -28,6 +28,7 @@ This software includes third party software subject to the associated copyrights
 * Software for developing case
 - Intellij Annotations 12.0 (Apache 2.0) - http://mvnrepository.com/artifact/com.intellij/annotations/12.0
 - Retrofit 2.0.0-beta1 (Apache 2.0) - https://github.com/square/retrofit/blob/master/LICENSE.txt
+- Rxjava 1.1.0 (Apache 2.0) - https://raw.githubusercontent.com/ReactiveX/RxJava/1.x/LICENSE
 
 * Software for testing case
 - Equalsverifier 1.7.5 (Apache 2.0) - https://github.com/jqno/equalsverifier/blob/master/LICENSE.md

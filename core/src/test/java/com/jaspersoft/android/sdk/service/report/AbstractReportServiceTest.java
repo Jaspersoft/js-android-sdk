@@ -26,7 +26,9 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,6 +37,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import static com.jaspersoft.android.sdk.service.report.Status.execution;
 import static com.jaspersoft.android.sdk.service.report.Status.ready;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
@@ -60,6 +66,9 @@ public class AbstractReportServiceTest {
     @Mock
     ReportExecutionDescriptor mReportExecutionDescriptor;
 
+    @Rule
+    public ExpectedException expected = none();
+
     private AbstractReportService reportService;
 
     @Before
@@ -69,7 +78,7 @@ public class AbstractReportServiceTest {
                 mExportExecutionApi,
                 mReportExecutionApi,
                 mExportFactory,
-                0){
+                0) {
             @Override
             protected ReportExecution buildExecution(String reportUri,
                                                      String executionId,
@@ -90,5 +99,18 @@ public class AbstractReportServiceTest {
         verify(mReportExecutionApi).start(REPORT_URI, criteria);
         verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, execution(), ready());
         verify(reportService).buildExecution(REPORT_URI, EXEC_ID, criteria);
+    }
+
+    @Test
+    public void should_not_run_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+
+        reportService.run(null, null);
+    }
+
+    @Test
+    public void should_run_with_null_options() throws Exception {
+        reportService.run(REPORT_URI, null);
     }
 }

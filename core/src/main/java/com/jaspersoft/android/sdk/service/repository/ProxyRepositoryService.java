@@ -24,7 +24,6 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +46,10 @@ final class ProxyRepositoryService extends RepositoryService {
     @NotNull
     @Override
     public SearchTask search(@Nullable SearchCriteria criteria) {
-        Preconditions.checkNotNull(criteria, "Criteria should not be null");
+        if (criteria == null) {
+            criteria = SearchCriteria.none();
+        }
+
         InternalCriteria internalCriteria = InternalCriteria.from(criteria);
         SearchTaskFactory searchTaskFactory = new SearchTaskFactory(internalCriteria, mSearchUseCase, mInfoCacheManager);
         return new SearchTaskProxy(searchTaskFactory);

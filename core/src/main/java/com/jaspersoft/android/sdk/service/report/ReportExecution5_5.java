@@ -56,7 +56,7 @@ final class ReportExecution5_5 extends AbstractReportExecution {
 
     @NotNull
     @Override
-    public ReportExport export(@NotNull ReportExportOptions options) throws ServiceException {
+    protected ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException {
         ExportExecutionDescriptor exportDetails = mExportExecutionApi.start(mExecId, options);
         String exportId = exportDetails.getExportId();
         ReportExecutionDescriptor reportDescriptor = mReportExecutionApi.getDetails(mExecId);
@@ -65,7 +65,7 @@ final class ReportExecution5_5 extends AbstractReportExecution {
 
     @NotNull
     @Override
-    public ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
+    protected ReportExecution doUpdateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
         ReportExecutionOptions criteria = mReportExecutionOptions.newBuilder()
                 .withParams(newParameters)
                 .build();
