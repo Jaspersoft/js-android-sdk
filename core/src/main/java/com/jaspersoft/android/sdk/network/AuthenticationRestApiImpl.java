@@ -24,12 +24,24 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthorizationClient {
-    public void authorize(Credentials credentials) throws IOException, HttpException;
+final class AuthenticationRestApiImpl implements AuthenticationRestApi {
+    private final AuthStrategy mAuthStrategy;
+
+    AuthenticationRestApiImpl(AuthStrategy authStrategy) {
+        mAuthStrategy = authStrategy;
+    }
+
+    @Override
+    public void authenticate(@Nullable Credentials credentials) throws IOException, HttpException {
+        Utils.checkNotNull(credentials, "Credentials should not be null");
+        credentials.apply(mAuthStrategy);
+    }
 }

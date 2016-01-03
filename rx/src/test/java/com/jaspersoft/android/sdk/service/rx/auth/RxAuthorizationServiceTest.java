@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.rx.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.auth.AuthorizationService;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -50,7 +50,7 @@ public class RxAuthorizationServiceTest {
     @Mock
     AuthorizationService mSyncDelegate;
     @Mock
-    AuthorizationClient mAuthorizationClient;
+    AnonymousClient mAnonymousClient;
     @Mock
     ServiceException mServiceException;
     @Mock
@@ -94,7 +94,7 @@ public class RxAuthorizationServiceTest {
 
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
-        RxAuthorizationService service = RxAuthorizationService.newService(mAuthorizationClient);
+        RxAuthorizationService service = RxAuthorizationService.newService(mAnonymousClient);
         assertThat(service, is(instanceOf(RxAuthorizationServiceImpl.class)));
         assertThat(service, is(notNullValue()));
     }

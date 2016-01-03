@@ -24,8 +24,7 @@
 
 package com.jaspersoft.android.sdk.test.integration.api;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
-import com.jaspersoft.android.sdk.network.Server;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,18 +35,17 @@ import org.junit.Test;
 public class AuthorizationClientTest {
 
     private final JrsMetadata mMetadata = JrsMetadata.createMobileDemo2();
-    private AuthorizationClient mClient;
+    private final LazyClient mLazyClient = new LazyClient(mMetadata);
+
+    private AnonymousClient mClient;
 
     @Before
     public void setUp() throws Exception {
-        Server server = Server.builder()
-                .withBaseUrl(mMetadata.getServerUrl())
-                .build();
-        mClient = server.newAuthorizationClient().create();
+        mClient = mLazyClient.getAnonymousClient();
     }
 
     @Test
     public void testAuthorize() throws Exception {
-        mClient.authorize(mMetadata.getCredentials());
+        mClient.authenticationApi().authenticate(mMetadata.getCredentials());
     }
 }

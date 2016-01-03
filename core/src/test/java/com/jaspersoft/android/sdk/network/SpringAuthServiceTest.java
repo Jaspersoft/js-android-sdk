@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
 })
 public class SpringAuthServiceTest {
     @Mock
-    AuthenticationRestApi mRestApi;
+    AuthRestApi mRestApi;
     @Mock
     JSEncryptionAlgorithm mAlgorithm;
     @Mock

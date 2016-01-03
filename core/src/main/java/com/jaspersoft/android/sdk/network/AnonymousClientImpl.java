@@ -32,6 +32,7 @@ import retrofit.Retrofit;
  */
 final class AnonymousClientImpl extends AbstractClient implements AnonymousClient {
     private ServerRestApiImpl mServerRestApi;
+    private AuthenticationRestApiImpl mAuthApi;
 
     AnonymousClientImpl(Retrofit retrofit) {
         super(retrofit);
@@ -42,5 +43,15 @@ final class AnonymousClientImpl extends AbstractClient implements AnonymousClien
             mServerRestApi = new ServerRestApiImpl(mRetrofit);
         }
         return mServerRestApi;
+    }
+
+    @Override
+    public AuthenticationRestApi authenticationApi() {
+        if (mAuthApi == null) {
+            SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mRetrofit);
+            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory);
+            mAuthApi = new AuthenticationRestApiImpl(authStrategy);
+        }
+        return mAuthApi;
     }
 }

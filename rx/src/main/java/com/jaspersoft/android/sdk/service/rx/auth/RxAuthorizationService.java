@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.rx.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.auth.AuthorizationService;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -41,9 +41,9 @@ public abstract class RxAuthorizationService {
     public abstract Observable<Void> authorize(@NotNull Credentials credentials);
 
     @NotNull
-    public static RxAuthorizationService newService(@NotNull AuthorizationClient authorizationClient) {
-        Preconditions.checkNotNull(authorizationClient, "Client should not be null");
-        AuthorizationService service = AuthorizationService.newService(authorizationClient);
+    public static RxAuthorizationService newService(@NotNull AnonymousClient client) {
+        Preconditions.checkNotNull(client, "Client should not be null");
+        AuthorizationService service = AuthorizationService.newService(client);
         return new RxAuthorizationServiceImpl(service);
     }
 }

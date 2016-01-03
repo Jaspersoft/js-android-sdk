@@ -30,4 +30,5 @@ package com.jaspersoft.android.sdk.network;
  */
 public interface AnonymousClient extends Client {
     ServerRestApi infoApi();
+    AuthenticationRestApi authenticationApi();
 }
