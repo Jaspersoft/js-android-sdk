@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
@@ -40,7 +40,7 @@ public abstract class AuthorizationService {
     public abstract void authorize(Credentials credentials) throws ServiceException;
 
     @NotNull
-    public static AuthorizationService newService(@NotNull AuthorizationClient client) {
+    public static AuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
         ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
         return new ProxyAuthorizationService(client, serviceExceptionMapper);

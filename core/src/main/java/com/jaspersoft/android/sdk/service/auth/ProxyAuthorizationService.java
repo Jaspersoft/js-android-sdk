@@ -24,7 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -38,11 +39,11 @@ import java.io.IOException;
  * @since 2.0
  */
 final class ProxyAuthorizationService extends AuthorizationService {
-    private final AuthorizationClient mClient;
+    private final AnonymousClient mClient;
     private final ServiceExceptionMapper mServiceExceptionMapper;
 
     @TestOnly
-    ProxyAuthorizationService(AuthorizationClient client,
+    ProxyAuthorizationService(AnonymousClient client,
                               ServiceExceptionMapper mapper) {
         mServiceExceptionMapper = mapper;
         mClient = client;
@@ -51,7 +52,8 @@ final class ProxyAuthorizationService extends AuthorizationService {
     @Override
     public void authorize(Credentials credentials) throws ServiceException {
         try {
-            mClient.authorize(credentials);
+            AuthenticationRestApi authenticationRestApi = mClient.authenticationApi();
+            authenticationRestApi.authenticate(credentials);
         } catch (IOException e) {
             throw mServiceExceptionMapper.transform(e);
         } catch (HttpException e) {

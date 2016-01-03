@@ -42,7 +42,7 @@ public class SpringCredentialsTest {
     private SpringCredentials.Builder objectUnderTest;
 
     @Mock
-    AuthenticationRestApi mRestApi;
+    AuthRestApi mRestApi;
 
     @Rule
     public ExpectedException mException = ExpectedException.none();

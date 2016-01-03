@@ -24,7 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -45,7 +46,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ProxyAuthorizationServiceTest {
 
     @Mock
-    AuthorizationClient mAuthorizationClient;
+    AnonymousClient mAnonymousClient;
+    @Mock
+    AuthenticationRestApi mAuthenticationRestApi;
     @Mock
     ServiceExceptionMapper mServiceExceptionMapper;
     @Mock
@@ -63,20 +66,22 @@ public class ProxyAuthorizationServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        authorizationService = new ProxyAuthorizationService(mAuthorizationClient, mServiceExceptionMapper);
+        when(mAnonymousClient.authenticationApi()).thenReturn(mAuthenticationRestApi);
+        authorizationService = new ProxyAuthorizationService(mAnonymousClient, mServiceExceptionMapper);
     }
 
     @Test
     public void testAuthorize() throws Exception {
         authorizationService.authorize(mCredentials);
-        verify(mAuthorizationClient).authorize(mCredentials);
+        verify(mAnonymousClient).authenticationApi();
+        verify(mAuthenticationRestApi).authenticate(mCredentials);
         verifyZeroInteractions(mServiceExceptionMapper);
     }
 
     @Test
     public void testShouldMapHttpException() throws Exception {
         when(mServiceExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
-        doThrow(mHttpException).when(mAuthorizationClient).authorize(any(Credentials.class));
+        doThrow(mHttpException).when(mAuthenticationRestApi).authenticate(any(Credentials.class));
 
         try {
             authorizationService.authorize(mCredentials);
@@ -89,7 +94,7 @@ public class ProxyAuthorizationServiceTest {
     @Test
     public void testShouldMapIOException() throws Exception {
         when(mServiceExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
-        doThrow(mIOException).when(mAuthorizationClient).authorize(any(Credentials.class));
+        doThrow(mIOException).when(mAuthenticationRestApi).authenticate(any(Credentials.class));
 
         try {
             authorizationService.authorize(mCredentials);

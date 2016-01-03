@@ -38,7 +38,7 @@ class SpringAuthServiceFactory {
     }
 
     public SpringAuthService create() {
-        AuthenticationRestApi restApi = new AuthenticationRestApi(mRetrofit);
+        AuthRestApi restApi = new AuthRestApi(mRetrofit);
         JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
         return new SpringAuthService(restApi, encryptionAlgorithm);
     }

@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
-public class AuthenticationRestApiTest {
+public class AuthRestApiTest {
     private final String LOCATION_SUCCESS = "/scripts/bower_components/js-sdk/src/common/auth/loginSuccess.json;jsessionid=7D86AE28407432B728694DF649DB5E8F";
     private final String LOCATION_ERROR = "login.html;jsessionid=395364A98787A1C42D5FEB0E9F58CF9F?error=1";
 
@@ -54,7 +54,7 @@ public class AuthenticationRestApiTest {
     @Rule
     public final ExpectedException mExpectedException = ExpectedException.none();
 
-    private AuthenticationRestApi apiUnderTest;
+    private AuthRestApi apiUnderTest;
 
     @ResourceFile("json/encryption_key.json")
     TestResource mKey;
@@ -67,7 +67,7 @@ public class AuthenticationRestApiTest {
                 .build();
         Retrofit retrofit = server.newRetrofit().build();
         retrofit.client().setFollowRedirects(false);
-        apiUnderTest = new AuthenticationRestApi(retrofit);
+        apiUnderTest = new AuthRestApi(retrofit);
     }
 
     @Test

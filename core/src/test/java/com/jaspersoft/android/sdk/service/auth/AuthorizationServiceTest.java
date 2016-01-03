@@ -24,7 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.AuthorizationClient;
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,16 +32,14 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AuthorizationServiceTest {
 
     @Mock
-    AuthorizationClient mAuthorizationClient;
+    AnonymousClient mAnonymousClient;
     @Rule
     public ExpectedException expected = none();
 
@@ -59,7 +57,7 @@ public class AuthorizationServiceTest {
 
     @Test
     public void should_create_new_proxy_service() throws Exception {
-        AuthorizationService service = AuthorizationService.newService(mAuthorizationClient);
+        AuthorizationService service = AuthorizationService.newService(mAnonymousClient);
         assertThat(service, is(instanceOf(ProxyAuthorizationService.class)));
         assertThat(service, is(notNullValue()));
     }

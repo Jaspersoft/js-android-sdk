@@ -40,12 +40,12 @@ import java.util.TimeZone;
  */
 class SpringAuthService {
 
-    private final AuthenticationRestApi mRestApi;
+    private final AuthRestApi mRestApi;
     private final JSEncryptionAlgorithm mEncryptionAlgorithm;
 
     @TestOnly
     SpringAuthService(
-            @NotNull AuthenticationRestApi restApi,
+            @NotNull AuthRestApi restApi,
             @NotNull JSEncryptionAlgorithm generator) {
         mEncryptionAlgorithm = generator;
         mRestApi = restApi;

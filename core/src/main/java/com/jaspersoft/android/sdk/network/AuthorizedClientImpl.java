@@ -83,4 +83,9 @@ final class AuthorizedClientImpl extends AbstractClient implements AuthorizedCli
     public ServerRestApi infoApi() {
         return mAnonymousClient.infoApi();
     }
+
+    @Override
+    public AuthenticationRestApi authenticationApi() {
+        return mAnonymousClient.authenticationApi();
+    }
 }

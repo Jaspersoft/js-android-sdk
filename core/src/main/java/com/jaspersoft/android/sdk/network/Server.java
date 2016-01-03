@@ -56,11 +56,6 @@ public final class Server {
     }
 
     @NotNull
-    public AuthorizationClientBuilder newAuthorizationClient() {
-        return new AuthorizationClientBuilder(this);
-    }
-
-    @NotNull
     public AnonymousClientBuilder newClient() {
         return new AnonymousClientBuilder(this);
     }
@@ -146,6 +141,7 @@ public final class Server {
 
         public AnonymousClient create() {
             OkHttpClient anonymousClient = mServer.client().clone();
+            anonymousClient.setFollowRedirects(false);
             anonymousClient.setCookieHandler(mCookieHandler);
 
             Retrofit anonymousRetrofit = mServer.newRetrofit()
@@ -214,34 +210,6 @@ public final class Server {
                 authenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
             }
             client.setAuthenticator(authenticator);
-        }
-    }
-
-    public static class AuthorizationClientBuilder {
-        private final Server mServer;
-        private CookieHandler mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
-
-        private AuthorizationClientBuilder(Server server) {
-            mServer = server;
-        }
-
-        public AuthorizationClientBuilder withCookieHandler(CookieHandler cookieHandler) {
-            mCookieHandler = cookieHandler;
-            return this;
-        }
-
-        public AuthorizationClient create() {
-            OkHttpClient authClient = mServer.client().clone();
-            authClient.setFollowRedirects(false);
-            authClient.setCookieHandler(mCookieHandler);
-
-            Retrofit authRetrofit = mServer.newRetrofit()
-                    .client(authClient)
-                    .build();
-
-            SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(authRetrofit);
-            AuthStrategy authStrategy = new AuthStrategy(springAuthServiceFactory);
-            return new AuthorizationClientImpl(authStrategy);
         }
     }
 }
