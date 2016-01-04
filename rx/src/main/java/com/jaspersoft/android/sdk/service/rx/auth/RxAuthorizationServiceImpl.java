@@ -46,16 +46,16 @@ final class RxAuthorizationServiceImpl extends RxAuthorizationService {
 
     @NotNull
     @Override
-    public Observable<Void> authorize(@NotNull final Credentials credentials) {
-        return Observable.defer(new Func0<Observable<Void>>() {
+    public Observable<Credentials> authorize(@NotNull final Credentials credentials) {
+        return Observable.defer(new Func0<Observable<Credentials>>() {
             @Override
-            public Observable<Void> call() {
+            public Observable<Credentials> call() {
                 try {
                     mSyncDelegate.authorize(credentials);
+                    return Observable.just(credentials);
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }
-                return Observable.just(null);
             }
         });
     }

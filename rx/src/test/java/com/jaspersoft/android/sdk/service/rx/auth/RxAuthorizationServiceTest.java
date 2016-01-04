@@ -69,7 +69,7 @@ public class RxAuthorizationServiceTest {
 
     @Test
     public void should_delegate_authorize_call() throws Exception {
-        TestSubscriber<Void> test = new TestSubscriber<>();
+        TestSubscriber<Credentials> test = new TestSubscriber<>();
         rxAuthorizationService.authorize(mCredentials).subscribe(test);
 
         test.assertNoErrors();
@@ -83,7 +83,7 @@ public class RxAuthorizationServiceTest {
     public void should_delegate_service_exception_on_authorize_call() throws Exception {
         doThrow(mServiceException).when(mSyncDelegate).authorize(any(Credentials.class));
 
-        TestSubscriber<Void> test = new TestSubscriber<>();
+        TestSubscriber<Credentials> test = new TestSubscriber<>();
         rxAuthorizationService.authorize(mCredentials).subscribe(test);
 
         test.assertError(mServiceException);

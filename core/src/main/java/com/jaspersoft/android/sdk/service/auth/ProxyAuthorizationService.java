@@ -50,10 +50,11 @@ final class ProxyAuthorizationService extends AuthorizationService {
     }
 
     @Override
-    public void authorize(Credentials credentials) throws ServiceException {
+    public Credentials authorize(Credentials credentials) throws ServiceException {
         try {
             AuthenticationRestApi authenticationRestApi = mClient.authenticationApi();
             authenticationRestApi.authenticate(credentials);
+            return credentials;
         } catch (IOException e) {
             throw mServiceExceptionMapper.transform(e);
         } catch (HttpException e) {

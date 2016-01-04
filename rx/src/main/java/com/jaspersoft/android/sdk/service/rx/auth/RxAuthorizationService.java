@@ -38,7 +38,7 @@ import rx.Observable;
  */
 public abstract class RxAuthorizationService {
     @NotNull
-    public abstract Observable<Void> authorize(@NotNull Credentials credentials);
+    public abstract Observable<Credentials> authorize(@NotNull Credentials credentials);
 
     @NotNull
     public static RxAuthorizationService newService(@NotNull AnonymousClient client) {

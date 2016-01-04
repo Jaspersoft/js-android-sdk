@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.0
  */
 public abstract class AuthorizationService {
-    public abstract void authorize(Credentials credentials) throws ServiceException;
+    public abstract Credentials authorize(Credentials credentials) throws ServiceException;
 
     @NotNull
     public static AuthorizationService newService(@NotNull AnonymousClient client) {
