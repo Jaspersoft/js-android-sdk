@@ -26,13 +26,11 @@ package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -42,7 +40,7 @@ public interface InputControlRestApi {
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
-     *
+     * <p/>
      * <b>ATTENTION:</b> Exclude flag works only on JRS instances 6.0+
      *
      * @param reportUri    uri of report
@@ -50,24 +48,24 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NotNull
-    Collection<InputControl> requestInputControls(@NotNull String reportUri,
-                                                  boolean excludeState) throws HttpException, IOException;
+    List<InputControl> requestInputControls(@NotNull String reportUri,
+                                            boolean excludeState) throws HttpException, IOException;
 
     @NotNull
-    Collection<InputControlState> requestInputControlsInitialStates(@NotNull String reportUri,
-                                                                    boolean freshData) throws HttpException, IOException;
+    List<InputControlState> requestInputControlsInitialStates(@NotNull String reportUri,
+                                                              boolean freshData) throws HttpException, IOException;
 
     /**
      * Provides values for specified controls. This API helpful to
      * delegate cascading resolving for the server, also should handle non-cascading cases
      *
      * @param reportUri      uri of report
-     * @param controlsValues map of {control_id: [value, value]} associated input controls metadata
+     * @param parameters     {control_id: [value, value]} associated with input controls
      * @param freshData      whether data should be retrieved from cache or not
      * @return unmodifiable list of {@link InputControlState}
      */
     @NotNull
-    Collection<InputControlState> requestInputControlsStates(@NotNull String reportUri,
-                                                             @NotNull Map<String, Set<String>> controlsValues,
-                                                             boolean freshData) throws HttpException, IOException;
+    List<InputControlState> requestInputControlsStates(@NotNull String reportUri,
+                                                       @NotNull List<ReportParameter> parameters,
+                                                       boolean freshData) throws HttpException, IOException;
 }

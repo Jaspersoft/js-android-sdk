@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.network.entity.control;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public final class InputControlCollection {
     @SerializedName(value = "inputControl")
     private List<InputControl> mValues = Collections.emptyList();
 
-    public Collection<InputControl> get() {
+    public List<InputControl> get() {
         return mValues;
     }
 }

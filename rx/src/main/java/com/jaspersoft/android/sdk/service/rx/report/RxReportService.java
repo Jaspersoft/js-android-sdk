@@ -25,12 +25,17 @@
 package com.jaspersoft.android.sdk.service.rx.report;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rx.Observable;
+
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -39,6 +44,12 @@ import rx.Observable;
 public abstract class RxReportService {
     @NotNull
     public abstract Observable<RxReportExecution> run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions);
+
+    @NotNull
+    public abstract Observable<List<InputControl>> listControls(@NotNull String reportUri);
+
+    @NotNull
+    public abstract Observable<List<InputControlState>> listControlsValues(@NotNull String reportUri, @NotNull List<ReportParameter> parameters);
 
     @NotNull
     public static RxReportService newService(@NotNull AuthorizedClient authorizedClient) {

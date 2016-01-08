@@ -87,12 +87,12 @@ public class ExportExecutionApiTest {
     @Mock
     ExecutionRequestOptions mExecutionRequestOptions;
 
-    private ExportExecutionApiImpl exportExecutionApi;
+    private ExportExecutionApi exportExecutionApi;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        exportExecutionApi = new ExportExecutionApiImpl(
+        exportExecutionApi = new ExportExecutionApi(
                 mServiceExceptionMapper,
                 mReportExportRestApi,
                 mExportOptionsMapper,

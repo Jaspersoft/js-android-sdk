@@ -24,11 +24,14 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -37,31 +40,43 @@ import org.jetbrains.annotations.Nullable;
 abstract class AbstractReportService extends ReportService {
     protected final ExportExecutionApi mExportExecutionApi;
     protected final ReportExecutionApi mReportExecutionApi;
+    protected final ControlsApi mControlsApi;
     protected final ExportFactory mExportFactory;
     protected final long mDelay;
 
     protected AbstractReportService(ExportExecutionApi exportExecutionApi,
                                     ReportExecutionApi reportExecutionApi,
-                                    ExportFactory exportFactory, long delay) {
+                                    ControlsApi controlsApi,
+                                    ExportFactory exportFactory,
+                                    long delay) {
         mExportExecutionApi = exportExecutionApi;
         mReportExecutionApi = reportExecutionApi;
+        mControlsApi = controlsApi;
         mExportFactory = exportFactory;
         mDelay = delay;
     }
 
     @NotNull
     @Override
-    public ReportExecution run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        if (execOptions == null) {
-            execOptions = ReportExecutionOptions.builder().build();
-        }
-
+    public final ReportExecution run(@NotNull String reportUri, @NotNull ReportExecutionOptions execOptions) throws ServiceException {
         ReportExecutionDescriptor descriptor = mReportExecutionApi.start(reportUri, execOptions);
         String executionId = descriptor.getExecutionId();
         mReportExecutionApi.awaitStatus(executionId, reportUri, mDelay, Status.execution(), Status.ready());
 
         return buildExecution(reportUri, executionId, execOptions);
+    }
+
+    @NotNull
+    @Override
+    public final List<InputControl> listControls(@NotNull String reportUri) throws ServiceException {
+        return mControlsApi.requestControls(reportUri, false);
+    }
+
+    @NotNull
+    @Override
+    public final List<InputControlState> listControlsValues(@NotNull String reportUri,
+                                                            @NotNull List<ReportParameter> parameters) throws ServiceException {
+        return mControlsApi.requestControlsValues(reportUri, parameters, true);
     }
 
     protected abstract ReportExecution buildExecution(String reportUri, String executionId, ReportExecutionOptions criteria);

@@ -24,9 +24,15 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -42,13 +48,35 @@ final class ProxyReportService extends ReportService {
 
     @NotNull
     @Override
-    public ReportExecution run(@NotNull String reportUri,
-                               @NotNull ReportExecutionOptions execOptions) throws ServiceException {
+    public ReportExecution run(@Nullable String reportUri,
+                               @Nullable ReportExecutionOptions execOptions) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(execOptions, "Criteria should not be null");
+        if (execOptions == null) {
+            execOptions = ReportExecutionOptions.builder().build();
+        }
+        return getDelegate().run(reportUri, execOptions);
+    }
+
+    @NotNull
+    @Override
+    public List<InputControl> listControls(@Nullable String reportUri) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        return getDelegate().listControls(reportUri);
+    }
+
+    @NotNull
+    @Override
+    public List<InputControlState> listControlsValues(@Nullable String reportUri,
+                                                      @Nullable List<ReportParameter> parameters) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+        return getDelegate().listControlsValues(reportUri, parameters);
+    }
+
+    private ReportService getDelegate() throws ServiceException {
         if (mDelegate == null) {
             mDelegate = mServiceFactory.newService();
         }
-        return mDelegate.run(reportUri, execOptions);
+        return mDelegate;
     }
 }

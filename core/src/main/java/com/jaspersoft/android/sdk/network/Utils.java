@@ -24,13 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.squareup.okhttp.ResponseBody;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -70,40 +63,6 @@ final class Utils {
             return url;
         }
         return url + "/";
-    }
-
-    public static String bodyToString(ResponseBody responseBody) {
-        try {
-            InputStream inputStream = responseBody.byteStream();
-            return streamToString(inputStream);
-        } catch (IOException ex) {
-            return null;
-        }
-    }
-
-    private static String streamToString(InputStream stream) throws IOException {
-        if (stream == null) {
-            return null;
-        }
-
-        InputStreamReader is = new InputStreamReader(stream);
-        StringBuilder sb = new StringBuilder();
-        BufferedReader br = new BufferedReader(is);
-
-        try {
-            String read = br.readLine();
-            while (read != null) {
-                sb.append(read);
-                read = br.readLine();
-            }
-            return sb.toString();
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                // close quietly
-            }
-        }
     }
 
     public static String joinString(CharSequence delimiter, Iterable tokens) {

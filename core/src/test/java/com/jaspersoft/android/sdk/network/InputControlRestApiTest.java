@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -90,13 +91,13 @@ public class InputControlRestApiTest {
     public void requestInputControlsStatesShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControlsStates(null, Collections.EMPTY_MAP, true);
+        restApiUnderTest.requestInputControlsStates(null, Collections.<ReportParameter>emptyList(), true);
     }
 
     @Test
     public void requestInputControlsStatesShouldNotAllowNullControlParams() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Controls values should not be null");
+        mExpectedException.expectMessage("Parameters should not be null");
         restApiUnderTest.requestInputControlsStates("any_id", null, true);
     }
 
@@ -118,7 +119,7 @@ public class InputControlRestApiTest {
     public void requestInputControlsStatesShouldThrowRestErrorFor500() throws Exception {
         mExpectedException.expect(HttpException.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        restApiUnderTest.requestInputControlsStates("any_id", Collections.EMPTY_MAP, true);
+        restApiUnderTest.requestInputControlsStates("any_id", Collections.<ReportParameter>emptyList(), true);
     }
 
     @Test
@@ -136,10 +137,10 @@ public class InputControlRestApiTest {
 
     @Test
     public void apiShouldProvideFreshStatesForInputControls() throws Exception {
-        Map<String, Set<String>> parameters = new HashMap<>();
-        Set<String> values = new HashSet<>();
-        values.add("19");
-        parameters.put("sales_fact_ALL__store_sales_2013_1", values);
+        List<ReportParameter> parameters =
+                Collections.singletonList(
+                        new ReportParameter("sales_fact_ALL__store_sales_2013_1",
+                                Collections.singleton("19")));
 
         MockResponse mockResponse = MockResponseFactory.create200()
                 .setBody(icsStates.asString());
