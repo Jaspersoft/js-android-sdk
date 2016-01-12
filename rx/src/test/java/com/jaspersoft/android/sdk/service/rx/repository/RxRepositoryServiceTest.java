@@ -25,6 +25,8 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
 import com.jaspersoft.android.sdk.service.repository.SearchTask;
@@ -39,11 +41,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RxRepositoryServiceTest {
+
+    private static final String REPORT_URI = "/my/uri";
 
     @Mock
     AuthorizedClient mAuthorizedClient;
@@ -51,6 +56,10 @@ public class RxRepositoryServiceTest {
     RepositoryService mSyncDelegate;
     @Mock
     SearchTask mSearchTask;
+    @Mock
+    ReportResource mReportResource;
+    @Mock
+    ServiceException mServiceException;
 
     @Rule
     public ExpectedException expected = none();
@@ -79,13 +88,39 @@ public class RxRepositoryServiceTest {
     }
 
     @Test
+    public void should_delegate_fetch_report_details_call() throws Exception {
+        when(mSyncDelegate.fetchReportDetails(anyString())).thenReturn(mReportResource);
+
+        TestSubscriber<ReportResource> test = new TestSubscriber<>();
+        rxRepositoryService.fetchReportDetails(REPORT_URI).subscribe(test);
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).fetchReportDetails(REPORT_URI);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription() throws Exception {
+        when(mSyncDelegate.fetchReportDetails(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<ReportResource> test = new TestSubscriber<>();
+        rxRepositoryService.fetchReportDetails(REPORT_URI).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).fetchReportDetails(REPORT_URI);
+    }
+
+    @Test
     public void should_accept_null_criteria() throws Exception {
         TestSubscriber<RxSearchTask> test = new TestSubscriber<>();
         rxRepositoryService.search(null).subscribe(test);
         test.assertNoErrors();
         test.assertCompleted();
     }
-
 
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
@@ -100,4 +135,6 @@ public class RxRepositoryServiceTest {
         expected.expect(NullPointerException.class);
         RxRepositoryService.newService(null);
     }
+
+
 }

@@ -35,26 +35,35 @@ import org.mockito.MockitoAnnotations;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class ProxyRepositoryServiceTest {
+    private static final String REPORT_URI = "/my/uri";
+
     @Mock
-    SearchUseCase mCase;
+    SearchUseCase mSearchCase;
+    @Mock
+    RepositoryUseCase mRepositoryUseCase;
     @Mock
     InfoCacheManager mInfoCacheManager;
+
+    @Rule
+    public ExpectedException expected = none();
 
     private ProxyRepositoryService objectUnderTest;
 
     @Rule
-    public ExpectedException mExpectedException = ExpectedException.none();
+    public ExpectedException mExpectedException = none();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ProxyRepositoryService(mCase, mInfoCacheManager);
+        objectUnderTest = new ProxyRepositoryService(mSearchCase, mRepositoryUseCase, mInfoCacheManager);
     }
 
     @Test
@@ -67,5 +76,18 @@ public class ProxyRepositoryServiceTest {
     public void should_accept_null_criteria() {
         SearchTask searchTask = objectUnderTest.search(null);
         assertThat(searchTask, is(notNullValue()));
+    }
+
+    @Test
+    public void fetch_should_delegate_request_on_usecase() throws Exception {
+        objectUnderTest.fetchReportDetails(REPORT_URI);
+        verify(mRepositoryUseCase).getReportDetails(REPORT_URI);
+    }
+
+    @Test
+    public void fetch_report_details_fails_with_null_uri() throws Exception {
+        expected.expectMessage("Report uri should not be null");
+        expected.expect(NullPointerException.class);
+        objectUnderTest.fetchReportDetails(null);
     }
 }

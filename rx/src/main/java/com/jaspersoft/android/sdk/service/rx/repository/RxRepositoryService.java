@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
@@ -40,6 +41,8 @@ import rx.Observable;
 public abstract class RxRepositoryService {
     @NotNull
     public abstract Observable<RxSearchTask> search(@Nullable SearchCriteria criteria);
+    @NotNull
+    public abstract Observable<ReportResource> fetchReportDetails(@NotNull String reportUri);
 
     @NotNull
     public static RxRepositoryService newService(@NotNull AuthorizedClient authorizedClient) {

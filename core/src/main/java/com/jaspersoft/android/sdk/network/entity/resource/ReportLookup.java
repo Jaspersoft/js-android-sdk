@@ -42,7 +42,7 @@ public class ReportLookup extends ResourceLookup {
         return "reportUnit";
     }
 
-    public boolean isAlwaysPromptControls() {
+    public boolean alwaysPromptControls() {
         return alwaysPromptControls;
     }
 
