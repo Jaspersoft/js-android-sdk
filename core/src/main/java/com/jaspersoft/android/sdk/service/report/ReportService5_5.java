@@ -31,9 +31,10 @@ package com.jaspersoft.android.sdk.service.report;
 final class ReportService5_5 extends AbstractReportService {
     protected ReportService5_5(ExportExecutionApi exportExecutionApi,
                                ReportExecutionApi reportExecutionApi,
+                               ControlsApi controlsApi,
                                ExportFactory exportFactory,
                                long delay) {
-        super(exportExecutionApi, reportExecutionApi, exportFactory, delay);
+        super(exportExecutionApi, reportExecutionApi, controlsApi, exportFactory, delay);
     }
 
     @Override

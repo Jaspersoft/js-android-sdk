@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
+import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
@@ -41,6 +42,7 @@ class ReportServiceFactory {
     private final InfoCacheManager mCacheManager;
     private final ReportExecutionRestApi mReportExecutionRestApi;
     private final ReportExportRestApi mReportExportRestApi;
+    private final InputControlRestApi mInputControlRestApi;
     private final ServiceExceptionMapper mExceptionMapper;
     private final String mBaseUrl;
     private final long mDelay;
@@ -49,11 +51,12 @@ class ReportServiceFactory {
     ReportServiceFactory(InfoCacheManager cacheManager,
                          ReportExecutionRestApi reportExecutionRestApi,
                          ReportExportRestApi reportExportRestApi,
-                         ServiceExceptionMapper exceptionMapper,
+                         InputControlRestApi inputControlRestApi, ServiceExceptionMapper exceptionMapper,
                          String baseUrl, long delay) {
         mCacheManager = cacheManager;
         mReportExecutionRestApi = reportExecutionRestApi;
         mReportExportRestApi = reportExportRestApi;
+        mInputControlRestApi = inputControlRestApi;
         mExceptionMapper = exceptionMapper;
         mBaseUrl = baseUrl;
         mDelay = delay;
@@ -72,22 +75,33 @@ class ReportServiceFactory {
         AttachmentsFactory attachmentsFactory = new AttachmentsFactory(exportExecutionApi);
         ExportFactory exportFactory = new ExportFactory(exportExecutionApi, attachmentsFactory);
 
+        ControlsApi controlsApi = new ControlsApi(mExceptionMapper, mInputControlRestApi);
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
-            return new ReportService5_5(exportExecutionApi, reportExecutionApi, exportFactory, mDelay);
+            return new ReportService5_5(
+                    exportExecutionApi,
+                    reportExecutionApi,
+                    controlsApi,
+                    exportFactory,
+                    mDelay);
         } else {
-            return new ReportService5_6Plus(exportExecutionApi, reportExecutionApi,exportFactory, mDelay);
+            return new ReportService5_6Plus(
+                    exportExecutionApi,
+                    reportExecutionApi,
+                    controlsApi,
+                    exportFactory,
+                    mDelay);
         }
     }
 
     @NotNull
     private ReportExecutionApi createReportExecApi(ReportOptionsMapper reportOptionsMapper) {
-        return new ReportExecutionApiImpl(mExceptionMapper, mReportExecutionRestApi, reportOptionsMapper);
+        return new ReportExecutionApi(mExceptionMapper, mReportExecutionRestApi, reportOptionsMapper);
     }
 
     @NotNull
     private ExportExecutionApi createExportExecApi(ExportOptionsMapper exportOptionsMapper) {
         ReportExportMapper reportExportMapper = new ReportExportMapper();
         AttachmentExportMapper attachmentExportMapper = new AttachmentExportMapper();
-        return new ExportExecutionApiImpl(mExceptionMapper, mReportExportRestApi, exportOptionsMapper, reportExportMapper, attachmentExportMapper);
+        return new ExportExecutionApi(mExceptionMapper, mReportExportRestApi, exportOptionsMapper, reportExportMapper, attachmentExportMapper);
     }
 }

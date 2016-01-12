@@ -25,6 +25,9 @@
 package com.jaspersoft.android.sdk.service.rx.report;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
@@ -36,10 +39,14 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import rx.observers.TestSubscriber;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +55,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class RxReportServiceTest {
     private static final String REPORT_URI = "my/uri";
     private static final ReportExecutionOptions OPTIONS = ReportExecutionOptions.builder().build();
+    private static final List<ReportParameter> PARAMS = Collections.emptyList();
 
     @Mock
     ReportService mSyncDelegate;
@@ -87,7 +95,7 @@ public class RxReportServiceTest {
     }
 
     @Test
-    public void should_execute_delegate_as_observable() throws Exception {
+    public void should_execute_delegate_as_observable_on_run() throws Exception {
         when(mSyncDelegate.run(anyString(), any(ReportExecutionOptions.class))).thenReturn(mReportExecution);
 
         TestSubscriber<RxReportExecution> test = TestSubscriber.create();
@@ -111,6 +119,62 @@ public class RxReportServiceTest {
         test.assertNotCompleted();
 
         verify(mSyncDelegate).run(REPORT_URI, OPTIONS);
+    }
+
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_controls() throws Exception {
+        when(mSyncDelegate.listControls(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<List<InputControl>> test = TestSubscriber.create();
+        rxReportService.listControls(REPORT_URI).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).listControls(REPORT_URI);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_list_controls() throws Exception {
+        when(mSyncDelegate.listControls(anyString())).thenReturn(Collections.<InputControl>emptyList());
+
+        TestSubscriber<List<InputControl>> test = TestSubscriber.create();
+        rxReportService.listControls(REPORT_URI).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).listControls(REPORT_URI);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_controls_values() throws Exception {
+        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class))).thenThrow(mServiceException);
+
+        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
+        rxReportService.listControlsValues(REPORT_URI, PARAMS).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).listControlsValues(REPORT_URI, PARAMS);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_list_controls_values() throws Exception {
+        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class)))
+                .thenReturn(Collections.<InputControlState>emptyList());
+
+        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
+        rxReportService.listControlsValues(REPORT_URI, PARAMS).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).listControlsValues(REPORT_URI, PARAMS);
     }
 
     @Test

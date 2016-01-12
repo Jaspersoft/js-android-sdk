@@ -25,6 +25,9 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -35,6 +38,7 @@ import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,6 +48,13 @@ import java.util.concurrent.TimeUnit;
 public abstract class ReportService {
     @NotNull
     public abstract ReportExecution run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions) throws ServiceException;
+
+    @NotNull
+    public abstract List<InputControl> listControls(@NotNull String reportUri) throws ServiceException;
+
+    @NotNull
+    public abstract List<InputControlState> listControlsValues(@NotNull String reportUri,
+                                                               @NotNull List<ReportParameter> parameters) throws ServiceException;
 
     @NotNull
     public static ReportService newService(@NotNull AuthorizedClient client) {
@@ -56,6 +67,7 @@ public abstract class ReportService {
         ReportServiceFactory reportServiceFactory = new ReportServiceFactory(cacheManager,
                 client.reportExecutionApi(),
                 client.reportExportApi(),
+                client.inputControlApi(),
                 reportMapper,
                 client.getBaseUrl(),
                 TimeUnit.SECONDS.toMillis(1)

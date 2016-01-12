@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,13 +45,8 @@ import static org.hamcrest.core.IsNot.not;
 public class InputControlRestApiTest {
     private static final String REPORT_URI = "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report";
 
-    public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
-
-    static {
-        Set<String> values = new HashSet<>();
-        values.add("19");
-        CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
-    }
+    public static final List<ReportParameter> CONTROL_PARAMETERS =
+            Collections.singletonList(new ReportParameter("sales_fact_ALL__store_sales_2013_1", Collections.singleton("19")));
 
     private final static LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
     private static InputControlRestApi apiUnderTest;

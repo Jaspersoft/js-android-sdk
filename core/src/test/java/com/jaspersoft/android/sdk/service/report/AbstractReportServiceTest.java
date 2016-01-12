@@ -25,27 +25,23 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
+import java.util.List;
+
 import static com.jaspersoft.android.sdk.service.report.Status.execution;
 import static com.jaspersoft.android.sdk.service.report.Status.ready;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -61,13 +57,12 @@ public class AbstractReportServiceTest {
     @Mock
     ReportExecutionApi mReportExecutionApi;
     @Mock
+    ControlsApi mControlsApi;
+    @Mock
     ExportFactory mExportFactory;
 
     @Mock
     ReportExecutionDescriptor mReportExecutionDescriptor;
-
-    @Rule
-    public ExpectedException expected = none();
 
     private AbstractReportService reportService;
 
@@ -77,6 +72,7 @@ public class AbstractReportServiceTest {
         reportService = new AbstractReportService(
                 mExportExecutionApi,
                 mReportExecutionApi,
+                mControlsApi,
                 mExportFactory,
                 0) {
             @Override
@@ -102,15 +98,15 @@ public class AbstractReportServiceTest {
     }
 
     @Test
-    public void should_not_run_with_null_uri() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Report uri should not be null");
-
-        reportService.run(null, null);
+    public void should_request_controls() throws Exception {
+        reportService.listControls(REPORT_URI);
+        verify(mControlsApi).requestControls(REPORT_URI, false);
     }
 
     @Test
-    public void should_run_with_null_options() throws Exception {
-        reportService.run(REPORT_URI, null);
+    public void should_request_controls_values() throws Exception {
+        List<ReportParameter> parameters = Collections.emptyList();
+        reportService.listControlsValues(REPORT_URI, parameters);
+        verify(mControlsApi).requestControlsValues(REPORT_URI, parameters, true);
     }
 }

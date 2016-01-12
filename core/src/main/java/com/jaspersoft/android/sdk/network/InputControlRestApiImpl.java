@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollection;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import retrofit.Call;
@@ -36,9 +37,7 @@ import retrofit.Retrofit;
 import retrofit.http.*;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tom Koptel
@@ -53,7 +52,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NotNull
     @Override
-    public Collection<InputControl> requestInputControls(@Nullable String reportUri,
+    public List<InputControl> requestInputControls(@Nullable String reportUri,
                                                          boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
 
@@ -65,7 +64,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
+    public List<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
                                                                            boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
 
@@ -76,14 +75,22 @@ final class InputControlRestApiImpl implements InputControlRestApi {
 
     @NotNull
     @Override
-    public Collection<InputControlState> requestInputControlsStates(@Nullable String reportUri,
-                                                                    @Nullable Map<String, Set<String>> controlsValues,
-                                                                    boolean freshData) throws IOException, HttpException {
+    public List<InputControlState> requestInputControlsStates(@NotNull String reportUri,
+                                                              @NotNull List<ReportParameter> parameters,
+                                                              boolean freshData) throws HttpException, IOException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
-        Utils.checkNotNull(controlsValues, "Controls values should not be null");
+        Utils.checkNotNull(parameters, "Parameters should not be null");
 
-        String ids = Utils.joinString(";", controlsValues.keySet());
-        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri, ids, controlsValues, freshData);
+        int capacity = parameters.size();
+        Map<String, Set<String>> params = new HashMap<>(capacity);
+        for (int i = 0; i < capacity; i++) {
+            ReportParameter param = parameters.get(i);
+            params.put(param.getName(), param.getValue());
+        }
+
+        String ids = Utils.joinString(";", params.keySet());
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri,
+                ids, params, freshData);
         InputControlStateCollection response = CallWrapper.wrap(call).body();
         return response.get();
     }
