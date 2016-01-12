@@ -41,7 +41,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyCount() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .limit(100)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -50,7 +50,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyOffset() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .offset(100)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -59,7 +59,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyForceFullPageFlag() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .forceFullPage(true)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -68,7 +68,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyQuery() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .query("q")
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -77,7 +77,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyRecursiveFlag() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .recursive(true)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -86,7 +86,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopySortBy() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .sortBy(SortType.CREATION_DATE)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -95,7 +95,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyResourceMask() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -104,7 +104,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyForceTotalPageFlag() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .forceTotalCount(true)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
@@ -113,7 +113,7 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyFolderUri() {
-        InternalCriteria searchCriteria = InternalCriteria.builder()
+        InternalCriteria searchCriteria = new InternalCriteria.Builder()
                 .folderUri("/")
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();

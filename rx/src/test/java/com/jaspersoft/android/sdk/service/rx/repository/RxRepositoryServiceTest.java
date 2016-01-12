@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
@@ -36,6 +37,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import rx.observers.TestSubscriber;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -102,7 +106,7 @@ public class RxRepositoryServiceTest {
     }
 
     @Test
-    public void should_delegate_service_exception_to_subscription() throws Exception {
+    public void report_details_call_delegate_service_exception() throws Exception {
         when(mSyncDelegate.fetchReportDetails(anyString())).thenThrow(mServiceException);
 
         TestSubscriber<ReportResource> test = new TestSubscriber<>();
@@ -112,6 +116,34 @@ public class RxRepositoryServiceTest {
         test.assertNotCompleted();
 
         verify(mSyncDelegate).fetchReportDetails(REPORT_URI);
+    }
+
+    @Test
+    public void should_delegate_fetch_root_folders_call() throws Exception {
+        List<Resource> folders = Collections.<Resource>emptyList();
+        when(mSyncDelegate.fetchRootFolders()).thenReturn(folders);
+
+        TestSubscriber<List<Resource>> test = new TestSubscriber<>();
+        rxRepositoryService.fetchRootFolders().subscribe(test);
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).fetchRootFolders();
+    }
+
+    @Test
+    public void root_folders_call_delegate_service_exception() throws Exception {
+        when(mSyncDelegate.fetchRootFolders()).thenThrow(mServiceException);
+
+        TestSubscriber<List<Resource>> test = new TestSubscriber<>();
+        rxRepositoryService.fetchRootFolders().subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).fetchRootFolders();
     }
 
     @Test

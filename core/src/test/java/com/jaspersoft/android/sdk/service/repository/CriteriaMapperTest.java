@@ -43,7 +43,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeCountInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .limit(101)
                 .create();
 
@@ -55,7 +55,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeOffsetInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .offset(100)
                 .create();
 
@@ -67,7 +67,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeRecursiveInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .recursive(true)
                 .create();
 
@@ -79,7 +79,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeForceFullPageInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .forceFullPage(true)
                 .create();
 
@@ -91,7 +91,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeForceTotalCountPageInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .forceTotalCount(true)
                 .create();
 
@@ -103,7 +103,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeQueryPageInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .query("any")
                 .create();
 
@@ -115,7 +115,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeFolderUriInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .folderUri("/")
                 .create();
 
@@ -127,7 +127,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIncludeSortByInParams() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .sortBy(SortType.DESCRIPTION)
                 .create();
 
@@ -139,7 +139,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldIgnoreEmptyQuery() {
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .query("")
                 .create();
 
@@ -151,8 +151,9 @@ public class CriteriaMapperTest {
     @Parameters({
             "REPORT|reportUnit",
             "DASHBOARD|dashboard",
+            "FOLDER|folder",
             "LEGACY_DASHBOARD|legacyDashboard",
-            "ALL|reportUnit:dashboard:legacyDashboard",
+            "ALL|reportUnit:dashboard:legacyDashboard:folder",
             "REPORT:DASHBOARD|reportUnit:dashboard",
     })
     public void criteriaShouldIncludeTypeInParams(String flags, String types) throws Exception {
@@ -165,7 +166,7 @@ public class CriteriaMapperTest {
             mask = (Integer) SearchCriteria.class.getField(flags).get(null);
         }
 
-        InternalCriteria criteria = InternalCriteria.builder()
+        InternalCriteria criteria = new InternalCriteria.Builder()
                 .resourceMask(mask)
                 .create();
 
@@ -183,7 +184,7 @@ public class CriteriaMapperTest {
 
     @Test
     public void shouldReturnEmptyParamsIfNoSupplied() {
-        InternalCriteria criteria = InternalCriteria.builder().create();
+        InternalCriteria criteria = new InternalCriteria.Builder().create();
         Map<String, Object> resultMap = new HashMap<>();
         assertThat(toMap(criteria), is(resultMap));
     }

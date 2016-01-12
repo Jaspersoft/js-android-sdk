@@ -31,22 +31,19 @@ import java.util.List;
  * @since 2.0
  */
 public class SearchResult {
-    private List<Resource> mResources;
-    private int mNextOffset;
+    private final List<Resource> mResources;
+    private final int mNextOffset;
+
+    public SearchResult(List<Resource> resources, int nextOffset) {
+        mResources = resources;
+        mNextOffset = nextOffset;
+    }
 
     public List<Resource> getResources() {
         return mResources;
     }
 
-    public void setResources(List<Resource> resources) {
-        mResources = resources;
-    }
-
     public int getNextOffset() {
         return mNextOffset;
-    }
-
-    public void setNextOffset(int nextOffset) {
-        mNextOffset = nextOffset;
     }
 }

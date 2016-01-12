@@ -31,12 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.ALL;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DASHBOARD;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_LIMIT;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_OFFSET;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.LEGACY_DASHBOARD;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.REPORT;
+import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.*;
 
 /**
  * @author Tom Koptel
@@ -110,6 +105,11 @@ final class CriteriaMapper {
                 (resourceMask & LEGACY_DASHBOARD) == LEGACY_DASHBOARD || (resourceMask & ALL) == ALL;
         if (includeLegacyDashboard) {
             types.add("legacyDashboard");
+        }
+        boolean includeFolder =
+                (resourceMask & FOLDER) == FOLDER || (resourceMask & ALL) == ALL;
+        if (includeFolder) {
+            types.add("folder");
         }
 
         return types;

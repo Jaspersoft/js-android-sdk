@@ -68,14 +68,8 @@ class SearchUseCase {
             public SearchResult perform() throws IOException, HttpException {
                 Map<String, Object> criteria = CriteriaMapper.map(internalCriteria);
                 ResourceSearchResult response = mRestApi.searchResources(criteria);
-
-                SearchResult searchResult = new SearchResult();
-                searchResult.setNextOffset(response.getNextOffset());
-
                 List<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
-                searchResult.setResources(resources);
-
-                return searchResult;
+                return new SearchResult(resources, response.getNextOffset());
             }
         };
         return mCallExecutor.execute(call);

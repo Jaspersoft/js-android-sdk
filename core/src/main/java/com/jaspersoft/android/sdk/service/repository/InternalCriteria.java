@@ -58,13 +58,8 @@ class InternalCriteria {
     }
 
     @NotNull
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @NotNull
     public static InternalCriteria from(SearchCriteria criteria) {
-        return InternalCriteria.builder()
+        return new InternalCriteria.Builder()
                 .limit(criteria.getLimit())
                 .offset(criteria.getOffset())
                 .resourceMask(criteria.getResourceMask())
@@ -119,7 +114,7 @@ class InternalCriteria {
 
     @NotNull
     public Builder newBuilder() {
-        Builder builder = builder();
+        Builder builder = new InternalCriteria.Builder();
 
         if (mRecursive != null) {
             builder.recursive(mRecursive);
@@ -209,7 +204,7 @@ class InternalCriteria {
         @Nullable
         private Boolean forceFullPage;
         @Nullable
-        public Boolean forceTotalCount;
+        private Boolean forceTotalCount;
         @Nullable
         private String query;
         @Nullable

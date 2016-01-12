@@ -71,12 +71,12 @@ public class SearchTaskV5_6PlusTest {
 
     @Test
     public void shouldMakeImmediateCallOnApiForUserOffsetZero() throws Exception {
-        InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
+        InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(0).create();
         SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         strategy.nextLookup();
 
-        InternalCriteria internalCriteria = InternalCriteria.builder()
+        InternalCriteria internalCriteria = new InternalCriteria.Builder()
                 .offset(0)
                 .forceFullPage(true)
                 .create();
@@ -85,12 +85,12 @@ public class SearchTaskV5_6PlusTest {
 
     @Test
     public void makesAdditionalCallOnApiIfUserOffsetNotZero() throws Exception {
-        InternalCriteria searchCriteria = InternalCriteria.builder().offset(5).create();
+        InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(5).create();
         SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         strategy.nextLookup();
 
-        InternalCriteria internalCriteria = InternalCriteria.builder()
+        InternalCriteria internalCriteria = new InternalCriteria.Builder()
                 .limit(5)
                 .forceFullPage(true)
                 .create();
@@ -99,7 +99,7 @@ public class SearchTaskV5_6PlusTest {
 
     @Test
     public void secondSearchLookupShouldUseNextOffset() throws Exception {
-        InternalCriteria searchCriteria = InternalCriteria.builder().offset(0).create();
+        InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(0).create();
         SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         when(mResponse.getNextOffset()).thenReturn(133);
@@ -109,7 +109,7 @@ public class SearchTaskV5_6PlusTest {
         strategy.nextLookup();
 
 
-        InternalCriteria internalCriteria = InternalCriteria.builder()
+        InternalCriteria internalCriteria = new InternalCriteria.Builder()
                 .offset(133)
                 .limit(100)
                 .forceFullPage(true)
@@ -139,7 +139,7 @@ public class SearchTaskV5_6PlusTest {
 
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
-        InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
+        InternalCriteria userCriteria = new InternalCriteria.Builder().limit(0).offset(5).create();
         SearchTask strategy = new SearchTaskV5_6Plus(userCriteria, mSearchUseCase);
 
         Collection<Resource> result = strategy.nextLookup();
