@@ -47,7 +47,7 @@ public class SearchTaskFactoryTest {
     ServerInfo mServerInfo;
 
     private static final InternalCriteria CRITERIA =
-            InternalCriteria.builder().create();
+            new InternalCriteria.Builder().create();
     private SearchTaskFactory searchTaskFactory;
 
 

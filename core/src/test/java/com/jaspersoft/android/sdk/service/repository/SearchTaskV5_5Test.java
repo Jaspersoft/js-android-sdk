@@ -78,7 +78,7 @@ public class SearchTaskV5_5Test {
 
         when(mSearchUseCase.performSearch(Matchers.any(InternalCriteria.class))).thenReturn(mResponse);
 
-        InternalCriteria criteria = InternalCriteria.builder().limit(10).create();
+        InternalCriteria criteria = new InternalCriteria.Builder().limit(10).create();
         search10itemsStrategy = new SearchTaskV5_5(criteria, mSearchUseCase);
 
         InternalCriteria userCriteria = criteria.newBuilder().offset(5).create();
@@ -92,10 +92,10 @@ public class SearchTaskV5_5Test {
         Collection<Resource> result = search10itemsStrategy.nextLookup();
         assertThat(result.size(), is(10));
 
-        InternalCriteria criteria1 = InternalCriteria.builder().limit(10).create();
+        InternalCriteria criteria1 = new InternalCriteria.Builder().limit(10).create();
         verify(mSearchUseCase).performSearch(criteria1);
 
-        InternalCriteria criteria2 = InternalCriteria.builder()
+        InternalCriteria criteria2 = new InternalCriteria.Builder()
                 .offset(10).limit(10).create();
         verify(mSearchUseCase).performSearch(criteria2);
     }
@@ -128,16 +128,16 @@ public class SearchTaskV5_5Test {
         search10itemsStrategyWithUserOffset5.nextLookup();
 
 
-        InternalCriteria criteria1 = InternalCriteria.builder()
+        InternalCriteria criteria1 = new InternalCriteria.Builder()
                 .limit(5).create();
         verify(mSearchUseCase).performSearch(criteria1);
 
 
-        InternalCriteria criteria2 = InternalCriteria.builder()
+        InternalCriteria criteria2 = new InternalCriteria.Builder()
                 .limit(10).offset(5).create();
         verify(mSearchUseCase).performSearch(criteria2);
 
-        InternalCriteria criteria3 = InternalCriteria.builder()
+        InternalCriteria criteria3 = new InternalCriteria.Builder()
                 .limit(10).offset(15).create();
         verify(mSearchUseCase).performSearch(criteria3);
 
@@ -147,7 +147,7 @@ public class SearchTaskV5_5Test {
 
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
-        InternalCriteria userCriteria = InternalCriteria.builder().limit(0).offset(5).create();
+        InternalCriteria userCriteria = new InternalCriteria.Builder().limit(0).offset(5).create();
         SearchTask strategy = new SearchTaskV5_5(userCriteria, mSearchUseCase);
 
         List<Resource> result = strategy.nextLookup();

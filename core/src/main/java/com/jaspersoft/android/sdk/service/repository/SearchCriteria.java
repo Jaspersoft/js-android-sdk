@@ -41,6 +41,7 @@ public final class SearchCriteria {
     public static int REPORT = (1 << 1);
     public static int DASHBOARD = (1 << 2);
     public static int LEGACY_DASHBOARD = (1 << 3);
+    public static int FOLDER = (1 << 4);
 
     private final int mLimit;
     private final int mOffset;
