@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.rx.repository;
 
+import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
 import com.jaspersoft.android.sdk.service.repository.SearchTask;
@@ -31,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
@@ -50,5 +53,21 @@ final class RxRepositoryServiceImpl extends RxRepositoryService {
         SearchTask searchTask = mSyncDelegate.search(criteria);
         RxSearchTask rxSearchTask = new RxSearchTaskImpl(searchTask);
         return Observable.just(rxSearchTask);
+    }
+
+    @NotNull
+    @Override
+    public Observable<ReportResource> fetchReportDetails(@NotNull final String reportUri) {
+        return Observable.defer(new Func0<Observable<ReportResource>>() {
+            @Override
+            public Observable<ReportResource> call() {
+                try {
+                    ReportResource reportResource = mSyncDelegate.fetchReportDetails(reportUri);
+                    return Observable.just(reportResource);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
     }
 }

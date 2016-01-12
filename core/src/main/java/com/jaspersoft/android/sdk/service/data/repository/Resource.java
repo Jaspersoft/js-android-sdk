@@ -36,21 +36,31 @@ import java.util.Date;
  */
 public class Resource {
     @Nullable
-    private Date mCreationDate;
+    private final Date mCreationDate;
     @Nullable
-    private Date mUpdateDate;
+    private final Date mUpdateDate;
+    @NotNull
+    private final ResourceType mResourceType;
+    @NotNull
+    private final String mLabel;
+    @NotNull
+    private final String mDescription;
 
-    private ResourceType mResourceType;
-    private String mLabel;
-    private String mDescription;
+    public Resource(@Nullable Date creationDate,
+                    @Nullable Date updateDate,
+                    @NotNull ResourceType resourceType,
+                    @NotNull String label,
+                    @NotNull String description) {
+        mCreationDate = creationDate;
+        mUpdateDate = updateDate;
+        mResourceType = resourceType;
+        mLabel = label;
+        mDescription = description;
+    }
 
     @Nullable
     public Date getCreationDate() {
         return mCreationDate;
-    }
-
-    public void setCreationDate(@Nullable Date creationDate) {
-        mCreationDate = creationDate;
     }
 
     @Nullable
@@ -58,17 +68,9 @@ public class Resource {
         return mUpdateDate;
     }
 
-    public void setUpdateDate(@Nullable Date updateDate) {
-        mUpdateDate = updateDate;
-    }
-
     @NotNull
     public ResourceType getResourceType() {
         return mResourceType;
-    }
-
-    public void setResourceType(@NotNull ResourceType resourceType) {
-        mResourceType = resourceType;
     }
 
     @NotNull
@@ -76,16 +78,48 @@ public class Resource {
         return mLabel;
     }
 
-    public void setLabel(@NotNull String label) {
-        mLabel = label;
-    }
-
     @NotNull
     public String getDescription() {
         return mDescription;
     }
 
-    public void setDescription(@NotNull String description) {
-        mDescription = description;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Resource resource = (Resource) o;
+
+        if (mCreationDate != null ? !mCreationDate.equals(resource.mCreationDate) : resource.mCreationDate != null)
+            return false;
+        if (mDescription != null ? !mDescription.equals(resource.mDescription) : resource.mDescription != null)
+            return false;
+        if (mLabel != null ? !mLabel.equals(resource.mLabel) : resource.mLabel != null) return false;
+        if (mResourceType != resource.mResourceType) return false;
+        if (mUpdateDate != null ? !mUpdateDate.equals(resource.mUpdateDate) : resource.mUpdateDate != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mCreationDate != null ? mCreationDate.hashCode() : 0;
+        result = 31 * result + (mUpdateDate != null ? mUpdateDate.hashCode() : 0);
+        result = 31 * result + (mResourceType != null ? mResourceType.hashCode() : 0);
+        result = 31 * result + (mLabel != null ? mLabel.hashCode() : 0);
+        result = 31 * result + (mDescription != null ? mDescription.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "mCreationDate=" + mCreationDate +
+                ", mUpdateDate=" + mUpdateDate +
+                ", mResourceType=" + mResourceType +
+                ", mLabel='" + mLabel + '\'' +
+                ", mDescription='" + mDescription + '\'' +
+                '}';
     }
 }

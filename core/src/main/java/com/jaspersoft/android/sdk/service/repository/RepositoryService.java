@@ -26,6 +26,8 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.*;
 import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
@@ -40,6 +42,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class RepositoryService {
     @NotNull
     public abstract SearchTask search(@Nullable SearchCriteria criteria);
+
+    @NotNull
+    public abstract ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException;
 
     @NotNull
     public static RepositoryService newService(@NotNull AuthorizedClient client) {
@@ -58,6 +63,9 @@ public abstract class RepositoryService {
                 cacheManager,
                 callExecutor
         );
-        return new ProxyRepositoryService(searchUseCase, cacheManager);
+        ReportResourceMapper reportResourceMapper = new ReportResourceMapper();
+        RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultExMapper,
+                repositoryRestApi, reportResourceMapper, cacheManager);
+        return new ProxyRepositoryService(searchUseCase, repositoryUseCase, cacheManager);
     }
 }

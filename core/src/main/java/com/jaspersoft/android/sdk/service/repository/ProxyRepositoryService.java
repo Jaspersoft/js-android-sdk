@@ -24,6 +24,10 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +39,16 @@ import org.jetbrains.annotations.TestOnly;
  */
 final class ProxyRepositoryService extends RepositoryService {
     private final SearchUseCase mSearchUseCase;
+    private final RepositoryUseCase mRepositoryUseCase;
     private final InfoCacheManager mInfoCacheManager;
 
     @TestOnly
-    ProxyRepositoryService(SearchUseCase searchUseCase, InfoCacheManager infoCacheManager) {
+    ProxyRepositoryService(
+            SearchUseCase searchUseCase,
+            RepositoryUseCase repositoryUseCase,
+            InfoCacheManager infoCacheManager) {
         mSearchUseCase = searchUseCase;
+        mRepositoryUseCase = repositoryUseCase;
         mInfoCacheManager = infoCacheManager;
     }
 
@@ -53,5 +62,12 @@ final class ProxyRepositoryService extends RepositoryService {
         InternalCriteria internalCriteria = InternalCriteria.from(criteria);
         SearchTaskFactory searchTaskFactory = new SearchTaskFactory(internalCriteria, mSearchUseCase, mInfoCacheManager);
         return new SearchTaskProxy(searchTaskFactory);
+    }
+
+    @NotNull
+    @Override
+    public ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        return mRepositoryUseCase.getReportDetails(reportUri);
     }
 }
