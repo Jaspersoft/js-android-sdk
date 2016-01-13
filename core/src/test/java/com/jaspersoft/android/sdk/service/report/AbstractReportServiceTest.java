@@ -51,11 +51,16 @@ public class AbstractReportServiceTest {
 
     private static final String REPORT_URI = "my/uri";
     private static final String EXEC_ID = "exec_id";
+    private static final String OPTION_LABEL = "label";
+    private static final String OPTION_ID = OPTION_LABEL;
+    private static final List<ReportParameter> REPORT_PARAMETERS = Collections.emptyList();
 
     @Mock
     ExportExecutionApi mExportExecutionApi;
     @Mock
     ReportExecutionApi mReportExecutionApi;
+    @Mock
+    ReportOptionsUseCase mReportOptionsUseCase;
     @Mock
     ControlsApi mControlsApi;
     @Mock
@@ -72,6 +77,7 @@ public class AbstractReportServiceTest {
         reportService = new AbstractReportService(
                 mExportExecutionApi,
                 mReportExecutionApi,
+                mReportOptionsUseCase,
                 mControlsApi,
                 mExportFactory,
                 0) {
@@ -108,5 +114,29 @@ public class AbstractReportServiceTest {
         List<ReportParameter> parameters = Collections.emptyList();
         reportService.listControlsValues(REPORT_URI, parameters);
         verify(mControlsApi).requestControlsValues(REPORT_URI, parameters, true);
+    }
+
+    @Test
+    public void should_request_options() throws Exception {
+        reportService.listReportOptions(REPORT_URI);
+        verify(mReportOptionsUseCase).requestReportOptionsList(REPORT_URI);
+    }
+
+    @Test
+    public void should_create_report_option() throws Exception {
+        reportService.createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
+        verify(mReportOptionsUseCase).createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
+    }
+
+    @Test
+    public void should_update_report_option() throws Exception {
+        reportService.updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
+        verify(mReportOptionsUseCase).updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
+    }
+
+    @Test
+    public void should_delete_report_option() throws Exception {
+        reportService.deleteReportOption(REPORT_URI, OPTION_ID);
+        verify(mReportOptionsUseCase).deleteReportOption(REPORT_URI, OPTION_ID);
     }
 }

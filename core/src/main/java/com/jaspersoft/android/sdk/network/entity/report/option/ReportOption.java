@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.network.entity.report.option;
 
 import com.google.gson.annotations.Expose;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -63,17 +62,18 @@ public final class ReportOption {
 
         ReportOption that = (ReportOption) o;
 
-        if (!uri.equals(that.uri)) return false;
-        if (!id.equals(that.id)) return false;
-        return label.equals(that.label);
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (label != null ? !label.equals(that.label) : that.label != null) return false;
+        if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
 
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = uri.hashCode();
-        result = 31 * result + id.hashCode();
-        result = 31 * result + label.hashCode();
+        int result = uri != null ? uri.hashCode() : 0;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (label != null ? label.hashCode() : 0);
         return result;
     }
 

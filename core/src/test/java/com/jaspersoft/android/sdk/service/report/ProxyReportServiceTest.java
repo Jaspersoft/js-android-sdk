@@ -20,6 +20,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ProxyReportServiceTest {
 
     private static final String REPORT_URI = "/my/uri";
+    private static final String OPTION_LABEL = "label";
+    private static final String OPTION_ID = OPTION_LABEL;
+    private static final List<ReportParameter> REPORT_PARAMETERS = Collections.emptyList();
 
     @Mock
     ReportServiceFactory mReportServiceFactory;
@@ -60,6 +63,26 @@ public class ProxyReportServiceTest {
     }
 
     @Test
+    public void should_delegate_list_report_options_call() throws Exception {
+        proxyReportService.listReportOptions(REPORT_URI);
+        verify(mReportServiceFactory).newService();
+        verify(mReportService).listReportOptions(eq(REPORT_URI));
+    }
+
+    @Test
+    public void should_delegate_create_report_option_call() throws Exception {
+        proxyReportService.createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
+        verify(mReportServiceFactory).newService();
+        verify(mReportService).createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
+    }
+   @Test
+    public void should_delegate_update_report_option_call() throws Exception {
+        proxyReportService.updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
+        verify(mReportServiceFactory).newService();
+        verify(mReportService).updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
+    }
+
+    @Test
     public void should_not_list_controls_with_null_uri() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Report uri should not be null");
@@ -78,6 +101,69 @@ public class ProxyReportServiceTest {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Report uri should not be null");
         proxyReportService.listControlsValues(null, Collections.<ReportParameter>emptyList());
+    }
+
+    @Test
+    public void should_not_list_report_options_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        proxyReportService.listReportOptions(null);
+    }
+
+    @Test
+    public void should_not_create_report_option_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        proxyReportService.createReportOption(null, OPTION_LABEL, REPORT_PARAMETERS, true);
+    }
+
+    @Test
+    public void should_not_create_report_option_with_null_option_label() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Option label should not be null");
+        proxyReportService.createReportOption(REPORT_URI, null, REPORT_PARAMETERS, true);
+    }
+
+    @Test
+    public void should_not_create_report_option_with_null_parameters() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Parameters should not be null");
+        proxyReportService.createReportOption(REPORT_URI, OPTION_LABEL, null, true);
+    }
+
+    @Test
+    public void should_not_update_report_option_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        proxyReportService.updateReportOption(null, OPTION_ID, REPORT_PARAMETERS);
+    }
+
+    @Test
+    public void should_not_update_report_option_with_null_option_id() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Option id should not be null");
+        proxyReportService.updateReportOption(REPORT_URI, null, REPORT_PARAMETERS);
+    }
+
+    @Test
+    public void should_not_update_report_option_with_null_parameters() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Parameters should not be null");
+        proxyReportService.updateReportOption(REPORT_URI, OPTION_ID, null);
+    }
+
+    @Test
+    public void should_not_delete_report_option_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        proxyReportService.deleteReportOption(null, OPTION_ID);
+    }
+
+    @Test
+    public void should_not_delete_report_option_with_null_option_id() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Option id should not be null");
+        proxyReportService.deleteReportOption(REPORT_URI, null);
     }
 
     @Test

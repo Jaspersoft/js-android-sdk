@@ -28,10 +28,12 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -40,17 +42,20 @@ import java.util.List;
 abstract class AbstractReportService extends ReportService {
     protected final ExportExecutionApi mExportExecutionApi;
     protected final ReportExecutionApi mReportExecutionApi;
+    protected final ReportOptionsUseCase mReportOptionsUseCase;
     protected final ControlsApi mControlsApi;
     protected final ExportFactory mExportFactory;
     protected final long mDelay;
 
     protected AbstractReportService(ExportExecutionApi exportExecutionApi,
                                     ReportExecutionApi reportExecutionApi,
+                                    ReportOptionsUseCase reportOptionsUseCase,
                                     ControlsApi controlsApi,
                                     ExportFactory exportFactory,
                                     long delay) {
         mExportExecutionApi = exportExecutionApi;
         mReportExecutionApi = reportExecutionApi;
+        mReportOptionsUseCase = reportOptionsUseCase;
         mControlsApi = controlsApi;
         mExportFactory = exportFactory;
         mDelay = delay;
@@ -77,6 +82,31 @@ abstract class AbstractReportService extends ReportService {
     public final List<InputControlState> listControlsValues(@NotNull String reportUri,
                                                             @NotNull List<ReportParameter> parameters) throws ServiceException {
         return mControlsApi.requestControlsValues(reportUri, parameters, true);
+    }
+
+    @NotNull
+    @Override
+    public final Set<ReportOption> listReportOptions(@NotNull String reportUnitUri) throws ServiceException {
+        return mReportOptionsUseCase.requestReportOptionsList(reportUnitUri);
+    }
+
+    @NotNull
+    @Override
+    public final ReportOption createReportOption(@NotNull String reportUri,
+                                           @NotNull String optionLabel,
+                                           @NotNull List<ReportParameter> parameters,
+                                           boolean overwrite) throws ServiceException {
+        return mReportOptionsUseCase.createReportOption(reportUri, optionLabel, parameters, overwrite);
+    }
+
+    @Override
+    public void updateReportOption(@NotNull String reportUri, @NotNull String optionId, @NotNull List<ReportParameter> parameters) throws ServiceException {
+        mReportOptionsUseCase.updateReportOption(reportUri, optionId, parameters);
+    }
+
+    @Override
+    public void deleteReportOption(@NotNull String reportUri, @NotNull String optionId) throws ServiceException {
+        mReportOptionsUseCase.deleteReportOption(reportUri, optionId);
     }
 
     protected abstract ReportExecution buildExecution(String reportUri, String executionId, ReportExecutionOptions criteria);
