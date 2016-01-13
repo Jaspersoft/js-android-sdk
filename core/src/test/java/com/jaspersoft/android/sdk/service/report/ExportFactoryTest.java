@@ -76,7 +76,7 @@ public class ExportFactoryTest {
     public void should_create_export_if_details_fulfilled() throws Exception {
         ReportExport result = exportFactory.create(mReportExecutionDescriptor, EXEC_ID, EXPORT_ID);
         assertThat(result, is(notNullValue()));
-        assertThat(result, is(instanceOf(ReportExportImpl.class)));
+        assertThat(result, is(instanceOf(ReportExport.class)));
 
         verify(mAttachmentsFactory).create(mExportDescriptor, EXEC_ID);
     }

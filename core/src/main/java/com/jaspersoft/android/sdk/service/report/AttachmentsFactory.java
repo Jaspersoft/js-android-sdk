@@ -48,7 +48,7 @@ class AttachmentsFactory {
         List<ReportAttachment> attachments = new ArrayList<>(rawAttachments.size());
         for (AttachmentDescriptor attachment : rawAttachments) {
             String fileName = attachment.getFileName();
-            ReportAttachment reportAttachment = new ReportAttachmentImpl(
+            ReportAttachment reportAttachment = new ReportAttachment(
                     mExportExecutionApi,
                     execId,
                     exportId,

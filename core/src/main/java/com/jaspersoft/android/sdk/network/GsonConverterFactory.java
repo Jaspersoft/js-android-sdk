@@ -29,6 +29,8 @@ import com.google.gson.TypeAdapter;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
+import okio.Buffer;
+import retrofit.Converter;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -36,9 +38,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
-
-import okio.Buffer;
-import retrofit.Converter;
 
 /**
  * Temporary workaround around {@link TypeAdapter} issue which causes null fields to be parsed.

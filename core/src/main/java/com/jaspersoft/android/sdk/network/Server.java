@@ -32,7 +32,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import retrofit.Retrofit;
 
-import java.net.*;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -147,7 +150,7 @@ public final class Server {
             Retrofit anonymousRetrofit = mServer.newRetrofit()
                     .client(anonymousClient)
                     .build();
-            return new AnonymousClientImpl(anonymousRetrofit);
+            return new AnonymousClient(anonymousRetrofit);
         }
     }
 
@@ -180,7 +183,7 @@ public final class Server {
                     .build();
 
             AnonymousClient anonymousClient = mServer.newClient().create();
-            return new AuthorizedClientImpl(authRetrofit, anonymousClient);
+            return new AuthorizedClient(authRetrofit, anonymousClient);
         }
 
         private OkHttpClient configureAuthClient(OkHttpClient client) {

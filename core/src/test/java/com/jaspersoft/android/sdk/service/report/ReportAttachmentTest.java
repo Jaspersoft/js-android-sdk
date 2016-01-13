@@ -62,12 +62,12 @@ public class ReportAttachmentTest {
     @Mock
     ExportExecutionApi mExportExecutionApi;
 
-    private ReportAttachmentImpl objectUnderTest;
+    private ReportAttachment objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportAttachmentImpl(mExportExecutionApi, EXEC_ID, EXPORT_ID, ATTACHMENT_ID);
+        objectUnderTest = new ReportAttachment(mExportExecutionApi, EXEC_ID, EXPORT_ID, ATTACHMENT_ID);
     }
 
     @Test

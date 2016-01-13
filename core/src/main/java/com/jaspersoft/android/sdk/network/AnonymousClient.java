@@ -24,11 +24,33 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import retrofit.Retrofit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AnonymousClient extends Client {
-    ServerRestApi infoApi();
-    AuthenticationRestApi authenticationApi();
+public class AnonymousClient extends Client {
+    private ServerRestApi mServerRestApi;
+    private AuthenticationRestApi mAuthApi;
+
+    AnonymousClient(Retrofit retrofit) {
+        super(retrofit);
+    }
+
+    public ServerRestApi infoApi() {
+        if (mServerRestApi == null) {
+            mServerRestApi = new ServerRestApi(mRetrofit);
+        }
+        return mServerRestApi;
+    }
+
+    public AuthenticationRestApi authenticationApi() {
+        if (mAuthApi == null) {
+            SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mRetrofit);
+            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory);
+            mAuthApi = new AuthenticationRestApi(authStrategy);
+        }
+        return mAuthApi;
+    }
 }

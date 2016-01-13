@@ -37,7 +37,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchTaskV5_5 implements SearchTask {
+final class SearchTaskV5_5 extends SearchTask {
     private static final List<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private static final int MAX_RETRY_COUNT = 5;
 

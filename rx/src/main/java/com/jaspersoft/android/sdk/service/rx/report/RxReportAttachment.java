@@ -25,15 +25,38 @@
 package com.jaspersoft.android.sdk.service.rx.report;
 
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.report.ReportAttachment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface RxReportAttachment {
+public class RxReportAttachment {
+    private final ReportAttachment mSyncDelegate;
+
+    @TestOnly
+    RxReportAttachment(ReportAttachment attachment) {
+        mSyncDelegate = attachment;
+    }
+
     @NotNull
-    Observable<ResourceOutput> download();
+    public Observable<ResourceOutput> download() {
+        return Observable.defer(new Func0<Observable<ResourceOutput>>() {
+            @Override
+            public Observable<ResourceOutput> call() {
+                try {
+                    ResourceOutput content = mSyncDelegate.download();
+                    return Observable.just(content);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 }

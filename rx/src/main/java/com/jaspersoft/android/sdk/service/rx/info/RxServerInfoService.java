@@ -26,23 +26,45 @@ package com.jaspersoft.android.sdk.service.rx.info;
 
 import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.info.ServerInfoService;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class RxServerInfoService {
+public class RxServerInfoService {
+    private final ServerInfoService mSyncDelegate;
+
+    @TestOnly
+    RxServerInfoService(ServerInfoService infoService) {
+        mSyncDelegate = infoService;
+    }
+
     @NotNull
-    public abstract Observable<ServerInfo> requestServerInfo();
+    public Observable<ServerInfo> requestServerInfo() {
+        return Observable.defer(new Func0<Observable<ServerInfo>>() {
+            @Override
+            public Observable<ServerInfo> call() {
+                try {
+                    ServerInfo serverInfo = mSyncDelegate.requestServerInfo();
+                    return Observable.just(serverInfo);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
     public static RxServerInfoService newService(@NotNull AnonymousClient anonymousClient) {
         Preconditions.checkNotNull(anonymousClient, "Client should not be null");
         ServerInfoService service = ServerInfoService.newService(anonymousClient);
-        return new RxServerInfoServiceImpl(service);
+        return new RxServerInfoService(service);
     }
 }

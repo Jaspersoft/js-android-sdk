@@ -30,6 +30,11 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,23 +44,102 @@ import java.util.Map;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ReportExecutionRestApi {
+public class ReportExecutionRestApi {
+
+    private final RestApi mRestApi;
+
+    ReportExecutionRestApi(Retrofit restAdapter) {
+        mRestApi = restAdapter.create(RestApi.class);
+    }
 
     @NotNull
-    ReportExecutionDescriptor runReportExecution(@NotNull ReportExecutionRequestOptions executionOptions) throws HttpException, IOException;
+    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
+        Utils.checkNotNull(executionOptions, "Execution options should not be null");
+
+        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions);
+        return CallWrapper.wrap(call).body();
+    }
 
     @NotNull
-    ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String executionId) throws HttpException, IOException;
+    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId) throws IOException, HttpException {
+        Utils.checkNotNull(executionId, "Execution id should not be null");
+
+        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId);
+        return CallWrapper.wrap(call).body();
+    }
 
     @NotNull
-    ExecutionStatus requestReportExecutionStatus(@NotNull String executionId) throws HttpException, IOException;
+    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId) throws IOException, HttpException {
+        Utils.checkNotNull(executionId, "Execution id should not be null");
 
-    boolean cancelReportExecution(@NotNull String executionId) throws HttpException, IOException;
+        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId);
+        return CallWrapper.wrap(call).body();
+    }
 
-    boolean updateReportExecution(@NotNull String executionId,
-                                  @NotNull List<ReportParameter> params) throws HttpException, IOException;
+    public boolean cancelReportExecution(@Nullable String executionId) throws IOException, HttpException {
+        Utils.checkNotNull(executionId, "Execution id should not be null");
 
-     // TODO: API is broken requires investigation before release
+        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus());
+        Response<Object> response = CallWrapper.wrap(call).response();
+        int status = response.code();
+        return status != 204;
+    }
+
+    public boolean updateReportExecution(@Nullable String executionId,
+                                         @Nullable List<ReportParameter> params) throws IOException, HttpException {
+        Utils.checkNotNull(executionId, "Execution id should not be null");
+        Utils.checkNotNull(params, "Execution params should not be null");
+        Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
+
+        Call<Object> call = mRestApi.updateReportExecution(executionId, params);
+        Response<Object> response = CallWrapper.wrap(call).response();
+        int status = response.code();
+        return status == 204;
+    }
+
     @NotNull
-    ReportExecutionSearchResponse searchReportExecution(Map<String, String> params) throws HttpException, IOException;
+    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params) throws IOException, HttpException {
+        Utils.checkNotNull(params, "Search params should not be null");
+        Utils.checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
+
+        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params);
+        ReportExecutionSearchResponse body = CallWrapper.wrap(call).body();
+        if (body == null) {
+            return ReportExecutionSearchResponse.empty();
+        }
+        return body;
+    }
+
+    interface RestApi {
+        @NotNull
+        @Headers("Accept: application/json")
+        @POST("rest_v2/reportExecutions")
+        Call<ReportExecutionDescriptor> runReportExecution(@NotNull @Body ReportExecutionRequestOptions executionOptions);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reportExecutions/{executionId}")
+        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NotNull @Path(value = "executionId", encoded = true) String executionId);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reportExecutions/{executionId}/status")
+        Call<ExecutionStatus> requestReportExecutionStatus(@NotNull @Path(value = "executionId", encoded = true) String executionId);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @POST("rest_v2/reportExecutions/{executionId}/parameters")
+        Call<Object> updateReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
+                                           @NotNull @Body List<ReportParameter> params);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @PUT("rest_v2/reportExecutions/{executionId}/status")
+        Call<Object> cancelReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
+                                           @NotNull @Body ExecutionStatus statusResponse);
+
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reportExecutions")
+        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params);
+    }
 }

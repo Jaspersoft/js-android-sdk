@@ -53,7 +53,7 @@ class ExportFactory {
             throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
         List<ReportAttachment> attachments = mAttachmentsFactory.create(export, execId);
-        return new ReportExportImpl(mExportExecutionApi, attachments, execId, exportId);
+        return new ReportExport(mExportExecutionApi, attachments, execId, exportId);
     }
 
     @Nullable

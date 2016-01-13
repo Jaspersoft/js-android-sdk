@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.network.entity.server;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

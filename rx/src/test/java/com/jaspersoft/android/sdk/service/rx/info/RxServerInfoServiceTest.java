@@ -58,12 +58,12 @@ public class RxServerInfoServiceTest {
     @Rule
     public ExpectedException expected = none();
 
-    private RxServerInfoServiceImpl rxServerInfoService;
+    private RxServerInfoService rxServerInfoService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxServerInfoService = new RxServerInfoServiceImpl(mSyncDelegate);
+        rxServerInfoService = new RxServerInfoService(mSyncDelegate);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class RxServerInfoServiceTest {
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
         RxServerInfoService service = RxServerInfoService.newService(mAnonymousClient);
-        assertThat(service, is(instanceOf(RxServerInfoServiceImpl.class)));
+        assertThat(service, is(instanceOf(RxServerInfoService.class)));
         assertThat(service, is(notNullValue()));
     }
 

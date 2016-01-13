@@ -45,12 +45,12 @@ public class RxReportAttachmentTest {
     @Mock
     ServiceException mServiceException;
 
-    private RxReportAttachmentImpl rxReportAttachment;
+    private RxReportAttachment rxReportAttachment;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxReportAttachment = new RxReportAttachmentImpl(mSyncDelegate);
+        rxReportAttachment = new RxReportAttachment(mSyncDelegate);
     }
 
     @Test

@@ -68,12 +68,12 @@ public class RxRepositoryServiceTest {
     @Rule
     public ExpectedException expected = none();
 
-    private RxRepositoryServiceImpl rxRepositoryService;
+    private RxRepositoryService rxRepositoryService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxRepositoryService = new RxRepositoryServiceImpl(mSyncDelegate);
+        rxRepositoryService = new RxRepositoryService(mSyncDelegate);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class RxRepositoryServiceTest {
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
         RxRepositoryService service = RxRepositoryService.newService(mAuthorizedClient);
-        assertThat(service, is(instanceOf(RxRepositoryServiceImpl.class)));
+        assertThat(service, is(instanceOf(RxRepositoryService.class)));
         assertThat(service, is(notNullValue()));
     }
 

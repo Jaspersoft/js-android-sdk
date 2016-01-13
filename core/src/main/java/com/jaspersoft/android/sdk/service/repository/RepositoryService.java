@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.*;
 import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
@@ -35,22 +36,65 @@ import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class RepositoryService {
-    @NotNull
-    public abstract SearchTask search(@Nullable SearchCriteria criteria);
+public class RepositoryService {
+    private final SearchUseCase mSearchUseCase;
+    private final RepositoryUseCase mRepositoryUseCase;
+    private final InfoCacheManager mInfoCacheManager;
+
+    @TestOnly
+    RepositoryService(
+            SearchUseCase searchUseCase,
+            RepositoryUseCase repositoryUseCase,
+            InfoCacheManager infoCacheManager) {
+        mSearchUseCase = searchUseCase;
+        mRepositoryUseCase = repositoryUseCase;
+        mInfoCacheManager = infoCacheManager;
+    }
 
     @NotNull
-    public abstract ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException;
+    public SearchTask search(@Nullable SearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = SearchCriteria.none();
+        }
+
+        InternalCriteria internalCriteria = InternalCriteria.from(criteria);
+        SearchTaskFactory searchTaskFactory = new SearchTaskFactory(internalCriteria, mSearchUseCase, mInfoCacheManager);
+        return new SearchTaskProxy(searchTaskFactory);
+    }
 
     @NotNull
-    public abstract List<Resource> fetchRootFolders() throws ServiceException;
+    public ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        return mRepositoryUseCase.getReportDetails(reportUri);
+    }
+
+    @NotNull
+    public List<Resource> fetchRootFolders() throws ServiceException {
+        InternalCriteria rootFolder = new InternalCriteria.Builder()
+                .folderUri("/")
+                .resourceMask(SearchCriteria.FOLDER)
+                .create();
+        List<Resource> folders = new ArrayList<>(10);
+        SearchResult result = mSearchUseCase.performSearch(rootFolder);
+        folders.addAll(result.getResources());
+
+        InternalCriteria publicFolder = rootFolder.newBuilder()
+                .folderUri("/public")
+                .create();
+        SearchResult publicFoldersResult = mSearchUseCase.performSearch(publicFolder);
+        folders.addAll(publicFoldersResult.getResources());
+
+        return folders;
+    }
 
     @NotNull
     public static RepositoryService newService(@NotNull AuthorizedClient client) {
@@ -72,6 +116,6 @@ public abstract class RepositoryService {
         ReportResourceMapper reportResourceMapper = new ReportResourceMapper();
         RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultExMapper,
                 repositoryRestApi, reportResourceMapper, cacheManager);
-        return new ProxyRepositoryService(searchUseCase, repositoryUseCase, cacheManager);
+        return new RepositoryService(searchUseCase, repositoryUseCase, cacheManager);
     }
 }

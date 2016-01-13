@@ -46,12 +46,12 @@ public class RxSearchTaskTest {
     @Mock
     ServiceException mServiceException;
 
-    private RxSearchTaskImpl rxSearchTask;
+    private RxSearchTask rxSearchTask;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxSearchTask = new RxSearchTaskImpl(mSyncDelegate);
+        rxSearchTask = new RxSearchTask(mSyncDelegate);
     }
 
     @Test

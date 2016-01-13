@@ -48,10 +48,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RxReportServiceTest {
@@ -73,7 +73,7 @@ public class RxReportServiceTest {
     @Mock
     AuthorizedClient mAuthorizedClient;
 
-    private RxReportServiceImpl rxReportService;
+    private RxReportService rxReportService;
 
     @Rule
     public ExpectedException expected = none();
@@ -81,7 +81,7 @@ public class RxReportServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxReportService = new RxReportServiceImpl(mSyncDelegate);
+        rxReportService = new RxReportService(mSyncDelegate);
     }
 
     @Test
@@ -294,7 +294,7 @@ public class RxReportServiceTest {
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
         RxReportService service = RxReportService.newService(mAuthorizedClient);
-        assertThat(service, is(instanceOf(RxReportServiceImpl.class)));
+        assertThat(service, is(instanceOf(RxReportService.class)));
         assertThat(service, is(notNullValue()));
     }
 

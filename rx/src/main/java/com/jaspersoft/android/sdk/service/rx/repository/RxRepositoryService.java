@@ -27,12 +27,16 @@ package com.jaspersoft.android.sdk.service.rx.repository;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
+import com.jaspersoft.android.sdk.service.repository.SearchTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 import java.util.List;
 
@@ -41,20 +45,55 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class RxRepositoryService {
-    @NotNull
-    public abstract Observable<RxSearchTask> search(@Nullable SearchCriteria criteria);
+public class RxRepositoryService {
+    private final RepositoryService mSyncDelegate;
+
+    @TestOnly
+    RxRepositoryService(RepositoryService repositoryService) {
+        mSyncDelegate = repositoryService;
+    }
 
     @NotNull
-    public abstract Observable<ReportResource> fetchReportDetails(@NotNull String reportUri);
+    public Observable<RxSearchTask> search(@Nullable SearchCriteria criteria) {
+        SearchTask searchTask = mSyncDelegate.search(criteria);
+        RxSearchTask rxSearchTask = new RxSearchTask(searchTask);
+        return Observable.just(rxSearchTask);
+    }
 
     @NotNull
-    public abstract Observable<List<Resource>> fetchRootFolders();
+    public Observable<ReportResource> fetchReportDetails(@NotNull final String reportUri) {
+        return Observable.defer(new Func0<Observable<ReportResource>>() {
+            @Override
+            public Observable<ReportResource> call() {
+                try {
+                    ReportResource reportResource = mSyncDelegate.fetchReportDetails(reportUri);
+                    return Observable.just(reportResource);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<List<Resource>> fetchRootFolders() {
+        return Observable.defer(new Func0<Observable<List<Resource>>>() {
+            @Override
+            public Observable<List<Resource>> call() {
+                try {
+                    List<Resource> resources = mSyncDelegate.fetchRootFolders();
+                    return Observable.just(resources);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
     public static RxRepositoryService newService(@NotNull AuthorizedClient authorizedClient) {
         Preconditions.checkNotNull(authorizedClient, "Client should not be null");
         RepositoryService repositoryService = RepositoryService.newService(authorizedClient);
-        return new RxRepositoryServiceImpl(repositoryService);
+        return new RxRepositoryService(repositoryService);
     }
 }

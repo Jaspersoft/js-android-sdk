@@ -29,12 +29,16 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 import java.util.List;
 import java.util.Set;
@@ -43,38 +47,148 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class RxReportService {
-    @NotNull
-    public abstract Observable<RxReportExecution> run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions);
+public class RxReportService {
+    private final ReportService mSyncDelegate;
+
+    @TestOnly
+    RxReportService(ReportService reportService) {
+        mSyncDelegate = reportService;
+    }
 
     @NotNull
-    public abstract Observable<List<InputControl>> listControls(@NotNull String reportUri);
+    public Observable<RxReportExecution> run(@NotNull final String reportUri, @Nullable final ReportExecutionOptions execOptions) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<RxReportExecution>>() {
+            @Override
+            public Observable<RxReportExecution> call() {
+                try {
+                    ReportExecution execution = mSyncDelegate.run(reportUri, execOptions);
+                    RxReportExecution rxReportExecution = new RxReportExecution(execution);
+                    return Observable.just(rxReportExecution);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
-    public abstract Observable<List<InputControlState>> listControlsValues(@NotNull String reportUri, @NotNull List<ReportParameter> parameters);
+    public Observable<List<InputControl>> listControls(@NotNull final String reportUri) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControl>>>() {
+            @Override
+            public Observable<List<InputControl>> call() {
+                try {
+                    List<InputControl> inputControls = mSyncDelegate.listControls(reportUri);
+                    return Observable.just(inputControls);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
-    public abstract Observable<Set<ReportOption>> listReportOptions(@NotNull String reportUri);
+    public Observable<List<InputControlState>> listControlsValues(@NotNull final String reportUri,
+                                                                  @NotNull final List<ReportParameter> parameters) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
+            @Override
+            public Observable<List<InputControlState>> call() {
+                try {
+                    List<InputControlState> inputControlStates = mSyncDelegate.listControlsValues(reportUri, parameters);
+                    return Observable.just(inputControlStates);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
-    public abstract Observable<ReportOption> createReportOption(@NotNull String reportUri,
-                                                                @NotNull String optionLabel,
-                                                                @NotNull List<ReportParameter> parameters,
-                                                                boolean overwrite);
+    public Observable<Set<ReportOption>> listReportOptions(@NotNull final String reportUri) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<Set<ReportOption>>>() {
+            @Override
+            public Observable<Set<ReportOption>> call() {
+                try {
+                    Set<ReportOption> reportOptions = mSyncDelegate.listReportOptions(reportUri);
+                    return Observable.just(reportOptions);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
-    public abstract Observable<Void> updateReportOption(@NotNull String reportUri,
-                                                        @NotNull String optionId,
-                                                        @NotNull List<ReportParameter> parameters);
+    public Observable<ReportOption> createReportOption(@NotNull final String reportUri,
+                                                       @NotNull final String optionLabel,
+                                                       @NotNull final List<ReportParameter> parameters,
+                                                       final boolean overwrite) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionLabel, "Option label should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        return Observable.defer(new Func0<Observable<ReportOption>>() {
+            @Override
+            public Observable<ReportOption> call() {
+                try {
+                    ReportOption reportOption = mSyncDelegate.createReportOption(reportUri, optionLabel, parameters, overwrite);
+                    return Observable.just(reportOption);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
-    public abstract Observable<Void> deleteReportOption(@NotNull String reportUri,
-                                                       @NotNull String optionId);
+    public Observable<Void> updateReportOption(@NotNull final String reportUri, @NotNull final String optionId, @NotNull final List<ReportParameter> parameters) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionId, "Option id should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        return Observable.defer(new Func0<Observable<Void>>() {
+            @Override
+            public Observable<Void> call() {
+                try {
+                    mSyncDelegate.updateReportOption(reportUri, optionId, parameters);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+                return Observable.just(null);
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<Void> deleteReportOption(@NotNull final String reportUri, @NotNull final String optionId) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionId, "Option id should not be null");
+
+        return Observable.defer(new Func0<Observable<Void>>() {
+            @Override
+            public Observable<Void> call() {
+                try {
+                    mSyncDelegate.deleteReportOption(reportUri, optionId);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+                return Observable.just(null);
+            }
+        });
+    }
 
     @NotNull
     public static RxReportService newService(@NotNull AuthorizedClient authorizedClient) {
         Preconditions.checkNotNull(authorizedClient, "Client should not be null");
         ReportService reportService = ReportService.newService(authorizedClient);
-        return new RxReportServiceImpl(reportService);
+        return new RxReportService(reportService);
     }
 }

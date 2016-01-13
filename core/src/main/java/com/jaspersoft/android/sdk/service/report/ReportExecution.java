@@ -36,13 +36,13 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ReportExecution {
+public abstract class ReportExecution {
     @NotNull
-    ReportExport export(@NotNull ReportExportOptions options) throws ServiceException;
+    public abstract ReportExport export(@NotNull ReportExportOptions options) throws ServiceException;
 
     @NotNull
-    ReportMetadata waitForReportCompletion() throws ServiceException;
+    public abstract ReportMetadata waitForReportCompletion() throws ServiceException;
 
     @NotNull
-    ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException;
+    public abstract ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException;
 }

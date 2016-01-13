@@ -46,12 +46,12 @@ public class ReportExportTest {
     @Mock
     ExportExecutionApi mExportExecutionApi;
 
-    private ReportExportImpl objectUnderTest;
+    private ReportExport objectUnderTest;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        objectUnderTest = new ReportExportImpl(mExportExecutionApi,
+        objectUnderTest = new ReportExport(mExportExecutionApi,
                 Collections.<ReportAttachment>emptyList(), EXEC_ID, EXPORT_ID);
     }
 

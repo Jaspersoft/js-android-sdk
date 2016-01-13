@@ -77,7 +77,7 @@ public class InputControlRestApiTest {
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new InputControlRestApiImpl(retrofit);
+        restApiUnderTest = new InputControlRestApi(retrofit);
     }
 
     @Test

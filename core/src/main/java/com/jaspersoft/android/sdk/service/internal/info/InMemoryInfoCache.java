@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.service.internal.info;
 
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

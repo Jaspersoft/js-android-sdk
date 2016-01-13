@@ -39,7 +39,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-abstract class AbstractReportExecution implements ReportExecution {
+abstract class AbstractReportExecution extends ReportExecution {
     protected final ReportExecutionApi mReportExecutionApi;
     protected final String mExecId;
     protected final String mReportUri;

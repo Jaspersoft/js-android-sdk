@@ -36,7 +36,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchTaskV5_6Plus implements SearchTask {
+final class SearchTaskV5_6Plus extends SearchTask {
     public static final List<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 

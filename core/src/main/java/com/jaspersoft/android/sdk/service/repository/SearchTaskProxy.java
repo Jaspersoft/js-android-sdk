@@ -34,7 +34,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchTaskProxy implements SearchTask {
+final class SearchTaskProxy extends SearchTask {
     private final SearchTaskFactory mSearchTaskFactory;
 
     private SearchTask mDelegate;
