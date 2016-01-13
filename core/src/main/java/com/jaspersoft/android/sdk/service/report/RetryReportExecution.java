@@ -37,7 +37,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class RetryReportExecution implements ReportExecution {
+final class RetryReportExecution extends ReportExecution {
     private final ReportExecution mDelegate;
 
     RetryReportExecution(ReportExecution delegate) {

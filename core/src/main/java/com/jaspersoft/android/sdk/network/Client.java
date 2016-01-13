@@ -24,10 +24,20 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import retrofit.Retrofit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface Client {
-    String getBaseUrl();
+public abstract class Client {
+    protected final Retrofit mRetrofit;
+
+    protected Client(Retrofit retrofit) {
+        mRetrofit = retrofit;
+    }
+
+    public String getBaseUrl() {
+        return mRetrofit.baseUrl().url().toString();
+    }
 }

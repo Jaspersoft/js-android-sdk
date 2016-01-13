@@ -25,27 +25,91 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AnonymousClient;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
+import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
+import java.io.IOException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AuthorizationServiceTest {
 
     @Mock
     AnonymousClient mAnonymousClient;
+    @Mock
+    AuthenticationRestApi mAuthenticationRestApi;
+    @Mock
+    ServiceExceptionMapper mServiceExceptionMapper;
+    @Mock
+    Credentials mCredentials;
+
+    @Mock
+    HttpException mHttpException;
+    @Mock
+    IOException mIOException;
+    @Mock
+    ServiceException mServiceException;
+
     @Rule
     public ExpectedException expected = none();
+
+    private AuthorizationService authorizationService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+        when(mAnonymousClient.authenticationApi()).thenReturn(mAuthenticationRestApi);
+        authorizationService = new AuthorizationService(mAnonymousClient, mServiceExceptionMapper);
+    }
+
+    @Test
+    public void testAuthorize() throws Exception {
+        authorizationService.authorize(mCredentials);
+        verify(mAnonymousClient).authenticationApi();
+        verify(mAuthenticationRestApi).authenticate(mCredentials);
+        verifyZeroInteractions(mServiceExceptionMapper);
+    }
+
+    @Test
+    public void testShouldMapHttpException() throws Exception {
+        when(mServiceExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
+        doThrow(mHttpException).when(mAuthenticationRestApi).authenticate(any(Credentials.class));
+
+        try {
+            authorizationService.authorize(mCredentials);
+            fail("Should fail with service exception");
+        } catch (ServiceException ex) {
+            assertThat(ex, is(mServiceException));
+        }
+    }
+
+    @Test
+    public void testShouldMapIOException() throws Exception {
+        when(mServiceExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
+        doThrow(mIOException).when(mAuthenticationRestApi).authenticate(any(Credentials.class));
+
+        try {
+            authorizationService.authorize(mCredentials);
+            fail("Should fail with service exception");
+        } catch (ServiceException ex) {
+            assertThat(ex, is(mServiceException));
+        }
     }
 
     @Test
@@ -53,12 +117,5 @@ public class AuthorizationServiceTest {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Client should not be null");
         AuthorizationService.newService(null);
-    }
-
-    @Test
-    public void should_create_new_proxy_service() throws Exception {
-        AuthorizationService service = AuthorizationService.newService(mAnonymousClient);
-        assertThat(service, is(instanceOf(ProxyAuthorizationService.class)));
-        assertThat(service, is(notNullValue()));
     }
 }

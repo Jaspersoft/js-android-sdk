@@ -78,7 +78,7 @@ public class ReportOptionRestApiTest {
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new ReportOptionRestApiImpl(retrofit);
+        restApiUnderTest = new ReportOptionRestApi(retrofit);
     }
 
     @Test

@@ -25,24 +25,49 @@
 package com.jaspersoft.android.sdk.service.auth;
 
 import com.jaspersoft.android.sdk.network.AnonymousClient;
+import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
 import com.jaspersoft.android.sdk.network.Credentials;
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class AuthorizationService {
-    public abstract Credentials authorize(Credentials credentials) throws ServiceException;
+public class AuthorizationService {
+    private final AnonymousClient mClient;
+    private final ServiceExceptionMapper mServiceExceptionMapper;
+
+    @TestOnly
+    AuthorizationService(AnonymousClient client,
+                              ServiceExceptionMapper mapper) {
+        mServiceExceptionMapper = mapper;
+        mClient = client;
+    }
+
+    public Credentials authorize(Credentials credentials) throws ServiceException {
+        try {
+            AuthenticationRestApi authenticationRestApi = mClient.authenticationApi();
+            authenticationRestApi.authenticate(credentials);
+            return credentials;
+        } catch (IOException e) {
+            throw mServiceExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw mServiceExceptionMapper.transform(e);
+        }
+    }
 
     @NotNull
     public static AuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
         ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
-        return new ProxyAuthorizationService(client, serviceExceptionMapper);
+        return new AuthorizationService(client, serviceExceptionMapper);
     }
 }

@@ -25,16 +25,11 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.squareup.okhttp.Authenticator;
-import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.Proxy;
-import java.net.URI;
-import java.util.List;
 
 /**
  * @author Tom Koptel

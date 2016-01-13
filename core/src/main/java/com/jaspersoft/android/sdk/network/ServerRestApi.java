@@ -25,8 +25,11 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
-
 import org.jetbrains.annotations.NotNull;
+import retrofit.Call;
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Headers;
 
 import java.io.IOException;
 
@@ -34,35 +37,105 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ServerRestApi {
+public class ServerRestApi {
+
+    private final RestApi mApi;
+
+    public ServerRestApi(Retrofit retrofit) {
+        mApi = retrofit.create(RestApi.class);
+    }
 
     @NotNull
-    ServerInfoData requestServerInfo() throws HttpException, IOException;
+    public ServerInfoData requestServerInfo() throws IOException, HttpException {
+        Call<ServerInfoData> call = mApi.requestServerInfo();
+        return CallWrapper.wrap(call).body();
+    }
 
     @NotNull
-    String requestBuild() throws HttpException, IOException;
+    public String requestEdition() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestEdition()).body();
+    }
 
     @NotNull
-    String requestDateFormatPattern() throws HttpException, IOException;
+    public String requestVersion() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestVersion()).body();
+    }
 
     @NotNull
-    String requestDateTimeFormatPattern() throws HttpException, IOException;
+    public String requestBuild() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestBuild()).body();
+    }
 
     @NotNull
-    String requestEdition() throws HttpException, IOException;
+    public String requestFeatures() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestFeatures()).body();
+    }
 
     @NotNull
-    String requestEditionName() throws HttpException, IOException;
+    public String requestEditionName() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestEditionName()).body();
+    }
 
     @NotNull
-    String requestVersion() throws HttpException, IOException;
+    public String requestLicenseType() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestLicenseType()).body();
+    }
 
     @NotNull
-    String requestFeatures() throws HttpException, IOException;
+    public String requestExpiration() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestExpiration()).body();
+    }
 
     @NotNull
-    String requestLicenseType() throws HttpException, IOException;
+    public String requestDateFormatPattern() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
+    }
 
     @NotNull
-    String requestExpiration() throws HttpException, IOException;
+    public String requestDateTimeFormatPattern() throws IOException, HttpException {
+        return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
+    }
+
+    private interface RestApi {
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET(value = "rest_v2/serverInfo")
+        Call<ServerInfoData> requestServerInfo();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/edition")
+        Call<String> requestEdition();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/version")
+        Call<String> requestVersion();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/build")
+        Call<String> requestBuild();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/features")
+        Call<String> requestFeatures();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/editionName")
+        Call<String> requestEditionName();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/licenseType")
+        Call<String> requestLicenseType();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/expiration")
+        Call<String> requestExpiration();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/dateFormatPattern")
+        Call<String> requestDateFormatPattern();
+
+        @Headers("Accept: text/plain")
+        @GET(value = "rest_v2/serverInfo/datetimeFormatPattern")
+        Call<String> requestDateTimeFormatPattern();
+    }
 }

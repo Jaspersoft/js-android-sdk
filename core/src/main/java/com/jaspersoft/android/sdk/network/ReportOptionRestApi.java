@@ -24,33 +24,118 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
+import com.squareup.okhttp.Response;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface ReportOptionRestApi {
+public class ReportOptionRestApi {
+    private final RestApi mRestApi;
+
+    ReportOptionRestApi(Retrofit retrofit) {
+        mRestApi = retrofit.create(RestApi.class);
+    }
 
     @NotNull
-    Set<ReportOption> requestReportOptionsList(@NotNull String reportUnitUri) throws HttpException, IOException;
+    public Set<ReportOption> requestReportOptionsList(
+                                                      @Nullable String reportUnitUri) throws IOException, HttpException {
+        Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
+
+        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri);
+        try {
+            ReportOptionSet options = CallWrapper.wrap(call).body();
+            return options.get();
+        } catch (JsonSyntaxException ex) {
+            /**
+             * This possible when there is no report options
+             * API responds with plain/text message: 'No options found for {URI}'
+             * As soon as there 2 options to reserve this we decide to swallow exception and return empty object
+             */
+            return Collections.emptySet();
+        }
+    }
 
     @NotNull
-    ReportOption createReportOption(@NotNull String reportUnitUri,
-                                    @NotNull String optionLabel,
-                                    @NotNull List<ReportParameter> parameters,
-                                    boolean overwrite) throws HttpException, IOException;
+    public ReportOption createReportOption(
+                                           @Nullable String reportUnitUri,
+                                           @Nullable String optionLabel,
+                                           @Nullable List<ReportParameter> parameters,
+                                           boolean overwrite) throws IOException, HttpException {
+        Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
+        Utils.checkNotNull(optionLabel, "Option label should not be null");
+        Utils.checkNotNull(parameters, "Parameters values should not be null");
 
-    void updateReportOption(@NotNull String reportUnitUri,
-                            @NotNull String optionId,
-                            @NotNull List<ReportParameter> parameters) throws HttpException, IOException;
+        Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
+        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite);
+        return CallWrapper.wrap(call).body();
+    }
 
-    void deleteReportOption(@NotNull String reportUnitUri,
-                            @NotNull String optionId) throws HttpException, IOException;
+    public void updateReportOption(@Nullable String reportUnitUri,
+                                   @Nullable String optionId,
+                                   @Nullable List<ReportParameter> parameters) throws IOException, HttpException {
+        Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
+        Utils.checkNotNull(optionId, "Option id should not be null");
+        Utils.checkNotNull(parameters, "Parameters values should not be null");
+
+        Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
+        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues);
+        CallWrapper.wrap(call).body();
+    }
+
+    public void deleteReportOption(@Nullable String reportUnitUri,
+                                   @Nullable String optionId) throws IOException, HttpException {
+        Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
+        Utils.checkNotNull(optionId, "Option id should not be null");
+
+        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId);
+        CallWrapper.wrap(call).body();
+    }
+
+    private interface RestApi {
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reports{reportUnitUri}/options")
+        Call<ReportOptionSet> requestReportOptionsList(
+                @NotNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @POST("rest_v2/reports{reportUnitURI}/options")
+        Call<ReportOption> createReportOption(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Query("label") String optionLabel,
+                @NotNull @Body Map<String, Set<String>> controlsValues,
+                @Query("overwrite") boolean overwrite);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @PUT("rest_v2/reports{reportUnitURI}/options/{optionId}")
+        Call<com.squareup.okhttp.Response> updateReportOption(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Path(value = "optionId", encoded = true) String optionId,
+                @NotNull @Body Map<String, Set<String>> controlsValues);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
+        Call<com.squareup.okhttp.Response> deleteReportOption(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
+                @NotNull @Path(value = "optionId", encoded = true) String optionI);
+    }
 }

@@ -74,7 +74,7 @@ public class RepositoryRestApiTest {
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
         Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new RepositoryRestApiImpl(retrofit);
+        restApiUnderTest = new RepositoryRestApi(retrofit);
     }
 
     @Test

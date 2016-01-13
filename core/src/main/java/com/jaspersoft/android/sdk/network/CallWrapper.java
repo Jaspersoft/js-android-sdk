@@ -24,10 +24,10 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import java.io.IOException;
-
 import retrofit.Call;
 import retrofit.Response;
+
+import java.io.IOException;
 
 /**
  * @author Tom Koptel

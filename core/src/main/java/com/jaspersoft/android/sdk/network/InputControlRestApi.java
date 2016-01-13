@@ -24,19 +24,33 @@
 
 package com.jaspersoft.android.sdk.network;
 
+
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
+import com.jaspersoft.android.sdk.network.entity.control.InputControlStateCollection;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import retrofit.Call;
+import retrofit.Retrofit;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface InputControlRestApi {
+public class InputControlRestApi {
+    private final RestApi mRestApi;
+
+    InputControlRestApi(Retrofit restAdapter) {
+        mRestApi = restAdapter.create(RestApi.class);
+    }
 
     /**
      * Returns input controls for associated response. Options can be excluded by additional argument.
@@ -48,12 +62,25 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControl}
      */
     @NotNull
-    List<InputControl> requestInputControls(@NotNull String reportUri,
-                                            boolean excludeState) throws HttpException, IOException;
+    public List<InputControl> requestInputControls(@Nullable String reportUri,
+                                                         boolean excludeState) throws IOException, HttpException {
+        Utils.checkNotNull(reportUri, "Report URI should not be null");
+
+        String state = (excludeState ? "state" : null);
+        Call<InputControlCollection> call = mRestApi.requestInputControls(reportUri, state);
+        InputControlCollection response = CallWrapper.wrap(call).body();
+        return response.get();
+    }
 
     @NotNull
-    List<InputControlState> requestInputControlsInitialStates(@NotNull String reportUri,
-                                                              boolean freshData) throws HttpException, IOException;
+    public List<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
+                                                                           boolean freshData) throws IOException, HttpException {
+        Utils.checkNotNull(reportUri, "Report URI should not be null");
+
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsInitialValues(reportUri, freshData);
+        InputControlStateCollection response = CallWrapper.wrap(call).body();
+        return response.get();
+    }
 
     /**
      * Provides values for specified controls. This API helpful to
@@ -65,7 +92,42 @@ public interface InputControlRestApi {
      * @return unmodifiable list of {@link InputControlState}
      */
     @NotNull
-    List<InputControlState> requestInputControlsStates(@NotNull String reportUri,
-                                                       @NotNull List<ReportParameter> parameters,
-                                                       boolean freshData) throws HttpException, IOException;
+    public List<InputControlState> requestInputControlsStates(@NotNull String reportUri,
+                                                              @NotNull List<ReportParameter> parameters,
+                                                              boolean freshData) throws HttpException, IOException {
+        Utils.checkNotNull(reportUri, "Report URI should not be null");
+        Utils.checkNotNull(parameters, "Parameters should not be null");
+
+        Map<String, Set<String>> params = ReportParamsMapper.INSTANCE.toMap(parameters);
+        String ids = Utils.joinString(";", params.keySet());
+        Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri,
+                ids, params, freshData);
+        InputControlStateCollection response = CallWrapper.wrap(call).body();
+        return response.get();
+    }
+
+    private interface RestApi {
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reports{reportUnitURI}/inputControls")
+        Call<InputControlCollection> requestInputControls(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
+                @Query("exclude") String state);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @GET("rest_v2/reports{reportUnitURI}/inputControls/values")
+        Call<InputControlStateCollection> requestInputControlsInitialValues(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
+                @Query("freshData") boolean freshData);
+
+        @NotNull
+        @Headers("Accept: application/json")
+        @POST("rest_v2/reports{reportUnitURI}/inputControls/{controlsId}/values")
+        Call<InputControlStateCollection> requestInputControlsValues(
+                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUri,
+                @NotNull @Path(value = "controlsId", encoded = true) String ids,
+                @NotNull @Body Map<String, Set<String>> controlsValues,
+                @Query("freshData") boolean freshData);
+    }
 }

@@ -66,12 +66,12 @@ public class ServerInfoServiceTest {
     @Rule
     public ExpectedException expected = none();
 
-    private ServerInfoServiceImpl serviceUnderTest;
+    private ServerInfoService serviceUnderTest;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        serviceUnderTest = new ServerInfoServiceImpl(mockApi, mockTransformer, mockServiceExceptionMapper);
+        serviceUnderTest = new ServerInfoService(mockApi, mockTransformer, mockServiceExceptionMapper);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ServerInfoServiceTest {
     @Test
     public void should_create_proxy_instance() throws Exception {
         ServerInfoService service = ServerInfoService.newService(mClient);
-        assertThat("Should be instance of proxy service", service, is(instanceOf(ServerInfoServiceImpl.class)));
+        assertThat("Should be instance of proxy service", service, is(instanceOf(ServerInfoService.class)));
         assertThat(service, is(notNullValue()));
     }
 

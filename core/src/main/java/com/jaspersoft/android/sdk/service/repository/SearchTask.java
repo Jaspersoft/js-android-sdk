@@ -34,8 +34,9 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public interface SearchTask {
+public abstract class SearchTask {
     @NotNull
-    List<Resource> nextLookup() throws ServiceException;
-    boolean hasNext();
+    public abstract List<Resource> nextLookup() throws ServiceException;
+
+    public abstract boolean hasNext();
 }

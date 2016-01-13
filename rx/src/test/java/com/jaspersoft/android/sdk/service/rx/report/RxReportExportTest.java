@@ -53,12 +53,12 @@ public class RxReportExportTest {
     ReportExportOutput mReportExportOutput;
 
 
-    private RxReportExportImpl rxReportExport;
+    private RxReportExport rxReportExport;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxReportExport = new RxReportExportImpl(mSyncDelegate);
+        rxReportExport = new RxReportExport(mSyncDelegate);
     }
 
     @Test

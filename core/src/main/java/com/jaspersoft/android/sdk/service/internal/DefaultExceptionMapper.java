@@ -26,9 +26,8 @@ package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
-import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

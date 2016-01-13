@@ -27,23 +27,45 @@ package com.jaspersoft.android.sdk.service.rx.auth;
 import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.service.auth.AuthorizationService;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
+import rx.functions.Func0;
 
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class RxAuthorizationService {
+public class RxAuthorizationService {
+    private final AuthorizationService mSyncDelegate;
+
+    @TestOnly
+    RxAuthorizationService(AuthorizationService service) {
+        mSyncDelegate = service;
+    }
+
     @NotNull
-    public abstract Observable<Credentials> authorize(@NotNull Credentials credentials);
+    public Observable<Credentials> authorize(@NotNull final Credentials credentials) {
+        return Observable.defer(new Func0<Observable<Credentials>>() {
+            @Override
+            public Observable<Credentials> call() {
+                try {
+                    mSyncDelegate.authorize(credentials);
+                    return Observable.just(credentials);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
 
     @NotNull
     public static RxAuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
         AuthorizationService service = AuthorizationService.newService(client);
-        return new RxAuthorizationServiceImpl(service);
+        return new RxAuthorizationService(service);
     }
 }

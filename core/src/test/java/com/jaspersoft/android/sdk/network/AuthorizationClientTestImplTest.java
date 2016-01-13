@@ -38,12 +38,12 @@ public class AuthorizationClientTestImplTest {
     @Mock
     Credentials mCredentials;
 
-    private AuthenticationRestApiImpl authorization;
+    private AuthenticationRestApi authorization;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        authorization = new AuthenticationRestApiImpl(mAuthStrategy);
+        authorization = new AuthenticationRestApi(mAuthStrategy);
     }
 
     @Test

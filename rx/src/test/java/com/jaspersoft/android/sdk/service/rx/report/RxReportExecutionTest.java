@@ -67,12 +67,12 @@ public class RxReportExecutionTest {
 
     private final ReportMetadata fakeReportData = new ReportMetadata("/uri", 100);
 
-    private RxReportExecutionImpl rxReportExecution;
+    private RxReportExecution rxReportExecution;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxReportExecution = new RxReportExecutionImpl(mSyncDelegate);
+        rxReportExecution = new RxReportExecution(mSyncDelegate);
     }
 
     @Test

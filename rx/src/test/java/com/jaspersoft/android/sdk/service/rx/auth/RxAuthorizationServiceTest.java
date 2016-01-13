@@ -59,12 +59,12 @@ public class RxAuthorizationServiceTest {
     @Rule
     public ExpectedException expected = none();
 
-    private RxAuthorizationServiceImpl rxAuthorizationService;
+    private RxAuthorizationService rxAuthorizationService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxAuthorizationService = new RxAuthorizationServiceImpl(mSyncDelegate);
+        rxAuthorizationService = new RxAuthorizationService(mSyncDelegate);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class RxAuthorizationServiceTest {
     @Test
     public void should_provide_impl_with_factory_method() throws Exception {
         RxAuthorizationService service = RxAuthorizationService.newService(mAnonymousClient);
-        assertThat(service, is(instanceOf(RxAuthorizationServiceImpl.class)));
+        assertThat(service, is(instanceOf(RxAuthorizationService.class)));
         assertThat(service, is(notNullValue()));
     }
 

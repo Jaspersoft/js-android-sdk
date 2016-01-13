@@ -24,19 +24,59 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import retrofit.Retrofit;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public interface AuthorizedClient extends AnonymousClient {
+public class AuthorizedClient extends AnonymousClient {
 
-    ReportExecutionRestApi reportExecutionApi();
+    private final AnonymousClient mAnonymousClient;
 
-    ReportExportRestApi reportExportApi();
+    private ReportExecutionRestApi mReportExecutionRestApi;
+    private ReportExportRestApi mReportExportRestApi;
+    private ReportOptionRestApi mReportOptionRestApi;
+    private InputControlRestApi mInputControlRestApi;
+    private RepositoryRestApi mRepositoryRestApi;
 
-    ReportOptionRestApi reportOptionsApi();
+    AuthorizedClient(Retrofit retrofit, AnonymousClient anonymousClient) {
+        super(retrofit);
+        mAnonymousClient = anonymousClient;
+    }
 
-    InputControlRestApi inputControlApi();
+    public ReportExecutionRestApi reportExecutionApi() {
+        if (mReportExecutionRestApi == null) {
+            mReportExecutionRestApi = new ReportExecutionRestApi(mRetrofit);
+        }
+        return mReportExecutionRestApi;
+    }
 
-    RepositoryRestApi repositoryApi();
+    public ReportExportRestApi reportExportApi() {
+        if (mReportExportRestApi == null) {
+            mReportExportRestApi = new ReportExportRestApi(mRetrofit);
+        }
+        return mReportExportRestApi;
+    }
+
+    public ReportOptionRestApi reportOptionsApi() {
+        if (mReportOptionRestApi == null) {
+            mReportOptionRestApi = new ReportOptionRestApi(mRetrofit);
+        }
+        return mReportOptionRestApi;
+    }
+
+    public InputControlRestApi inputControlApi() {
+        if (mInputControlRestApi == null) {
+            mInputControlRestApi = new InputControlRestApi(mRetrofit);
+        }
+        return mInputControlRestApi;
+    }
+
+    public RepositoryRestApi repositoryApi() {
+        if (mRepositoryRestApi == null) {
+            mRepositoryRestApi = new RepositoryRestApi(mRetrofit);
+        }
+        return mRepositoryRestApi;
+    }
 }
