@@ -39,6 +39,7 @@ public class AuthorizedClient extends AnonymousClient {
     private ReportOptionRestApi mReportOptionRestApi;
     private InputControlRestApi mInputControlRestApi;
     private RepositoryRestApi mRepositoryRestApi;
+    private ReportScheduleRestApi mReportScheduleRestApi;
 
     AuthorizedClient(Retrofit retrofit, AnonymousClient anonymousClient) {
         super(retrofit);
@@ -78,5 +79,12 @@ public class AuthorizedClient extends AnonymousClient {
             mRepositoryRestApi = new RepositoryRestApi(mRetrofit);
         }
         return mRepositoryRestApi;
+    }
+
+    public ReportScheduleRestApi reportScheduleApi() {
+        if (mReportScheduleRestApi == null) {
+            mReportScheduleRestApi = new ReportScheduleRestApi(mRetrofit);
+        }
+        return mReportScheduleRestApi;
     }
 }

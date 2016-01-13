@@ -1,0 +1,56 @@
+package com.jaspersoft.android.sdk.service.report.schedule;
+
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
+
+/**
+ * @author Tom Koptel
+ * @since 2.0
+ */
+public class ReportScheduleService {
+
+    private final ReportScheduleUseCase mUseCase;
+
+    @TestOnly
+    ReportScheduleService(ReportScheduleUseCase useCase) {
+        mUseCase = useCase;
+    }
+
+    @NotNull
+    public JobSearchTask search(@Nullable JobSearchCriteria criteria) {
+        if (criteria == null) {
+            criteria = JobSearchCriteria.empty();
+        }
+        return new BaseJobSearchTask(mUseCase, criteria);
+    }
+
+    @NotNull
+    public JobData createJob(@NotNull JobForm form) throws ServiceException {
+        Preconditions.checkNotNull(form, "Job form should not be null");
+        return mUseCase.createJob(form);
+    }
+
+    @NotNull
+    public static ReportScheduleService newService(@NotNull AuthorizedClient client) {
+        Preconditions.checkNotNull(client, "Client should not be null");
+
+        JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
+        JobDataMapper jobDataMapper = new JobDataMapper();
+        ServiceExceptionMapper exceptionMapper = new DefaultExceptionMapper();
+        ReportScheduleUseCase reportScheduleUseCase = new ReportScheduleUseCase(
+                exceptionMapper,
+                client.reportScheduleApi(),
+                criteriaMapper,
+                jobDataMapper
+        );
+        return new ReportScheduleService(reportScheduleUseCase);
+    }
+}

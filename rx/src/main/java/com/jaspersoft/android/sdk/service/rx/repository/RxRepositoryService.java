@@ -54,10 +54,9 @@ public class RxRepositoryService {
     }
 
     @NotNull
-    public Observable<RxSearchTask> search(@Nullable SearchCriteria criteria) {
+    public RxSearchTask search(@Nullable SearchCriteria criteria) {
         SearchTask searchTask = mSyncDelegate.search(criteria);
-        RxSearchTask rxSearchTask = new RxSearchTask(searchTask);
-        return Observable.just(rxSearchTask);
+        return new RxSearchTask(searchTask);
     }
 
     @NotNull

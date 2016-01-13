@@ -82,11 +82,7 @@ public class RxRepositoryServiceTest {
         SearchCriteria criteria = SearchCriteria.none();
 
         TestSubscriber<RxSearchTask> test = new TestSubscriber<>();
-        rxRepositoryService.search(criteria).subscribe(test);
-
-        test.assertNoErrors();
-        test.assertCompleted();
-        test.assertValueCount(1);
+        rxRepositoryService.search(criteria);
 
         verify(mSyncDelegate).search(criteria);
     }
@@ -148,10 +144,7 @@ public class RxRepositoryServiceTest {
 
     @Test
     public void should_accept_null_criteria() throws Exception {
-        TestSubscriber<RxSearchTask> test = new TestSubscriber<>();
-        rxRepositoryService.search(null).subscribe(test);
-        test.assertNoErrors();
-        test.assertCompleted();
+        rxRepositoryService.search(null);
     }
 
     @Test
