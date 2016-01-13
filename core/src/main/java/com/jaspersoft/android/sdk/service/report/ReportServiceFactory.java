@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
 import com.jaspersoft.android.sdk.network.ReportExecutionRestApi;
 import com.jaspersoft.android.sdk.network.ReportExportRestApi;
+import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -43,6 +44,7 @@ class ReportServiceFactory {
     private final ReportExecutionRestApi mReportExecutionRestApi;
     private final ReportExportRestApi mReportExportRestApi;
     private final InputControlRestApi mInputControlRestApi;
+    private final ReportOptionRestApi mReportOptionRestApi;
     private final ServiceExceptionMapper mExceptionMapper;
     private final String mBaseUrl;
     private final long mDelay;
@@ -51,12 +53,15 @@ class ReportServiceFactory {
     ReportServiceFactory(InfoCacheManager cacheManager,
                          ReportExecutionRestApi reportExecutionRestApi,
                          ReportExportRestApi reportExportRestApi,
-                         InputControlRestApi inputControlRestApi, ServiceExceptionMapper exceptionMapper,
+                         InputControlRestApi inputControlRestApi,
+                         ReportOptionRestApi reportOptionRestApi,
+                         ServiceExceptionMapper exceptionMapper,
                          String baseUrl, long delay) {
         mCacheManager = cacheManager;
         mReportExecutionRestApi = reportExecutionRestApi;
         mReportExportRestApi = reportExportRestApi;
         mInputControlRestApi = inputControlRestApi;
+        mReportOptionRestApi = reportOptionRestApi;
         mExceptionMapper = exceptionMapper;
         mBaseUrl = baseUrl;
         mDelay = delay;
@@ -76,10 +81,13 @@ class ReportServiceFactory {
         ExportFactory exportFactory = new ExportFactory(exportExecutionApi, attachmentsFactory);
 
         ControlsApi controlsApi = new ControlsApi(mExceptionMapper, mInputControlRestApi);
+        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(mExceptionMapper, mReportOptionRestApi);
+
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
             return new ReportService5_5(
                     exportExecutionApi,
                     reportExecutionApi,
+                    reportOptionsUseCase,
                     controlsApi,
                     exportFactory,
                     mDelay);
@@ -87,6 +95,7 @@ class ReportServiceFactory {
             return new ReportService5_6Plus(
                     exportExecutionApi,
                     reportExecutionApi,
+                    reportOptionsUseCase,
                     controlsApi,
                     exportFactory,
                     mDelay);

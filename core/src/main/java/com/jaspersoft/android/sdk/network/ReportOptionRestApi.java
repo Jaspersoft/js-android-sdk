@@ -24,12 +24,12 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,12 +44,12 @@ public interface ReportOptionRestApi {
     @NotNull
     ReportOption createReportOption(@NotNull String reportUnitUri,
                                     @NotNull String optionLabel,
-                                    @NotNull Map<String, Set<String>> controlsValues,
+                                    @NotNull List<ReportParameter> parameters,
                                     boolean overwrite) throws HttpException, IOException;
 
     void updateReportOption(@NotNull String reportUnitUri,
                             @NotNull String optionId,
-                            @NotNull Map<String, Set<String>> controlsValues) throws HttpException, IOException;
+                            @NotNull List<ReportParameter> parameters) throws HttpException, IOException;
 
     void deleteReportOption(@NotNull String reportUnitUri,
                             @NotNull String optionId) throws HttpException, IOException;

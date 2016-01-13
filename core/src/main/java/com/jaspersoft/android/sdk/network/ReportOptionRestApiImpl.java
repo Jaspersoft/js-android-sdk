@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.JsonSyntaxException;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 import com.squareup.okhttp.Response;
@@ -36,6 +37,7 @@ import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,32 +77,32 @@ final class ReportOptionRestApiImpl implements ReportOptionRestApi {
     public ReportOption createReportOption(
                                            @Nullable String reportUnitUri,
                                            @Nullable String optionLabel,
-                                           @Nullable Map<String, Set<String>> controlsValues,
+                                           @Nullable List<ReportParameter> parameters,
                                            boolean overwrite) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionLabel, "Option label should not be null");
-        Utils.checkNotNull(controlsValues, "Controls values should not be null");
+        Utils.checkNotNull(parameters, "Parameters values should not be null");
 
+        Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
         Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite);
         return CallWrapper.wrap(call).body();
     }
 
     @Override
-    public void updateReportOption(
-                                   @Nullable String reportUnitUri,
+    public void updateReportOption(@Nullable String reportUnitUri,
                                    @Nullable String optionId,
-                                   @Nullable Map<String, Set<String>> controlsValues) throws IOException, HttpException {
+                                   @Nullable List<ReportParameter> parameters) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
-        Utils.checkNotNull(controlsValues, "Controls values should not be null");
+        Utils.checkNotNull(parameters, "Parameters values should not be null");
 
+        Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
         Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues);
         CallWrapper.wrap(call).body();
     }
 
     @Override
-    public void deleteReportOption(
-                                   @Nullable String reportUnitUri,
+    public void deleteReportOption(@Nullable String reportUnitUri,
                                    @Nullable String optionId) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");

@@ -25,14 +25,14 @@
 package com.jaspersoft.android.sdk.network.entity.report.option;
 
 import com.google.gson.annotations.Expose;
-
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
-
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
 import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,4 +55,10 @@ public class ReportOptionTest {
         assertThat(field, hasAnnotation(Expose.class));
     }
 
+    @Test
+    public void testEquals() throws Exception {
+        EqualsVerifier.forClass(ReportOption.class)
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
 }

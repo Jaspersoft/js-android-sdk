@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.rx.report;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
@@ -39,6 +40,7 @@ import rx.Observable;
 import rx.functions.Func0;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -105,6 +107,86 @@ final class RxReportServiceImpl extends RxReportService {
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public Observable<Set<ReportOption>> listReportOptions(@NotNull final String reportUri) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<Set<ReportOption>>>() {
+            @Override
+            public Observable<Set<ReportOption>> call() {
+                try {
+                    Set<ReportOption> reportOptions = mSyncDelegate.listReportOptions(reportUri);
+                    return Observable.just(reportOptions);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public Observable<ReportOption> createReportOption(@NotNull final String reportUri,
+                                                       @NotNull final String optionLabel,
+                                                       @NotNull final List<ReportParameter> parameters,
+                                                       final boolean overwrite) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionLabel, "Option label should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        return Observable.defer(new Func0<Observable<ReportOption>>() {
+            @Override
+            public Observable<ReportOption> call() {
+                try {
+                    ReportOption reportOption = mSyncDelegate.createReportOption(reportUri, optionLabel, parameters, overwrite);
+                    return Observable.just(reportOption);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public Observable<Void> updateReportOption(@NotNull final String reportUri, @NotNull final String optionId, @NotNull final List<ReportParameter> parameters) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionId, "Option id should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        return Observable.defer(new Func0<Observable<Void>>() {
+            @Override
+            public Observable<Void> call() {
+                try {
+                    mSyncDelegate.updateReportOption(reportUri, optionId, parameters);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+                return Observable.just(null);
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public Observable<Void> deleteReportOption(@NotNull final String reportUri, @NotNull final String optionId) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(optionId, "Option id should not be null");
+
+        return Observable.defer(new Func0<Observable<Void>>() {
+            @Override
+            public Observable<Void> call() {
+                try {
+                    mSyncDelegate.deleteReportOption(reportUri, optionId);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+                return Observable.just(null);
             }
         });
     }

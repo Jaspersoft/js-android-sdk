@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
@@ -41,13 +42,14 @@ import rx.observers.TestSubscriber;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -56,6 +58,8 @@ public class RxReportServiceTest {
     private static final String REPORT_URI = "my/uri";
     private static final ReportExecutionOptions OPTIONS = ReportExecutionOptions.builder().build();
     private static final List<ReportParameter> PARAMS = Collections.emptyList();
+    private static final String OPTION_LABEL = "label";
+    private static final String OPTION_ID = OPTION_LABEL;
 
     @Mock
     ReportService mSyncDelegate;
@@ -63,6 +67,8 @@ public class RxReportServiceTest {
     ReportExecution mReportExecution;
     @Mock
     ServiceException mServiceException;
+
+    private ReportOption fakeReportOption = new ReportOption();
 
     @Mock
     AuthorizedClient mAuthorizedClient;
@@ -175,6 +181,114 @@ public class RxReportServiceTest {
         test.assertValueCount(1);
 
         verify(mSyncDelegate).listControlsValues(REPORT_URI, PARAMS);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_report_options() throws Exception {
+        when(mSyncDelegate.listReportOptions(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<Set<ReportOption>> test = TestSubscriber.create();
+        rxReportService.listReportOptions(REPORT_URI).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).listReportOptions(REPORT_URI);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_list_report_options() throws Exception {
+        when(mSyncDelegate.listReportOptions(anyString()))
+                .thenReturn(Collections.<ReportOption>emptySet());
+
+        TestSubscriber<Set<ReportOption>> test = TestSubscriber.create();
+        rxReportService.listReportOptions(REPORT_URI).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).listReportOptions(REPORT_URI);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_create_report_option() throws Exception {
+        when(mSyncDelegate.createReportOption(anyString(), anyString(), anyListOf(ReportParameter.class), anyBoolean()))
+                .thenThrow(mServiceException);
+
+        TestSubscriber<ReportOption> test = TestSubscriber.create();
+        rxReportService.createReportOption(REPORT_URI, OPTION_LABEL, PARAMS, true).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).createReportOption(REPORT_URI, OPTION_LABEL, PARAMS, true);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_create_report_option() throws Exception {
+        when(mSyncDelegate.createReportOption(anyString(), anyString(), anyListOf(ReportParameter.class), anyBoolean()))
+                .thenReturn(fakeReportOption);
+
+        TestSubscriber<ReportOption> test = TestSubscriber.create();
+        rxReportService.createReportOption(REPORT_URI, OPTION_LABEL, PARAMS, true).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).createReportOption(REPORT_URI, OPTION_LABEL, PARAMS, true);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_update_report_option() throws Exception {
+        doThrow(mServiceException).when(mSyncDelegate).updateReportOption(anyString(),
+                anyString(), anyListOf(ReportParameter.class));
+
+        TestSubscriber<Void> test = TestSubscriber.create();
+        rxReportService.updateReportOption(REPORT_URI, OPTION_ID, PARAMS).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).updateReportOption(REPORT_URI, OPTION_ID, PARAMS);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_update_report_option() throws Exception {
+        TestSubscriber<Void> test = TestSubscriber.create();
+        rxReportService.updateReportOption(REPORT_URI, OPTION_ID, PARAMS).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).updateReportOption(REPORT_URI, OPTION_ID, PARAMS);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_delete_report_option() throws Exception {
+        doThrow(mServiceException).when(mSyncDelegate).deleteReportOption(anyString(), anyString());
+
+        TestSubscriber<Void> test = TestSubscriber.create();
+        rxReportService.deleteReportOption(REPORT_URI, OPTION_ID).subscribe(test);
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).deleteReportOption(REPORT_URI, OPTION_ID);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_delete_report_option() throws Exception {
+        TestSubscriber<Void> test = TestSubscriber.create();
+        rxReportService.deleteReportOption(REPORT_URI, OPTION_ID).subscribe(test);
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).deleteReportOption(REPORT_URI, OPTION_ID);
     }
 
     @Test

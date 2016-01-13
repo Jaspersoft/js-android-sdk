@@ -81,13 +81,7 @@ final class InputControlRestApiImpl implements InputControlRestApi {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
         Utils.checkNotNull(parameters, "Parameters should not be null");
 
-        int capacity = parameters.size();
-        Map<String, Set<String>> params = new HashMap<>(capacity);
-        for (int i = 0; i < capacity; i++) {
-            ReportParameter param = parameters.get(i);
-            params.put(param.getName(), param.getValue());
-        }
-
+        Map<String, Set<String>> params = ReportParamsMapper.INSTANCE.toMap(parameters);
         String ids = Utils.joinString(";", params.keySet());
         Call<InputControlStateCollection> call = mRestApi.requestInputControlsValues(reportUri,
                 ids, params, freshData);

@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,7 +49,8 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class ReportService {
     @NotNull
-    public abstract ReportExecution run(@NotNull String reportUri, @Nullable ReportExecutionOptions execOptions) throws ServiceException;
+    public abstract ReportExecution run(@NotNull String reportUri,
+                                        @Nullable ReportExecutionOptions execOptions) throws ServiceException;
 
     @NotNull
     public abstract List<InputControl> listControls(@NotNull String reportUri) throws ServiceException;
@@ -55,6 +58,22 @@ public abstract class ReportService {
     @NotNull
     public abstract List<InputControlState> listControlsValues(@NotNull String reportUri,
                                                                @NotNull List<ReportParameter> parameters) throws ServiceException;
+
+    @NotNull
+    public abstract Set<ReportOption> listReportOptions(@NotNull String reportUri) throws ServiceException;
+
+    @NotNull
+    public abstract ReportOption createReportOption(@NotNull String reportUri,
+                                                    @NotNull String optionLabel,
+                                                    @NotNull List<ReportParameter> parameters,
+                                                    boolean overwrite) throws ServiceException;
+
+    public abstract void updateReportOption(@NotNull String reportUri,
+                                            @NotNull String optionId,
+                                            @NotNull List<ReportParameter> parameters) throws ServiceException;
+
+    public abstract void deleteReportOption(@NotNull String reportUri,
+                                            @NotNull String optionId) throws ServiceException;
 
     @NotNull
     public static ReportService newService(@NotNull AuthorizedClient client) {
@@ -68,6 +87,7 @@ public abstract class ReportService {
                 client.reportExecutionApi(),
                 client.reportExportApi(),
                 client.inputControlApi(),
+                client.reportOptionsApi(),
                 reportMapper,
                 client.getBaseUrl(),
                 TimeUnit.SECONDS.toMillis(1)

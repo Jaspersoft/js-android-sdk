@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -39,10 +40,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import retrofit.Retrofit;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -55,6 +53,12 @@ import static org.hamcrest.core.IsNot.not;
  */
 @SuppressWarnings("unchecked")
 public class ReportOptionRestApiTest {
+
+    private final static List<ReportParameter> REPORT_PARAMS  =
+            Collections.singletonList(
+                    new ReportParameter("sales_fact_ALL__store_sales_2013_1", Collections.singleton("19"))
+            );
+
     @Rule
     public final WebMockRule mWebMockRule = new WebMockRule();
     @Rule
@@ -88,20 +92,20 @@ public class ReportOptionRestApiTest {
     public void createReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.createReportOption(null, "label", Collections.EMPTY_MAP, false);
+        restApiUnderTest.createReportOption(null, "label", REPORT_PARAMS, false);
     }
 
     @Test
     public void createReportOptionShouldNotAllowNullOptionLabel() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option label should not be null");
-        restApiUnderTest.createReportOption("any_id", null, Collections.EMPTY_MAP, false);
+        restApiUnderTest.createReportOption("any_id", null, REPORT_PARAMS, false);
     }
 
     @Test
     public void createReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Controls values should not be null");
+        mExpectedException.expectMessage("Parameters values should not be null");
         restApiUnderTest.createReportOption("any_id", "label", null, false);
     }
 
@@ -109,20 +113,20 @@ public class ReportOptionRestApiTest {
     public void updateReportOptionShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-        restApiUnderTest.updateReportOption(null, "option_id", Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption(null, "option_id", REPORT_PARAMS);
     }
 
     @Test
     public void updateReportOptionShouldNotAllowNullOptionId() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Option id should not be null");
-        restApiUnderTest.updateReportOption("any_id", null, Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption("any_id", null, REPORT_PARAMS);
     }
 
     @Test
     public void updateReportOptionShouldNotAllowNullControlsValues() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Controls values should not be null");
+        mExpectedException.expectMessage("Parameters values should not be null");
         restApiUnderTest.updateReportOption("any_id", "option_id", null);
     }
 
@@ -157,10 +161,7 @@ public class ReportOptionRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200().setBody(reportOption.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Map<String, Set<String>> params = new HashMap<>();
-        params.put("sales_fact_ALL__store_sales_2013_1", Collections.singleton("19"));
-
-        ReportOption reportOption = restApiUnderTest.createReportOption("/any/uri", "my label", params, true);
+        ReportOption reportOption = restApiUnderTest.createReportOption("/any/uri", "my label", REPORT_PARAMS, true);
         assertThat(reportOption.getId(), is("my_label"));
         assertThat(reportOption.getLabel(), is("my label"));
         assertThat(reportOption.getUri(), is("/public/Samples/Reports/my_label"));
@@ -177,7 +178,7 @@ public class ReportOptionRestApiTest {
         Map<String, Set<String>> params = new HashMap<>();
         params.put("sales_fact_ALL__store_sales_2013_1", Collections.singleton("22"));
 
-        restApiUnderTest.updateReportOption("/any/uri", "option_id", params);
+        restApiUnderTest.updateReportOption("/any/uri", "option_id", REPORT_PARAMS);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request.getPath(), is("/rest_v2/reports/any/uri/options/option_id"));
@@ -210,7 +211,7 @@ public class ReportOptionRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        restApiUnderTest.updateReportOption("any_id", "option_id", Collections.EMPTY_MAP);
+        restApiUnderTest.updateReportOption("any_id", "option_id", REPORT_PARAMS);
     }
 
     @Test

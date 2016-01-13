@@ -26,14 +26,12 @@ package com.jaspersoft.android.sdk.test.integration.api;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
@@ -47,13 +45,10 @@ import static org.hamcrest.core.IsNot.not;
 public class ReportOptionRestApiTest {
 
     private static final String REPORT_URI = "/public/Samples/Reports/1._Geographic_Results_by_Segment_Report";
-    public static final Map<String, Set<String>> CONTROL_PARAMETERS = new HashMap<>();
-
-    static {
-        Set<String> values = new HashSet<>();
-        values.add("19");
-        CONTROL_PARAMETERS.put("sales_fact_ALL__store_sales_2013_1", values);
-    }
+    private final static List<ReportParameter> REPORT_PARAMS  =
+            Collections.singletonList(
+                    new ReportParameter("sales_fact_ALL__store_sales_2013_1", Collections.singleton("19"))
+            );
 
     private final LazyClient mLazyClient = new LazyClient(JrsMetadata.createMobileDemo2());
     private ReportOptionRestApi apiUnderTest;
@@ -76,10 +71,10 @@ public class ReportOptionRestApiTest {
     // TODO: fix this by providing proper integration tests
     @Ignore
     public void apiSupportsCrudForReportOption() throws Exception {
-        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", CONTROL_PARAMETERS, true);
+        ReportOption response = apiUnderTest.createReportOption(REPORT_URI, "label", REPORT_PARAMS, true);
         assertThat(response.getLabel(), is("label"));
 
-        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), CONTROL_PARAMETERS);
+        apiUnderTest.updateReportOption(REPORT_URI, response.getId(), REPORT_PARAMS);
 
         apiUnderTest.deleteReportOption(REPORT_URI, response.getId());
     }

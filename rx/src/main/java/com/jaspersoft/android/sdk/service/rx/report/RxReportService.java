@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
 import com.jaspersoft.android.sdk.service.report.ReportService;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -50,6 +52,24 @@ public abstract class RxReportService {
 
     @NotNull
     public abstract Observable<List<InputControlState>> listControlsValues(@NotNull String reportUri, @NotNull List<ReportParameter> parameters);
+
+    @NotNull
+    public abstract Observable<Set<ReportOption>> listReportOptions(@NotNull String reportUri);
+
+    @NotNull
+    public abstract Observable<ReportOption> createReportOption(@NotNull String reportUri,
+                                                                @NotNull String optionLabel,
+                                                                @NotNull List<ReportParameter> parameters,
+                                                                boolean overwrite);
+
+    @NotNull
+    public abstract Observable<Void> updateReportOption(@NotNull String reportUri,
+                                                        @NotNull String optionId,
+                                                        @NotNull List<ReportParameter> parameters);
+
+    @NotNull
+    public abstract Observable<Void> deleteReportOption(@NotNull String reportUri,
+                                                       @NotNull String optionId);
 
     @NotNull
     public static RxReportService newService(@NotNull AuthorizedClient authorizedClient) {
