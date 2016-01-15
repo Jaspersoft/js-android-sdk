@@ -8,7 +8,7 @@ import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import java.util.TimeZone;
@@ -22,12 +22,12 @@ import static org.hamcrest.Matchers.notNullValue;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-
 public class ReportScheduleServiceTest {
     @ClassRule
     public static JrsEnvironmentRule sEnv = new JrsEnvironmentRule();
 
-    @Test
+    // TODO: Fix after implementing DELETE API
+    @Ignore
     @Parameters(method = "reports")
     public void schedule_service_should_create_job(ReportTestBundle bundle) throws Exception {
         ReportScheduleService service = ReportScheduleService.newService(bundle.getClient());
