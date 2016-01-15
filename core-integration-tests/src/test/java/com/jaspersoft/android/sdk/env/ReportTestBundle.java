@@ -12,20 +12,33 @@ import java.util.*;
  */
 public final class ReportTestBundle {
     private final String reportUri;
-    private final Map<String, Set<String>> params;
+    private Map<String, Set<String>> params;
     private final ServerTestBundle serverTestBundle;
+    private final PendingTask<Map<String, Set<String>>> paramsRequest;
 
-    public ReportTestBundle(String reportUri, Map<String, Set<String>> params, ServerTestBundle serverTestBundle) {
+    public ReportTestBundle(String reportUri, PendingTask<Map<String, Set<String>>> paramsRequest, ServerTestBundle serverTestBundle) {
         this.reportUri = reportUri;
-        this.params = params;
+        this.paramsRequest = paramsRequest;
         this.serverTestBundle = serverTestBundle;
     }
 
     public boolean hasParams() {
-        return !params.isEmpty();
+        return !loadParamsLazily().isEmpty();
+    }
+
+    private Map<String, Set<String>> loadParamsLazily() {
+        if (params == null) {
+            try {
+                params = paramsRequest.perform();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return params;
     }
 
     public List<ReportParameter> getParams() {
+        Map<String, Set<String>> params = loadParamsLazily();
         List<ReportParameter> parameters = new ArrayList<>(params.size());
         for (Map.Entry<String, Set<String>> entry : params.entrySet()) {
             parameters.add(new ReportParameter(entry.getKey(), entry.getValue()));

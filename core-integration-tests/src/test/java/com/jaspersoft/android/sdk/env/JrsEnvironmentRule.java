@@ -150,17 +150,22 @@ public final class JrsEnvironmentRule extends ExternalResource {
         for (Object o : clients) {
             ServerTestBundle sererBundle = (ServerTestBundle) o;
             String baseUrl = sererBundle.getClient().getBaseUrl();
-            TestKitClient kitClient = TestKitClient.newClient(baseUrl, isProxyReachable() ? CHARLES : null);
+            final TestKitClient kitClient = TestKitClient.newClient(baseUrl, isProxyReachable() ? CHARLES : null);
 
             int reportsNumber = getLazyEnv().reportExecNumber();
             ListResourcesUrisCommand listResourcesUris = new ListResourcesUrisCommand(reportsNumber, "reportUnit");
 
             try {
                 List<String> uris = kitClient.getResourcesUris(listResourcesUris);
-                for (String uri : uris) {
-                    ListReportParamsCommand listReportParams = new ListReportParamsCommand(uri);
-                    Map<String, Set<String>> params = kitClient.resourceParameter(listReportParams);
-                    bundle.add(new ReportTestBundle(uri, params, sererBundle));
+                for (final String uri : uris) {
+                    PendingTask<Map<String, Set<String>>> pendingLookup = new PendingTask<Map<String, Set<String>>>() {
+                        @Override
+                        public Map<String, Set<String>> perform() throws Exception {
+                            ListReportParamsCommand listReportParams = new ListReportParamsCommand(uri);
+                            return kitClient.resourceParameter(listReportParams);
+                        }
+                    };
+                    bundle.add(new ReportTestBundle(uri, pendingLookup, sererBundle));
                 }
             } catch (IOException | HttpException e) {
                 System.out.println(e);
