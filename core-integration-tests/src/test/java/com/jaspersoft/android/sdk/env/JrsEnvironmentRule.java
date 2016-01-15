@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.env;
 
+import com.jaspersoft.android.sdk.network.AnonymousClient;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
@@ -55,14 +56,37 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
     private IntegrationEnv mIntegrationEnv;
 
-    private Object[] mClients;
+    private Object[] mAuthorizedClients;
+    private Object[] mAnonymousClients;
     private Object[] mReports;
 
-    public Object[] listClients() {
-        if (mClients == null) {
-            mClients = loadClients();
+    public Object[] listAnonymousClients() {
+        if (mAnonymousClients == null) {
+            mAnonymousClients = loadAnonymousClients();
         }
-        return mClients;
+        return mAnonymousClients;
+    }
+
+    private Object[] loadAnonymousClients() {
+        List<SampleServer> sampleServers = getLazyEnv().getServers();
+        List<AnonymousServerTestBundle> bundles = new ArrayList<>();
+        for (SampleServer sampleServer : sampleServers) {
+            Server server = createServer(sampleServer);
+            AnonymousClient client = server.newClient()
+                    .withCookieHandler(LocalCookieManager.get())
+                    .create();
+            bundles.add(new AnonymousServerTestBundle(client));
+        }
+        Object[] result = new Object[bundles.size()];
+        bundles.toArray(result);
+        return result;
+    }
+
+    public Object[] listAuthorizedClients() {
+        if (mAuthorizedClients == null) {
+            mAuthorizedClients = loadClients();
+        }
+        return mAuthorizedClients;
     }
 
     private Object[] loadClients() {
@@ -70,12 +94,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
         List<ServerTestBundle> bundles = new ArrayList<>();
 
         for (SampleServer sampleServer : sampleServers) {
-            Server.OptionalBuilder serverBuilder = Server.builder()
-                    .withBaseUrl(sampleServer.getUrl());
-            if (isProxyReachable()) {
-                serverBuilder.withProxy(CHARLES);
-            }
-            Server server = serverBuilder.build();
+            Server server = createServer(sampleServer);
             for (AuthConfig authConfig : sampleServer.getAuthConfigs()) {
                 SpringCredentials credentials = SpringCredentials.builder()
                         .withOrganization(authConfig.getOrganization())
@@ -101,6 +120,15 @@ public final class JrsEnvironmentRule extends ExternalResource {
         return result;
     }
 
+    private Server createServer(SampleServer sampleServer) {
+        Server.OptionalBuilder serverBuilder = Server.builder()
+                .withBaseUrl(sampleServer.getUrl());
+        if (isProxyReachable()) {
+            serverBuilder.withProxy(CHARLES);
+        }
+        return serverBuilder.build();
+    }
+
     public Object[] listReports() {
         if (mReports == null) {
             mReports = loadReports();
@@ -110,7 +138,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
     private Object[] loadReports() {
         List<ReportTestBundle> bundle = new ArrayList<>();
-        Object[] clients = listClients();
+        Object[] clients = listAuthorizedClients();
 
         for (Object o : clients) {
             ServerTestBundle sererBundle = (ServerTestBundle) o;
