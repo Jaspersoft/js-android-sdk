@@ -34,6 +34,9 @@ class JobSearchCriteriaMapper {
         searchParams.put("startIndex", String.valueOf(offset));
 
         int limit = criteria.getLimit();
+        if (limit == JobSearchCriteria.UNLIMITED_ROW_NUMBER) {
+            limit = -1;
+        }
         searchParams.put("numberOfRows", String.valueOf(limit));
 
         JobSortType jobSortType = criteria.getSortType();

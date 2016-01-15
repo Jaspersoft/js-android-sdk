@@ -89,6 +89,16 @@ public class JobUnitSearchCriteriaMapperTest {
         assertThat(String.valueOf(params.get("isAscending")), is("true"));
     }
 
+    @Test
+    public void should_map_to_negative_if_unlimited() throws Exception {
+        JobSearchCriteria criteria = JobSearchCriteria.builder()
+                .withLimit(JobSearchCriteria.UNLIMITED_ROW_NUMBER)
+                .build();
+        Map<String, Object> params = performMap(criteria);
+        assertThat(params.containsKey("numberOfRows"), is(true));
+        assertThat(String.valueOf(params.get("numberOfRows")), is("-1"));
+    }
+
     private Map<String, Object> performMap(JobSearchCriteria criteria) {
         return mCriteriaMapper.transform(criteria);
     }

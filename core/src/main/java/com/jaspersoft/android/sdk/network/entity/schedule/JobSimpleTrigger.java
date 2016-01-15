@@ -8,18 +8,45 @@ import com.google.gson.annotations.Expose;
  */
 public class JobSimpleTrigger {
     @Expose
-    private final String timezone;
+    private String timezone;
     @Expose
-    private final String startType;
+    private int startType;
     @Expose
-    private final String startDate;
+    private String startDate;
     @Expose
-    private final int occurrenceCount;
+    private String stopDate;
+    @Expose
+    private Integer occurrenceCount;
+    @Expose
+    private Integer recurrenceInterval;
+    @Expose
+    private String recurrenceIntervalUnit;
 
-    public JobSimpleTrigger(String timezone, String startType, String startDate, int occurrenceCount) {
+    public void setTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    public void setStartType(int startType) {
         this.startType = startType;
+    }
+
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
+    }
+
+    public void setStopDate(String stopDate) {
+        this.stopDate = stopDate;
+    }
+
+    public void setOccurrenceCount(int occurrenceCount) {
         this.occurrenceCount = occurrenceCount;
+    }
+
+    public void setRecurrenceInterval(int recurrenceInterval) {
+        this.recurrenceInterval = recurrenceInterval;
+    }
+
+    public void setRecurrenceIntervalUnit(String recurrenceIntervalUnit) {
+        this.recurrenceIntervalUnit = recurrenceIntervalUnit;
     }
 }
