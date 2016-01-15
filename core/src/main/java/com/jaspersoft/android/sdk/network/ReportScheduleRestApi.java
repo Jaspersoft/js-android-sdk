@@ -1,9 +1,9 @@
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobSearchResult;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobsSearchResult;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,8 +54,8 @@ public class ReportScheduleRestApi {
             }
         }
 
-        Call<JobSearchResult> call = mRestApi.searchJob(encodedParams);
-        JobSearchResult searchResult = CallWrapper.wrap(call).body();
+        Call<JobsSearchResult> call = mRestApi.searchJob(encodedParams);
+        JobsSearchResult searchResult = CallWrapper.wrap(call).body();
         return searchResult.getJobSummary();
     }
 
@@ -70,7 +70,7 @@ public class ReportScheduleRestApi {
         @NotNull
         @Headers("Accept: application/json")
         @GET("rest_v2/jobs")
-        public Call<JobSearchResult> searchJob(@Nullable @QueryMap(encoded = true) Map<String, Object> searchParams);
+        public Call<JobsSearchResult> searchJob(@Nullable @QueryMap(encoded = true) Map<String, Object> searchParams);
 
         @NotNull
         @Headers("Accept: application/job+json")

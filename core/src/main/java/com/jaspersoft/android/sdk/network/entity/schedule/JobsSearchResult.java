@@ -9,11 +9,11 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public class JobSearchResult {
+public class JobsSearchResult {
     @Expose
-    private List<JobUnit> mJobsummary = Collections.emptyList();
+    private List<JobUnit> jobsummary = Collections.emptyList();
 
     public List<JobUnit> getJobSummary() {
-        return Collections.unmodifiableList(mJobsummary);
+        return Collections.unmodifiableList(jobsummary);
     }
 }
