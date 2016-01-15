@@ -182,7 +182,9 @@ public final class Server {
                     .client(authClient)
                     .build();
 
-            AnonymousClient anonymousClient = mServer.newClient().create();
+            AnonymousClient anonymousClient = mServer.newClient()
+                    .withCookieHandler(mCookieHandler)
+                    .create();
             return new AuthorizedClient(authRetrofit, anonymousClient);
         }
 

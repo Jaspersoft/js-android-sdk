@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,9 +56,12 @@ public final class TestKitClient {
         return mGetReportParametersUseCase.execute(command);
     }
 
-    public static TestKitClient newClient(String baseUrl) {
+    public static TestKitClient newClient(String baseUrl, Proxy proxy) {
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.setCookieHandler(LocalCookieManager.get());
+        if (proxy != null) {
+            okHttpClient.setProxy(proxy);
+        }
 
         GetResourcesUrisUseCase getResourcesUrisUseCase = new GetResourcesUrisUseCase(okHttpClient, baseUrl);
         GetReportParametersUseCase getReportParametersUseCase = new GetReportParametersUseCase(okHttpClient, baseUrl);

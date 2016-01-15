@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.env;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
+import com.jaspersoft.android.sdk.testkit.ListReportParamsCommand;
 import com.jaspersoft.android.sdk.testkit.ListResourcesUrisCommand;
 import com.jaspersoft.android.sdk.testkit.LocalCookieManager;
 import com.jaspersoft.android.sdk.testkit.TestKitClient;
@@ -41,6 +42,8 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -52,7 +55,17 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
     private IntegrationEnv mIntegrationEnv;
 
+    private Object[] mClients;
+    private Object[] mReports;
+
     public Object[] listClients() {
+        if (mClients == null) {
+            mClients = loadClients();
+        }
+        return mClients;
+    }
+
+    private Object[] loadClients() {
         List<SampleServer> sampleServers = getLazyEnv().getServers();
         List<ServerTestBundle> bundles = new ArrayList<>();
 
@@ -85,29 +98,35 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
         Object[] result = new Object[bundles.size()];
         bundles.toArray(result);
-
         return result;
     }
 
-
     public Object[] listReports() {
-        List<ReportTestBundle> bundle = new ArrayList<>();
+        if (mReports == null) {
+            mReports = loadReports();
+        }
+        return mReports;
+    }
 
-        for (Object o : listClients()) {
+    private Object[] loadReports() {
+        List<ReportTestBundle> bundle = new ArrayList<>();
+        Object[] clients = listClients();
+
+        for (Object o : clients) {
             ServerTestBundle sererBundle = (ServerTestBundle) o;
             String baseUrl = sererBundle.getClient().getBaseUrl();
-            TestKitClient kitClient = TestKitClient.newClient(baseUrl);
+            TestKitClient kitClient = TestKitClient.newClient(baseUrl, isProxyReachable() ? CHARLES : null);
 
             int reportsNumber = getLazyEnv().reportExecNumber();
             ListResourcesUrisCommand listResourcesUris = new ListResourcesUrisCommand(reportsNumber, "reportUnit");
 
             try {
                 List<String> uris = kitClient.getResourcesUris(listResourcesUris);
-
                 for (String uri : uris) {
-                    bundle.add(new ReportTestBundle(uri, sererBundle));
+                    ListReportParamsCommand listReportParams = new ListReportParamsCommand(uri);
+                    Map<String, Set<String>> params = kitClient.resourceParameter(listReportParams);
+                    bundle.add(new ReportTestBundle(uri, params, sererBundle));
                 }
-
             } catch (IOException | HttpException e) {
                 System.out.println(e);
             }

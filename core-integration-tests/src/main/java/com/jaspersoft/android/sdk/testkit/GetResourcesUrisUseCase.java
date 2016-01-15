@@ -33,6 +33,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -80,6 +81,6 @@ final class GetResourcesUrisUseCase extends HttpUseCase<List<String>, ListResour
         reader.endArray();
         reader.endObject();
 
-        return resources;
+        return Collections.unmodifiableList(resources);
     }
 }

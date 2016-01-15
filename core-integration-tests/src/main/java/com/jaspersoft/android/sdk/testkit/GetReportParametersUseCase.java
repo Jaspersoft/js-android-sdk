@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.testkit;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import com.squareup.okhttp.HttpUrl;
@@ -32,16 +35,13 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-final class GetReportParametersUseCase extends HttpUseCase< Map<String, Set<String>>, ListReportParamsCommand> {
+final class GetReportParametersUseCase extends HttpUseCase<Map<String, Set<String>>, ListReportParamsCommand> {
     private final String mBaseUrl;
 
     public GetReportParametersUseCase(OkHttpClient client, String baseUrl) {
@@ -59,54 +59,62 @@ final class GetReportParametersUseCase extends HttpUseCase< Map<String, Set<Stri
         Response response = performRequest(url);
         Map<String, Set<String>> params = new HashMap<>();
         mapResponse(response, params);
-        return params;
+        return Collections.unmodifiableMap(params);
     }
 
     private void mapResponse(Response response, Map<String, Set<String>> params) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(response.body().byteStream(), "UTF-8"));
-        reader.beginObject();
-        reader.nextName();
-        reader.beginArray();
-        while (reader.hasNext()) {
-            populateParams(params, reader);
-        }
-        reader.endArray();
-        reader.endObject();
-    }
+        Gson gson = new GsonBuilder()
+                .serializeNulls()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        States states = gson.fromJson(reader, States.class);
+        List<State> inputControlState = states.getInputControlState();
+        for (State state : inputControlState) {
+            List<Option> options = state.getOptions();
 
-    private void populateParams(Map<String, Set<String>> params, JsonReader reader) throws IOException {
-        reader.beginObject();
-        while (reader.hasNext()) {
-            Set<String> values = new HashSet<>();
-            String id = "null";
+            if (options != null) {
+                String id = state.getId();
+                Set<String> values = new HashSet<>(options.size());
 
-            String name = reader.nextName();
-            if ("options".equals(name)) {
-                readValues(reader, values);
-            } else if ("id".equals(name)) {
-                id = reader.nextString();
-            } else {
-                reader.skipValue();
-            }
-            params.put(id, values);
-        }
-        reader.endObject();
-    }
-
-    private void readValues(JsonReader reader, Set<String> values) throws IOException {
-        reader.beginArray();
-        while (reader.hasNext()) {
-            reader.beginObject();
-            while (reader.hasNext()) {
-                String name = reader.nextName();
-                if ("value".equals(name)) {
-                    values.add(reader.nextString());
-                } else {
-                    reader.skipValue();
+                for (Option option : options) {
+                    values.add(option.getValue());
                 }
+                params.put(id, values);
             }
-            reader.endObject();
         }
-        reader.endArray();
+    }
+
+    private static class States {
+        @Expose
+        private List<State> inputControlState;
+
+        public List<State> getInputControlState() {
+            return inputControlState;
+        }
+    }
+
+    private static class State {
+        @Expose
+        private String id;
+        @Expose
+        private List<Option> options;
+
+        public List<Option> getOptions() {
+            return options;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
+    private static class Option {
+        @Expose
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
     }
 }
