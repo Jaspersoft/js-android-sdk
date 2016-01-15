@@ -27,4 +27,12 @@ public final class ReportTestBundle {
     public AuthorizedClient getClient() {
         return serverTestBundle.getClient();
     }
+
+    @Override
+    public String toString() {
+        return "ReportTestBundle{" +
+                "server=" + serverTestBundle +
+                ", reportUri='" + reportUri + '\'' +
+                '}';
+    }
 }

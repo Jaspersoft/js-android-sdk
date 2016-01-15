@@ -27,13 +27,13 @@ public class ServerTestBundle {
     @Override
     public String toString() {
         String credentials = "Credentials{" +
-                ", username='" + mCredentials.getUsername() + '\'' +
+                "username='" + mCredentials.getUsername() + '\'' +
                 ", organization='" + mCredentials.getOrganization() + '\'' +
                 ", password=" + mCredentials.getPassword() +
                 '}';
         return "ServerTestBundle{" +
-                "credentials=" + credentials +
-                ", url=" + mClient.getBaseUrl() +
+                "url=" + mClient.getBaseUrl() +
+                ", credentials=" + credentials +
                 '}';
     }
 }
