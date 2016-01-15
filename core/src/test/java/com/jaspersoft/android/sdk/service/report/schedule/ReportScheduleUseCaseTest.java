@@ -5,13 +5,16 @@ import com.jaspersoft.android.sdk.network.ReportScheduleRestApi;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ReportScheduleUseCaseTest {
     private static final Map<String, Object> SEARCH_PARAMS = Collections.emptyMap();
     private static final JobSearchCriteria CRITERIA = JobSearchCriteria.empty();
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat();
 
     @Mock
     ServiceExceptionMapper mExceptionMapper;
@@ -34,6 +38,11 @@ public class ReportScheduleUseCaseTest {
     ReportScheduleRestApi mScheduleRestApi;
     @Mock
     JobSearchCriteriaMapper mSearchCriteriaMapper;
+
+    @Mock
+    InfoCacheManager mInfoCacheManager;
+    @Mock
+    ServerInfo mServerInfo;
 
     @Mock
     JobData mJobData;
@@ -56,7 +65,12 @@ public class ReportScheduleUseCaseTest {
         initMocks(this);
 
         setupMocks();
-        useCase = new ReportScheduleUseCase(mExceptionMapper, mScheduleRestApi, mSearchCriteriaMapper, mJobDataMapper);
+        useCase = new ReportScheduleUseCase(
+                mExceptionMapper,
+                mScheduleRestApi,
+                mInfoCacheManager,
+                mSearchCriteriaMapper,
+                mJobDataMapper);
     }
 
     @Test
@@ -73,7 +87,7 @@ public class ReportScheduleUseCaseTest {
 
         useCase.createJob(mJobForm);
 
-        verify(mJobDataMapper).transform(mJobDescriptor);
+        verify(mJobDataMapper).transform(mJobDescriptor, SIMPLE_DATE_FORMAT);
         verify(mScheduleRestApi).createJob(mJobForm);
     }
 
@@ -124,10 +138,13 @@ public class ReportScheduleUseCaseTest {
         }
     }
 
-    private void setupMocks() {
+    private void setupMocks() throws Exception {
+        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
+        when(mServerInfo.getDatetimeFormatPattern()).thenReturn(SIMPLE_DATE_FORMAT);
+
         when(mSearchCriteriaMapper.transform(any(JobSearchCriteria.class)))
                 .thenReturn(SEARCH_PARAMS);
-        when(mJobDataMapper.transform(any(JobDescriptor.class)))
+        when(mJobDataMapper.transform(any(JobDescriptor.class), any(SimpleDateFormat.class)))
                 .thenReturn(mJobData);
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
         when(mExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
