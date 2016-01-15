@@ -12,6 +12,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +84,24 @@ public class ReportServiceTest {
 
             reportOptions = reportService.listReportOptions(reportUri);
             assertThat(reportOptions, not(hasItem(reportOption)));
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void report_service_should_list_input_controls(ReportTestBundle bundle) throws Exception {
+        ReportService reportService = ReportService.newService(bundle.getClient());
+        reportService.listControls(bundle.getReportUri());
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void report_service_should_list_input_cascades(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            ReportService reportService = ReportService.newService(bundle.getClient());
+            List<ReportParameter> params = bundle.getParams();
+            reportService.listControlsValues(bundle.getReportUri(),
+                    Collections.singletonList(params.get(0)));
         }
     }
 
