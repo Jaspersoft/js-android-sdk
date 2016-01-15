@@ -2,6 +2,8 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import junitparams.JUnitParamsRunner;
@@ -11,6 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 
 /**
  * @author Tom Koptel
@@ -52,6 +59,30 @@ public class ReportServiceTest {
         if (bundle.hasParams()) {
             ReportExecution execution = runReport(bundle);
             execution.updateExecution(bundle.getParams());
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void report_service_should_support_crud_for_report_option(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            String reportUri = bundle.getReportUri();
+            ReportService reportService = ReportService.newService(bundle.getClient());
+
+            String reportOptionLabel = "My Label";
+            List<ReportParameter> params = bundle.getParams();
+            ReportOption reportOption =
+                    reportService.createReportOption(reportUri, reportOptionLabel, params, true);
+
+            Set<ReportOption> reportOptions = reportService.listReportOptions(reportUri);
+            assertThat(reportOptions, hasItem(reportOption));
+
+            reportService.updateReportOption(reportUri, reportOption.getId(), params);
+
+            reportService.deleteReportOption(reportUri, reportOption.getId());
+
+            reportOptions = reportService.listReportOptions(reportUri);
+            assertThat(reportOptions, not(hasItem(reportOption)));
         }
     }
 
