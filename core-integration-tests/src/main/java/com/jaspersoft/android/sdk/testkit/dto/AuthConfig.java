@@ -22,11 +22,31 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-include ':js-android-sdk-client'
-include ':js-android-sdk-core'
-include ':js-android-sdk-rx'
-include ':core-integration-tests'
-project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
-project(':js-android-sdk-core').projectDir = "$rootDir/core" as File
-project(':core-integration-tests').projectDir = "$rootDir/core-integration-tests" as File
-project(':js-android-sdk-rx').projectDir = "$rootDir/rx" as File
+package com.jaspersoft.android.sdk.testkit.dto;
+
+import com.google.gson.annotations.Expose;
+
+/**
+ * @author Tom Koptel
+ * @since 2.3
+ */
+public final class AuthConfig {
+    @Expose
+    private String username;
+    @Expose
+    private String password;
+    @Expose
+    private String organization;
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+}

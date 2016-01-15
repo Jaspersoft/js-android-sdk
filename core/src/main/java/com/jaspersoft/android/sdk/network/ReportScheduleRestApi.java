@@ -10,10 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import retrofit.Call;
 import retrofit.Retrofit;
-import retrofit.http.GET;
-import retrofit.http.Headers;
-import retrofit.http.PUT;
-import retrofit.http.QueryMap;
+import retrofit.http.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -73,8 +70,11 @@ public class ReportScheduleRestApi {
         public Call<JobsSearchResult> searchJob(@Nullable @QueryMap(encoded = true) Map<String, Object> searchParams);
 
         @NotNull
-        @Headers("Accept: application/job+json")
+        @Headers({
+                "Content-Type: application/job+json",
+                "Accept: application/job+json"
+        })
         @PUT("rest_v2/jobs")
-        public Call<JobDescriptor> createJob(@NotNull JobForm descriptor);
+        public Call<JobDescriptor> createJob(@NotNull @Body JobForm descriptor);
     }
 }

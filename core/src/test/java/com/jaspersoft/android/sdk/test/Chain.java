@@ -37,10 +37,12 @@ public final class Chain<Value> implements Answer<Value> {
     private final Value[] mChain;
     private int invocationCount = 0;
 
+    @SafeVarargs
     private Chain(Value... chain) {
         mChain = chain;
     }
 
+    @SafeVarargs
     public static <Value> Chain<Value> of(Value... values) {
         return new Chain<>(values);
     }

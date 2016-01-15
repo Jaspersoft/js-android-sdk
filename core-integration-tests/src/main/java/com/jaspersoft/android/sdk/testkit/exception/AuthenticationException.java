@@ -22,11 +22,18 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-include ':js-android-sdk-client'
-include ':js-android-sdk-core'
-include ':js-android-sdk-rx'
-include ':core-integration-tests'
-project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
-project(':js-android-sdk-core').projectDir = "$rootDir/core" as File
-project(':core-integration-tests').projectDir = "$rootDir/core-integration-tests" as File
-project(':js-android-sdk-rx').projectDir = "$rootDir/rx" as File
+package com.jaspersoft.android.sdk.testkit.exception;
+
+/**
+ * @author Tom Koptel
+ * @since 2.3
+ */
+public final class AuthenticationException extends HttpException {
+    private AuthenticationException(int code, String url, String response) {
+        super(code, url, response);
+    }
+
+    public static AuthenticationException create(String url, String response) {
+        return new AuthenticationException(401, url, response);
+    }
+}

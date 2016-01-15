@@ -4,21 +4,27 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import retrofit.Retrofit;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static junitparams.JUnitParamsRunner.$;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.rules.ExpectedException.none;
 
+@RunWith(JUnitParamsRunner.class)
 public class ReportScheduleRestApiTest {
 
     private final static String SEARCH_RESPONSE = "{ \"jobsummary\": [ { \"id\": 1898, \"version\": 0, \"reportUnitURI\": \"/adhoc/topics/AllAccounts\", \"label\": \"Sample Job Name\", \"owner\": \"jasperadmin|organization_1\", \"state\": { \"previousFireTime\": null, \"nextFireTime\": \"2013-10-12T00:00:00+03:00\", \"value\": \"NORMAL\" } }]}";
@@ -42,15 +48,10 @@ public class ReportScheduleRestApiTest {
     }
 
     @Test
-    public void search_encodes_any_param() throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("reportUnitURI", "/some/report");
-        params.put("owner", "jasperadmin|organization_1");
-        params.put("label", "Sample Name");
-        params.put("startIndex", "1");
-        params.put("numberOfRows", "-1");
-        params.put("sortType", "NONE");
-        params.put("isAscending", "true");
+    @Parameters(method = "params")
+    public void search_encode_query_param(String key, String value, String encodedQuery) throws Exception {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(key, value);
 
         List<JobUnit> result = reportScheduleRestApi.searchJob(params);
         assertThat(result, is(notNullValue()));
@@ -58,8 +59,20 @@ public class ReportScheduleRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         String path = request.getPath();
 
-        String encodedPath = "/rest_v2/jobs?owner=jasperadmin%7Corganization_1&startIndex=1&sortType=NONE&label=Sample%20Name&numberOfRows=-1&isAscending=true&reportUnitURI=%2Fsome%2Freport";
-        assertThat("Should encode all params supplied in map", path, is(encodedPath));
+        String encodedPath = "/rest_v2/jobs?" + encodedQuery;
+        assertThat("Should encode '" + key + "' with value '" + value + "' as '" + encodedQuery, path, is(encodedPath));
+    }
+
+    private Object[] params() {
+        return $(
+                $("reportUnitURI", "/some/report", "reportUnitURI=%2Fsome%2Freport"),
+                $("owner", "jasperadmin|organization_1", "owner=jasperadmin%7Corganization_1"),
+                $("label", "Sample Name", "label=Sample%20Name"),
+                $("startIndex", "1", "startIndex=1"),
+                $("numberOfRows", "-1", "numberOfRows=-1"),
+                $("sortType", "NONE", "sortType=NONE"),
+                $("isAscending", "true", "isAscending=true")
+        );
     }
 
     @Test

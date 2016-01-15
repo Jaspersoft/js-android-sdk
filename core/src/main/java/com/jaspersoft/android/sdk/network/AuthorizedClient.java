@@ -87,4 +87,14 @@ public class AuthorizedClient extends AnonymousClient {
         }
         return mReportScheduleRestApi;
     }
+
+    @Override
+    public ServerRestApi infoApi() {
+        return mAnonymousClient.infoApi();
+    }
+
+    @Override
+    public AuthenticationRestApi authenticationApi() {
+        return mAnonymousClient.authenticationApi();
+    }
 }

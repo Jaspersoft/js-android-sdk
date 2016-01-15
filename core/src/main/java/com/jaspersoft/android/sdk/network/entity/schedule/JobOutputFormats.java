@@ -8,11 +8,15 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-class JobOutputFormats {
+public class JobOutputFormats {
     @Expose
     private final List<String> outputFormat;
 
     JobOutputFormats(List<String> outputFormat) {
         this.outputFormat = outputFormat;
+    }
+
+    public List<String> getOutputFormat() {
+        return outputFormat;
     }
 }

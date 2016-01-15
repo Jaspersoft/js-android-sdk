@@ -6,8 +6,10 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,15 +22,18 @@ import java.util.Map;
 class ReportScheduleUseCase {
     private final ServiceExceptionMapper mExceptionMapper;
     private final ReportScheduleRestApi mScheduleRestApi;
+    private final InfoCacheManager mCacheManager;
     private final JobSearchCriteriaMapper mSearchCriteriaMapper;
     private final JobDataMapper mJobDataMapper;
 
     ReportScheduleUseCase(ServiceExceptionMapper exceptionMapper,
                           ReportScheduleRestApi scheduleRestApi,
+                          InfoCacheManager cacheManager,
                           JobSearchCriteriaMapper searchCriteriaMapper,
                           JobDataMapper jobDataMapper) {
         mExceptionMapper = exceptionMapper;
         mScheduleRestApi = scheduleRestApi;
+        mCacheManager = cacheManager;
         mSearchCriteriaMapper = searchCriteriaMapper;
         mJobDataMapper = jobDataMapper;
     }
@@ -46,9 +51,9 @@ class ReportScheduleUseCase {
 
     public JobData createJob(JobForm form) throws ServiceException {
         try {
+            ServerInfo info = mCacheManager.getInfo();
             JobDescriptor jobDescriptor = mScheduleRestApi.createJob(form);
-            JobData jobData = mJobDataMapper.transform(jobDescriptor);
-            return jobData;
+            return mJobDataMapper.transform(jobDescriptor, info.getDatetimeFormatPattern());
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
         } catch (HttpException e) {
