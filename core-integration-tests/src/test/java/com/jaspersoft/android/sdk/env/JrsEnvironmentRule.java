@@ -75,7 +75,14 @@ public final class JrsEnvironmentRule extends ExternalResource {
             AnonymousClient client = server.newClient()
                     .withCookieHandler(LocalCookieManager.get())
                     .create();
-            bundles.add(new AnonymousServerTestBundle(client));
+            for (AuthConfig authConfig : sampleServer.getAuthConfigs()) {
+                SpringCredentials credentials = SpringCredentials.builder()
+                        .withOrganization(authConfig.getOrganization())
+                        .withPassword(authConfig.getPassword())
+                        .withUsername(authConfig.getPassword())
+                        .build();
+                bundles.add(new AnonymousServerTestBundle(credentials, client));
+            }
         }
         Object[] result = new Object[bundles.size()];
         bundles.toArray(result);
