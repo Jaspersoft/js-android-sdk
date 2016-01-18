@@ -60,10 +60,6 @@ public class AbstractReportServiceTest {
     @Mock
     ReportExecutionApi mReportExecutionApi;
     @Mock
-    ReportOptionsUseCase mReportOptionsUseCase;
-    @Mock
-    ControlsApi mControlsApi;
-    @Mock
     ExportFactory mExportFactory;
 
     @Mock
@@ -77,8 +73,6 @@ public class AbstractReportServiceTest {
         reportService = new AbstractReportService(
                 mExportExecutionApi,
                 mReportExecutionApi,
-                mReportOptionsUseCase,
-                mControlsApi,
                 mExportFactory,
                 0) {
             @Override
@@ -101,42 +95,5 @@ public class AbstractReportServiceTest {
         verify(mReportExecutionApi).start(REPORT_URI, criteria);
         verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, execution(), ready());
         verify(reportService).buildExecution(REPORT_URI, EXEC_ID, criteria);
-    }
-
-    @Test
-    public void should_request_controls() throws Exception {
-        reportService.listControls(REPORT_URI);
-        verify(mControlsApi).requestControls(REPORT_URI, false);
-    }
-
-    @Test
-    public void should_request_controls_values() throws Exception {
-        List<ReportParameter> parameters = Collections.emptyList();
-        reportService.listControlsValues(REPORT_URI, parameters);
-        verify(mControlsApi).requestControlsValues(REPORT_URI, parameters, true);
-    }
-
-    @Test
-    public void should_request_options() throws Exception {
-        reportService.listReportOptions(REPORT_URI);
-        verify(mReportOptionsUseCase).requestReportOptionsList(REPORT_URI);
-    }
-
-    @Test
-    public void should_create_report_option() throws Exception {
-        reportService.createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
-        verify(mReportOptionsUseCase).createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
-    }
-
-    @Test
-    public void should_update_report_option() throws Exception {
-        reportService.updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
-        verify(mReportOptionsUseCase).updateReportOption(REPORT_URI, OPTION_ID, REPORT_PARAMETERS);
-    }
-
-    @Test
-    public void should_delete_report_option() throws Exception {
-        reportService.deleteReportOption(REPORT_URI, OPTION_ID);
-        verify(mReportOptionsUseCase).deleteReportOption(REPORT_URI, OPTION_ID);
     }
 }

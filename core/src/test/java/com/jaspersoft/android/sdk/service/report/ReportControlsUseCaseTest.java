@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ControlsApiTest {
+public class ReportControlsUseCaseTest {
     private static final String REPORT_URI = "my/uri";
     private static final List<ReportParameter> PARAMS = Collections.emptyList();
 
@@ -59,12 +59,12 @@ public class ControlsApiTest {
     @Mock
     ServiceException mServiceException;
 
-    private ControlsApi controlsApi;
+    private ReportControlsUseCase mReportControlsUseCase;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controlsApi = new ControlsApi(mExceptionMapper, mRestApi);
+        mReportControlsUseCase = new ReportControlsUseCase(mExceptionMapper, mRestApi);
         
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
         when(mExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
@@ -72,7 +72,7 @@ public class ControlsApiTest {
 
     @Test
     public void should_request_controls() throws Exception {
-        controlsApi.requestControls(REPORT_URI, false);
+        mReportControlsUseCase.requestControls(REPORT_URI, false);
         verify(mRestApi).requestInputControls(REPORT_URI, false);
     }
 
@@ -80,7 +80,7 @@ public class ControlsApiTest {
     public void request_controls_adapt_io_exception() throws Exception {
         when(mRestApi.requestInputControls(anyString(), anyBoolean())).thenThrow(mIOException);
         try {
-            controlsApi.requestControls(REPORT_URI, false);
+            mReportControlsUseCase.requestControls(REPORT_URI, false);
             fail("Should adapt IO exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mIOException);
@@ -91,7 +91,7 @@ public class ControlsApiTest {
     public void request_controls_adapt_http_exception() throws Exception {
         when(mRestApi.requestInputControls(anyString(), anyBoolean())).thenThrow(mHttpException);
         try {
-            controlsApi.requestControls(REPORT_URI, false);
+            mReportControlsUseCase.requestControls(REPORT_URI, false);
             fail("Should adapt HTTP exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mHttpException);
@@ -103,7 +103,7 @@ public class ControlsApiTest {
     public void request_controls_values_adapt_io_exception() throws Exception {
         when(mRestApi.requestInputControlsStates(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mIOException);
         try {
-            controlsApi.requestControlsValues(REPORT_URI, PARAMS, false);
+            mReportControlsUseCase.requestControlsValues(REPORT_URI, PARAMS, false);
             fail("Should adapt IO exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mIOException);
@@ -114,7 +114,7 @@ public class ControlsApiTest {
     public void request_controls_values_adapt_http_exception() throws Exception {
         when(mRestApi.requestInputControlsStates(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mHttpException);
         try {
-            controlsApi.requestControlsValues(REPORT_URI, PARAMS, false);
+            mReportControlsUseCase.requestControlsValues(REPORT_URI, PARAMS, false);
             fail("Should adapt HTTP exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mHttpException);
@@ -123,7 +123,7 @@ public class ControlsApiTest {
 
     @Test
     public void should_request_controls_values() throws Exception {
-        controlsApi.requestControlsValues(REPORT_URI, PARAMS, false);
+        mReportControlsUseCase.requestControlsValues(REPORT_URI, PARAMS, false);
         verify(mRestApi).requestInputControlsStates(REPORT_URI, PARAMS, false);
     }
 }
