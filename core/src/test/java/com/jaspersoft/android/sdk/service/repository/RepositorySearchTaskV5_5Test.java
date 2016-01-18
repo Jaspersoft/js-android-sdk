@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SearchUseCase.class})
-public class SearchTaskV5_5Test {
+public class RepositorySearchTaskV5_5Test {
 
     @Mock
     SearchUseCase mSearchUseCase;
@@ -68,8 +68,8 @@ public class SearchTaskV5_5Test {
     /**
      * Objects under test
      */
-    private SearchTask search10itemsStrategy;
-    private SearchTask search10itemsStrategyWithUserOffset5;
+    private RepositorySearchTask search10itemsStrategy;
+    private RepositorySearchTask search10itemsStrategyWithUserOffset5;
     public static final List<Resource> FIVE_ITEMS = Arrays.asList(null, null, null, null, null);
 
     @Before
@@ -79,10 +79,10 @@ public class SearchTaskV5_5Test {
         when(mSearchUseCase.performSearch(Matchers.any(InternalCriteria.class))).thenReturn(mResponse);
 
         InternalCriteria criteria = new InternalCriteria.Builder().limit(10).create();
-        search10itemsStrategy = new SearchTaskV5_5(criteria, mSearchUseCase);
+        search10itemsStrategy = new RepositorySearchTaskV5_5(criteria, mSearchUseCase);
 
         InternalCriteria userCriteria = criteria.newBuilder().offset(5).create();
-        search10itemsStrategyWithUserOffset5 = new SearchTaskV5_5(userCriteria, mSearchUseCase);
+        search10itemsStrategyWithUserOffset5 = new RepositorySearchTaskV5_5(userCriteria, mSearchUseCase);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SearchTaskV5_5Test {
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
         InternalCriteria userCriteria = new InternalCriteria.Builder().limit(0).offset(5).create();
-        SearchTask strategy = new SearchTaskV5_5(userCriteria, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_5(userCriteria, mSearchUseCase);
 
         List<Resource> result = strategy.nextLookup();
         assertThat(result, is(empty()));

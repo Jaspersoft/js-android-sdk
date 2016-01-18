@@ -86,14 +86,14 @@ public class RepositoryServiceTest {
 
     @Test
     public void shouldProvideListOfResources() {
-        SearchTask searchTask = objectUnderTest.search(SearchCriteria.none());
-        assertThat(searchTask, is(notNullValue()));
+        RepositorySearchTask repositorySearchTask = objectUnderTest.search(RepositorySearchCriteria.empty());
+        assertThat(repositorySearchTask, is(notNullValue()));
     }
 
     @Test
     public void should_accept_null_criteria() {
-        SearchTask searchTask = objectUnderTest.search(null);
-        assertThat(searchTask, is(notNullValue()));
+        RepositorySearchTask repositorySearchTask = objectUnderTest.search(null);
+        assertThat(repositorySearchTask, is(notNullValue()));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class RepositoryServiceTest {
 
         InternalCriteria rootFolder = new InternalCriteria.Builder()
                 .folderUri("/")
-                .resourceMask(SearchCriteria.FOLDER)
+                .resourceMask(RepositorySearchCriteria.FOLDER)
                 .create();
         verify(mSearchUseCase).performSearch(rootFolder);
         InternalCriteria publicFolder = rootFolder.newBuilder()

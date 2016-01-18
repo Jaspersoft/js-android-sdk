@@ -35,13 +35,13 @@ import static org.hamcrest.core.Is.is;
  * @author Tom Koptel
  * @since 2.0
  */
-public class SearchCriteriaTest {
+public class RepositorySearchCriteriaTest {
     @Rule
     public ExpectedException mExpectedException = ExpectedException.none();
 
     @Test
     public void shouldIncludeSortByLabelInParams() {
-        SearchCriteria criteria = SearchCriteria.builder()
+        RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
                 .withSortType(SortType.LABEL)
                 .build();
         assertThat(criteria.getSortBy(), is(SortType.LABEL));
@@ -49,7 +49,7 @@ public class SearchCriteriaTest {
 
     @Test
     public void shouldIncludeSortByCreationDateInParams() {
-        SearchCriteria criteria = SearchCriteria.builder()
+        RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
                 .withSortType(SortType.CREATION_DATE)
                 .build();
         assertThat(criteria.getSortBy(), is(SortType.CREATION_DATE));
@@ -59,13 +59,13 @@ public class SearchCriteriaTest {
     public void shouldNotAcceptNegativeOffset() {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Offset should be positive");
-        SearchCriteria.builder().withOffset(-1).build();
+        RepositorySearchCriteria.builder().withOffset(-1).build();
     }
 
     @Test
     public void shouldNotAcceptNegativeLimit() {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Limit should be positive");
-        SearchCriteria.builder().withLimit(-1).build();
+        RepositorySearchCriteria.builder().withLimit(-1).build();
     }
 }

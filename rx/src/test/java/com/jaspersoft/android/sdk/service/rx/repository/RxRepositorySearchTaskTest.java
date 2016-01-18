@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.repository.SearchTask;
+import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,19 +39,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class RxSearchTaskTest {
+public class RxRepositorySearchTaskTest {
 
     @Mock
-    SearchTask mSyncDelegate;
+    RepositorySearchTask mSyncDelegate;
     @Mock
     ServiceException mServiceException;
 
-    private RxSearchTask rxSearchTask;
+    private RxRepositorySearchTask mRxRepositorySearchTask;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        rxSearchTask = new RxSearchTask(mSyncDelegate);
+        mRxRepositorySearchTask = new RxRepositorySearchTask(mSyncDelegate);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class RxSearchTaskTest {
         when(mSyncDelegate.nextLookup()).thenReturn(Collections.<Resource>emptyList());
 
         TestSubscriber<List<Resource>> test = new TestSubscriber<>();
-        rxSearchTask.nextLookup().subscribe(test);
+        mRxRepositorySearchTask.nextLookup().subscribe(test);
 
         test.assertNoErrors();
         test.assertCompleted();
@@ -73,7 +73,7 @@ public class RxSearchTaskTest {
         when(mSyncDelegate.nextLookup()).thenThrow(mServiceException);
 
         TestSubscriber<List<Resource>> test = new TestSubscriber<>();
-        rxSearchTask.nextLookup().subscribe(test);
+        mRxRepositorySearchTask.nextLookup().subscribe(test);
 
         test.assertError(mServiceException);
         test.assertNotCompleted();
@@ -86,7 +86,7 @@ public class RxSearchTaskTest {
         when(mSyncDelegate.hasNext()).thenReturn(true);
 
         TestSubscriber<Boolean> test = new TestSubscriber<>();
-        rxSearchTask.hasNext().subscribe(test);
+        mRxRepositorySearchTask.hasNext().subscribe(test);
 
         test.assertNoErrors();
         test.assertCompleted();

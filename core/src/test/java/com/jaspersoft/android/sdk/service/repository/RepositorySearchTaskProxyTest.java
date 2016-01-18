@@ -24,52 +24,51 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
-import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class SearchTaskFactoryTest {
+@RunWith(PowerMockRunner.class)
+public class RepositorySearchTaskProxyTest {
 
     @Mock
-    InfoCacheManager mInfoCacheManager;
+    SearchTaskFactory mSearchTaskFactory;
     @Mock
-    SearchUseCase mSearchUseCase;
-    @Mock
-    ServerInfo mServerInfo;
+    RepositorySearchTask mDelegate;
 
-    private static final InternalCriteria CRITERIA =
-            new InternalCriteria.Builder().create();
-    private SearchTaskFactory searchTaskFactory;
-
+    private RepositorySearchTaskProxy searchTask;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
-
-        searchTaskFactory = new SearchTaskFactory(CRITERIA, mSearchUseCase, mInfoCacheManager);
+        when(mSearchTaskFactory.create()).thenReturn(mDelegate);
+        searchTask = new RepositorySearchTaskProxy(mSearchTaskFactory);
     }
 
     @Test
-    public void testShouldReturnLegacySearchTask() throws Exception {
-        when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_5);
-        SearchTask task = searchTaskFactory.create();
-        assertThat(task, is(instanceOf(SearchTaskV5_5.class)));
+    public void testNextLookup() throws Exception {
+        searchTask.nextLookup();
+        verify(mSearchTaskFactory).create();
+
+        searchTask.nextLookup();
+        verifyNoMoreInteractions(mSearchTaskFactory);
     }
 
     @Test
-    public void testShouldReturnNewSearchTask() throws Exception {
-        when(mServerInfo.getVersion()).thenReturn(ServerVersion.v5_6);
-        SearchTask task = searchTaskFactory.create();
-        assertThat(task, is(instanceOf(SearchTaskV5_6Plus.class)));
+    public void testHasNext() throws Exception {
+        when(mDelegate.hasNext()).thenReturn(true);
+
+        assertThat("Has next returns false by default", searchTask.hasNext(), is(false));
+        searchTask.nextLookup();
+        assertThat("Has next returns true from delegate", searchTask.hasNext(), is(true));
     }
 }

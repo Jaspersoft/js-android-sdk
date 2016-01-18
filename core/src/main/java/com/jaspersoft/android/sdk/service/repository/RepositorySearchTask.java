@@ -34,7 +34,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public abstract class SearchTask {
+public abstract class RepositorySearchTask {
     @NotNull
     public abstract List<Resource> nextLookup() throws ServiceException;
 

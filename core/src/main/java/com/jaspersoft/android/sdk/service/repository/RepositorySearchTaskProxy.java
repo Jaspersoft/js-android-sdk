@@ -22,15 +22,11 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.rx.repository;
+package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.repository.SearchTask;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
-import rx.Observable;
-import rx.functions.Func0;
 
 import java.util.List;
 
@@ -38,36 +34,26 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public class RxSearchTask {
-    private final SearchTask mSyncDelegate;
+final class RepositorySearchTaskProxy extends RepositorySearchTask {
+    private final SearchTaskFactory mSearchTaskFactory;
 
-    @TestOnly
-    RxSearchTask(SearchTask searchTask) {
-        mSyncDelegate = searchTask;
+    private RepositorySearchTask mDelegate;
+
+    RepositorySearchTaskProxy(SearchTaskFactory searchTaskFactory) {
+        mSearchTaskFactory = searchTaskFactory;
     }
 
     @NotNull
-    public Observable<List<Resource>> nextLookup() {
-        return Observable.defer(new Func0<Observable<List<Resource>>>() {
-            @Override
-            public Observable<List<Resource>> call() {
-                try {
-                    List<Resource> result = mSyncDelegate.nextLookup();
-                    return Observable.just(result);
-                } catch (ServiceException e) {
-                    return Observable.error(e);
-                }
-            }
-        });
+    @Override
+    public List<Resource> nextLookup() throws ServiceException {
+        if (mDelegate == null) {
+            mDelegate = mSearchTaskFactory.create();
+        }
+        return mDelegate.nextLookup();
     }
 
-    @NotNull
-    public Observable<Boolean> hasNext() {
-        return Observable.defer(new Func0<Observable<Boolean>>() {
-            @Override
-            public Observable<Boolean> call() {
-                return Observable.just(mSyncDelegate.hasNext());
-            }
-        });
+    @Override
+    public boolean hasNext() {
+        return mDelegate != null && mDelegate.hasNext();
     }
 }

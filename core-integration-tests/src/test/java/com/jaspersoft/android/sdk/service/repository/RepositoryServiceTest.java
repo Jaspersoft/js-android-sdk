@@ -30,14 +30,14 @@ public class RepositoryServiceTest {
     @Parameters(method = "clients")
     public void repo_service_should_perform_search(ServerTestBundle bundle) throws Exception {
         RepositoryService service = RepositoryService.newService(bundle.getClient());
-        SearchCriteria searchCriteria = SearchCriteria.builder()
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder()
                 .withLimit(5)
-                .withResourceMask(SearchCriteria.REPORT)
+                .withResourceMask(RepositorySearchCriteria.REPORT)
                 .build();
 
-        SearchTask searchTask = service.search(searchCriteria);
-        assertThat(searchTask.nextLookup(), is(notNullValue()));
-        assertThat(searchTask.nextLookup(), is(notNullValue()));
+        RepositorySearchTask repositorySearchTask = service.search(repositorySearchCriteria);
+        assertThat(repositorySearchTask.nextLookup(), is(notNullValue()));
+        assertThat(repositorySearchTask.nextLookup(), is(notNullValue()));
     }
 
     @Test
