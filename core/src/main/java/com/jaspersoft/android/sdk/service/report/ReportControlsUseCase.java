@@ -39,12 +39,12 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-class ControlsApi {
+class ReportControlsUseCase {
 
     private final ServiceExceptionMapper mExceptionMapper;
     private final InputControlRestApi mRestApi;
 
-    public ControlsApi(ServiceExceptionMapper exceptionMapper, InputControlRestApi restApi) {
+    public ReportControlsUseCase(ServiceExceptionMapper exceptionMapper, InputControlRestApi restApi) {
         mExceptionMapper = exceptionMapper;
         mRestApi = restApi;
     }

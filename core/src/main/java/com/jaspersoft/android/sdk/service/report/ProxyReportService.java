@@ -24,17 +24,10 @@
 
 package com.jaspersoft.android.sdk.service.report;
 
-import com.jaspersoft.android.sdk.network.entity.control.InputControl;
-import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -57,59 +50,6 @@ final class ProxyReportService extends ReportService {
             execOptions = ReportExecutionOptions.builder().build();
         }
         return getDelegate().run(reportUri, execOptions);
-    }
-
-    @NotNull
-    @Override
-    public List<InputControl> listControls(@Nullable String reportUri) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        return getDelegate().listControls(reportUri);
-    }
-
-    @NotNull
-    @Override
-    public List<InputControlState> listControlsValues(@Nullable String reportUri,
-                                                      @Nullable List<ReportParameter> parameters) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(parameters, "Parameters should not be null");
-        return getDelegate().listControlsValues(reportUri, parameters);
-    }
-
-    @NotNull
-    @Override
-    public Set<ReportOption> listReportOptions(@Nullable String reportUri) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        return getDelegate().listReportOptions(reportUri);
-    }
-
-    @NotNull
-    @Override
-    public ReportOption createReportOption(@NotNull String reportUri,
-                                           @NotNull String optionLabel,
-                                           @NotNull List<ReportParameter> parameters,
-                                           boolean overwrite) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(optionLabel, "Option label should not be null");
-        Preconditions.checkNotNull(parameters, "Parameters should not be null");
-
-        return getDelegate().createReportOption(reportUri, optionLabel, parameters, overwrite);
-    }
-
-    @Override
-    public void updateReportOption(@NotNull String reportUri, @NotNull String optionId, @NotNull List<ReportParameter> parameters) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(optionId, "Option id should not be null");
-        Preconditions.checkNotNull(parameters, "Parameters should not be null");
-
-        getDelegate().updateReportOption(reportUri, optionId, parameters);
-    }
-
-    @Override
-    public void deleteReportOption(@NotNull String reportUri, @NotNull String optionId) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(optionId, "Option id should not be null");
-
-        getDelegate().deleteReportOption(reportUri, optionId);
     }
 
     private ReportService getDelegate() throws ServiceException {

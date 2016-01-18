@@ -43,8 +43,6 @@ class ReportServiceFactory {
     private final InfoCacheManager mCacheManager;
     private final ReportExecutionRestApi mReportExecutionRestApi;
     private final ReportExportRestApi mReportExportRestApi;
-    private final InputControlRestApi mInputControlRestApi;
-    private final ReportOptionRestApi mReportOptionRestApi;
     private final ServiceExceptionMapper mExceptionMapper;
     private final String mBaseUrl;
     private final long mDelay;
@@ -53,15 +51,11 @@ class ReportServiceFactory {
     ReportServiceFactory(InfoCacheManager cacheManager,
                          ReportExecutionRestApi reportExecutionRestApi,
                          ReportExportRestApi reportExportRestApi,
-                         InputControlRestApi inputControlRestApi,
-                         ReportOptionRestApi reportOptionRestApi,
                          ServiceExceptionMapper exceptionMapper,
                          String baseUrl, long delay) {
         mCacheManager = cacheManager;
         mReportExecutionRestApi = reportExecutionRestApi;
         mReportExportRestApi = reportExportRestApi;
-        mInputControlRestApi = inputControlRestApi;
-        mReportOptionRestApi = reportOptionRestApi;
         mExceptionMapper = exceptionMapper;
         mBaseUrl = baseUrl;
         mDelay = delay;
@@ -80,23 +74,16 @@ class ReportServiceFactory {
         AttachmentsFactory attachmentsFactory = new AttachmentsFactory(exportExecutionApi);
         ExportFactory exportFactory = new ExportFactory(exportExecutionApi, attachmentsFactory);
 
-        ControlsApi controlsApi = new ControlsApi(mExceptionMapper, mInputControlRestApi);
-        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(mExceptionMapper, mReportOptionRestApi);
-
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
             return new ReportService5_5(
                     exportExecutionApi,
                     reportExecutionApi,
-                    reportOptionsUseCase,
-                    controlsApi,
                     exportFactory,
                     mDelay);
         } else {
             return new ReportService5_6Plus(
                     exportExecutionApi,
                     reportExecutionApi,
-                    reportOptionsUseCase,
-                    controlsApi,
                     exportFactory,
                     mDelay);
         }
