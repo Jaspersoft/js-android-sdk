@@ -160,10 +160,10 @@ public class CriteriaMapperTest {
         int mask = 0;
         if (flags.contains(":")) {
             for (String flag : flags.split(":")) {
-                mask |= (Integer) SearchCriteria.class.getField(flag).get(null);
+                mask |= (Integer) RepositorySearchCriteria.class.getField(flag).get(null);
             }
         } else {
-            mask = (Integer) SearchCriteria.class.getField(flags).get(null);
+            mask = (Integer) RepositorySearchCriteria.class.getField(flags).get(null);
         }
 
         InternalCriteria criteria = new InternalCriteria.Builder()

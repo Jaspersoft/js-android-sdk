@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.*;
+import static com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria.*;
 
 /**
  * @author Tom Koptel

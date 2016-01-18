@@ -37,7 +37,7 @@ import static org.hamcrest.core.Is.is;
  * @since 2.0
  */
 @RunWith(JUnitParamsRunner.class)
-public class InternalSearchCriteriaTest {
+public class InternalRepositorySearchCriteriaTest {
 
     @Test
     public void newBuilderShouldCopyCount() {
@@ -96,10 +96,10 @@ public class InternalSearchCriteriaTest {
     @Test
     public void newBuilderShouldCopyResourceMask() {
         InternalCriteria searchCriteria = new InternalCriteria.Builder()
-                .resourceMask(SearchCriteria.REPORT | SearchCriteria.DASHBOARD)
+                .resourceMask(RepositorySearchCriteria.REPORT | RepositorySearchCriteria.DASHBOARD)
                 .create();
         InternalCriteria newCriteria = searchCriteria.newBuilder().create();
-        assertThat(newCriteria.getResourceMask(), is(SearchCriteria.REPORT | SearchCriteria.DASHBOARD));
+        assertThat(newCriteria.getResourceMask(), is(RepositorySearchCriteria.REPORT | RepositorySearchCriteria.DASHBOARD));
     }
 
     @Test
@@ -122,50 +122,50 @@ public class InternalSearchCriteriaTest {
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldLimit() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withLimit(1).build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withLimit(1).build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getLimit(), is(1));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldOffset() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withOffset(2).build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withOffset(2).build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getOffset(), is(2));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldResourceMask() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withResourceMask(SearchCriteria.REPORT).build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
-        assertThat(criteria.getResourceMask(), is(SearchCriteria.REPORT));
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withResourceMask(RepositorySearchCriteria.REPORT).build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
+        assertThat(criteria.getResourceMask(), is(RepositorySearchCriteria.REPORT));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldRecursive() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withRecursive(true).build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withRecursive(true).build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getRecursive(), is(true));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldFolderUri() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withFolderUri("/").build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withFolderUri("/").build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getFolderUri(), is("/"));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldQuery() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withQuery("query").build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withQuery("query").build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getQuery(), is("query"));
     }
 
     @Test
     public void shouldAdaptFromUserCriteriaFieldSortBy() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().withSortType(SortType.CREATION_DATE).build();
-        InternalCriteria criteria = InternalCriteria.from(searchCriteria);
+        RepositorySearchCriteria repositorySearchCriteria = RepositorySearchCriteria.builder().withSortType(SortType.CREATION_DATE).build();
+        InternalCriteria criteria = InternalCriteria.from(repositorySearchCriteria);
         assertThat(criteria.getSortBy(), is(SortType.CREATION_DATE));
     }
 }

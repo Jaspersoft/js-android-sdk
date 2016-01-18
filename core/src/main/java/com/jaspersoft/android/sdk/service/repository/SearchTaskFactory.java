@@ -44,12 +44,12 @@ class SearchTaskFactory {
         mCacheManager = cacheManager;
     }
 
-    public SearchTask create() throws ServiceException {
+    public RepositorySearchTask create() throws ServiceException {
         ServerInfo serverInfo = mCacheManager.getInfo();
         ServerVersion version = serverInfo.getVersion();
         if (version.lessThanOrEquals(ServerVersion.v5_5)) {
-            return new SearchTaskV5_5(mInternalCriteria, mSearchUseCase);
+            return new RepositorySearchTaskV5_5(mInternalCriteria, mSearchUseCase);
         }
-        return new SearchTaskV5_6Plus(mInternalCriteria, mSearchUseCase);
+        return new RepositorySearchTaskV5_6Plus(mInternalCriteria, mSearchUseCase);
     }
 }

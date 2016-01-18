@@ -51,8 +51,8 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchUseCase.class)
-public class SearchTaskV5_6PlusTest {
-    private static final InternalCriteria NO_CRITERIA = InternalCriteria.from(SearchCriteria.none());
+public class RepositorySearchTaskV5_6PlusTest {
+    private static final InternalCriteria NO_CRITERIA = InternalCriteria.from(RepositorySearchCriteria.empty());
 
     @Mock
     SearchUseCase mSearchUseCase;
@@ -72,7 +72,7 @@ public class SearchTaskV5_6PlusTest {
     @Test
     public void shouldMakeImmediateCallOnApiForUserOffsetZero() throws Exception {
         InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(0).create();
-        SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         strategy.nextLookup();
 
@@ -86,7 +86,7 @@ public class SearchTaskV5_6PlusTest {
     @Test
     public void makesAdditionalCallOnApiIfUserOffsetNotZero() throws Exception {
         InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(5).create();
-        SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         strategy.nextLookup();
 
@@ -100,7 +100,7 @@ public class SearchTaskV5_6PlusTest {
     @Test
     public void secondSearchLookupShouldUseNextOffset() throws Exception {
         InternalCriteria searchCriteria = new InternalCriteria.Builder().offset(0).create();
-        SearchTask strategy = new SearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_6Plus(searchCriteria, mSearchUseCase);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.nextLookup();
@@ -121,7 +121,7 @@ public class SearchTaskV5_6PlusTest {
 
     @Test
     public void searchWillAlwaysReturnEmptyCollectionIfReachedEndOnApiSide() throws Exception {
-        SearchTask strategy = new SearchTaskV5_6Plus(NO_CRITERIA, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_6Plus(NO_CRITERIA, mSearchUseCase);
 
         when(mResponse.getNextOffset()).thenReturn(133);
         strategy.nextLookup();
@@ -140,7 +140,7 @@ public class SearchTaskV5_6PlusTest {
     @Test
     public void shouldReturnEmptyCollectionForZeroLimit() throws Exception {
         InternalCriteria userCriteria = new InternalCriteria.Builder().limit(0).offset(5).create();
-        SearchTask strategy = new SearchTaskV5_6Plus(userCriteria, mSearchUseCase);
+        RepositorySearchTask strategy = new RepositorySearchTaskV5_6Plus(userCriteria, mSearchUseCase);
 
         Collection<Resource> result = strategy.nextLookup();
         assertThat(result, Matchers.is(Matchers.empty()));

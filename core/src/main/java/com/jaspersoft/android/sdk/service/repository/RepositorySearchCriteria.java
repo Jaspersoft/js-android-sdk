@@ -33,7 +33,7 @@ import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkArg
  * @author Tom Koptel
  * @since 2.0
  */
-public final class SearchCriteria {
+public final class RepositorySearchCriteria {
     public static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = 100;
 
@@ -52,7 +52,7 @@ public final class SearchCriteria {
     private final SortType mSort;
     private final String mFolderUri;
 
-    private SearchCriteria(Builder builder) {
+    private RepositorySearchCriteria(Builder builder) {
         mLimit = builder.limit;
         mOffset = builder.offset;
         mResourceMask = builder.resourceMask;
@@ -68,7 +68,7 @@ public final class SearchCriteria {
     }
 
     @NotNull
-    public static SearchCriteria none() {
+    public static RepositorySearchCriteria empty() {
         return builder().build();
     }
 
@@ -155,8 +155,8 @@ public final class SearchCriteria {
             return this;
         }
 
-        public SearchCriteria build() {
-            return new SearchCriteria(this);
+        public RepositorySearchCriteria build() {
+            return new RepositorySearchCriteria(this);
         }
     }
 }

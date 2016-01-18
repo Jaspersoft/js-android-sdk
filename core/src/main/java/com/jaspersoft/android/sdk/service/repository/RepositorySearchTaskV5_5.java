@@ -37,7 +37,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchTaskV5_5 extends SearchTask {
+final class RepositorySearchTaskV5_5 extends RepositorySearchTask {
     private static final List<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private static final int MAX_RETRY_COUNT = 5;
 
@@ -48,7 +48,7 @@ final class SearchTaskV5_5 extends SearchTask {
     private int mServerDisposition;
     private boolean mEndReached;
 
-    public SearchTaskV5_5(InternalCriteria criteria, SearchUseCase searchUseCase) {
+    public RepositorySearchTaskV5_5(InternalCriteria criteria, SearchUseCase searchUseCase) {
         mSearchUserCase = searchUseCase;
         mInitialCriteria = criteria;
         mEndReached = false;

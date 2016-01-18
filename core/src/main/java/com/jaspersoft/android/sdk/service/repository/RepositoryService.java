@@ -61,14 +61,14 @@ public class RepositoryService {
     }
 
     @NotNull
-    public SearchTask search(@Nullable SearchCriteria criteria) {
+    public RepositorySearchTask search(@Nullable RepositorySearchCriteria criteria) {
         if (criteria == null) {
-            criteria = SearchCriteria.none();
+            criteria = RepositorySearchCriteria.empty();
         }
 
         InternalCriteria internalCriteria = InternalCriteria.from(criteria);
         SearchTaskFactory searchTaskFactory = new SearchTaskFactory(internalCriteria, mSearchUseCase, mInfoCacheManager);
-        return new SearchTaskProxy(searchTaskFactory);
+        return new RepositorySearchTaskProxy(searchTaskFactory);
     }
 
     @NotNull
@@ -81,7 +81,7 @@ public class RepositoryService {
     public List<Resource> fetchRootFolders() throws ServiceException {
         InternalCriteria rootFolder = new InternalCriteria.Builder()
                 .folderUri("/")
-                .resourceMask(SearchCriteria.FOLDER)
+                .resourceMask(RepositorySearchCriteria.FOLDER)
                 .create();
         List<Resource> folders = new ArrayList<>(10);
         SearchResult result = mSearchUseCase.performSearch(rootFolder);

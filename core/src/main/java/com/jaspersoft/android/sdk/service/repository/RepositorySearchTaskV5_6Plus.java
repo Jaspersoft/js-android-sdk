@@ -36,7 +36,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-final class SearchTaskV5_6Plus extends SearchTask {
+final class RepositorySearchTaskV5_6Plus extends RepositorySearchTask {
     public static final List<Resource> EMPTY_RESPONSE = Collections.emptyList();
     private final static int UNDEFINED = -1;
 
@@ -47,7 +47,7 @@ final class SearchTaskV5_6Plus extends SearchTask {
     private int mInternalOffset = UNDEFINED;
     private boolean mEndReached;
 
-    public SearchTaskV5_6Plus(InternalCriteria criteria, SearchUseCase searchUseCase) {
+    public RepositorySearchTaskV5_6Plus(InternalCriteria criteria, SearchUseCase searchUseCase) {
         mSearchUseCase = searchUseCase;
 
         // Internally enabling 'forceFullPageFlag'

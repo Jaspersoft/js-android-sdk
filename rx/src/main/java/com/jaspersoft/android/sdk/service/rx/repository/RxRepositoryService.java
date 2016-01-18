@@ -30,8 +30,8 @@ import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
-import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
-import com.jaspersoft.android.sdk.service.repository.SearchTask;
+import com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria;
+import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -54,9 +54,9 @@ public class RxRepositoryService {
     }
 
     @NotNull
-    public RxSearchTask search(@Nullable SearchCriteria criteria) {
-        SearchTask searchTask = mSyncDelegate.search(criteria);
-        return new RxSearchTask(searchTask);
+    public RxRepositorySearchTask search(@Nullable RepositorySearchCriteria criteria) {
+        RepositorySearchTask repositorySearchTask = mSyncDelegate.search(criteria);
+        return new RxRepositorySearchTask(repositorySearchTask);
     }
 
     @NotNull

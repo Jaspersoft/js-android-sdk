@@ -27,8 +27,8 @@ package com.jaspersoft.android.sdk.service.repository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_LIMIT;
-import static com.jaspersoft.android.sdk.service.repository.SearchCriteria.DEFAULT_OFFSET;
+import static com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria.DEFAULT_LIMIT;
+import static com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria.DEFAULT_OFFSET;
 
 /**
  * @author Tom Koptel
@@ -58,7 +58,7 @@ class InternalCriteria {
     }
 
     @NotNull
-    public static InternalCriteria from(SearchCriteria criteria) {
+    public static InternalCriteria from(RepositorySearchCriteria criteria) {
         return new InternalCriteria.Builder()
                 .limit(criteria.getLimit())
                 .offset(criteria.getOffset())

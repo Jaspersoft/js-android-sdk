@@ -29,8 +29,8 @@ import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.repository.RepositoryService;
-import com.jaspersoft.android.sdk.service.repository.SearchCriteria;
-import com.jaspersoft.android.sdk.service.repository.SearchTask;
+import com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria;
+import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class RxRepositoryServiceTest {
     @Mock
     RepositoryService mSyncDelegate;
     @Mock
-    SearchTask mSearchTask;
+    RepositorySearchTask mRepositorySearchTask;
     @Mock
     ReportResource mReportResource;
     @Mock
@@ -78,10 +78,10 @@ public class RxRepositoryServiceTest {
 
     @Test
     public void should_delegate_search_call() throws Exception {
-        when(mSyncDelegate.search(any(SearchCriteria.class))).thenReturn(mSearchTask);
-        SearchCriteria criteria = SearchCriteria.none();
+        when(mSyncDelegate.search(any(RepositorySearchCriteria.class))).thenReturn(mRepositorySearchTask);
+        RepositorySearchCriteria criteria = RepositorySearchCriteria.empty();
 
-        TestSubscriber<RxSearchTask> test = new TestSubscriber<>();
+        TestSubscriber<RxRepositorySearchTask> test = new TestSubscriber<>();
         rxRepositoryService.search(criteria);
 
         verify(mSyncDelegate).search(criteria);
