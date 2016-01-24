@@ -46,7 +46,10 @@ abstract class ExportOptionsMapper {
         if (serverVersion.greaterThanOrEquals(ServerVersion.v6_2)) {
             return new ExportOptionsMapper6_2(baseUrl);
         }
-        return new ExportOptionsMapper5_5and6_1(baseUrl);
+        if (serverVersion.lessThanOrEquals(ServerVersion.v5_5)) {
+            return new ExportOptionsMapper5_5(baseUrl);
+        }
+        return new ExportOptionsMapper5_6and6_1(baseUrl);
     }
 
     public ExecutionRequestOptions transform(ReportExportOptions options) {

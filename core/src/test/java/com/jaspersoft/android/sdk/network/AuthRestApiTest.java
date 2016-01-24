@@ -35,7 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -65,9 +64,9 @@ public class AuthRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        retrofit.client().setFollowRedirects(false);
-        apiUnderTest = new AuthRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        networkClient.getClient().setFollowRedirects(false);
+        apiUnderTest = new AuthRestApi(networkClient);
     }
 
     @Test

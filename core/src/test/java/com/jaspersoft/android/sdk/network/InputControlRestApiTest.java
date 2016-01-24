@@ -39,10 +39,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -76,8 +81,8 @@ public class InputControlRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new InputControlRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        restApiUnderTest = new InputControlRestApi(networkClient);
     }
 
     @Test
@@ -131,8 +136,10 @@ public class InputControlRestApiTest {
         Collection<InputControlState> states = restApiUnderTest.requestInputControlsInitialStates("/my/uri", true);
         assertThat(states, is(not(empty())));
 
-        RecordedRequest response = mWebMockRule.get().takeRequest();
-        assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls/values?freshData=true"));
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls/values?freshData=true"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -149,8 +156,10 @@ public class InputControlRestApiTest {
         Collection<InputControlState> states = restApiUnderTest.requestInputControlsStates("/my/uri", parameters, true);
         assertThat(states, Matchers.is(not(Matchers.empty())));
 
-        RecordedRequest response = mWebMockRule.get().takeRequest();
-        assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls/sales_fact_ALL__store_sales_2013_1/values?freshData=true"));
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls/sales_fact_ALL__store_sales_2013_1/values?freshData=true"));
+        assertThat(request, wasMethod("POST"));
     }
 
     @Test
@@ -163,8 +172,10 @@ public class InputControlRestApiTest {
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(nullValue()));
 
-        RecordedRequest response = mWebMockRule.get().takeRequest();
-        assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls?exclude=state"));
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls?exclude=state"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -177,7 +188,9 @@ public class InputControlRestApiTest {
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(not(nullValue())));
 
-        RecordedRequest response = mWebMockRule.get().takeRequest();
-        assertThat(response.getPath(), is("/rest_v2/reports/my/uri/inputControls"));
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls"));
+        assertThat(request, wasMethod("GET"));
     }
 }

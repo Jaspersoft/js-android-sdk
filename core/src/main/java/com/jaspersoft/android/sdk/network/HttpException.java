@@ -31,7 +31,6 @@ import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.ResponseBody;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +53,6 @@ public class HttpException extends Exception {
         super(responseMessage + " " + code);
         mCode = code;
         mBody = responseBody;
-    }
-
-    static HttpException httpError(Response response) {
-        return new HttpException(response.message(), response.code(), response.errorBody());
     }
 
     static HttpException httpError(com.squareup.okhttp.Response response) {

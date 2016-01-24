@@ -24,13 +24,11 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Retrofit;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -45,12 +43,12 @@ import java.util.concurrent.TimeUnit;
 public final class Server {
     private final String mBaseUrl;
     private final OkHttpClient mOkHttpClient;
-    private final Retrofit.Builder mRetrofitBuilder;
+    private final NetworkClient.Builder mNetworkBuilder;
 
-    private Server(String baseUrl, OkHttpClient okHttpClient, Retrofit.Builder retrofitBuilder) {
+    private Server(String baseUrl, OkHttpClient okHttpClient, NetworkClient.Builder networkBuilder) {
         mBaseUrl = baseUrl;
         mOkHttpClient = okHttpClient;
-        mRetrofitBuilder = retrofitBuilder;
+        mNetworkBuilder = networkBuilder;
     }
 
     @NotNull
@@ -74,8 +72,8 @@ public final class Server {
         return mBaseUrl;
     }
 
-    Retrofit.Builder newRetrofit() {
-        return mRetrofitBuilder;
+    NetworkClient.Builder newNetworkClient() {
+        return mNetworkBuilder;
     }
 
     OkHttpClient client() {
@@ -115,16 +113,11 @@ public final class Server {
         }
 
         public Server build() {
-            Gson configuredGson = GsonFactory.create();
-            GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(configuredGson);
-            StringConverterFactory stringConverterFactory = StringConverterFactory.create();
+            NetworkClient.Builder networkBuilder = new NetworkClient.Builder()
+                    .setBaseUrl(mBaseUrl)
+                    .setGson(GsonFactory.create());
 
-            Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
-                    .baseUrl(mBaseUrl)
-                    .addConverterFactory(stringConverterFactory)
-                    .addConverterFactory(gsonConverterFactory);
-
-            return new Server(mBaseUrl, mOkHttpClient, retrofitBuilder);
+            return new Server(mBaseUrl, mOkHttpClient, networkBuilder);
         }
     }
 
@@ -147,10 +140,10 @@ public final class Server {
             anonymousClient.setFollowRedirects(false);
             anonymousClient.setCookieHandler(mCookieHandler);
 
-            Retrofit anonymousRetrofit = mServer.newRetrofit()
-                    .client(anonymousClient)
+            NetworkClient networkClient = mServer.newNetworkClient()
+                    .setClient(anonymousClient)
                     .build();
-            return new AnonymousClient(anonymousRetrofit);
+            return new AnonymousClient(networkClient);
         }
     }
 
@@ -178,14 +171,14 @@ public final class Server {
 
         public AuthorizedClient create() {
             OkHttpClient authClient = configureAuthClient(mServer.client().clone());
-            Retrofit authRetrofit = mServer.newRetrofit()
-                    .client(authClient)
+            NetworkClient networkClient = mServer.newNetworkClient()
+                    .setClient(authClient)
                     .build();
 
             AnonymousClient anonymousClient = mServer.newClient()
                     .withCookieHandler(mCookieHandler)
                     .create();
-            return new AuthorizedClient(authRetrofit, anonymousClient);
+            return new AuthorizedClient(networkClient, anonymousClient);
         }
 
         private OkHttpClient configureAuthClient(OkHttpClient client) {
@@ -198,11 +191,11 @@ public final class Server {
         private AuthStrategy configureAuthStrategy(OkHttpClient client) {
             OkHttpClient authClient = client.clone();
             authClient.setFollowRedirects(false);
-            Retrofit authRetrofit = mServer.newRetrofit()
-                    .client(authClient)
+            NetworkClient networkClient = mServer.newNetworkClient()
+                    .setClient(authClient)
                     .build();
 
-            SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(authRetrofit);
+            SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(networkClient);
             return new AuthStrategy(springAuthServiceFactory);
         }
 

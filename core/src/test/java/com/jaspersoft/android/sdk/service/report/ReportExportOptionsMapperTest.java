@@ -45,8 +45,13 @@ public class ReportExportOptionsMapperTest {
     }
 
     @Test
+    public void should_create_5_5_mapper() throws Exception {
+        ExportOptionsMapper mapper = ExportOptionsMapper.create(ServerVersion.v5_5, BASE_URL);
+        assertThat(mapper, is(instanceOf(ExportOptionsMapper5_5.class)));
+    }
+
+    @Test
     @Parameters({
-            "v5_5",
             "v5_6",
             "v5_6_1",
             "v6",
@@ -57,6 +62,6 @@ public class ReportExportOptionsMapperTest {
     public void should_create_default_mapper_for(String rawVersion) throws Exception {
         ServerVersion version = (ServerVersion) ServerVersion.class.getField(rawVersion).get(null);
         ExportOptionsMapper mapper = ExportOptionsMapper.create(version, BASE_URL);
-        assertThat(mapper, is(instanceOf(ExportOptionsMapper5_5and6_1.class)));
+        assertThat(mapper, is(instanceOf(ExportOptionsMapper5_6and6_1.class)));
     }
 }

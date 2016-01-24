@@ -32,20 +32,18 @@ import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
-import retrofit.Retrofit;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasQuery.hasQuery;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -73,8 +71,8 @@ public class RepositoryRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new RepositoryRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        restApiUnderTest = new RepositoryRestApi(networkClient);
     }
 
     @Test
@@ -189,7 +187,11 @@ public class RepositoryRestApiTest {
         restApiUnderTest.searchResources(params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/resources?folderUri=/&type=reportUnit&type=dashboard"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasQuery("folderUri", "/"));
+        assertThat(request, hasQuery("type", "reportUnit"));
+        assertThat(request, hasQuery("type", "dashboard"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -202,7 +204,9 @@ public class RepositoryRestApiTest {
         restApiUnderTest.searchResources(params);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/resources?limit=100&offset=100"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/resources?limit=100&offset=100"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -212,8 +216,9 @@ public class RepositoryRestApiTest {
         restApiUnderTest.requestReportResource("/my/uri");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
-        assertThat(request.getHeader("Accept"), is("application/repository.reportUnit+json"));
+        assertThat(request, containsHeader("Accept", "application/repository.reportUnit+json"));
+        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -223,7 +228,8 @@ public class RepositoryRestApiTest {
         restApiUnderTest.requestFolderResource("/my/uri");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/resources/my/uri"));
-        assertThat(request.getHeader("Accept"), is("application/repository.folder+json"));
+        assertThat(request, containsHeader("Accept", "application/repository.folder+json"));
+        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
+        assertThat(request, wasMethod("GET"));
     }
 }

@@ -28,12 +28,12 @@ import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Call;
-import retrofit.Retrofit;
-import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -46,21 +46,34 @@ import java.util.Set;
  * @since 2.0
  */
 public class ReportOptionRestApi {
-    private final RestApi mRestApi;
+    private final NetworkClient mNetworkClient;
 
-    ReportOptionRestApi(Retrofit retrofit) {
-        mRestApi = retrofit.create(RestApi.class);
+    ReportOptionRestApi(NetworkClient networkClient) {
+        mNetworkClient = networkClient;
     }
 
     @NotNull
-    public Set<ReportOption> requestReportOptionsList(
-                                                      @Nullable String reportUnitUri) throws IOException, HttpException {
+    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
 
-        Call<ReportOptionSet> call = mRestApi.requestReportOptionsList(reportUnitUri);
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reports")
+                .addPaths(reportUnitUri)
+                .addPath("options")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
+
+        Response response = mNetworkClient.makeCall(request);
         try {
-            ReportOptionSet options = CallWrapper.wrap(call).body();
-            return options.get();
+            ReportOptionSet reportOptionSet = mNetworkClient.deserializeJson(response, ReportOptionSet.class);
+            return reportOptionSet.get();
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when there is no report options
@@ -73,17 +86,37 @@ public class ReportOptionRestApi {
 
     @NotNull
     public ReportOption createReportOption(
-                                           @Nullable String reportUnitUri,
-                                           @Nullable String optionLabel,
-                                           @Nullable List<ReportParameter> parameters,
-                                           boolean overwrite) throws IOException, HttpException {
+            @Nullable String reportUnitUri,
+            @Nullable String optionLabel,
+            @Nullable List<ReportParameter> parameters,
+            boolean overwrite) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionLabel, "Option label should not be null");
         Utils.checkNotNull(parameters, "Parameters values should not be null");
 
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reports")
+                .addPaths(reportUnitUri)
+                .addPath("options")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl())
+                .newBuilder()
+                .addQueryParameter("label", optionLabel)
+                .addQueryParameter("overwrite", String.valueOf(overwrite))
+                .build();
+
         Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
-        Call<ReportOption> call = mRestApi.createReportOption(reportUnitUri, optionLabel, controlsValues, overwrite);
-        return CallWrapper.wrap(call).body();
+        RequestBody requestBody = mNetworkClient.createJsonRequestBody(controlsValues);
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .post(requestBody)
+                .url(url)
+                .build();
+
+        Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ReportOption.class);
     }
 
     public void updateReportOption(@Nullable String reportUnitUri,
@@ -93,9 +126,26 @@ public class ReportOptionRestApi {
         Utils.checkNotNull(optionId, "Option id should not be null");
         Utils.checkNotNull(parameters, "Parameters values should not be null");
 
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reports")
+                .addPaths(reportUnitUri)
+                .addPath("options")
+                .addPath(optionId)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+
         Map<String, Set<String>> controlsValues = ReportParamsMapper.INSTANCE.toMap(parameters);
-        Call<Response> call = mRestApi.updateReportOption(reportUnitUri, optionId, controlsValues);
-        CallWrapper.wrap(call).body();
+        RequestBody requestBody = mNetworkClient.createJsonRequestBody(controlsValues);
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .put(requestBody)
+                .url(url)
+                .build();
+
+        mNetworkClient.makeCall(request);
     }
 
     public void deleteReportOption(@Nullable String reportUnitUri,
@@ -103,39 +153,21 @@ public class ReportOptionRestApi {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
 
-        Call<Response> call = mRestApi.deleteReportOption(reportUnitUri, optionId);
-        CallWrapper.wrap(call).body();
-    }
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reports")
+                .addPaths(reportUnitUri)
+                .addPath("options")
+                .addPath(optionId)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
 
-    private interface RestApi {
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reports{reportUnitUri}/options")
-        Call<ReportOptionSet> requestReportOptionsList(
-                @NotNull @Path(value = "reportUnitUri", encoded = true) String reportUnitUri);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .delete()
+                .url(url)
+                .build();
 
-        @NotNull
-        @Headers("Accept: application/json")
-        @POST("rest_v2/reports{reportUnitURI}/options")
-        Call<ReportOption> createReportOption(
-                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NotNull @Query("label") String optionLabel,
-                @NotNull @Body Map<String, Set<String>> controlsValues,
-                @Query("overwrite") boolean overwrite);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @PUT("rest_v2/reports{reportUnitURI}/options/{optionId}")
-        Call<com.squareup.okhttp.Response> updateReportOption(
-                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NotNull @Path(value = "optionId", encoded = true) String optionId,
-                @NotNull @Body Map<String, Set<String>> controlsValues);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @DELETE("rest_v2/reports{reportUnitURI}/options/{optionId}")
-        Call<com.squareup.okhttp.Response> deleteReportOption(
-                @NotNull @Path(value = "reportUnitURI", encoded = true) String reportUnitUri,
-                @NotNull @Path(value = "optionId", encoded = true) String optionI);
+        mNetworkClient.makeCall(request);
     }
 }

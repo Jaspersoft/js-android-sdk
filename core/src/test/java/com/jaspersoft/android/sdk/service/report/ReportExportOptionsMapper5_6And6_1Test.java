@@ -25,20 +25,31 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
+import com.jaspersoft.android.sdk.service.data.report.PageRange;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * @author Tom Koptel
- * @since 2.0
- */
-final class ExportOptionsMapper5_5and6_1 extends ExportOptionsMapper {
-    ExportOptionsMapper5_5and6_1(String baseUrl) {
-        super(baseUrl);
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+public class ReportExportOptionsMapper5_6And6_1Test {
+    private static final String BASE_URL = "http://localhost";
+
+    private ExportOptionsMapper5_6and6_1 mapper;
+
+    @Before
+    public void setUp() throws Exception {
+        mapper = new ExportOptionsMapper5_6and6_1(BASE_URL);
     }
 
-    @Override
-    public ExecutionRequestOptions transform(ReportExportOptions criteria) {
-        ExecutionRequestOptions options = super.transform(criteria);
-        options.withIgnorePagination(null);
-        return options;
+    @Test
+    public void should_exclude_ignore_pagination_flag() throws Exception {
+        ReportExportOptions criteria = ReportExportOptions.builder()
+                .withFormat(ReportFormat.PDF)
+                .withIgnorePagination(true)
+                .build();
+        ExecutionRequestOptions options = mapper.transform(criteria);
+        assertThat("Failed to remove 'ignorePagination' option", options.getIgnorePagination(), is(nullValue()));
     }
 }

@@ -24,20 +24,18 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import retrofit.Retrofit;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public abstract class Client {
-    protected final Retrofit mRetrofit;
+    protected final NetworkClient mNetworkClient;
 
-    protected Client(Retrofit retrofit) {
-        mRetrofit = retrofit;
+    protected Client(NetworkClient networkClient) {
+        mNetworkClient = networkClient;
     }
 
     public String getBaseUrl() {
-        return mRetrofit.baseUrl().url().toString();
+        return mNetworkClient.getBaseUrl().url().toString();
     }
 }

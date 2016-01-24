@@ -29,13 +29,11 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportOutputResource;
 import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
-import com.squareup.okhttp.ResponseBody;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Call;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.*;
 
 import java.io.IOException;
 
@@ -44,10 +42,10 @@ import java.io.IOException;
  * @since 2.0
  */
 public class ReportExportRestApi {
-    private final RestApi mRestApi;
+    private final NetworkClient mNetworkClient;
 
-    public ReportExportRestApi(Retrofit restAdapter) {
-        mRestApi = restAdapter.create(RestApi.class);
+    public ReportExportRestApi(NetworkClient networkClient) {
+        mNetworkClient = networkClient;
     }
 
     @NotNull
@@ -56,8 +54,24 @@ public class ReportExportRestApi {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
 
-        Call<ExportExecutionDescriptor> call = mRestApi.runReportExportExecution(executionId, executionOptions);
-        return CallWrapper.wrap(call).body();
+
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reportExecutions")
+                .addPath(executionId)
+                .addPath("exports")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        RequestBody jsonRequestBody = mNetworkClient.createJsonRequestBody(executionOptions);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .post(jsonRequestBody)
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ExportExecutionDescriptor.class);
     }
 
     @NotNull
@@ -65,10 +79,25 @@ public class ReportExportRestApi {
                                                       @Nullable String exportId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
-        
 
-        Call<ExecutionStatus> call = mRestApi.checkReportExportStatus(executionId, exportId);
-        return CallWrapper.wrap(call).body();
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reportExecutions")
+                .addPath(executionId)
+                .addPath("exports")
+                .addPath(exportId)
+                .addPath("status")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ExecutionStatus.class);
     }
 
     @NotNull
@@ -77,11 +106,32 @@ public class ReportExportRestApi {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(exportId, "Export id should not be null");
 
-        Call<ResponseBody> call = mRestApi.requestReportExportOutput(executionId, exportId);
-        Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
-        com.squareup.okhttp.Headers headers = rawResponse.headers();
+        /**
+         * 'suppressContentDisposition' used due to security implications this header has
+         */
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reportExecutions")
+                .addPath(executionId)
+                .addPath("exports")
+                .addPath(exportId)
+                .addPath("outputResource")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl())
+                .newBuilder()
+                .addQueryParameter("suppressContentDisposition", "true")
+                .build();
 
-        RetrofitOutputResource exportInput = new RetrofitOutputResource(rawResponse.body());
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        com.squareup.okhttp.Headers headers = response.headers();
+
+        RetrofitOutputResource exportInput = new RetrofitOutputResource(response.body());
         String pages = headers.get("report-pages");
         boolean isFinal = Boolean.parseBoolean(headers.get("output-final"));
 
@@ -96,39 +146,24 @@ public class ReportExportRestApi {
         Utils.checkNotNull(exportId, "Export id should not be null");
         Utils.checkNotNull(attachmentId, "Attachment id should not be null");
 
-        Call<ResponseBody> call = mRestApi.requestReportExportAttachmentOutput(executionId, exportId, attachmentId);
-        Response<ResponseBody> rawResponse = CallWrapper.wrap(call).response();
-        ResponseBody body = rawResponse.body();
-        return new RetrofitOutputResource(body);
-    }
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("reportExecutions")
+                .addPath(executionId)
+                .addPath("exports")
+                .addPath(exportId)
+                .addPath("attachments")
+                .addPath(attachmentId)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
 
-    private interface RestApi {
-        @NotNull
-        @Headers("Accept: application/json")
-        @POST("rest_v2/reportExecutions/{executionId}/exports")
-        Call<ExportExecutionDescriptor> runReportExportExecution(@NotNull @Path("executionId") String executionId,
-                                                                 @NotNull @Body ExecutionRequestOptions executionOptions);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
 
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/status")
-        Call<ExecutionStatus> checkReportExportStatus(@NotNull @Path("executionId") String executionId,
-                                                      @NotNull @Path(value = "exportId", encoded = true) String exportId);
-
-        /**
-         * 'suppressContentDisposition' used due to security implications this header has
-         */
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/outputResource?suppressContentDisposition=true")
-        Call<ResponseBody> requestReportExportOutput(@NotNull @Path("executionId") String executionId,
-                                                     @NotNull @Path(value = "exportId", encoded = true) String exportId);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions/{executionId}/exports/{exportId}/attachments/{attachmentId}")
-        Call<ResponseBody> requestReportExportAttachmentOutput(@NotNull @Path("executionId") String executionId,
-                                                               @NotNull @Path(value = "exportId", encoded = true) String exportId,
-                                                               @NotNull @Path("attachmentId") String attachmentId);
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return new RetrofitOutputResource(response.body());
     }
 }

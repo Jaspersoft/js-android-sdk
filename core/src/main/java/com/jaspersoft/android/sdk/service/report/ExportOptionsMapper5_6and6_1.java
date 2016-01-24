@@ -22,33 +22,23 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network;
+package com.jaspersoft.android.sdk.service.report;
+
+import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AnonymousClient extends Client {
-    private ServerRestApi mServerRestApi;
-    private AuthenticationRestApi mAuthApi;
-
-    AnonymousClient(NetworkClient networkClient) {
-        super(networkClient);
+final class ExportOptionsMapper5_6and6_1 extends ExportOptionsMapper {
+    ExportOptionsMapper5_6and6_1(String baseUrl) {
+        super(baseUrl);
     }
 
-    public ServerRestApi infoApi() {
-        if (mServerRestApi == null) {
-            mServerRestApi = new ServerRestApi(mNetworkClient);
-        }
-        return mServerRestApi;
-    }
-
-    public AuthenticationRestApi authenticationApi() {
-        if (mAuthApi == null) {
-            SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mNetworkClient);
-            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory);
-            mAuthApi = new AuthenticationRestApi(authStrategy);
-        }
-        return mAuthApi;
+    @Override
+    public ExecutionRequestOptions transform(ReportExportOptions criteria) {
+        ExecutionRequestOptions options = super.transform(criteria);
+        options.withIgnorePagination(null);
+        return options;
     }
 }

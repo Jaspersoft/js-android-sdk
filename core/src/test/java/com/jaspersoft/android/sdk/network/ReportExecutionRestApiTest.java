@@ -27,7 +27,6 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -40,14 +39,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.empty;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasBody.hasBody;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -60,6 +60,7 @@ public class ReportExecutionRestApiTest {
     private static final List<ReportParameter> PARAMS = Collections.singletonList(
             new ReportParameter("key", new HashSet<String>(Collections.singletonList("value")))
     );
+    private static final String EXEC_ID = "f3a9805a-4089-4b53-b9e9-b54752f91586";
 
     static {
         SEARCH_PARAMS.put("key", "value");
@@ -86,8 +87,8 @@ public class ReportExecutionRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new ReportExecutionRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        restApiUnderTest = new ReportExecutionRestApi(networkClient);
     }
 
     @Test
@@ -156,9 +157,10 @@ public class ReportExecutionRestApiTest {
         restApiUnderTest.runReportExecution(options);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions"));
-        assertThat(request.getBody().readUtf8(), is("{\"reportUnitUri\":\"/my/uri\"}"));
-        assertThat(request.getMethod(), is("POST"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions"));
+        assertThat(request, wasMethod("POST"));
+        assertThat(request, hasBody("{\"reportUnitUri\":\"/my/uri\"}"));
     }
 
     @Test
@@ -166,12 +168,13 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody(reportExecutionDetailsResponse.asString());
         mWebMockRule.enqueue(response);
 
-        ReportExecutionDescriptor details = restApiUnderTest.requestReportExecutionDetails("exec_id");
+        ReportExecutionDescriptor details = restApiUnderTest.requestReportExecutionDetails(EXEC_ID);
         assertThat(details, is(notNullValue()));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id"));
-        assertThat(request.getMethod(), is("GET"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -179,12 +182,13 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody("{\"value\":\"execution\"}");
         mWebMockRule.enqueue(response);
 
-        ExecutionStatus status = restApiUnderTest.requestReportExecutionStatus("exec_id");
+        ExecutionStatus status = restApiUnderTest.requestReportExecutionStatus(EXEC_ID);
         assertThat(status, is(notNullValue()));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/status"));
-        assertThat(request.getMethod(), is("GET"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/status"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -192,12 +196,14 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create200();
         mWebMockRule.enqueue(response);
 
-        restApiUnderTest.cancelReportExecution("exec_id");
+        restApiUnderTest.cancelReportExecution(EXEC_ID);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/status"));
-        assertThat(request.getBody().readUtf8(), is("{\"value\":\"cancelled\"}"));
-        assertThat(request.getMethod(), is("PUT"));
+
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/status"));
+        assertThat(request, hasBody("{\"value\":\"cancelled\"}"));
+        assertThat(request, wasMethod("PUT"));
     }
 
     @Test
@@ -205,12 +211,13 @@ public class ReportExecutionRestApiTest {
         MockResponse response = MockResponseFactory.create204();
         mWebMockRule.enqueue(response);
 
-        restApiUnderTest.updateReportExecution("exec_id", PARAMS);
+        restApiUnderTest.updateReportExecution(EXEC_ID, PARAMS);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/exec_id/parameters"));
-        assertThat(request.getBody().readUtf8(), is("[{\"name\":\"key\",\"value\":[\"value\"]}]"));
-        assertThat(request.getMethod(), is("POST"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/parameters"));
+        assertThat(request, hasBody("[{\"name\":\"key\",\"value\":[\"value\"]}]"));
+        assertThat(request, wasMethod("POST"));
     }
 
     @Test
@@ -230,24 +237,6 @@ public class ReportExecutionRestApiTest {
         boolean cancelled = restApiUnderTest.cancelReportExecution("any_id");
 
         assertThat(cancelled, is(true));
-    }
-
-    @Test
-    public void executionSearchResponseShouldBeEmptyIfResponseIs204() throws Exception {
-        mWebMockRule.enqueue(MockResponseFactory.create204());
-
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS);
-        assertThat(response.getItems(), is(empty()));
-    }
-
-    @Test
-    public void executionSearchResponseShouldNotBeEmptyIfResponseIs200() throws Exception {
-        MockResponse mockResponse = MockResponseFactory.create200();
-        mockResponse.setBody(searchExecutionResponse.asString());
-        mWebMockRule.enqueue(mockResponse);
-
-        ReportExecutionSearchResponse response = restApiUnderTest.searchReportExecution(SEARCH_PARAMS);
-        assertThat(response.getItems(), is(not(empty())));
     }
 
     @Test
