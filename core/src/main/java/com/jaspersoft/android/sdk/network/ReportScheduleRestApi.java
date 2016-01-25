@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class ReportScheduleRestApi {
 
         Response response = mNetworkClient.makeCall(request);
         JobsSearchResult searchResult = mNetworkClient.deserializeJson(response, JobsSearchResult.class);
-        return searchResult.getJobSummary();
+        return Collections.unmodifiableList(searchResult.getJobSummary());
     }
 
     @NotNull
@@ -84,6 +85,6 @@ public class ReportScheduleRestApi {
 
         Response response = mNetworkClient.makeCall(request);
         JobIdsList jobIdsList = mNetworkClient.deserializeJson(response, JobIdsList.class);
-        return jobIdsList.getJobId();
+        return Collections.unmodifiableSet(jobIdsList.getJobId());
     }
 }

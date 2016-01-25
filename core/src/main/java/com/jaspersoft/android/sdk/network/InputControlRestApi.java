@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,7 +89,7 @@ public class InputControlRestApi {
 
         com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
         InputControlCollection inputControlCollection = mNetworkClient.deserializeJson(response, InputControlCollection.class);
-        return inputControlCollection.get();
+        return Collections.unmodifiableList(inputControlCollection.get());
     }
 
     @NotNull
@@ -116,7 +117,7 @@ public class InputControlRestApi {
 
         com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
         InputControlStateCollection inputControlStateCollection = mNetworkClient.deserializeJson(response, InputControlStateCollection.class);
-        return inputControlStateCollection.get();
+        return Collections.unmodifiableList(inputControlStateCollection.get());
     }
 
     /**
@@ -161,6 +162,6 @@ public class InputControlRestApi {
 
         com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
         InputControlStateCollection inputControlStateCollection = mNetworkClient.deserializeJson(response, InputControlStateCollection.class);
-        return inputControlStateCollection.get();
+        return Collections.unmodifiableList(inputControlStateCollection.get());
     }
 }

@@ -40,7 +40,7 @@ final class BaseJobSearchTask extends JobSearchTask {
             mBuffer = mUseCase.searchJob(mCriteria);
             mEndReached = (mBuffer.size() != mCriteria.getLimit());
         }
-        return mBuffer;
+        return Collections.unmodifiableList(mBuffer);
     }
 
     private int newOffset(JobSearchCriteria criteria) {
