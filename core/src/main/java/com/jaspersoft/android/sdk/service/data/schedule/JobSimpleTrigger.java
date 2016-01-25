@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.service.data.schedule;
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -10,11 +12,9 @@ import java.util.TimeZone;
  * @since 2.0
  */
 public class JobSimpleTrigger extends JobTrigger {
-    @Nullable
-    private final Integer mOccurrenceCount;
-    @Nullable
-    private final Integer mRecurrenceInterval;
-    @Nullable
+    private final int mOccurrenceCount;
+    private final int mRecurrenceInterval;
+    @NotNull
     private final RecurrenceIntervalUnit mRecurrenceIntervalUnit;
 
     protected JobSimpleTrigger(Builder builder) {
@@ -22,7 +22,6 @@ public class JobSimpleTrigger extends JobTrigger {
                 builder.mTimeZone,
                 builder.mCalendarName,
                 builder.mStartType,
-                builder.mStartDate,
                 builder.mStopDate
         );
 
@@ -31,17 +30,15 @@ public class JobSimpleTrigger extends JobTrigger {
         mRecurrenceIntervalUnit = builder.mRecurrenceIntervalUnit;
     }
 
-    @Nullable
-    public Integer getOccurrenceCount() {
+    public int getOccurrenceCount() {
         return mOccurrenceCount;
     }
 
-    @Nullable
-    public Integer getRecurrenceInterval() {
+    public int getRecurrenceInterval() {
         return mRecurrenceInterval;
     }
 
-    @Nullable
+    @NotNull
     public RecurrenceIntervalUnit getRecurrenceIntervalUnit() {
         return mRecurrenceIntervalUnit;
     }
@@ -49,8 +46,7 @@ public class JobSimpleTrigger extends JobTrigger {
     public static class Builder {
         private TimeZone mTimeZone;
         private String mCalendarName;
-        private TriggerStartType mStartType;
-        private Date mStartDate;
+        private JobStartType mStartType;
         private Date mStopDate;
         private Integer mOccurrenceCount;
         private Integer mRecurrenceInterval;
@@ -61,18 +57,13 @@ public class JobSimpleTrigger extends JobTrigger {
             return this;
         }
 
-        public Builder withCalendarName(String calendarName) {
+        public Builder withCalendarName(@Nullable String calendarName) {
             mCalendarName = calendarName;
             return this;
         }
 
-        public Builder withStartType(@Nullable TriggerStartType startType) {
+        public Builder withStartType(@Nullable JobStartType startType) {
             mStartType = startType;
-            return this;
-        }
-
-        public Builder withStartDate(@Nullable Date startDate) {
-            mStartDate = startDate;
             return this;
         }
 
@@ -91,13 +82,28 @@ public class JobSimpleTrigger extends JobTrigger {
             return this;
         }
 
-        public Builder withRecurrenceIntervalUnit(@Nullable RecurrenceIntervalUnit recurrenceIntervalUnit) {
+        public Builder withRecurrenceIntervalUnit(@NotNull RecurrenceIntervalUnit recurrenceIntervalUnit) {
+            Preconditions.checkNotNull(recurrenceIntervalUnit, "Recurrent interval should not be null");
             mRecurrenceIntervalUnit = recurrenceIntervalUnit;
             return this;
         }
 
         public JobSimpleTrigger build() {
+            assertState();
+            ensureSaneDefaults();
             return new JobSimpleTrigger(this);
+        }
+
+        private void ensureSaneDefaults() {
+            if (mStartType == null) {
+                mStartType = new ImmediateStartType();
+            }
+        }
+
+        private void assertState() {
+            Preconditions.checkNotNull(mOccurrenceCount, "Occurrence count should be specified");
+            Preconditions.checkNotNull(mRecurrenceInterval, "Recurrence interval should be specified");
+            Preconditions.checkNotNull(mRecurrenceIntervalUnit, "Recurrent interval unit should be specified");
         }
     }
 }

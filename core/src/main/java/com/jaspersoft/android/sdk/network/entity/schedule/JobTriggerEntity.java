@@ -16,7 +16,7 @@ public abstract class JobTriggerEntity {
     @Expose
     private String startDate;
     @Expose
-    private String stopDate;
+    private String endDate;
     @Expose
     private Integer misfireInstruction;
 
@@ -52,12 +52,12 @@ public abstract class JobTriggerEntity {
         this.startDate = startDate;
     }
 
-    public String getStopDate() {
-        return stopDate;
+    public String getEndDate() {
+        return endDate;
     }
 
-    public void setStopDate(String stopDate) {
-        this.stopDate = stopDate;
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public Integer getMisfireInstruction() {

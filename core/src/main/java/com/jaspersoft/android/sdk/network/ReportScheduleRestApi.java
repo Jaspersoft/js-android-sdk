@@ -1,14 +1,8 @@
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobsSearchResult;
+import com.jaspersoft.android.sdk.network.entity.schedule.*;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -16,6 +10,7 @@ import org.jetbrains.annotations.TestOnly;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -58,15 +53,37 @@ public class ReportScheduleRestApi {
 
         HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/jobs");
 
-        RequestBody jsonRequestBody = mNetworkClient.createJsonRequestBody(form);
+        MediaType mediaType = MediaType.parse("application/job+json; charset=UTF-8");
+        RequestBody jsonRequestBody = mNetworkClient.createRequestBody(form, mediaType);
         Request request = new Request.Builder()
-                .addHeader("Accept", "application/job+json; charset=UTF-8")
-                .addHeader("Content-Type", "application/job+json; charset=UTF-8")
                 .put(jsonRequestBody)
+                .addHeader("Accept", "application/job+json; charset=UTF-8")
                 .url(url)
                 .build();
 
         Response response = mNetworkClient.makeCall(request);
         return mNetworkClient.deserializeJson(response, JobDescriptor.class);
+    }
+
+    @NotNull
+    public Set<Integer> deleteJobs(@NotNull Set<Integer> jobIds) throws IOException, HttpException {
+        Preconditions.checkNotNull(jobIds, "Job ids should not be null");
+        Preconditions.checkArgument(!jobIds.isEmpty(), "Job ids should not be empty");
+
+        HttpUrl.Builder urlBuilder = mNetworkClient.getBaseUrl().resolve("rest_v2/jobs")
+                .newBuilder();
+        for (Integer jobId : jobIds) {
+            urlBuilder.addQueryParameter("id", String.valueOf(jobId));
+        }
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .url(urlBuilder.build())
+                .delete()
+                .build();
+
+        Response response = mNetworkClient.makeCall(request);
+        JobIdsList jobIdsList = mNetworkClient.deserializeJson(response, JobIdsList.class);
+        return jobIdsList.getJobId();
     }
 }

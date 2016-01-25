@@ -9,13 +9,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasQuery.hasQuery;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.rules.ExpectedException.none;
 
@@ -38,11 +39,12 @@ public class ReportScheduleRestApiTest {
                 .build();
         NetworkClient networkClient = server.newNetworkClient().build();
         reportScheduleRestApi = new ReportScheduleRestApi(networkClient);
-        mWebMockRule.enqueue(MockResponseFactory.create200().setBody(SEARCH_RESPONSE));
     }
 
     @Test
     public void search_with_no_params() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody(SEARCH_RESPONSE));
+
         reportScheduleRestApi.searchJob(null);
         RecordedRequest request = mWebMockRule.get().takeRequest();
         String path = request.getPath();
@@ -71,5 +73,33 @@ public class ReportScheduleRestApiTest {
         assertThat(request, containsHeader("Content-Type", "application/job+json; charset=UTF-8"));
         assertThat(request, hasPath("/rest_v2/jobs"));
         assertThat(request, wasMethod("PUT"));
+    }
+
+    @Test
+    public void delete_jobs_operation_rejects_null_ids() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Job ids should not be null");
+        reportScheduleRestApi.deleteJobs(null);
+    }
+
+    @Test
+    public void delete_jobs_operation_rejects_empty_ids() throws Exception {
+        expected.expect(IllegalArgumentException.class);
+        expected.expectMessage("Job ids should not be empty");
+        reportScheduleRestApi.deleteJobs(Collections.<Integer>emptySet());
+    }
+
+    @Test
+    public void creates_delete_jobs_request() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody("{\"jobId\":[5594,5645]}"));
+
+        Set<Integer> deletedJobs = reportScheduleRestApi.deleteJobs(new HashSet<>(Arrays.asList(1, 2)));
+        assertThat(deletedJobs, hasItems(5594, 5645));
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasQuery("id", "1"));
+        assertThat(request, hasQuery("id", "2"));
+        assertThat(request, wasMethod("DELETE"));
     }
 }

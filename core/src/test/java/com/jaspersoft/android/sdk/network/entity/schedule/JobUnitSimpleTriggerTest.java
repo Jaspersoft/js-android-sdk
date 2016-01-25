@@ -19,7 +19,7 @@ public class JobUnitSimpleTriggerTest {
             "calendarName",
             "startType",
             "startDate",
-            "stopDate",
+            "endDate",
             "misfireInstruction",
     })
     public void shouldHaveExposeAnnotationForSubclassFields(String fieldName) throws NoSuchFieldException {

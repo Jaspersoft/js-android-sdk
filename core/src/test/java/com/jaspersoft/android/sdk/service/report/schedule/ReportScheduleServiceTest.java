@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -19,6 +22,8 @@ public class ReportScheduleServiceTest {
 
     @Mock
     ReportScheduleUseCase mUseCase;
+    @Mock
+    JobForm jobForm;
 
     @Rule
     public ExpectedException expected = none();
@@ -46,9 +51,15 @@ public class ReportScheduleServiceTest {
 
     @Test
     public void should_delegate_job_creation() throws Exception {
-        JobForm jobForm = new JobForm.Builder().build();
         scheduleService.createJob(jobForm);
         verify(mUseCase).createJob(jobForm);
+    }
+
+    @Test
+    public void should_delegate_job_deletion() throws Exception {
+        Set<Integer> jobIds = Collections.singleton(1);
+        scheduleService.deleteJobs(jobIds);
+        verify(mUseCase).deleteJobs(jobIds);
     }
 
     @Test
@@ -56,5 +67,19 @@ public class ReportScheduleServiceTest {
         expected.expectMessage("Job form should not be null");
         expected.expect(NullPointerException.class);
         scheduleService.createJob(null);
+    }
+
+    @Test
+    public void should_reject_null_job_ids() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Job ids should not be null");
+        scheduleService.deleteJobs(null);
+    }
+
+    @Test
+    public void should_reject_empty_job_ids() throws Exception {
+        expected.expect(IllegalArgumentException.class);
+        expected.expectMessage("Job ids should not be empty");
+        scheduleService.deleteJobs(Collections.<Integer>emptySet());
     }
 }

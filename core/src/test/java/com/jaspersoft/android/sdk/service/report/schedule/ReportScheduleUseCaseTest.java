@@ -18,10 +18,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import static junit.framework.TestCase.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -29,7 +31,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ReportScheduleUseCaseTest {
     private static final Map<String, Object> SEARCH_PARAMS = Collections.emptyMap();
     private static final JobSearchCriteria CRITERIA = JobSearchCriteria.empty();
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat();
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat();
+    private static final Set<Integer> JOB_IDS = Collections.singleton(1);
 
     @Mock
     ServiceExceptionMapper mExceptionMapper;
@@ -99,6 +102,12 @@ public class ReportScheduleUseCaseTest {
     }
 
     @Test
+    public void should_perform_delete_jobs() throws Exception {
+        useCase.deleteJobs(JOB_IDS);
+        verify(mScheduleRestApi).deleteJobs(JOB_IDS);
+    }
+
+    @Test
     public void search_adapts_io_exception() throws Exception {
         when(mScheduleRestApi.searchJob(anyMapOf(String.class, Object.class))).thenThrow(mIOException);
         try {
@@ -115,6 +124,30 @@ public class ReportScheduleUseCaseTest {
 
         try {
             useCase.searchJob(CRITERIA);
+            fail("Should adapt HTTP exception");
+        } catch (ServiceException ex) {
+            verify(mExceptionMapper).transform(mHttpException);
+        }
+    }
+
+    @Test
+    public void delete_jobs_adapts_io_exception() throws Exception {
+        when(mScheduleRestApi.deleteJobs(anySetOf(Integer.class))).thenThrow(mIOException);
+
+        try {
+            useCase.deleteJobs(JOB_IDS);
+            fail("Should adapt IO exception");
+        } catch (ServiceException ex) {
+            verify(mExceptionMapper).transform(mIOException);
+        }
+    }
+
+    @Test
+    public void delete_jobs_adapts_http_exception() throws Exception {
+        when(mScheduleRestApi.deleteJobs(anySetOf(Integer.class))).thenThrow(mHttpException);
+
+        try {
+            useCase.deleteJobs(JOB_IDS);
             fail("Should adapt HTTP exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mHttpException);

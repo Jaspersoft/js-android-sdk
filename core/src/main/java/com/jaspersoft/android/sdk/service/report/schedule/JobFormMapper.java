@@ -45,28 +45,24 @@ class JobFormMapper {
             simpleTriggerEntity.setCalendarName(jobSimpleTrigger.getCalendarName());
 
             RecurrenceIntervalUnit recurrenceIntervalUnit = jobSimpleTrigger.getRecurrenceIntervalUnit();
-            if (recurrenceIntervalUnit != null) {
-                simpleTriggerEntity.setRecurrenceIntervalUnit(mapInterval(recurrenceIntervalUnit));
-            }
+            simpleTriggerEntity.setRecurrenceIntervalUnit(mapInterval(recurrenceIntervalUnit));
 
-            Date startDate = jobSimpleTrigger.getStartDate();
-            if (startDate != null) {
+            JobStartType startType = jobSimpleTrigger.getStartType();
+            if (startType instanceof DeferredStartType) {
+                DeferredStartType type = (DeferredStartType) startType;
+                Date startDate = type.getStartDate();
                 simpleTriggerEntity.setStartDate(DATE_FORMAT.format(startDate));
             }
+            simpleTriggerEntity.setStartType(mapStartType(startType));
 
             Date stopDate = jobSimpleTrigger.getStopDate();
             if (stopDate != null) {
-                simpleTriggerEntity.setStopDate(DATE_FORMAT.format(stopDate));
+                simpleTriggerEntity.setEndDate(DATE_FORMAT.format(stopDate));
             }
 
             TimeZone timeZone = jobSimpleTrigger.getTimeZone();
             if (timeZone != null) {
                 simpleTriggerEntity.setTimezone(timeZone.getID());
-            }
-
-            TriggerStartType startType = jobSimpleTrigger.getStartType();
-            if (startType != null) {
-                simpleTriggerEntity.setStartType(mapStartType(startType));
             }
 
             entity.setSimpleTrigger(simpleTriggerEntity);
@@ -81,7 +77,7 @@ class JobFormMapper {
     }
 
     @TestOnly
-    int mapStartType(TriggerStartType triggerStartType) {
-        return triggerStartType.getValue();
+    int mapStartType(JobStartType startType) {
+        return startType instanceof DeferredStartType ? 2 : 1;
     }
 }

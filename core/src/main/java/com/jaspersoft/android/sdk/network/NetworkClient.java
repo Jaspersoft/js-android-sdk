@@ -84,6 +84,11 @@ class NetworkClient {
         return RequestBody.create(MediaType.parse("application/json; charset=UTF-8"), json);
     }
 
+    public RequestBody createRequestBody(Object body, MediaType mediaType) {
+        String json = mGson.toJson(body);
+        return RequestBody.create(mediaType, json);
+    }
+
     public static class Builder {
         private HttpUrl mBaseUrl;
         private OkHttpClient mClient;
