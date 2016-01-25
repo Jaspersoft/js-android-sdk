@@ -3,8 +3,9 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportScheduleRestApi;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
@@ -35,6 +36,8 @@ public class ReportScheduleUseCaseTest {
     @Mock
     JobDataMapper mJobDataMapper;
     @Mock
+    JobFormMapper mJobFormMapper;
+    @Mock
     ReportScheduleRestApi mScheduleRestApi;
     @Mock
     JobSearchCriteriaMapper mSearchCriteriaMapper;
@@ -46,6 +49,8 @@ public class ReportScheduleUseCaseTest {
 
     @Mock
     JobData mJobData;
+    @Mock
+    JobFormEntity mJobFormEntity;
     @Mock
     JobForm mJobForm;
     @Mock
@@ -70,7 +75,9 @@ public class ReportScheduleUseCaseTest {
                 mScheduleRestApi,
                 mInfoCacheManager,
                 mSearchCriteriaMapper,
-                mJobDataMapper);
+                mJobDataMapper,
+                mJobFormMapper
+        );
     }
 
     @Test
@@ -83,12 +90,12 @@ public class ReportScheduleUseCaseTest {
 
     @Test
     public void should_perform_create_job() throws Exception {
-        when(mScheduleRestApi.createJob(any(JobForm.class))).thenReturn(mJobDescriptor);
+        when(mScheduleRestApi.createJob(any(JobFormEntity.class))).thenReturn(mJobDescriptor);
 
         useCase.createJob(mJobForm);
 
         verify(mJobDataMapper).transform(mJobDescriptor, SIMPLE_DATE_FORMAT);
-        verify(mScheduleRestApi).createJob(mJobForm);
+        verify(mScheduleRestApi).createJob(mJobFormEntity);
     }
 
     @Test
@@ -116,7 +123,7 @@ public class ReportScheduleUseCaseTest {
 
     @Test
     public void create_job_adapts_io_exception() throws Exception {
-        when(mScheduleRestApi.createJob(any(JobForm.class))).thenThrow(mIOException);
+        when(mScheduleRestApi.createJob(any(JobFormEntity.class))).thenThrow(mIOException);
 
         try {
             useCase.createJob(mJobForm);
@@ -128,7 +135,7 @@ public class ReportScheduleUseCaseTest {
 
     @Test
     public void create_job_adapts_http_exception() throws Exception {
-        when(mScheduleRestApi.createJob(any(JobForm.class))).thenThrow(mHttpException);
+        when(mScheduleRestApi.createJob(any(JobFormEntity.class))).thenThrow(mHttpException);
 
         try {
             useCase.createJob(mJobForm);
@@ -146,6 +153,8 @@ public class ReportScheduleUseCaseTest {
                 .thenReturn(SEARCH_PARAMS);
         when(mJobDataMapper.transform(any(JobDescriptor.class), any(SimpleDateFormat.class)))
                 .thenReturn(mJobData);
+         when(mJobFormMapper.transform(any(JobForm.class)))
+                .thenReturn(mJobFormEntity);
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
         when(mExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
     }

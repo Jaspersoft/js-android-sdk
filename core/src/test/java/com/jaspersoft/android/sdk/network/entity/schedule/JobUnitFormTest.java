@@ -3,7 +3,6 @@ package com.jaspersoft.android.sdk.network.entity.schedule;
 import com.google.gson.annotations.Expose;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,12 +24,7 @@ public class JobUnitFormTest {
             "trigger",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobForm.class.getDeclaredField(fieldName);
+        Field field = JobFormEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
-    }
-
-    @Test
-    public void testEquals() throws Exception {
-        EqualsVerifier.forClass(JobForm.class).verify();
     }
 }

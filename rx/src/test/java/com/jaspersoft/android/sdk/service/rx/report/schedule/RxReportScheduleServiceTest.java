@@ -1,8 +1,8 @@
 package com.jaspersoft.android.sdk.service.rx.report.schedule;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.schedule.ReportScheduleService;
 import org.junit.Before;

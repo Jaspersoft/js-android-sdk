@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ class JobDataMapper {
         }
         builder.withCreationDate(creationDate);
 
-        List<String> outputFormat = jobDescriptor.getOutputFormats().getOutputFormat();
+        Collection<String> outputFormat = jobDescriptor.getOutputFormats().getOutputFormat();
         List<JobOutputFormat> formats = new ArrayList<>(outputFormat.size());
         for (String format : outputFormat) {
             formats.add(JobOutputFormat.valueOf(format));

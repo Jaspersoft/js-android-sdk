@@ -2,15 +2,14 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTrigger;
-import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
+import com.jaspersoft.android.sdk.service.data.schedule.*;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,22 +31,27 @@ public class ReportScheduleServiceTest {
     public void schedule_service_should_create_job(ReportTestBundle bundle) throws Exception {
         ReportScheduleService service = ReportScheduleService.newService(bundle.getClient());
 
-        TimeZone timeZone = TimeZone.getDefault();
-        JobSimpleTrigger simpleTrigger = new JobSimpleTrigger();
-        simpleTrigger.setTimezone(timeZone.getID());
-        simpleTrigger.setStartType(2);
-        simpleTrigger.setOccurrenceCount(1);
-        simpleTrigger.setStartDate("2016-02-16 10:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 5);
+
+        JobTrigger trigger = new JobSimpleTrigger.Builder()
+                .withCalendarName("calendar name")
+                .withTimeZone(TimeZone.getDefault())
+                .withOccurrenceCount(1)
+                .withStartType(TriggerStartType.IMMEDIATE)
+                .withStartDate(calendar.getTime())
+                .build();
 
         JobForm form = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination("/temp")
                 .withSource(bundle.getReportUri())
-                .addOutputFormat(JobOutputFormat.HTML.toString())
+                .addOutputFormat(JobOutputFormat.HTML)
                 .withBaseOutputFilename("output")
-                .withSimpleTrigger(simpleTrigger)
+                .withTrigger(trigger)
                 .build();
+
         assertThat(service.createJob(form), is(notNullValue()));
 
         JobSearchCriteria criteria = JobSearchCriteria.builder()

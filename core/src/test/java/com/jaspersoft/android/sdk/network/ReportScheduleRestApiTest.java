@@ -1,30 +1,22 @@
 package com.jaspersoft.android.sdk.network;
 
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
-import static junitparams.JUnitParamsRunner.$;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.rules.ExpectedException.none;
 
 public class ReportScheduleRestApiTest {
@@ -71,8 +63,7 @@ public class ReportScheduleRestApiTest {
     public void creates_post_job_request() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200().setBody("{}"));
 
-        JobForm form = new JobForm.Builder()
-                .build();
+        JobFormEntity form = new JobFormEntity();
         reportScheduleRestApi.createJob(form);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();

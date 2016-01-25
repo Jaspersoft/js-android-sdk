@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class JobData {
     @NotNull
-    private final String mId;
+    private final int mId;
     private final int mVersion;
     @NotNull
     private final String mUsername;
@@ -24,7 +24,7 @@ public class JobData {
     @NotNull
     private final List<JobOutputFormat> mOutputFormats;
 
-    public JobData(@NotNull String id,
+    public JobData(int id,
                    int version,
                    @NotNull String username,
                    @NotNull String label,
@@ -41,7 +41,7 @@ public class JobData {
     }
 
     @NotNull
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
@@ -81,10 +81,10 @@ public class JobData {
 
         JobData jobData = (JobData) o;
 
+        if (mId != jobData.mId) return false;
         if (mVersion != jobData.mVersion) return false;
         if (!mCreationDate.equals(jobData.mCreationDate)) return false;
         if (!mDescription.equals(jobData.mDescription)) return false;
-        if (!mId.equals(jobData.mId)) return false;
         if (!mLabel.equals(jobData.mLabel)) return false;
         if (!mOutputFormats.equals(jobData.mOutputFormats)) return false;
         if (!mUsername.equals(jobData.mUsername)) return false;
@@ -94,7 +94,7 @@ public class JobData {
 
     @Override
     public final int hashCode() {
-        int result = mId.hashCode();
+        int result = mId;
         result = 31 * result + mVersion;
         result = 31 * result + mUsername.hashCode();
         result = 31 * result + mLabel.hashCode();
@@ -118,7 +118,7 @@ public class JobData {
     }
 
     public static class Builder {
-        private String mId;
+        private int mId;
         private int mVersion;
         private String mUsername;
         private String mLabel;
@@ -126,7 +126,7 @@ public class JobData {
         private Date mCreationDate;
         private List<JobOutputFormat> mOutputFormats;
 
-        public Builder withId(String id) {
+        public Builder withId(int id) {
             mId = id;
             return this;
         }
