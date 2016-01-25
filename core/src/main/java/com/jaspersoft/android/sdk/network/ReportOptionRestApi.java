@@ -73,7 +73,7 @@ public class ReportOptionRestApi {
         Response response = mNetworkClient.makeCall(request);
         try {
             ReportOptionSet reportOptionSet = mNetworkClient.deserializeJson(response, ReportOptionSet.class);
-            return reportOptionSet.get();
+            return Collections.unmodifiableSet(reportOptionSet.get());
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when there is no report options

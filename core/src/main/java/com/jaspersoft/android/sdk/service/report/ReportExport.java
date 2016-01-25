@@ -29,6 +29,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class ReportExport {
 
     @NotNull
     public List<ReportAttachment> getAttachments() {
-        return mAttachments;
+        return Collections.unmodifiableList(mAttachments);
     }
 
     @NotNull

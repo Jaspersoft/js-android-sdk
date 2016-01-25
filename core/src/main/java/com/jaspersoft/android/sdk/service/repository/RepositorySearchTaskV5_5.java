@@ -64,7 +64,7 @@ final class RepositorySearchTaskV5_5 extends RepositorySearchTask {
             return EMPTY_RESPONSE;
         }
         calculateDisposition(offset);
-        return internalSearch(limit);
+        return Collections.unmodifiableList(internalSearch(limit));
     }
 
     @Override

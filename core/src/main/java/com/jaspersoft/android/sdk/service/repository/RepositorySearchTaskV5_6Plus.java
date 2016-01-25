@@ -67,7 +67,7 @@ final class RepositorySearchTaskV5_6Plus extends RepositorySearchTask {
             defineInternalOffset();
         }
 
-        return performLookup();
+        return Collections.unmodifiableList(performLookup());
     }
 
     @Override
