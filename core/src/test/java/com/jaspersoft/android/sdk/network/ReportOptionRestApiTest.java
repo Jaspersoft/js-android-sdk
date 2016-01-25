@@ -33,12 +33,10 @@ import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
 import java.util.*;
 
@@ -77,8 +75,8 @@ public class ReportOptionRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new ReportOptionRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        restApiUnderTest = new ReportOptionRestApi(networkClient);
     }
 
     @Test

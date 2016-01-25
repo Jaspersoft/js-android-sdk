@@ -27,15 +27,12 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Call;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,42 +40,35 @@ import java.util.Map;
  * @since 2.0
  */
 public class RepositoryRestApi {
-    private final RestApi mRestApi;
+    private final NetworkClient mNetworkClient;
 
-    RepositoryRestApi(Retrofit restAdapter) {
-        mRestApi = restAdapter.create(RestApi.class);
+    RepositoryRestApi(NetworkClient networkClient) {
+        mNetworkClient = networkClient;
     }
 
     @NotNull
     public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
-        Iterable<?> types = null;
-        Call<ResourceSearchResult> call;
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .newBuilder()
+                .addPathSegment("rest_v2")
+                .addPathSegment("resources")
+                .build();
+        url = QueryMapper.INSTANCE.mapParams(searchParams, url);
 
-        if (searchParams == null) {
-            call = mRestApi.searchResources(null, null);
-        } else {
-            Map<String, Object> copy = new HashMap<>(searchParams);
-            Object typeValues = copy.get("type");
-            copy.remove("type");
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
 
-            if (typeValues == null) {
-                types = null;
-            }
-            if (typeValues instanceof Iterable<?>) {
-                types = (Iterable<?>) typeValues;
-            }
-
-            call = mRestApi.searchResources(copy, types);
-        }
-
-        Response<ResourceSearchResult> rawResponse = CallWrapper.wrap(call).response();
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
 
         int status = rawResponse.code();
         ResourceSearchResult entity;
         if (status == 204) {
             entity = ResourceSearchResult.empty();
         } else {
-            entity = rawResponse.body();
+            entity = mNetworkClient.deserializeJson(rawResponse, ResourceSearchResult.class);
             com.squareup.okhttp.Headers headers = rawResponse.headers();
 
             int resultCount = Utils.headerToInt(headers, "Result-Count");
@@ -98,36 +88,41 @@ public class RepositoryRestApi {
     public ReportLookup requestReportResource(@Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Report uri should not be null");
 
-        Call<ReportLookup> call = mRestApi.requestReportResource(resourceUri);
-        return CallWrapper.wrap(call).body();
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("resources")
+                .addPaths(resourceUri)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/repository.reportUnit+json")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(rawResponse, ReportLookup.class);
     }
 
     @NotNull
     public FolderLookup requestFolderResource(@Nullable String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Folder uri should not be null");
 
-        Call<FolderLookup> call = mRestApi.requestFolderResource(resourceUri);
-        return CallWrapper.wrap(call).body();
-    }
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("resources")
+                .addPaths(resourceUri)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
 
-    private interface RestApi {
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/resources")
-        Call<ResourceSearchResult> searchResources(
-                @Nullable @QueryMap Map<String, Object> searchParams,
-                @Nullable @Query("type") Iterable<?> types);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/repository.folder+json")
+                .get()
+                .url(url)
+                .build();
 
-        @NotNull
-        @Headers("Accept: application/repository.reportUnit+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<ReportLookup> requestReportResource(
-                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri);
-
-        @NotNull
-        @Headers("Accept: application/repository.folder+json")
-        @GET("rest_v2/resources{resourceUri}")
-        Call<FolderLookup> requestFolderResource(
-                @NotNull @Path(value = "resourceUri", encoded = true) String resourceUri);
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(rawResponse, FolderLookup.class);
     }
 }

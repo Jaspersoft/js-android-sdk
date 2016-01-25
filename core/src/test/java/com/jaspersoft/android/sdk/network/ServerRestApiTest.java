@@ -24,17 +24,20 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
-
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 /**
  * @author Tom Koptel
@@ -54,8 +57,8 @@ public class ServerRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        objectUnderTest = new ServerRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        objectUnderTest = new ServerRestApi(networkClient);
     }
 
     @Test
@@ -68,15 +71,31 @@ public class ServerRestApiTest {
     }
 
     @Test
+    public void shouldBuildAppropriateJsonRequestForServerInfo() throws Exception {
+        mWebMockRule.enqueue(
+                MockResponseFactory.create200().setBody("{}")
+        );
+
+        ServerInfoData serverInfoData = objectUnderTest.requestServerInfo();
+        assertThat("Response not null value", serverInfoData, is(notNullValue()));
+
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept json header", recordedRequest, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo'", recordedRequest, hasPath("/rest_v2/serverInfo"));
+    }
+
+    @Test
     public void shouldHandlePlainTextResponseForBuild() throws Exception {
         mWebMockRule.enqueue(
                 MockResponseFactory.create200().setBody("Enterprise for AWS")
         );
+
         String editionName = objectUnderTest.requestBuild();
         assertThat(editionName, is("Enterprise for AWS"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/build"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/build'", recordedRequest, hasPath("/rest_v2/serverInfo/build"));
     }
 
     @Test
@@ -87,9 +106,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestDateFormatPattern();
         assertThat(editionName, is("yyyy-MM-dd"));
 
-
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/dateFormatPattern"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/dateFormatPattern'", recordedRequest, hasPath("/rest_v2/serverInfo/dateFormatPattern"));
     }
 
     @Test
@@ -100,9 +119,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestDateTimeFormatPattern();
         assertThat(editionName, is("yyyy-MM-dd'T'HH:mm:ss"));
 
-
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/datetimeFormatPattern"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/datetimeFormatPattern'", recordedRequest, hasPath("/rest_v2/serverInfo/datetimeFormatPattern"));
     }
 
     @Test
@@ -113,8 +132,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestEdition();
         assertThat(editionName, is("PRO"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/edition"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/edition'", recordedRequest, hasPath("/rest_v2/serverInfo/edition"));
     }
 
 
@@ -126,8 +146,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestEditionName();
         assertThat(editionName, is("Enterprise for AWS"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/editionName"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/editionName'", recordedRequest, hasPath("/rest_v2/serverInfo/editionName"));
     }
 
     @Test
@@ -138,8 +159,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestExpiration();
         assertThat(editionName, is("1000"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/expiration"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/expiration'", recordedRequest, hasPath("/rest_v2/serverInfo/expiration"));
     }
 
     @Test
@@ -150,8 +172,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestFeatures();
         assertThat(editionName, is("Fusion AHD EXP DB ANA AUD MT "));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/features"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/features'", recordedRequest, hasPath("/rest_v2/serverInfo/features"));
     }
 
     @Test
@@ -162,8 +185,9 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestLicenseType();
         assertThat(editionName, is("Commercial"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/licenseType"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/licenseType'", recordedRequest, hasPath("/rest_v2/serverInfo/licenseType"));
     }
 
     @Test
@@ -174,7 +198,8 @@ public class ServerRestApiTest {
         String editionName = objectUnderTest.requestVersion();
         assertThat(editionName, is("5.5.0"));
 
-        String path = mWebMockRule.get().takeRequest().getPath();
-        assertThat(path, is("/rest_v2/serverInfo/version"));
+        RecordedRequest recordedRequest = mWebMockRule.get().takeRequest();
+        assertThat("Should accept text plain header", recordedRequest, containsHeader("Accept", "text/plain; charset=UTF-8"));
+        assertThat("Should have path '/rest_v2/serverInfo/version'", recordedRequest, hasPath("/rest_v2/serverInfo/version"));
     }
 }

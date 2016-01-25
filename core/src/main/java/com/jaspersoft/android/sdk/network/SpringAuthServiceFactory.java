@@ -24,21 +24,19 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import retrofit.Retrofit;
-
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 class SpringAuthServiceFactory {
-    private final Retrofit mRetrofit;
+    private final NetworkClient mClient;
 
-    SpringAuthServiceFactory(Retrofit retrofit) {
-        mRetrofit = retrofit;
+    SpringAuthServiceFactory(NetworkClient client) {
+        mClient = client;
     }
 
     public SpringAuthService create() {
-        AuthRestApi restApi = new AuthRestApi(mRetrofit);
+        AuthRestApi restApi = new AuthRestApi(mClient);
         JSEncryptionAlgorithm encryptionAlgorithm = JSEncryptionAlgorithm.create();
         return new SpringAuthService(restApi, encryptionAlgorithm);
     }

@@ -34,15 +34,16 @@ import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import retrofit.Retrofit;
 
 import java.io.InputStream;
 
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -52,6 +53,9 @@ import static org.junit.Assert.assertThat;
  * @since 2.0
  */
 public class ReportExportRestApiTest {
+
+    private static final String EXECUTION_ID = "f3a9805a-4089-4b53-b9e9-b54752f91586";
+    private static final String EXPORT_ID = "195a65cb-1762-450a-be2b-1196a02bb625";
 
     @Rule
     public final WebMockRule mWebMockRule = new WebMockRule();
@@ -69,8 +73,8 @@ public class ReportExportRestApiTest {
         Server server = Server.builder()
                 .withBaseUrl(mWebMockRule.getRootUrl())
                 .build();
-        Retrofit retrofit = server.newRetrofit().build();
-        restApiUnderTest = new ReportExportRestApi(retrofit);
+        NetworkClient networkClient = server.newNetworkClient().build();
+        restApiUnderTest = new ReportExportRestApi(networkClient);
     }
 
     @Test
@@ -136,7 +140,7 @@ public class ReportExportRestApiTest {
                 .addHeader("report-pages", "1-10");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportOutputResource resource = restApiUnderTest.requestExportOutput("any_id", "any_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput(EXECUTION_ID, EXPORT_ID);
         assertThat(resource.getPages(), is("1-10"));
     }
 
@@ -147,7 +151,7 @@ public class ReportExportRestApiTest {
                 .addHeader("output-final", "true");
         mWebMockRule.enqueue(mockResponse);
 
-        ExportOutputResource resource = restApiUnderTest.requestExportOutput("execution_id", "export_id");
+        ExportOutputResource resource = restApiUnderTest.requestExportOutput(EXECUTION_ID, EXPORT_ID);
         assertThat(resource.isFinal(), is(true));
     }
 
@@ -155,10 +159,13 @@ public class ReportExportRestApiTest {
     public void shouldRequestExportOutput() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
-        restApiUnderTest.requestExportOutput("execution_id", "html;pages=1");
+        restApiUnderTest.requestExportOutput(EXECUTION_ID, "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/outputResource?suppressContentDisposition=true"));
+
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/exports/html;pages=1/outputResource?suppressContentDisposition=true"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -179,10 +186,12 @@ public class ReportExportRestApiTest {
                 .setBody(mResource.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.requestExportAttachment("execution_id", "html;pages=1", "attachment_id");
+        restApiUnderTest.requestExportAttachment(EXECUTION_ID, "html;pages=1", "attachment_id");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/attachments/attachment_id"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/exports/html;pages=1/attachments/attachment_id"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test
@@ -190,10 +199,12 @@ public class ReportExportRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.runExportExecution("execution_id", ExecutionRequestOptions.create());
+        restApiUnderTest.runExportExecution(EXECUTION_ID, ExecutionRequestOptions.create());
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/exports"));
+        assertThat(request, wasMethod("POST"));
     }
 
     @Test
@@ -201,10 +212,12 @@ public class ReportExportRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200();
         mWebMockRule.enqueue(mockResponse);
 
-        restApiUnderTest.checkExportExecutionStatus("execution_id", "html;pages=1");
+        restApiUnderTest.checkExportExecutionStatus(EXECUTION_ID, "html;pages=1");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request.getPath(), is("/rest_v2/reportExecutions/execution_id/exports/html;pages=1/status"));
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reportExecutions/f3a9805a-4089-4b53-b9e9-b54752f91586/exports/html;pages=1/status"));
+        assertThat(request, wasMethod("GET"));
     }
 
     @Test

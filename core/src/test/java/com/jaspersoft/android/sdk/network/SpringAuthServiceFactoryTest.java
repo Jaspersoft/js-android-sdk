@@ -26,7 +26,6 @@ package com.jaspersoft.android.sdk.network;
 
 import org.junit.Before;
 import org.junit.Test;
-import retrofit.Retrofit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -38,10 +37,10 @@ public class SpringAuthServiceFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost")
+        NetworkClient networkClient = new NetworkClient.Builder()
+                .setBaseUrl("http://localhost")
                 .build();
-        authServiceFactory = new SpringAuthServiceFactory(retrofit);
+        authServiceFactory = new SpringAuthServiceFactory(networkClient);
     }
 
     @Test

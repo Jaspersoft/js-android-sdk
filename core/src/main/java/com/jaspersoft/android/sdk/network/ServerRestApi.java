@@ -25,11 +25,10 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.jetbrains.annotations.NotNull;
-import retrofit.Call;
-import retrofit.Retrofit;
-import retrofit.http.GET;
-import retrofit.http.Headers;
 
 import java.io.IOException;
 
@@ -39,103 +38,77 @@ import java.io.IOException;
  */
 public class ServerRestApi {
 
-    private final RestApi mApi;
+    private final NetworkClient mClientWrapper;
 
-    public ServerRestApi(Retrofit retrofit) {
-        mApi = retrofit.create(RestApi.class);
+    public ServerRestApi(NetworkClient networkClient) {
+        mClientWrapper = networkClient;
     }
 
     @NotNull
     public ServerInfoData requestServerInfo() throws IOException, HttpException {
-        Call<ServerInfoData> call = mApi.requestServerInfo();
-        return CallWrapper.wrap(call).body();
-    }
-
-    @NotNull
-    public String requestEdition() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestEdition()).body();
-    }
-
-    @NotNull
-    public String requestVersion() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestVersion()).body();
+        HttpUrl httpUrl = mClientWrapper.getBaseUrl().resolve("rest_v2/serverInfo");
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .url(httpUrl)
+                .get()
+                .build();
+        Response response = mClientWrapper.makeCall(request);
+        return mClientWrapper.deserializeJson(response, ServerInfoData.class);
     }
 
     @NotNull
     public String requestBuild() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestBuild()).body();
+        return plainRequest("rest_v2/serverInfo/build");
+    }
+
+    @NotNull
+    public String requestEdition() throws IOException, HttpException {
+        return plainRequest("rest_v2/serverInfo/edition");
+    }
+
+    @NotNull
+    public String requestVersion() throws IOException, HttpException {
+        return plainRequest("rest_v2/serverInfo/version");
     }
 
     @NotNull
     public String requestFeatures() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestFeatures()).body();
+        return plainRequest("rest_v2/serverInfo/features");
     }
 
     @NotNull
     public String requestEditionName() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestEditionName()).body();
+        return plainRequest("rest_v2/serverInfo/editionName");
     }
 
     @NotNull
     public String requestLicenseType() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestLicenseType()).body();
+        return plainRequest("rest_v2/serverInfo/licenseType");
     }
 
     @NotNull
     public String requestExpiration() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestExpiration()).body();
+        return plainRequest("rest_v2/serverInfo/expiration");
     }
 
     @NotNull
     public String requestDateFormatPattern() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestDateFormatPattern()).body();
+        return plainRequest("rest_v2/serverInfo/dateFormatPattern");
     }
 
     @NotNull
     public String requestDateTimeFormatPattern() throws IOException, HttpException {
-        return CallWrapper.wrap(mApi.requestDateTimeFormatPattern()).body();
+        return plainRequest("rest_v2/serverInfo/datetimeFormatPattern");
     }
 
-    private interface RestApi {
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET(value = "rest_v2/serverInfo")
-        Call<ServerInfoData> requestServerInfo();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/edition")
-        Call<String> requestEdition();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/version")
-        Call<String> requestVersion();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/build")
-        Call<String> requestBuild();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/features")
-        Call<String> requestFeatures();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/editionName")
-        Call<String> requestEditionName();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/licenseType")
-        Call<String> requestLicenseType();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/expiration")
-        Call<String> requestExpiration();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/dateFormatPattern")
-        Call<String> requestDateFormatPattern();
-
-        @Headers("Accept: text/plain")
-        @GET(value = "rest_v2/serverInfo/datetimeFormatPattern")
-        Call<String> requestDateTimeFormatPattern();
+    private String plainRequest(String path) throws IOException, HttpException {
+        HttpUrl httpUrl = mClientWrapper.getBaseUrl().resolve(path);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "text/plain; charset=UTF-8")
+                .url(httpUrl)
+                .get()
+                .build();
+        Response response = mClientWrapper.makeCall(request);
+        return mClientWrapper.deserializeString(response);
     }
 }

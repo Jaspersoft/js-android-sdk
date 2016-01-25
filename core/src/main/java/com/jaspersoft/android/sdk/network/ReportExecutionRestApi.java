@@ -27,18 +27,15 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionStatus;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionSearchResponse;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import retrofit.Call;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Tom Koptel
@@ -46,41 +43,87 @@ import java.util.Map;
  */
 public class ReportExecutionRestApi {
 
-    private final RestApi mRestApi;
+    private final NetworkClient mNetworkClient;
 
-    ReportExecutionRestApi(Retrofit restAdapter) {
-        mRestApi = restAdapter.create(RestApi.class);
+    ReportExecutionRestApi(NetworkClient networkClient) {
+        mNetworkClient = networkClient;
     }
 
     @NotNull
     public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.runReportExecution(executionOptions);
-        return CallWrapper.wrap(call).body();
+        HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/reportExecutions");
+
+        RequestBody jsonRequestBody = mNetworkClient.createJsonRequestBody(executionOptions);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .post(jsonRequestBody)
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ReportExecutionDescriptor.class);
     }
 
     @NotNull
     public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
-        Call<ReportExecutionDescriptor> call = mRestApi.requestReportExecutionDetails(executionId);
-        return CallWrapper.wrap(call).body();
+        HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/reportExecutions")
+                .newBuilder()
+                .addPathSegment(executionId)
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ReportExecutionDescriptor.class);
     }
 
     @NotNull
     public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
-        Call<ExecutionStatus> call = mRestApi.requestReportExecutionStatus(executionId);
-        return CallWrapper.wrap(call).body();
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .resolve("rest_v2/reportExecutions")
+                .newBuilder()
+                .addPathSegment(executionId)
+                .addPathSegment("status")
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(response, ExecutionStatus.class);
     }
 
     public boolean cancelReportExecution(@Nullable String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
-        Call<Object> call = mRestApi.cancelReportExecution(executionId, ExecutionStatus.cancelledStatus());
-        Response<Object> response = CallWrapper.wrap(call).response();
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .resolve("rest_v2/reportExecutions")
+                .newBuilder()
+                .addPathSegment(executionId)
+                .addPathSegment("status")
+                .build();
+
+        RequestBody jsonRequestBody = mNetworkClient.createJsonRequestBody(ExecutionStatus.cancelledStatus());
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .put(jsonRequestBody)
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
         int status = response.code();
         return status != 204;
     }
@@ -91,55 +134,23 @@ public class ReportExecutionRestApi {
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
 
-        Call<Object> call = mRestApi.updateReportExecution(executionId, params);
-        Response<Object> response = CallWrapper.wrap(call).response();
+
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .resolve("rest_v2/reportExecutions")
+                .newBuilder()
+                .addPathSegment(executionId)
+                .addPathSegment("parameters")
+                .build();
+
+        RequestBody jsonRequestBody = mNetworkClient.createJsonRequestBody(params);
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .post(jsonRequestBody)
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
         int status = response.code();
         return status == 204;
-    }
-
-    @NotNull
-    public ReportExecutionSearchResponse searchReportExecution(@Nullable Map<String, String> params) throws IOException, HttpException {
-        Utils.checkNotNull(params, "Search params should not be null");
-        Utils.checkArgument(params.isEmpty(), "Search params should have at lease one key pair");
-
-        Call<ReportExecutionSearchResponse> call = mRestApi.searchReportExecution(params);
-        ReportExecutionSearchResponse body = CallWrapper.wrap(call).body();
-        if (body == null) {
-            return ReportExecutionSearchResponse.empty();
-        }
-        return body;
-    }
-
-    interface RestApi {
-        @NotNull
-        @Headers("Accept: application/json")
-        @POST("rest_v2/reportExecutions")
-        Call<ReportExecutionDescriptor> runReportExecution(@NotNull @Body ReportExecutionRequestOptions executionOptions);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions/{executionId}")
-        Call<ReportExecutionDescriptor> requestReportExecutionDetails(@NotNull @Path(value = "executionId", encoded = true) String executionId);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions/{executionId}/status")
-        Call<ExecutionStatus> requestReportExecutionStatus(@NotNull @Path(value = "executionId", encoded = true) String executionId);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @POST("rest_v2/reportExecutions/{executionId}/parameters")
-        Call<Object> updateReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                           @NotNull @Body List<ReportParameter> params);
-
-        @NotNull
-        @Headers("Accept: application/json")
-        @PUT("rest_v2/reportExecutions/{executionId}/status")
-        Call<Object> cancelReportExecution(@NotNull @Path(value = "executionId", encoded = true) String executionId,
-                                           @NotNull @Body ExecutionStatus statusResponse);
-
-        @Headers("Accept: application/json")
-        @GET("rest_v2/reportExecutions")
-        Call<ReportExecutionSearchResponse> searchReportExecution(@Nullable @QueryMap(encoded = true) Map<String, String> params);
     }
 }

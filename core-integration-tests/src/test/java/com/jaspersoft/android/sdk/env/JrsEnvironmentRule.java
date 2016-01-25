@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tom Koptel
@@ -129,7 +130,9 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
     private Server createServer(SampleServer sampleServer) {
         Server.OptionalBuilder serverBuilder = Server.builder()
-                .withBaseUrl(sampleServer.getUrl());
+                .withBaseUrl(sampleServer.getUrl())
+                .withConnectionTimeOut(30, TimeUnit.SECONDS)
+                .withReadTimeout(30, TimeUnit.SECONDS);
         if (isProxyReachable()) {
             serverBuilder.withProxy(CHARLES);
         }

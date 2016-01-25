@@ -24,31 +24,56 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.squareup.okhttp.HttpUrl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class AnonymousClient extends Client {
-    private ServerRestApi mServerRestApi;
-    private AuthenticationRestApi mAuthApi;
+class PathResolver {
+    private final List<String> mPaths;
 
-    AnonymousClient(NetworkClient networkClient) {
-        super(networkClient);
+    PathResolver(List<String> paths) {
+        mPaths = paths;
     }
 
-    public ServerRestApi infoApi() {
-        if (mServerRestApi == null) {
-            mServerRestApi = new ServerRestApi(mNetworkClient);
+    public HttpUrl resolve(HttpUrl base) {
+        HttpUrl.Builder builder = base.newBuilder();
+        for (String path : mPaths) {
+            builder.addPathSegment(path);
         }
-        return mServerRestApi;
+        return builder.build();
     }
 
-    public AuthenticationRestApi authenticationApi() {
-        if (mAuthApi == null) {
-            SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mNetworkClient);
-            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory);
-            mAuthApi = new AuthenticationRestApi(authStrategy);
+    static class Builder {
+        private final List<String> mPaths = new ArrayList<>();
+
+
+        public Builder addPath(String path) {
+            if (path.length() > 0) {
+                mPaths.add(path);
+            }
+            return this;
         }
-        return mAuthApi;
+
+        public Builder addPaths(String paths) {
+            if (paths.length() > 0) {
+                if (paths.contains("/")) {
+                    String[] parts = paths.split("/");
+                    mPaths.addAll(Arrays.asList(parts));
+                } else {
+                    return addPath(paths);
+                }
+            }
+            return this;
+        }
+
+        public PathResolver build() {
+            return new PathResolver(mPaths);
+        }
     }
 }

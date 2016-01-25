@@ -24,8 +24,6 @@
 
 package com.jaspersoft.android.sdk.network;
 
-import retrofit.Retrofit;
-
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -41,49 +39,49 @@ public class AuthorizedClient extends AnonymousClient {
     private RepositoryRestApi mRepositoryRestApi;
     private ReportScheduleRestApi mReportScheduleRestApi;
 
-    AuthorizedClient(Retrofit retrofit, AnonymousClient anonymousClient) {
-        super(retrofit);
+    AuthorizedClient(NetworkClient networkClient, AnonymousClient anonymousClient) {
+        super(networkClient);
         mAnonymousClient = anonymousClient;
     }
 
     public ReportExecutionRestApi reportExecutionApi() {
         if (mReportExecutionRestApi == null) {
-            mReportExecutionRestApi = new ReportExecutionRestApi(mRetrofit);
+            mReportExecutionRestApi = new ReportExecutionRestApi(mNetworkClient);
         }
         return mReportExecutionRestApi;
     }
 
     public ReportExportRestApi reportExportApi() {
         if (mReportExportRestApi == null) {
-            mReportExportRestApi = new ReportExportRestApi(mRetrofit);
+            mReportExportRestApi = new ReportExportRestApi(mNetworkClient);
         }
         return mReportExportRestApi;
     }
 
     public ReportOptionRestApi reportOptionsApi() {
         if (mReportOptionRestApi == null) {
-            mReportOptionRestApi = new ReportOptionRestApi(mRetrofit);
+            mReportOptionRestApi = new ReportOptionRestApi(mNetworkClient);
         }
         return mReportOptionRestApi;
     }
 
     public InputControlRestApi inputControlApi() {
         if (mInputControlRestApi == null) {
-            mInputControlRestApi = new InputControlRestApi(mRetrofit);
+            mInputControlRestApi = new InputControlRestApi(mNetworkClient);
         }
         return mInputControlRestApi;
     }
 
     public RepositoryRestApi repositoryApi() {
         if (mRepositoryRestApi == null) {
-            mRepositoryRestApi = new RepositoryRestApi(mRetrofit);
+            mRepositoryRestApi = new RepositoryRestApi(mNetworkClient);
         }
         return mRepositoryRestApi;
     }
 
     public ReportScheduleRestApi reportScheduleApi() {
         if (mReportScheduleRestApi == null) {
-            mReportScheduleRestApi = new ReportScheduleRestApi(mRetrofit);
+            mReportScheduleRestApi = new ReportScheduleRestApi(mNetworkClient);
         }
         return mReportScheduleRestApi;
     }
