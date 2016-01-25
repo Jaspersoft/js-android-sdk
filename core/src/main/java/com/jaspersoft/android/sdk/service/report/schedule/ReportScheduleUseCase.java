@@ -15,6 +15,7 @@ import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -60,6 +61,16 @@ class ReportScheduleUseCase {
             JobFormEntity formEntity = mJobFormMapper.transform(form);
             JobDescriptor jobDescriptor = mScheduleRestApi.createJob(formEntity);
             return mJobDataMapper.transform(jobDescriptor, info.getDatetimeFormatPattern());
+        } catch (IOException e) {
+            throw mExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw mExceptionMapper.transform(e);
+        }
+    }
+
+    public Set<Integer> deleteJobs(Set<Integer> jobIds)  throws ServiceException  {
+        try {
+            return mScheduleRestApi.deleteJobs(jobIds);
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
         } catch (HttpException e) {

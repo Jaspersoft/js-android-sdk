@@ -14,6 +14,8 @@ import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
 import rx.functions.Func0;
 
+import java.util.Set;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -35,12 +37,32 @@ public class RxReportScheduleService {
 
     @NotNull
     public Observable<JobData> createJob(@NotNull final JobForm form) {
+        Preconditions.checkNotNull(form, "Job form should not be null");
+
         return Observable.defer(new Func0<Observable<JobData>>() {
             @Override
             public Observable<JobData> call() {
                 try {
                     JobData job = mSyncDelegate.createJob(form);
                     return Observable.just(job);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<Set<Integer>> deleteJobs(@NotNull final Set<Integer> ids) {
+        Preconditions.checkNotNull(ids, "Job ids should not be null");
+        Preconditions.checkArgument(!ids.isEmpty(), "Job ids should not be empty");
+
+        return Observable.defer(new Func0<Observable<Set<Integer>>>() {
+            @Override
+            public Observable<Set<Integer>> call() {
+                try {
+                    Set<Integer> integers = mSyncDelegate.deleteJobs(ids);
+                    return Observable.just(integers);
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }

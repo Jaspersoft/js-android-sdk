@@ -36,7 +36,6 @@ public class JobFormMapperTest {
 
     @Test
     public void testTransform() throws Exception {
-        Date startDate = DATE_FORMAT.parse("2013-10-03 16:32:05");
         Date endDate = DATE_FORMAT.parse("2013-11-03 16:32:05");
 
         TimeZone timezone = TimeZone.getDefault();
@@ -46,8 +45,7 @@ public class JobFormMapperTest {
                 .withOccurrenceCount(1)
                 .withRecurrenceInterval(10)
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .withStartType(TriggerStartType.IMMEDIATE)
-                .withStartDate(startDate)
+                .withStartType(new ImmediateStartType())
                 .withStopDate(endDate)
                 .build();
 
@@ -74,17 +72,37 @@ public class JobFormMapperTest {
         assertThat(simpleTrigger.getTimezone(), is(timezone.getID()));
         assertThat(simpleTrigger.getCalendarName(), is("calendar name"));
         assertThat(simpleTrigger.getStartType(), is(1));
-        assertThat(simpleTrigger.getStartDate(), is("2013-10-03 16:32"));
-        assertThat(simpleTrigger.getStopDate(), is("2013-11-03 16:32"));
+        assertThat(simpleTrigger.getEndDate(), is("2013-11-03 16:32"));
         assertThat(simpleTrigger.getOccurrenceCount(), is(1));
         assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
         assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
     }
 
     @Test
-    public void should_map_empty_form_without_issues() throws Exception {
-        JobForm form = new JobForm.Builder().build();
-        mJobFormMapper.transform(form);
+    public void should_transform_deffered_trigger() throws Exception {
+        Date startDate = DATE_FORMAT.parse("2013-10-03 16:32:05");
+
+        JobTrigger trigger = new JobSimpleTrigger.Builder()
+                .withOccurrenceCount(1)
+                .withRecurrenceInterval(10)
+                .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
+                .withStartType(new DeferredStartType(startDate))
+                .build();
+
+        JobForm form = new JobForm.Builder()
+                .withLabel("my label")
+                .withDescription("Description")
+                .withTrigger(trigger)
+                .addOutputFormat(JobOutputFormat.CSV)
+                .withBaseOutputFilename("output")
+                .withRepositoryDestination("/temp")
+                .withSource("/my/uri")
+                .build();
+
+        JobFormEntity entity = mJobFormMapper.transform(form);
+        JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
+        assertThat(simpleTrigger.getStartType(), is(2));
+        assertThat(simpleTrigger.getStartDate(), is("2013-10-03 16:32"));
     }
 
     @Test
@@ -92,13 +110,6 @@ public class JobFormMapperTest {
     public void should_map_interval_to_primitive(String type) throws Exception {
         String expected = mJobFormMapper.mapInterval(RecurrenceIntervalUnit.valueOf(type));
         assertThat(expected, is(type));
-    }
-
-    @Test
-    @Parameters(method = "types")
-    public void should_map_start_type(String type, int value) throws Exception {
-        int expected = mJobFormMapper.mapStartType(TriggerStartType.valueOf(type));
-        assertThat(expected, is(value));
     }
 
     private Object[] intervals() {
@@ -110,10 +121,4 @@ public class JobFormMapperTest {
         );
     }
 
-    private Object[] types() {
-        return $(
-                $("IMMEDIATE", 1),
-                $("DEFERRED", 2)
-        );
-    }
 }

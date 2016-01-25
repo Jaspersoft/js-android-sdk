@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
+import java.util.Set;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -39,6 +41,13 @@ public class ReportScheduleService {
     public JobData createJob(@NotNull JobForm form) throws ServiceException {
         Preconditions.checkNotNull(form, "Job form should not be null");
         return mUseCase.createJob(form);
+    }
+
+    @NotNull
+    public Set<Integer> deleteJobs(@NotNull Set<Integer> jobIds) throws ServiceException {
+        Preconditions.checkNotNull(jobIds, "Job ids should not be null");
+        Preconditions.checkArgument(!jobIds.isEmpty(), "Job ids should not be empty");
+        return mUseCase.deleteJobs(jobIds);
     }
 
     @NotNull
