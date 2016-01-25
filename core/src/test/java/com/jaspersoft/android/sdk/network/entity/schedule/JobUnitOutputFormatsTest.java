@@ -18,7 +18,7 @@ public class JobUnitOutputFormatsTest {
             "outputFormat",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobOutputFormats.class.getDeclaredField(fieldName);
+        Field field = JobOutputFormatsEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }

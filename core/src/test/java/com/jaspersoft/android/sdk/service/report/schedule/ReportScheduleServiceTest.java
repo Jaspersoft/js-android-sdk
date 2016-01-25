@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -6,11 +6,15 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-class RepositoryDestination {
+class RepositoryDestinationEntity {
     @Expose
-    private final String folderURI;
+    private String folderURI;
 
-    RepositoryDestination(String folderURI) {
+    public String getFolderURI() {
+        return folderURI;
+    }
+
+    public void setFolderURI(String folderURI) {
         this.folderURI = folderURI;
     }
 }

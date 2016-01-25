@@ -6,11 +6,15 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-class JobSource {
+class JobSourceEntity {
     @Expose
-    private final String reportUnitURI;
+    private String reportUnitURI;
 
-    JobSource(String reportUnitURI) {
+    public String getReportUnitURI() {
+        return reportUnitURI;
+    }
+
+    public void setReportUnitURI(String reportUnitURI) {
         this.reportUnitURI = reportUnitURI;
     }
 }

@@ -1,7 +1,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobsSearchResult;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -53,7 +53,7 @@ public class ReportScheduleRestApi {
     }
 
     @NotNull
-    public JobDescriptor createJob(@NotNull JobForm form) throws IOException, HttpException {
+    public JobDescriptor createJob(@NotNull JobFormEntity form) throws IOException, HttpException {
         Preconditions.checkNotNull(form, "Job form should not be null");
 
         HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/jobs");

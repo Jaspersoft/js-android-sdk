@@ -18,7 +18,7 @@ public class JobUnitSourceTest {
             "folderURI",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = RepositoryDestination.class.getDeclaredField(fieldName);
+        Field field = RepositoryDestinationEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }

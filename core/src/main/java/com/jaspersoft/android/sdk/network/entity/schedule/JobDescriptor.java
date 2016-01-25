@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose;
  */
 public class JobDescriptor {
     @Expose
-    private String id;
+    private int id;
     @Expose
     private int version;
     @Expose
@@ -20,9 +20,9 @@ public class JobDescriptor {
     @Expose
     private String creationDate;
     @Expose
-    private JobOutputFormats outputFormats;
+    private JobOutputFormatsEntity outputFormats;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -46,7 +46,7 @@ public class JobDescriptor {
         return creationDate;
     }
 
-    public JobOutputFormats getOutputFormats() {
+    public JobOutputFormatsEntity getOutputFormats() {
         return outputFormats;
     }
 }

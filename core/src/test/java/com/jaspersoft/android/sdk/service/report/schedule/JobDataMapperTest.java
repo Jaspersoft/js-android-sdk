@@ -1,7 +1,7 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobOutputFormats;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobOutputFormatsEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class JobDataMapperTest {
     JobDescriptor mJobDescriptor;
 
     @Mock
-    JobOutputFormats mJobOutputFormats;
+    JobOutputFormatsEntity mJobOutputFormats;
 
     @Before
     public void setUp() throws Exception {
@@ -44,7 +44,7 @@ public class JobDataMapperTest {
 
         JobData jobData = jobDataMapper.transform(mJobDescriptor, DATE_FORMAT);
 
-        assertThat("Should map id", jobData.getId(), is("id"));
+        assertThat("Should map id", jobData.getId(), is(20));
         assertThat("Should map version", jobData.getVersion(), is(2));
         assertThat("Should map username", jobData.getUsername(), is("user"));
         assertThat("Should map label", jobData.getLabel(), is("label"));
@@ -54,7 +54,7 @@ public class JobDataMapperTest {
     }
 
     private void setupMocks() {
-        when(mJobDescriptor.getId()).thenReturn("id");
+        when(mJobDescriptor.getId()).thenReturn(20);
         when(mJobDescriptor.getVersion()).thenReturn(2);
         when(mJobDescriptor.getUsername()).thenReturn("user");
         when(mJobDescriptor.getLabel()).thenReturn("label");

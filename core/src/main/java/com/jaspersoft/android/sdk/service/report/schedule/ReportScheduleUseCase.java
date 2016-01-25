@@ -3,9 +3,10 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportScheduleRestApi;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
@@ -25,17 +26,21 @@ class ReportScheduleUseCase {
     private final InfoCacheManager mCacheManager;
     private final JobSearchCriteriaMapper mSearchCriteriaMapper;
     private final JobDataMapper mJobDataMapper;
+    private final JobFormMapper mJobFormMapper;
 
     ReportScheduleUseCase(ServiceExceptionMapper exceptionMapper,
                           ReportScheduleRestApi scheduleRestApi,
                           InfoCacheManager cacheManager,
                           JobSearchCriteriaMapper searchCriteriaMapper,
-                          JobDataMapper jobDataMapper) {
+                          JobDataMapper jobDataMapper,
+                          JobFormMapper jobFormMapper
+    ) {
         mExceptionMapper = exceptionMapper;
         mScheduleRestApi = scheduleRestApi;
         mCacheManager = cacheManager;
         mSearchCriteriaMapper = searchCriteriaMapper;
         mJobDataMapper = jobDataMapper;
+        mJobFormMapper = jobFormMapper;
     }
 
     public List<JobUnit> searchJob(JobSearchCriteria criteria) throws ServiceException {
@@ -52,7 +57,8 @@ class ReportScheduleUseCase {
     public JobData createJob(JobForm form) throws ServiceException {
         try {
             ServerInfo info = mCacheManager.getInfo();
-            JobDescriptor jobDescriptor = mScheduleRestApi.createJob(form);
+            JobFormEntity formEntity = mJobFormMapper.transform(form);
+            JobDescriptor jobDescriptor = mScheduleRestApi.createJob(formEntity);
             return mJobDataMapper.transform(jobDescriptor, info.getDatetimeFormatPattern());
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);

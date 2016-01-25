@@ -12,13 +12,13 @@ import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotatio
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(JUnitParamsRunner.class)
-public class RepositoryDestinationTest {
+public class RepositoryDestinationEntityTest {
     @Test
     @Parameters({
             "reportUnitURI",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobSource.class.getDeclaredField(fieldName);
+        Field field = JobSourceEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }

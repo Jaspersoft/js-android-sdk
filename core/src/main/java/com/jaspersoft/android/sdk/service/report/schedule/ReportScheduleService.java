@@ -1,8 +1,8 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -47,6 +47,7 @@ public class ReportScheduleService {
 
         JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
         JobDataMapper jobDataMapper = new JobDataMapper();
+        JobFormMapper jobFormMapper = new JobFormMapper();
         ServiceExceptionMapper exceptionMapper = new DefaultExceptionMapper();
 
         InfoCache cache = new InMemoryInfoCache();
@@ -57,7 +58,8 @@ public class ReportScheduleService {
                 client.reportScheduleApi(),
                 cacheManager,
                 criteriaMapper,
-                jobDataMapper
+                jobDataMapper,
+                jobFormMapper
         );
         return new ReportScheduleService(reportScheduleUseCase);
     }

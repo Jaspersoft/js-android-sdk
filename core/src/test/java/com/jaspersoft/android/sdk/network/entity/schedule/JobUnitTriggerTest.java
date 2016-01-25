@@ -18,7 +18,7 @@ public class JobUnitTriggerTest {
             "simpleTrigger",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobTrigger.class.getDeclaredField(fieldName);
+        Field field = JobTriggerWrapper.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }

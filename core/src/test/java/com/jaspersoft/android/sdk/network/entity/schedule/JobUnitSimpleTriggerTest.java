@@ -16,12 +16,25 @@ public class JobUnitSimpleTriggerTest {
     @Test
     @Parameters({
             "timezone",
+            "calendarName",
             "startType",
             "startDate",
-            "occurrenceCount",
+            "stopDate",
+            "misfireInstruction",
     })
-    public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobSimpleTrigger.class.getDeclaredField(fieldName);
+    public void shouldHaveExposeAnnotationForSubclassFields(String fieldName) throws NoSuchFieldException {
+        Field field = JobTriggerEntity.class.getDeclaredField(fieldName);
+        assertThat(field, hasAnnotation(Expose.class));
+    }
+
+    @Test
+    @Parameters({
+            "occurrenceCount",
+            "recurrenceInterval",
+            "recurrenceIntervalUnit",
+    })
+    public void shouldHaveExposeAnnotationForFields(String fieldName) throws NoSuchFieldException {
+        Field field = JobSimpleTriggerEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 }
