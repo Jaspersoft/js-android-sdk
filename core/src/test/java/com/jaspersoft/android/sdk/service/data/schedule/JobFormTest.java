@@ -40,8 +40,8 @@ public class JobFormTest {
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .withRepositoryDestination("/temp")
-                .withSource("/my/uri")
+                .addRepositoryDestination().withFolderUri("/temp").done()
+                .addSource().withUri("/my/uri").done()
                 .withBaseOutputFilename("output")
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
@@ -53,8 +53,8 @@ public class JobFormTest {
         expected.expectMessage("Job can not be scheduled without label");
 
         new JobForm.Builder()
-                .withRepositoryDestination("/temp")
-                .withSource("/my/uri")
+                .addRepositoryDestination().withFolderUri("/temp").done()
+                .addSource().withUri("/my/uri").done()
                 .withBaseOutputFilename("output")
                 .withTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
@@ -64,11 +64,11 @@ public class JobFormTest {
     @Test
     public void should_not_allow_job_without_repo_destination() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without repo destination");
+        expected.expectMessage("Job can not be scheduled without folder uri");
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .withSource("/my/uri")
+                .addSource().withUri("/my/uri").done()
                 .withBaseOutputFilename("output")
                 .withTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
@@ -78,11 +78,11 @@ public class JobFormTest {
     @Test
     public void should_not_allow_job_without_source() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without source");
+        expected.expectMessage("Job can not be scheduled without source uri");
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .withRepositoryDestination("/temp")
+                .addRepositoryDestination().withFolderUri("/temp").done()
                 .withBaseOutputFilename("output")
                 .addOutputFormat(JobOutputFormat.HTML)
                 .withTrigger(mJobTrigger)
@@ -97,8 +97,8 @@ public class JobFormTest {
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .withRepositoryDestination("/temp")
-                .withSource("/my/uri")
+                .addRepositoryDestination().withFolderUri("/temp").done()
+                .addSource().withUri("/my/uri").done()
                 .withTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
@@ -121,15 +121,15 @@ public class JobFormTest {
     @Test
     public void builder_should_not_accept_null_for_source() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Source should not be null");
-        new JobForm.Builder().withSource(null);
+        expected.expectMessage("Source uri should not be null");
+        new JobForm.Builder().addSource().withUri(null).done();
     }
 
     @Test
     public void builder_should_not_accept_null_for_repo_destination() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Repository destination should not be null");
-        new JobForm.Builder().withRepositoryDestination(null);
+        expected.expectMessage("Repository folder uri should not be null");
+        new JobForm.Builder().addRepositoryDestination().withFolderUri(null);
     }
 
     @Test

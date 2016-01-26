@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTriggerEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.*;
@@ -9,54 +10,65 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 import static junitparams.JUnitParamsRunner.$;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(JUnitParamsRunner.class)
 public class JobFormMapperTest {
 
-    public static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    public static final SimpleDateFormat DATE_FORMAT =
+    private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
+    private static final TimeZone TIME_ZONE = TimeZone.getDefault();
+
+    private static Date START_DATE;
+    private static Date END_DATE;
+    static {
+        try {
+            END_DATE = DATE_FORMAT.parse("2013-11-03 16:32:05");
+            START_DATE = DATE_FORMAT.parse("2013-10-03 16:32:05");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private JobFormMapper mJobFormMapper;
+    private JobSimpleTrigger.Builder mTriggerBuilder;
+    private JobForm.Builder mJobBuilder;
 
     @Before
     public void setUp() throws Exception {
         mJobFormMapper = new JobFormMapper();
-    }
-
-    @Test
-    public void testTransform() throws Exception {
-        Date endDate = DATE_FORMAT.parse("2013-11-03 16:32:05");
-
-        TimeZone timezone = TimeZone.getDefault();
-        JobTrigger trigger = new JobSimpleTrigger.Builder()
+        mTriggerBuilder = new JobSimpleTrigger.Builder()
                 .withCalendarName("calendar name")
-                .withTimeZone(timezone)
+                .withTimeZone(TIME_ZONE)
                 .withOccurrenceCount(1)
                 .withRecurrenceInterval(10)
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
                 .withStartType(new ImmediateStartType())
-                .withStopDate(endDate)
-                .build();
-
-        JobForm form = new JobForm.Builder()
+                .withStopDate(END_DATE);
+        mJobBuilder = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
-                .withRepositoryDestination("/temp")
-                .withSource("/my/uri")
+                .addRepositoryDestination().withFolderUri("/temp").done()
+                .addSource().withUri("/my/uri").done()
                 .addOutputFormat(JobOutputFormat.HTML)
                 .addOutputFormats(Collections.singletonList(JobOutputFormat.CSV))
-                .withBaseOutputFilename("output")
+                .withBaseOutputFilename("output");
+    }
+
+    @Test
+    public void testTransform() throws Exception {
+        JobTrigger trigger = mTriggerBuilder.build();
+        JobForm form = mJobBuilder
                 .withTrigger(trigger)
                 .build();
 
@@ -64,12 +76,12 @@ public class JobFormMapperTest {
         assertThat(entity.getLabel(), is("my label"));
         assertThat(entity.getDescription(), is("Description"));
         assertThat(entity.getRepositoryDestination(), is("/temp"));
-        assertThat(entity.getSource(), is("/my/uri"));
+        assertThat(entity.getSourceUri(), is("/my/uri"));
         assertThat(entity.getOutputFormats(), hasItems("HTML", "CSV"));
         assertThat(entity.getBaseOutputFilename(), is("output"));
 
         JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
-        assertThat(simpleTrigger.getTimezone(), is(timezone.getID()));
+        assertThat(simpleTrigger.getTimezone(), is(TIME_ZONE.getID()));
         assertThat(simpleTrigger.getCalendarName(), is("calendar name"));
         assertThat(simpleTrigger.getStartType(), is(1));
         assertThat(simpleTrigger.getEndDate(), is("2013-11-03 16:32"));
@@ -79,24 +91,38 @@ public class JobFormMapperTest {
     }
 
     @Test
-    public void should_transform_deffered_trigger() throws Exception {
-        Date startDate = DATE_FORMAT.parse("2013-10-03 16:32:05");
+    public void should_map_source_param_values() throws Exception {
+        List<ReportParameter> parameters = Collections.singletonList(
+                new ReportParameter("key", Collections.singleton("value")));
 
-        JobTrigger trigger = new JobSimpleTrigger.Builder()
-                .withOccurrenceCount(1)
-                .withRecurrenceInterval(10)
+        JobForm form = mJobBuilder
+                .addSource()
+                .withParameters(parameters)
+                .done()
+                .withTrigger(mTriggerBuilder.build())
+                .build();
+        JobFormEntity entity = mJobFormMapper.transform(form);
+
+
+        Map<String, Set<String>> params = entity.getSourceParameters();
+        Collection<String> values = new ArrayList<>();
+        for (Map.Entry<String, Set<String>> entry : params.entrySet()) {
+            values.addAll(entry.getValue());
+        }
+
+        assertThat(params.keySet(), hasItem("key"));
+        assertThat(values, hasItem("value"));
+    }
+
+    @Test
+    public void should_transform_deffered_trigger() throws Exception {
+        JobTrigger trigger = mTriggerBuilder
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .withStartType(new DeferredStartType(startDate))
+                .withStartType(new DeferredStartType(START_DATE))
                 .build();
 
-        JobForm form = new JobForm.Builder()
-                .withLabel("my label")
-                .withDescription("Description")
+        JobForm form = mJobBuilder
                 .withTrigger(trigger)
-                .addOutputFormat(JobOutputFormat.CSV)
-                .withBaseOutputFilename("output")
-                .withRepositoryDestination("/temp")
-                .withSource("/my/uri")
                 .build();
 
         JobFormEntity entity = mJobFormMapper.transform(form);
@@ -120,5 +146,4 @@ public class JobFormMapperTest {
                 $("WEEK")
         );
     }
-
 }

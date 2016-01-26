@@ -11,7 +11,7 @@ import java.util.TimeZone;
  * @author Tom Koptel
  * @since 2.0
  */
-public class JobSimpleTrigger extends JobTrigger {
+public final class JobSimpleTrigger extends JobTrigger {
     private final int mOccurrenceCount;
     private final int mRecurrenceInterval;
     @NotNull
