@@ -39,17 +39,21 @@ public class ReportScheduleServiceTest {
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
                 .build();
 
-        JobForm form = new JobForm.Builder()
+        JobForm.Builder formBuilder = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
-                .withRepositoryDestination("/temp")
-                .withSource(bundle.getReportUri())
+                .addRepositoryDestination().withFolderUri("/temp").done()
+                .addSource()
+                    .withUri(bundle.getReportUri())
+                .done()
                 .addOutputFormat(JobOutputFormat.HTML)
                 .withBaseOutputFilename("output")
-                .withTrigger(trigger)
-                .build();
+                .withTrigger(trigger);
+        if (bundle.hasParams()) {
+            formBuilder.addSource().withParameters(bundle.getParams());
+        }
 
-        JobData job = service.createJob(form);
+        JobData job = service.createJob(formBuilder.build());
         assertThat(job, is(notNullValue()));
 
         JobSearchCriteria criteria = JobSearchCriteria.builder()

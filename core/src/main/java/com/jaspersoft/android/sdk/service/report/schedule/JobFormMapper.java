@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTriggerEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.*;
@@ -24,8 +25,15 @@ class JobFormMapper {
         entity.setLabel(form.getLabel());
         entity.setDescription(form.getDescription());
         entity.setBaseOutputFilename(form.getBaseOutputFilename());
-        entity.setRepositoryDestination(form.getRepositoryDestination());
-        entity.setSource(form.getSource());
+
+        RepositoryDestination repositoryDestination = form.getRepositoryDestination();
+        entity.setRepositoryDestination(repositoryDestination.getFolderUri());
+
+        JobSource source = form.getSource();
+        List<ReportParameter> params = source.getParameters();
+        Map<String, Set<String>> values = mapSourceParamValues(params);
+        entity.setSourceUri(source.getUri());
+        entity.setSourceParameters(values);
 
         Set<JobOutputFormat> outputFormats = form.getOutputFormats();
         Collection<String> formats = new ArrayList<>(outputFormats.size());
@@ -69,6 +77,14 @@ class JobFormMapper {
         }
 
         return entity;
+    }
+
+    private Map<String, Set<String>> mapSourceParamValues(List<ReportParameter> params) {
+        Map<String, Set<String>> values = new HashMap<>(params.size());
+        for (ReportParameter param : params) {
+            values.put(param.getName(), param.getValue());
+        }
+        return values;
     }
 
     @TestOnly

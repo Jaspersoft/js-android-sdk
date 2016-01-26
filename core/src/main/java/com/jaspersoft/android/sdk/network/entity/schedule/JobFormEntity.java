@@ -3,6 +3,8 @@ package com.jaspersoft.android.sdk.network.entity.schedule;
 import com.google.gson.annotations.Expose;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -49,8 +51,12 @@ public class JobFormEntity {
         this.baseOutputFilename = baseOutputFilename;
     }
 
-    public void setSource(String reportUri) {
-        source.setReportUnitURI(reportUri);
+    public void setSourceUri(String sourceUri) {
+        source.setReportUnitURI(sourceUri);
+    }
+
+    public void setSourceParameters(Map<String, Set<String>> params) {
+        source.setParameters(params);
     }
 
     public void setRepositoryDestination(String folderUri) {
@@ -77,8 +83,12 @@ public class JobFormEntity {
         return baseOutputFilename;
     }
 
-    public String getSource() {
+    public String getSourceUri() {
         return source.getReportUnitURI();
+    }
+
+    public Map<String, Set<String>> getSourceParameters() {
+        return source.getParameters();
     }
 
     public String getRepositoryDestination() {
@@ -125,4 +135,6 @@ public class JobFormEntity {
         result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
         return result;
     }
+
+
 }

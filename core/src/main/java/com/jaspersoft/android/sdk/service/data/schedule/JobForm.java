@@ -21,9 +21,9 @@ public class JobForm {
     @NotNull
     private final String mBaseOutputFilename;
     @NotNull
-    private final String mSource;
+    private final JobSource mSource;
     @NotNull
-    private final String mRepositoryDestination;
+    private final RepositoryDestination mRepositoryDestination;
     @NotNull
     private final Set<JobOutputFormat> mOutputFormats;
     @NotNull
@@ -33,8 +33,8 @@ public class JobForm {
         mLabel = builder.mLabel;
         mDescription = builder.mDescription;
         mBaseOutputFilename = builder.mBaseOutputFilename;
-        mSource = builder.mSource;
-        mRepositoryDestination = builder.mRepositoryDestination;
+        mSource = builder.mJobSourceBuilder.build();
+        mRepositoryDestination = builder.mRepositoryDestinationBuilder.build();
         mOutputFormats = builder.mOutputFormats;
         mTrigger = builder.mTrigger;
     }
@@ -55,12 +55,12 @@ public class JobForm {
     }
 
     @NotNull
-    public String getSource() {
+    public JobSource getSource() {
         return mSource;
     }
 
     @NotNull
-    public String getRepositoryDestination() {
+    public RepositoryDestination getRepositoryDestination() {
         return mRepositoryDestination;
     }
 
@@ -78,10 +78,24 @@ public class JobForm {
         private String mLabel;
         private String mDescription;
         private String mBaseOutputFilename;
-        private String mSource;
-        private String mRepositoryDestination;
         private JobTrigger mTrigger;
+
         private final Set<JobOutputFormat> mOutputFormats = new HashSet<>(15);
+        private final JobSource.Builder mJobSourceBuilder;
+        private final RepositoryDestination.Builder mRepositoryDestinationBuilder;
+
+        public Builder() {
+            mJobSourceBuilder = new JobSource.Builder(this);
+            mRepositoryDestinationBuilder = new RepositoryDestination.Builder(this);
+        }
+
+        public JobSource.Builder addSource() {
+            return mJobSourceBuilder;
+        }
+
+        public RepositoryDestination.Builder addRepositoryDestination() {
+            return mRepositoryDestinationBuilder;
+        }
 
         public Builder withLabel(@NotNull String label) {
             Preconditions.checkNotNull(label, "Label should not be null");
@@ -100,17 +114,6 @@ public class JobForm {
             return this;
         }
 
-        public Builder withSource(@Nullable String source) {
-            Preconditions.checkNotNull(source, "Source should not be null");
-            mSource = source;
-            return this;
-        }
-
-        public Builder withRepositoryDestination(@Nullable String repositoryDestination) {
-            Preconditions.checkNotNull(repositoryDestination, "Repository destination should not be null");
-            mRepositoryDestination = repositoryDestination;
-            return this;
-        }
 
         public Builder addOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
             Preconditions.checkNotNull(outputFormats, "Formats should not be null");
@@ -132,7 +135,17 @@ public class JobForm {
 
         public JobForm build() {
             assertState();
+            assertJobSource();
+            assertDestinationState();
             return new JobForm(this);
+        }
+
+        private void assertDestinationState() {
+            mRepositoryDestinationBuilder.assertState();
+        }
+
+        private void assertJobSource() {
+            mJobSourceBuilder.assertState();
         }
 
         private void assertState() {
@@ -142,8 +155,6 @@ public class JobForm {
             Preconditions.checkNotNull(mLabel, "Job can not be scheduled without label");
             Preconditions.checkNotNull(mTrigger, "Job can not be scheduled without trigger");
             Preconditions.checkNotNull(mBaseOutputFilename, "Job can not be scheduled without output file name");
-            Preconditions.checkNotNull(mSource, "Job can not be scheduled without source");
-            Preconditions.checkNotNull(mRepositoryDestination, "Job can not be scheduled without repo destination");
         }
     }
 }
