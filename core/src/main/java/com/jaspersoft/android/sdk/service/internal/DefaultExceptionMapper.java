@@ -76,9 +76,11 @@ public final class DefaultExceptionMapper implements ServiceExceptionMapper {
 
     @NotNull
     private static ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
-        if ("resource.not.found".equals(descriptor.getErrorCode())) {
+        if (descriptor.getErrorCodes().contains("resource.not.found")) {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.RESOURCE_NOT_FOUND);
-        } else if ("export.pages.out.of.range".equals(descriptor.getErrorCode())) {
+        } else if (descriptor.getErrorCodes().contains("error.duplicate.report.job.output.filename")) {
+            return new ServiceException("Duplicate job output file name", e, StatusCodes.JOB_DUPLICATE_OUTPUT_FILE_NAME);
+        } else if (descriptor.getErrorCodes().contains("export.pages.out.of.range")) {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.EXPORT_PAGE_OUT_OF_RANGE);
         } else {
             return mapHttpCodesToState(e);

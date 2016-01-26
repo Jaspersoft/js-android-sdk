@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose;
  */
 public class JobUnit {
     @Expose
-    private String id;
+    private int id;
     @Expose
     private String version;
     @Expose
@@ -20,7 +20,7 @@ public class JobUnit {
     @Expose
     private JobState state;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -51,10 +51,11 @@ public class JobUnit {
 
         JobUnit jobUnit = (JobUnit) o;
 
-        if (id != null ? !id.equals(jobUnit.id) : jobUnit.id != null) return false;
+        if (id != jobUnit.id) return false;
         if (label != null ? !label.equals(jobUnit.label) : jobUnit.label != null) return false;
         if (owner != null ? !owner.equals(jobUnit.owner) : jobUnit.owner != null) return false;
-        if (reportUnitURI != null ? !reportUnitURI.equals(jobUnit.reportUnitURI) : jobUnit.reportUnitURI != null) return false;
+        if (reportUnitURI != null ? !reportUnitURI.equals(jobUnit.reportUnitURI) : jobUnit.reportUnitURI != null)
+            return false;
         if (state != null ? !state.equals(jobUnit.state) : jobUnit.state != null) return false;
         if (version != null ? !version.equals(jobUnit.version) : jobUnit.version != null) return false;
 
@@ -63,7 +64,7 @@ public class JobUnit {
 
     @Override
     public final int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id;
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (reportUnitURI != null ? reportUnitURI.hashCode() : 0);
         result = 31 * result + (label != null ? label.hashCode() : 0);

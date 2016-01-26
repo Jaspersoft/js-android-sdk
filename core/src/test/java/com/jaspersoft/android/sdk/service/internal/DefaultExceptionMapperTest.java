@@ -39,6 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -131,7 +132,7 @@ public class DefaultExceptionMapperTest {
 
     @Test
     public void testTransformWithDescriptorWithMissingKey() throws IOException {
-        when(mDescriptor.getErrorCode()).thenReturn("missing.key");
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("missing.key"));
         when(mHttpException.code()).thenReturn(403);
         when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
 
@@ -142,12 +143,21 @@ public class DefaultExceptionMapperTest {
 
     @Test
     public void testTransformWillHandleIOExceptionForDescriptorMapping() throws IOException {
-        when(mDescriptor.getErrorCode()).thenReturn("missing.key");
-        when(mHttpException.code()).thenReturn(403);
         when(mHttpException.getDescriptor()).thenThrow(new IOException("Failed IO"));
 
         ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
         assertThat(serviceException.code(), is(StatusCodes.NETWORK_ERROR));
         assertThat(serviceException.getCause(), is(instanceOf(IOException.class)));
+    }
+
+    @Test
+    public void should_transform_job_output_filename_duplication() throws Exception {
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("error.duplicate.report.job.output.filename"));
+        when(mHttpException.code()).thenReturn(400);
+        when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
+
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
+        assertThat(serviceException.code(), is(StatusCodes.JOB_DUPLICATE_OUTPUT_FILE_NAME));
+        assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
     }
 }

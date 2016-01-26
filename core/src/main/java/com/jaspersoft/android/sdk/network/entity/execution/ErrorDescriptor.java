@@ -26,9 +26,7 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tom Koptel
@@ -40,10 +38,22 @@ public final class ErrorDescriptor {
     @Expose
     private String message;
     @Expose
+    private List<ErrorDescriptorItem> error;
+    @Expose
     private Set<String> parameters = Collections.emptySet();
 
-    public String getErrorCode() {
-        return errorCode;
+    public Set<String> getErrorCodes() {
+        if (errorCode != null) {
+            return Collections.singleton(errorCode);
+        }
+        if (error != null) {
+            Set<String> codes = new HashSet<>();
+            for (ErrorDescriptorItem item : error) {
+                codes.add(item.getErrorCode());
+            }
+            return codes;
+        }
+        return Collections.emptySet();
     }
 
     public String getMessage() {

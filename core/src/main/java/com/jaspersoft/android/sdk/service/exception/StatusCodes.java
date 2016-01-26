@@ -49,5 +49,8 @@ public final class StatusCodes {
     // RESOURCE
     public static final int RESOURCE_NOT_FOUND = 400;
 
+    // SCHEDULE
+    public static final int JOB_DUPLICATE_OUTPUT_FILE_NAME = 500;
+
     private StatusCodes() {}
 }
