@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.service.rx.report;
+package com.jaspersoft.android.sdk.service.rx.filter;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
@@ -7,7 +7,7 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
-import com.jaspersoft.android.sdk.service.report.FiltersService;
+import com.jaspersoft.android.sdk.service.filter.FiltersService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
@@ -37,14 +37,31 @@ public class RxFiltersService {
     }
 
     @NotNull
-    public Observable<List<InputControl>> listControls(@NotNull final String reportUri) {
+    public Observable<List<InputControl>> listReportControls(@NotNull final String reportUri) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
 
         return Observable.defer(new Func0<Observable<List<InputControl>>>() {
             @Override
             public Observable<List<InputControl>> call() {
                 try {
-                    List<InputControl> inputControls = mSyncDelegate.listControls(reportUri);
+                    List<InputControl> inputControls = mSyncDelegate.listReportControls(reportUri);
+                    return Observable.just(inputControls);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<List<InputControl>> listDashboardControls(@NotNull final String dashboardUri) {
+        Preconditions.checkNotNull(dashboardUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControl>>>() {
+            @Override
+            public Observable<List<InputControl>> call() {
+                try {
+                    List<InputControl> inputControls = mSyncDelegate.listDashboardControls(dashboardUri);
                     return Observable.just(inputControls);
                 } catch (ServiceException e) {
                     return Observable.error(e);

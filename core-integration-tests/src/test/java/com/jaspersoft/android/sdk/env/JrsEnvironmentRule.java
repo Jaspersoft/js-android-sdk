@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.testkit.ListResourcesUrisCommand;
 import com.jaspersoft.android.sdk.testkit.LocalCookieManager;
 import com.jaspersoft.android.sdk.testkit.TestKitClient;
 import com.jaspersoft.android.sdk.testkit.dto.AuthConfig;
+import com.jaspersoft.android.sdk.testkit.dto.Info;
 import com.jaspersoft.android.sdk.testkit.dto.SampleServer;
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import org.junit.rules.ExternalResource;
@@ -60,6 +61,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
     private Object[] mAuthorizedClients;
     private Object[] mAnonymousClients;
     private Object[] mReports;
+    private Object[] mDashboards;
 
     public Object[] listAnonymousClients() {
         if (mAnonymousClients == null) {
@@ -76,18 +78,30 @@ public final class JrsEnvironmentRule extends ExternalResource {
             AnonymousClient client = server.newClient()
                     .withCookieHandler(LocalCookieManager.get())
                     .create();
+
+            Info info = requestServerInfo(server);
             for (AuthConfig authConfig : sampleServer.getAuthConfigs()) {
                 SpringCredentials credentials = SpringCredentials.builder()
                         .withOrganization(authConfig.getOrganization())
                         .withPassword(authConfig.getPassword())
                         .withUsername(authConfig.getPassword())
                         .build();
-                bundles.add(new AnonymousServerTestBundle(credentials, client));
+                bundles.add(new AnonymousServerTestBundle(credentials, client, info));
             }
         }
         Object[] result = new Object[bundles.size()];
         bundles.toArray(result);
         return result;
+    }
+
+    private Info requestServerInfo(Server server) {
+        TestKitClient kitClient = getTestKitClient(server.getBaseUrl());
+        try {
+            return kitClient.getServerInfo();
+        } catch (IOException | HttpException e) {
+            System.out.println(e);
+        }
+        return null;
     }
 
     public Object[] listAuthorizedClients() {
@@ -103,6 +117,8 @@ public final class JrsEnvironmentRule extends ExternalResource {
 
         for (SampleServer sampleServer : sampleServers) {
             Server server = createServer(sampleServer);
+            Info info = requestServerInfo(server);
+
             for (AuthConfig authConfig : sampleServer.getAuthConfigs()) {
                 SpringCredentials credentials = SpringCredentials.builder()
                         .withOrganization(authConfig.getOrganization())
@@ -119,7 +135,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
                     System.out.println(e);
                 }
 
-                bundles.add(new ServerTestBundle(credentials, client));
+                bundles.add(new ServerTestBundle(credentials, client, info));
             }
         }
 
@@ -146,6 +162,43 @@ public final class JrsEnvironmentRule extends ExternalResource {
         return mReports;
     }
 
+    public Object[] listDashboards() {
+        if (mDashboards == null) {
+            mDashboards = loadDashboards();
+        }
+        return mDashboards;
+    }
+
+    private Object[] loadDashboards() {
+        List<DashboardTestBundle> bundle = new ArrayList<>();
+        Object[] clients = listAuthorizedClients();
+
+        for (Object o : clients) {
+            ServerTestBundle sererBundle = (ServerTestBundle) o;
+            String baseUrl = sererBundle.getClient().getBaseUrl();
+            final TestKitClient kitClient = getTestKitClient(baseUrl);
+
+            int reportsNumber = getLazyEnv().dashboardExecNumber();
+
+            ListResourcesUrisCommand listDashboardUris = new ListResourcesUrisCommand(reportsNumber, "dashboard");
+            try {
+                List<String> uris = kitClient.getResourcesUris(listDashboardUris);
+                for (String uri : uris) {
+                    bundle.add(new DashboardTestBundle(uri, sererBundle));
+                }
+            } catch (IOException | HttpException e) {
+                System.out.println(e);
+            }
+        }
+
+        Object[] result = new Object[bundle.size()];
+        return bundle.toArray(result);
+    }
+
+    private TestKitClient getTestKitClient(String baseUrl) {
+        return TestKitClient.newClient(baseUrl, isProxyReachable() ? CHARLES : null);
+    }
+
     private Object[] loadReports() {
         List<ReportTestBundle> bundle = new ArrayList<>();
         Object[] clients = listAuthorizedClients();
@@ -153,7 +206,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
         for (Object o : clients) {
             ServerTestBundle sererBundle = (ServerTestBundle) o;
             String baseUrl = sererBundle.getClient().getBaseUrl();
-            final TestKitClient kitClient = TestKitClient.newClient(baseUrl, isProxyReachable() ? CHARLES : null);
+            final TestKitClient kitClient = getTestKitClient(baseUrl);
 
             int reportsNumber = getLazyEnv().reportExecNumber();
             ListResourcesUrisCommand listResourcesUris = new ListResourcesUrisCommand(reportsNumber, "reportUnit");

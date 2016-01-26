@@ -29,7 +29,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * @author Tom Koptel
@@ -44,7 +44,7 @@ public class IsRecordedRequestHasPath extends TypeSafeDiagnosingMatcher<Recorded
 
     @Override
     protected boolean matchesSafely(RecordedRequest item, Description mismatchDescription) {
-        Matcher<String> pathMatcher = is(mPath);
+        Matcher<String> pathMatcher = containsString(mPath);
         String targetPath = item.getPath();
         if (pathMatcher.matches(targetPath)) {
             return true;

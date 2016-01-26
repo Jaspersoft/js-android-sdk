@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report;
+package com.jaspersoft.android.sdk.service.filter;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
@@ -34,6 +34,7 @@ import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -49,9 +50,9 @@ class ReportControlsUseCase {
         mRestApi = restApi;
     }
 
-    public List<InputControl> requestControls(String reportUri, boolean excludeState) throws ServiceException {
+    public List<InputControl> requestControls(String reportUri, Set<String> ids, boolean excludeState) throws ServiceException {
         try {
-            return mRestApi.requestInputControls(reportUri, excludeState);
+            return mRestApi.requestInputControls(reportUri, ids, excludeState);
         } catch (HttpException e) {
             throw mExceptionMapper.transform(e);
         } catch (IOException e) {

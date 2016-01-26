@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.testkit;
 
+import com.jaspersoft.android.sdk.testkit.dto.Info;
 import com.jaspersoft.android.sdk.testkit.exception.HttpException;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -40,12 +41,16 @@ import java.util.Set;
 public final class TestKitClient {
     private final GetResourcesUrisUseCase mGetResourcesUrisUseCase;
     private final GetReportParametersUseCase mGetReportParametersUseCase;
+    private final GetServerInfoUseCase mGetServerInfoUseCase;
 
     TestKitClient(
             GetResourcesUrisUseCase getResourcesUrisUseCase,
-            GetReportParametersUseCase getReportParametersUseCase) {
+            GetReportParametersUseCase getReportParametersUseCase,
+            GetServerInfoUseCase getServerInfoUseCase
+    ) {
         mGetResourcesUrisUseCase = getResourcesUrisUseCase;
         mGetReportParametersUseCase = getReportParametersUseCase;
+        mGetServerInfoUseCase = getServerInfoUseCase;
     }
 
     public List<String> getResourcesUris(ListResourcesUrisCommand command) throws IOException, HttpException {
@@ -54,6 +59,10 @@ public final class TestKitClient {
 
     public Map<String, Set<String>> resourceParameter(ListReportParamsCommand command) throws IOException, HttpException {
         return mGetReportParametersUseCase.execute(command);
+    }
+
+    public Info getServerInfo() throws IOException, HttpException {
+        return mGetServerInfoUseCase.execute(null);
     }
 
     public static TestKitClient newClient(String baseUrl, Proxy proxy) {
@@ -65,7 +74,12 @@ public final class TestKitClient {
 
         GetResourcesUrisUseCase getResourcesUrisUseCase = new GetResourcesUrisUseCase(okHttpClient, baseUrl);
         GetReportParametersUseCase getReportParametersUseCase = new GetReportParametersUseCase(okHttpClient, baseUrl);
+        GetServerInfoUseCase getServerInfoUseCase = new GetServerInfoUseCase(okHttpClient, baseUrl);
 
-        return new TestKitClient(getResourcesUrisUseCase, getReportParametersUseCase);
+        return new TestKitClient(
+                getResourcesUrisUseCase,
+                getReportParametersUseCase,
+                getServerInfoUseCase
+        );
     }
 }

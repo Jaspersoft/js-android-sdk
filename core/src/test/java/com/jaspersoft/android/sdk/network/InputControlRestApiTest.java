@@ -40,10 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod.wasMethod;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
@@ -89,7 +86,7 @@ public class InputControlRestApiTest {
     public void requestInputControlsShouldNotAllowNullReportUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report URI should not be null");
-        restApiUnderTest.requestInputControls(null, false);
+        restApiUnderTest.requestInputControls(null, null, false);
     }
 
     @Test
@@ -110,7 +107,7 @@ public class InputControlRestApiTest {
     public void requestInputControlsShouldThrowRestErrorFor500() throws Exception {
         mExpectedException.expect(HttpException.class);
         mWebMockRule.enqueue(MockResponseFactory.create500());
-        restApiUnderTest.requestInputControls("any_id", true);
+        restApiUnderTest.requestInputControls("any_id", null, true);
     }
 
     @Test
@@ -168,7 +165,7 @@ public class InputControlRestApiTest {
                 .setBody(icsWithoutStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", true);
+        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", null, true);
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(nullValue()));
 
@@ -184,13 +181,27 @@ public class InputControlRestApiTest {
                 .setBody(icsWithStates.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", false);
+        Collection<InputControl> controls = restApiUnderTest.requestInputControls("/my/uri", null, false);
         assertThat(controls, Matchers.is(not(Matchers.empty())));
         assertThat(new ArrayList<>(controls).get(0).getState(), is(not(nullValue())));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
         assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls"));
+        assertThat(request, wasMethod("GET"));
+    }
+
+    @Test
+    public void apiShouldMapControlsIds() throws Exception {
+        MockResponse mockResponse = MockResponseFactory.create200()
+                .setBody(icsWithStates.asString());
+        mWebMockRule.enqueue(mockResponse);
+
+        restApiUnderTest.requestInputControls("/my/uri", new LinkedHashSet<String>(Arrays.asList("1", "2")), false);
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls/1;2"));
         assertThat(request, wasMethod("GET"));
     }
 }

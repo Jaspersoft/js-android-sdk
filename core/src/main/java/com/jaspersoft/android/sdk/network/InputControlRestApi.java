@@ -65,14 +65,22 @@ public class InputControlRestApi {
      */
     @NotNull
     public List<InputControl> requestInputControls(@Nullable String reportUri,
+                                                   @Nullable Set<String> controlIds,
                                                    boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
+
+
+        String ids = "";
+        if (controlIds != null && !controlIds.isEmpty()) {
+            ids = Utils.joinString(";", controlIds);
+        }
 
         HttpUrl url = new PathResolver.Builder()
                 .addPath("rest_v2")
                 .addPath("reports")
                 .addPaths(reportUri)
                 .addPath("inputControls")
+                .addPath(ids)
                 .build()
                 .resolve(mNetworkClient.getBaseUrl());
         if (excludeState) {

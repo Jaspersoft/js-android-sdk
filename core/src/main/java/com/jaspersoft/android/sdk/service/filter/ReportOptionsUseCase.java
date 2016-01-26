@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.service.report;
+package com.jaspersoft.android.sdk.service.filter;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;

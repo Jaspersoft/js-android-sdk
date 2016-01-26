@@ -71,6 +71,10 @@ public final class IntegrationEnv {
         return Integer.parseInt(config.getProperty("run.report.count"));
     }
 
+    public int dashboardExecNumber() {
+        return Integer.parseInt(config.getProperty("run.dashboard.count"));
+    }
+
     @Override
     public String toString() {
         return "IntegrationEnv{" +

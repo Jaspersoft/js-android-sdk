@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
@@ -124,5 +125,30 @@ public class RepositoryRestApi {
 
         com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
         return mNetworkClient.deserializeJson(rawResponse, FolderLookup.class);
+    }
+
+    @NotNull
+    public DashboardComponentCollection requestDashboardComponents(@Nullable String resourceUri) throws IOException, HttpException {
+        Utils.checkNotNull(resourceUri, "Dashboard uri should not be null");
+
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("resources")
+                .addPaths(resourceUri + "_files")
+                .addPath("components")
+                .build()
+                .resolve(mNetworkClient.getBaseUrl())
+                .newBuilder()
+                .addQueryParameter("expanded", "false")
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/dashboardComponentsSchema+json")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(rawResponse, DashboardComponentCollection.class);
     }
 }

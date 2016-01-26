@@ -1,9 +1,10 @@
-package com.jaspersoft.android.sdk.service.report;
+package com.jaspersoft.android.sdk.service.filter;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.filter.ReportOptionsUseCase;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.junit.Before;
 import org.junit.Test;
