@@ -6,14 +6,20 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.0
  */
-public class JobState {
+public class JobStateEntity {
     @Expose
     private String nextFireTime;
     @Expose
+    private String previousFireTime;
+    @Expose
     private String value;
 
-    public String getNextFileTime() {
+    public String getNextFireTime() {
         return nextFireTime;
+    }
+
+    public String getPreviousFireTime() {
+        return previousFireTime;
     }
 
     public String getValue() {
@@ -25,7 +31,7 @@ public class JobState {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        JobState jobState = (JobState) o;
+        JobStateEntity jobState = (JobStateEntity) o;
 
         if (nextFireTime != null ? !nextFireTime.equals(jobState.nextFireTime) : jobState.nextFireTime != null)
             return false;

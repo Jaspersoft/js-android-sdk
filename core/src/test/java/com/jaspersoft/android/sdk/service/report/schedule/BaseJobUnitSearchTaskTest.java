@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
-import com.jaspersoft.android.sdk.network.entity.schedule.JobUnit;
+import com.jaspersoft.android.sdk.service.data.schedule.JobUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

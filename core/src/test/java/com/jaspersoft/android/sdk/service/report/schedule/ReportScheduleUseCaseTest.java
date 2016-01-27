@@ -4,8 +4,10 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportScheduleRestApi;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobDescriptor;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobUnitEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobUnit;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
@@ -21,9 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.TestCase.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anySetOf;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -40,6 +40,8 @@ public class ReportScheduleUseCaseTest {
     JobDataMapper mJobDataMapper;
     @Mock
     JobFormMapper mJobFormMapper;
+    @Mock
+    JobUnitMapper mJobUnitMapper;
     @Mock
     ReportScheduleRestApi mScheduleRestApi;
     @Mock
@@ -65,13 +67,14 @@ public class ReportScheduleUseCaseTest {
     HttpException mHttpException;
     @Mock
     ServiceException mServiceException;
+    @Mock
+    JobUnit mJobUnit;
 
     private ReportScheduleUseCase useCase;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-
         setupMocks();
         useCase = new ReportScheduleUseCase(
                 mExceptionMapper,
@@ -79,16 +82,19 @@ public class ReportScheduleUseCaseTest {
                 mInfoCacheManager,
                 mSearchCriteriaMapper,
                 mJobDataMapper,
-                mJobFormMapper
+                mJobFormMapper,
+                mJobUnitMapper
         );
     }
 
     @Test
     public void should_perform_search() throws Exception {
+        when(mScheduleRestApi.searchJob(anyMapOf(String.class, Object.class))).thenReturn(Collections.<JobUnitEntity>emptyList());
         useCase.searchJob(CRITERIA);
 
         verify(mSearchCriteriaMapper).transform(CRITERIA);
         verify(mScheduleRestApi).searchJob(SEARCH_PARAMS);
+        verify(mJobUnitMapper).transform(Collections.<JobUnitEntity>emptyList(), SIMPLE_DATE_FORMAT);
     }
 
     @Test
@@ -188,6 +194,9 @@ public class ReportScheduleUseCaseTest {
                 .thenReturn(mJobData);
          when(mJobFormMapper.transform(any(JobForm.class)))
                 .thenReturn(mJobFormEntity);
+        when(mJobUnitMapper.transform(anyListOf(JobUnitEntity.class), any(SimpleDateFormat.class)))
+                .thenReturn(Collections.singletonList(mJobUnit));
+
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
         when(mExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
     }

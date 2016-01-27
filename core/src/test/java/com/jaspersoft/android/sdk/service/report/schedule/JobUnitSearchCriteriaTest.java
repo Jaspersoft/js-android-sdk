@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.service.data.schedule.JobOwner;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Before;
 import org.junit.Rule;

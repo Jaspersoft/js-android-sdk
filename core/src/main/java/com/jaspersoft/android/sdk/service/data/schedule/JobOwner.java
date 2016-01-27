@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.service.report.schedule;
+package com.jaspersoft.android.sdk.service.data.schedule;
 
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,15 @@ public final class JobOwner {
     public static JobOwner newOwner(@NotNull String username, @Nullable String organization) {
         Preconditions.checkNotNull(username, "Username should not be null");
         return new JobOwner(username, organization);
+    }
+
+    public static JobOwner newOwner(@NotNull String rawOwner) {
+        Preconditions.checkNotNull(rawOwner, "Raw owner should not be null");
+        if (rawOwner.contains("|")) {
+            String[] split = rawOwner.split("\\|");
+            return newOwner(split[0], split[1]);
+        }
+        return newOwner(rawOwner, null);
     }
 
     @NotNull

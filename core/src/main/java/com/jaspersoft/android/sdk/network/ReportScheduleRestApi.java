@@ -26,7 +26,7 @@ public class ReportScheduleRestApi {
     }
 
     @NotNull
-    public List<JobUnit> searchJob(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
+    public List<JobUnitEntity> searchJob(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
         if (searchParams != null && searchParams.containsKey("example")) {
             throw new IllegalArgumentException("Current version does not support 'example' search parameter");
         }

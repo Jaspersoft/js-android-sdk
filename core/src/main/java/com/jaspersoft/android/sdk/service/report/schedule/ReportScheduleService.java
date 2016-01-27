@@ -55,12 +55,14 @@ public class ReportScheduleService {
         Preconditions.checkNotNull(client, "Client should not be null");
 
         JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
-        JobDataMapper jobDataMapper = new JobDataMapper();
-        JobFormMapper jobFormMapper = new JobFormMapper();
         ServiceExceptionMapper exceptionMapper = new DefaultExceptionMapper();
 
         InfoCache cache = new InMemoryInfoCache();
         InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
+
+        JobDataMapper jobDataMapper = new JobDataMapper();
+        JobFormMapper jobFormMapper = new JobFormMapper();
+        JobUnitMapper jobUnitMapper = new JobUnitMapper();
 
         ReportScheduleUseCase reportScheduleUseCase = new ReportScheduleUseCase(
                 exceptionMapper,
@@ -68,7 +70,8 @@ public class ReportScheduleService {
                 cacheManager,
                 criteriaMapper,
                 jobDataMapper,
-                jobFormMapper
+                jobFormMapper,
+                jobUnitMapper
         );
         return new ReportScheduleService(reportScheduleUseCase);
     }
