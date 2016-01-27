@@ -53,13 +53,21 @@ public class JobFormMapperTest {
                 .withOccurrenceCount(1)
                 .withRecurrenceInterval(10)
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .withStartType(new ImmediateStartType())
+                .withStartDate(START_DATE)
                 .withStopDate(END_DATE);
+
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withFolderUri("/temp")
+                .build();
+        JobSource source = new JobSource.Builder()
+                .withUri("/my/uri")
+                .build();
+
         mJobBuilder = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
-                .addRepositoryDestination().withFolderUri("/temp").done()
-                .addSource().withUri("/my/uri").done()
+                .withRepositoryDestination(destination)
+                .withJobSource(source)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .addOutputFormats(Collections.singletonList(JobOutputFormat.CSV))
                 .withBaseOutputFilename("output");
@@ -67,9 +75,9 @@ public class JobFormMapperTest {
 
     @Test
     public void testTransform() throws Exception {
-        JobTrigger trigger = mTriggerBuilder.build();
+        JobSimpleTrigger trigger = mTriggerBuilder.build();
         JobForm form = mJobBuilder
-                .withTrigger(trigger)
+                .withSimpleTrigger(trigger)
                 .build();
 
         JobFormEntity entity = mJobFormMapper.transform(form);
@@ -95,11 +103,14 @@ public class JobFormMapperTest {
         List<ReportParameter> parameters = Collections.singletonList(
                 new ReportParameter("key", Collections.singleton("value")));
 
-        JobForm form = mJobBuilder
-                .addSource()
+        JobSource source = new JobSource.Builder()
+                .withUri("/my/uri")
                 .withParameters(parameters)
-                .done()
-                .withTrigger(mTriggerBuilder.build())
+                .build();
+
+        JobForm form = mJobBuilder
+                .withJobSource(source)
+                .withSimpleTrigger(mTriggerBuilder.build())
                 .build();
         JobFormEntity entity = mJobFormMapper.transform(form);
 
@@ -116,13 +127,12 @@ public class JobFormMapperTest {
 
     @Test
     public void should_transform_deffered_trigger() throws Exception {
-        JobTrigger trigger = mTriggerBuilder
+        JobSimpleTrigger trigger = mTriggerBuilder
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .withStartType(new DeferredStartType(START_DATE))
                 .build();
 
         JobForm form = mJobBuilder
-                .withTrigger(trigger)
+                .withSimpleTrigger(trigger)
                 .build();
 
         JobFormEntity entity = mJobFormMapper.transform(form);

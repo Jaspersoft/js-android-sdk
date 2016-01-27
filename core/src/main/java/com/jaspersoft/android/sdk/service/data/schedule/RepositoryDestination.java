@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class RepositoryDestination {
+public class RepositoryDestination {
     private final String mFolderUri;
 
     RepositoryDestination(String folderUri) {
@@ -19,31 +19,21 @@ public final class RepositoryDestination {
         return mFolderUri;
     }
 
-    public static class Builder extends NestedBuilder<JobForm.Builder, RepositoryDestination> {
-        private final JobForm.Builder mParent;
+    public static class Builder {
         private String mFolderUri;
-
-        public Builder(JobForm.Builder parent) {
-            mParent = parent;
-        }
 
         public Builder withFolderUri(@NotNull String folderUri) {
             mFolderUri = Preconditions.checkNotNull(folderUri, "Repository folder uri should not be null");
             return this;
         }
 
-        @Override
-        public JobForm.Builder done() {
-            return mParent;
-        }
-
-        @Override
         public RepositoryDestination build() {
+            assertState();
             return new RepositoryDestination(mFolderUri);
         }
 
-        void assertState() {
-            Preconditions.checkNotNull(mFolderUri, "Job can not be scheduled without folder uri");
+        private void assertState() {
+            Preconditions.checkNotNull(mFolderUri, "Repository destination can not be built without folder uri");
         }
     }
 }

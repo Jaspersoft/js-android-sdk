@@ -13,7 +13,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class JobSource {
+public class JobSource {
     private final String mUri;
     private final List<ReportParameter> mParameters;
 
@@ -32,13 +32,11 @@ public final class JobSource {
         return mParameters;
     }
 
-    public static class Builder extends NestedBuilder<JobForm.Builder, JobSource> {
-        private final JobForm.Builder mParentBuilder;
+    public static class Builder {
         private String mUri;
         private List<ReportParameter> mParameters = Collections.emptyList();
 
-        Builder(JobForm.Builder parentBuilder) {
-            mParentBuilder = parentBuilder;
+        public Builder() {
             mParameters = new ArrayList<>();
         }
 
@@ -54,18 +52,13 @@ public final class JobSource {
             return this;
         }
 
-        @Override
-        public JobForm.Builder done() {
-            return mParentBuilder;
-        }
-
-        @Override
         public JobSource build() {
+            assertState();
             return new JobSource(mUri, mParameters);
         }
 
-        void assertState() {
-            Preconditions.checkNotNull(mUri, "Job can not be scheduled without source uri");
+        private void assertState() {
+            Preconditions.checkNotNull(mUri, "Source can not be created without uri");
         }
     }
 }

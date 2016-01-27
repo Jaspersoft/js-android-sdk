@@ -8,6 +8,8 @@ import org.mockito.Mock;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -16,7 +18,11 @@ public class JobFormTest {
     public ExpectedException expected = none();
 
     @Mock
-    JobTrigger mJobTrigger;
+    JobSimpleTrigger mJobTrigger;
+    @Mock
+    JobSource mSource;
+    @Mock
+    RepositoryDestination mDestination;
 
     @Before
     public void setUp() throws Exception {
@@ -36,12 +42,12 @@ public class JobFormTest {
     @Test
     public void should_not_allow_job_without_trigger() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without trigger");
+        expected.expectMessage("Job can not be scheduled without simple trigger");
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .addRepositoryDestination().withFolderUri("/temp").done()
-                .addSource().withUri("/my/uri").done()
+                .withRepositoryDestination(mDestination)
+                .withJobSource(mSource)
                 .withBaseOutputFilename("output")
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
@@ -53,10 +59,10 @@ public class JobFormTest {
         expected.expectMessage("Job can not be scheduled without label");
 
         new JobForm.Builder()
-                .addRepositoryDestination().withFolderUri("/temp").done()
-                .addSource().withUri("/my/uri").done()
+                .withRepositoryDestination(mDestination)
+                .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .withTrigger(mJobTrigger)
+                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -64,13 +70,13 @@ public class JobFormTest {
     @Test
     public void should_not_allow_job_without_repo_destination() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without folder uri");
+        expected.expectMessage("Job can not be scheduled without repository destination");
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .addSource().withUri("/my/uri").done()
+                .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .withTrigger(mJobTrigger)
+                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -78,17 +84,16 @@ public class JobFormTest {
     @Test
     public void should_not_allow_job_without_source() throws Exception {
         expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without source uri");
+        expected.expectMessage("Job can not be scheduled without source");
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .addRepositoryDestination().withFolderUri("/temp").done()
+                .withRepositoryDestination(mDestination)
                 .withBaseOutputFilename("output")
                 .addOutputFormat(JobOutputFormat.HTML)
-                .withTrigger(mJobTrigger)
+                .withSimpleTrigger(mJobTrigger)
                 .build();
     }
-
 
     @Test
     public void should_not_allow_job_without_output_file_name() throws Exception {
@@ -97,9 +102,9 @@ public class JobFormTest {
 
         new JobForm.Builder()
                 .withLabel("my label")
-                .addRepositoryDestination().withFolderUri("/temp").done()
-                .addSource().withUri("/my/uri").done()
-                .withTrigger(mJobTrigger)
+                .withRepositoryDestination(mDestination)
+                .withJobSource(mSource)
+                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -119,20 +124,6 @@ public class JobFormTest {
     }
 
     @Test
-    public void builder_should_not_accept_null_for_source() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Source uri should not be null");
-        new JobForm.Builder().addSource().withUri(null).done();
-    }
-
-    @Test
-    public void builder_should_not_accept_null_for_repo_destination() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Repository folder uri should not be null");
-        new JobForm.Builder().addRepositoryDestination().withFolderUri(null);
-    }
-
-    @Test
     public void builder_should_not_accept_null_for_formats() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Formats should not be null");
@@ -148,9 +139,22 @@ public class JobFormTest {
     }
 
     @Test
-    public void builder_should_not_accept_null_for_trigger() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Trigger should not be null");
-        new JobForm.Builder().withTrigger(null);
+    public void form_new_builder() throws Exception {
+        JobForm form = new JobForm.Builder()
+                .withLabel("my label")
+                .withSimpleTrigger(mJobTrigger)
+                .withRepositoryDestination(mDestination)
+                .withJobSource(mSource)
+                .withBaseOutputFilename("output")
+                .addOutputFormat(JobOutputFormat.HTML)
+                .build();
+        JobForm expected = form.newBuilder().build();
+        assertThat(expected.getLabel(), is(form.getLabel()));
+        assertThat(expected.getDescription(), is(form.getDescription()));
+        assertThat(expected.getSimpleTrigger(), is(form.getSimpleTrigger()));
+        assertThat(expected.getRepositoryDestination(), is(form.getRepositoryDestination()));
+        assertThat(expected.getSource(), is(form.getSource()));
+        assertThat(expected.getBaseOutputFilename(), is(form.getBaseOutputFilename()));
+        assertThat(expected.getOutputFormats(), is(form.getOutputFormats()));
     }
 }

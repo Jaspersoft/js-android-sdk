@@ -1,6 +1,5 @@
 package com.jaspersoft.android.sdk.service.data.schedule;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -15,20 +14,20 @@ public abstract class JobTrigger {
     private final TimeZone mTimeZone;
     @Nullable
     private final String mCalendarName;
-    @NotNull
-    private final JobStartType mStartType;
+    @Nullable
+    private final Date mStartDate;
     @Nullable
     private final Date mStopDate;
 
     protected JobTrigger(
             @Nullable TimeZone timeZone,
             @Nullable String calendarName,
-            @NotNull JobStartType startType,
+            @Nullable Date startDate,
             @Nullable Date stopDate
     ) {
         mTimeZone = timeZone;
         mCalendarName = calendarName;
-        mStartType = startType;
+        mStartDate = startDate;
         mStopDate = stopDate;
     }
 
@@ -42,9 +41,9 @@ public abstract class JobTrigger {
         return mCalendarName;
     }
 
-    @NotNull
-    public JobStartType getStartType() {
-        return mStartType;
+    @Nullable
+    public Date getStartDate() {
+        return mStartDate;
     }
 
     @Nullable

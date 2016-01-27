@@ -11,7 +11,7 @@ import java.util.TimeZone;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class JobSimpleTrigger extends JobTrigger {
+public class JobSimpleTrigger extends JobTrigger {
     private final int mOccurrenceCount;
     private final int mRecurrenceInterval;
     @NotNull
@@ -21,7 +21,7 @@ public final class JobSimpleTrigger extends JobTrigger {
         super(
                 builder.mTimeZone,
                 builder.mCalendarName,
-                builder.mStartType,
+                builder.mStartDate,
                 builder.mStopDate
         );
 
@@ -46,7 +46,7 @@ public final class JobSimpleTrigger extends JobTrigger {
     public static class Builder {
         private TimeZone mTimeZone;
         private String mCalendarName;
-        private JobStartType mStartType;
+        private Date mStartDate;
         private Date mStopDate;
         private Integer mOccurrenceCount;
         private Integer mRecurrenceInterval;
@@ -62,8 +62,8 @@ public final class JobSimpleTrigger extends JobTrigger {
             return this;
         }
 
-        public Builder withStartType(@Nullable JobStartType startType) {
-            mStartType = startType;
+        public Builder withStartDate(@Nullable Date startDate) {
+            mStartDate = startDate;
             return this;
         }
 
@@ -90,14 +90,7 @@ public final class JobSimpleTrigger extends JobTrigger {
 
         public JobSimpleTrigger build() {
             assertState();
-            ensureSaneDefaults();
             return new JobSimpleTrigger(this);
-        }
-
-        private void ensureSaneDefaults() {
-            if (mStartType == null) {
-                mStartType = new ImmediateStartType();
-            }
         }
 
         private void assertState() {
