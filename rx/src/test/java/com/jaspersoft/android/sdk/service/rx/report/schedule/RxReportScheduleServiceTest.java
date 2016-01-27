@@ -12,16 +12,22 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import rx.observers.TestSubscriber;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RxReportScheduleServiceTest {
+
+    private static final Set<Integer> JOB_IDS = Collections.singleton(1);
 
     @Rule
     public ExpectedException expected = none();
@@ -66,8 +72,21 @@ public class RxReportScheduleServiceTest {
     }
 
     @Test
-    public void should_call_delegate_for_lookup() throws Exception {
-        when(mSyncDelegate.createJob(any(JobForm.class))).thenReturn(mJobData);
+    public void should_call_delegate_for_create_job() throws Exception {
+        when(mSyncDelegate.deleteJobs(anySetOf(Integer.class))).thenReturn(JOB_IDS);
+
+        TestSubscriber<Set<Integer>> test = deleteJobs();
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).deleteJobs(JOB_IDS);
+    }
+
+    @Test
+    public void should_call_delegate_for_delete_jobs() throws Exception {
+        when(mSyncDelegate.deleteJobs(anySetOf(Integer.class))).thenReturn(JOB_IDS);
 
         TestSubscriber<JobData> test = createJob();
 
@@ -88,6 +107,24 @@ public class RxReportScheduleServiceTest {
         test.assertNotCompleted();
 
         verify(mSyncDelegate).createJob(mJobForm);
+    }
+
+    @Test
+    public void should_delegate_service_exception_on_delete_jobs() throws Exception {
+        when(mSyncDelegate.deleteJobs(anySetOf(Integer.class))).thenThrow(mServiceException);
+
+        TestSubscriber<Set<Integer>> test = deleteJobs();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).deleteJobs(JOB_IDS);
+    }
+
+    private TestSubscriber<Set<Integer>> deleteJobs() {
+        TestSubscriber<Set<Integer>> test = new TestSubscriber<>();
+        mRxReportScheduleService.deleteJobs(JOB_IDS).subscribe(test);
+        return test;
     }
 
     private TestSubscriber<JobData> createJob() {

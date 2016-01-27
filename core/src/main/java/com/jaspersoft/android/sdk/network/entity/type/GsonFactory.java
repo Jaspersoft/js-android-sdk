@@ -39,6 +39,7 @@ public final class GsonFactory {
         gsonBuilder.registerTypeAdapterFactory(new ReportLookupTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new InputControlTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new ReportExecutionRequestOptionsFactory());
+        gsonBuilder.registerTypeAdapterFactory(new DashboardComponentTypeAdapterFactory());
         return gsonBuilder.create();
     }
 }

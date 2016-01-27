@@ -26,9 +26,14 @@ package com.jaspersoft.android.sdk.network.entity.type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.test.resource.ResourceFile;
+import com.jaspersoft.android.sdk.test.resource.TestResource;
+import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -37,7 +42,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
@@ -51,6 +56,15 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GsonBuilder.class, GsonFactory.class})
 public class GsonFactoryTest {
+
+    @ResourceFile("json/dashboard_components.json")
+    TestResource mComponents;
+
+    @Before
+    public void setUp() throws Exception {
+        TestResourceInjector.inject(this);
+    }
+
     @Test
     public void shouldEnableGsonExposeAnnotationField() throws Exception {
         GsonBuilder gsonBuilder = PowerMockito.mock(GsonBuilder.class);
@@ -79,5 +93,12 @@ public class GsonFactoryTest {
         options.withParameters(Collections.singletonList(new ReportParameter("key", Collections.singleton("value"))));
         Gson gson = GsonFactory.create();
         assertThat(gson.toJson(options), is("{\"reportUnitUri\":\"/my/uri\",\"parameters\":{\"reportParameter\":[{\"name\":\"key\",\"value\":[\"value\"]}]}}"));
+    }
+
+    @Test
+    public void should_parse_only_input_controls_from_dashboard_components() throws Exception {
+        Gson gson = GsonFactory.create();
+        DashboardComponentCollection components = gson.fromJson(mComponents.asString(), DashboardComponentCollection.class);
+        assertThat(components.getInputControlComponents() , is(not(empty())));
     }
 }

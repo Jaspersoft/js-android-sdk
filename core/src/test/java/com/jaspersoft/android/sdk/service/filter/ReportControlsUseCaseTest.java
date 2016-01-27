@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.service.report;
+package com.jaspersoft.android.sdk.service.filter;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.InputControlRestApi;
@@ -65,22 +65,22 @@ public class ReportControlsUseCaseTest {
     public void setUp() throws Exception {
         initMocks(this);
         mReportControlsUseCase = new ReportControlsUseCase(mExceptionMapper, mRestApi);
-        
+
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);
         when(mExceptionMapper.transform(any(IOException.class))).thenReturn(mServiceException);
     }
 
     @Test
     public void should_request_controls() throws Exception {
-        mReportControlsUseCase.requestControls(REPORT_URI, false);
-        verify(mRestApi).requestInputControls(REPORT_URI, false);
+        mReportControlsUseCase.requestControls(REPORT_URI, null, false);
+        verify(mRestApi).requestInputControls(REPORT_URI, null, false);
     }
 
     @Test
     public void request_controls_adapt_io_exception() throws Exception {
-        when(mRestApi.requestInputControls(anyString(), anyBoolean())).thenThrow(mIOException);
+        when(mRestApi.requestInputControls(anyString(), anySetOf(String.class), anyBoolean())).thenThrow(mIOException);
         try {
-            mReportControlsUseCase.requestControls(REPORT_URI, false);
+            mReportControlsUseCase.requestControls(REPORT_URI, null, false);
             fail("Should adapt IO exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mIOException);
@@ -89,9 +89,9 @@ public class ReportControlsUseCaseTest {
 
     @Test
     public void request_controls_adapt_http_exception() throws Exception {
-        when(mRestApi.requestInputControls(anyString(), anyBoolean())).thenThrow(mHttpException);
+        when(mRestApi.requestInputControls(anyString(), anySetOf(String.class), anyBoolean())).thenThrow(mHttpException);
         try {
-            mReportControlsUseCase.requestControls(REPORT_URI, false);
+            mReportControlsUseCase.requestControls(REPORT_URI, null, false);
             fail("Should adapt HTTP exception");
         } catch (ServiceException ex) {
             verify(mExceptionMapper).transform(mHttpException);
