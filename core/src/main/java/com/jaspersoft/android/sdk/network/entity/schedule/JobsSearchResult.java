@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class JobsSearchResult {
     @Expose
-    private List<JobUnit> jobsummary = Collections.emptyList();
+    private List<JobUnitEntity> jobsummary = Collections.emptyList();
 
-    public List<JobUnit> getJobSummary() {
+    public List<JobUnitEntity> getJobSummary() {
         return Collections.unmodifiableList(jobsummary);
     }
 }

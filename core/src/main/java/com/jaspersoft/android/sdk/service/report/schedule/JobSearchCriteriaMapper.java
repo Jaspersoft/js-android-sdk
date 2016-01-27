@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.service.data.schedule.JobOwner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

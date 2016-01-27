@@ -25,13 +25,13 @@ public class JobUnitTest {
             "state",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = JobUnit.class.getDeclaredField(fieldName);
+        Field field = JobUnitEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 
     @Test
     public void testEquals() throws Exception {
-        EqualsVerifier.forClass(JobUnit.class)
+        EqualsVerifier.forClass(JobUnitEntity.class)
                 .suppress(Warning.NONFINAL_FIELDS)
                 .verify();
     }
