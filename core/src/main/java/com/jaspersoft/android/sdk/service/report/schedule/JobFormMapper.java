@@ -43,9 +43,8 @@ class JobFormMapper {
         entity.addOutputFormats(formats);
 
 
-        JobTrigger trigger = form.getTrigger();
-        if (trigger instanceof JobSimpleTrigger) {
-            JobSimpleTrigger jobSimpleTrigger = (JobSimpleTrigger) trigger;
+        JobSimpleTrigger jobSimpleTrigger = form.getSimpleTrigger();
+        if (jobSimpleTrigger != null) {
             JobSimpleTriggerEntity simpleTriggerEntity = new JobSimpleTriggerEntity();
 
             simpleTriggerEntity.setOccurrenceCount(jobSimpleTrigger.getOccurrenceCount());
@@ -55,13 +54,12 @@ class JobFormMapper {
             RecurrenceIntervalUnit recurrenceIntervalUnit = jobSimpleTrigger.getRecurrenceIntervalUnit();
             simpleTriggerEntity.setRecurrenceIntervalUnit(mapInterval(recurrenceIntervalUnit));
 
-            JobStartType startType = jobSimpleTrigger.getStartType();
-            if (startType instanceof DeferredStartType) {
-                DeferredStartType type = (DeferredStartType) startType;
-                Date startDate = type.getStartDate();
+            Date startDate = jobSimpleTrigger.getStartDate();
+            if (startDate != null) {
                 simpleTriggerEntity.setStartDate(DATE_FORMAT.format(startDate));
+                simpleTriggerEntity.setStartType(2);
             }
-            simpleTriggerEntity.setStartType(mapStartType(startType));
+            simpleTriggerEntity.setStartType(1);
 
             Date stopDate = jobSimpleTrigger.getStopDate();
             if (stopDate != null) {
@@ -90,10 +88,5 @@ class JobFormMapper {
     @TestOnly
     String mapInterval(RecurrenceIntervalUnit recurrenceIntervalUnit) {
         return recurrenceIntervalUnit.toString();
-    }
-
-    @TestOnly
-    int mapStartType(JobStartType startType) {
-        return startType instanceof DeferredStartType ? 2 : 1;
     }
 }

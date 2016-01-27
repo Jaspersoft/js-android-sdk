@@ -26,17 +26,17 @@ public class JobForm {
     private final RepositoryDestination mRepositoryDestination;
     @NotNull
     private final Set<JobOutputFormat> mOutputFormats;
-    @NotNull
-    private final JobTrigger mTrigger;
+    @Nullable
+    private final JobSimpleTrigger mSimpleTrigger;
 
     JobForm(Builder builder) {
         mLabel = builder.mLabel;
         mDescription = builder.mDescription;
         mBaseOutputFilename = builder.mBaseOutputFilename;
-        mSource = builder.mJobSourceBuilder.build();
-        mRepositoryDestination = builder.mRepositoryDestinationBuilder.build();
+        mSource = builder.mJobSource;
+        mRepositoryDestination = builder.mRepositoryDestination;
         mOutputFormats = builder.mOutputFormats;
-        mTrigger = builder.mTrigger;
+        mSimpleTrigger = builder.mSimpleTrigger;
     }
 
     @NotNull
@@ -69,32 +69,42 @@ public class JobForm {
         return mOutputFormats;
     }
 
+    @Nullable
+    public JobSimpleTrigger getSimpleTrigger() {
+        return mSimpleTrigger;
+    }
+
     @NotNull
-    public JobTrigger getTrigger() {
-        return mTrigger;
+    public Builder newBuilder() {
+        return new Builder()
+                .withLabel(mLabel)
+                .withDescription(mDescription)
+                .withBaseOutputFilename(mBaseOutputFilename)
+                .withJobSource(mSource)
+                .withRepositoryDestination(mRepositoryDestination)
+                .withSimpleTrigger(mSimpleTrigger)
+                .withDescription(mDescription)
+                .addOutputFormats(mOutputFormats);
     }
 
     public static class Builder {
         private String mLabel;
         private String mDescription;
         private String mBaseOutputFilename;
-        private JobTrigger mTrigger;
+        private JobSimpleTrigger mSimpleTrigger;
+        private RepositoryDestination mRepositoryDestination;
+        private JobSource mJobSource;
 
         private final Set<JobOutputFormat> mOutputFormats = new HashSet<>(15);
-        private final JobSource.Builder mJobSourceBuilder;
-        private final RepositoryDestination.Builder mRepositoryDestinationBuilder;
 
-        public Builder() {
-            mJobSourceBuilder = new JobSource.Builder(this);
-            mRepositoryDestinationBuilder = new RepositoryDestination.Builder(this);
+        public Builder withJobSource(@NotNull JobSource jobSource) {
+            mJobSource = jobSource;
+            return this;
         }
 
-        public JobSource.Builder addSource() {
-            return mJobSourceBuilder;
-        }
-
-        public RepositoryDestination.Builder addRepositoryDestination() {
-            return mRepositoryDestinationBuilder;
+        public Builder withRepositoryDestination(@NotNull RepositoryDestination repositoryDestination) {
+            mRepositoryDestination = repositoryDestination;
+            return this;
         }
 
         public Builder withLabel(@NotNull String label) {
@@ -127,25 +137,14 @@ public class JobForm {
             return this;
         }
 
-        public Builder withTrigger(@NotNull JobTrigger trigger) {
-            Preconditions.checkNotNull(trigger, "Trigger should not be null");
-            mTrigger = trigger;
+        public Builder withSimpleTrigger(@Nullable JobSimpleTrigger trigger) {
+            mSimpleTrigger = trigger;
             return this;
         }
 
         public JobForm build() {
             assertState();
-            assertJobSource();
-            assertDestinationState();
             return new JobForm(this);
-        }
-
-        private void assertDestinationState() {
-            mRepositoryDestinationBuilder.assertState();
-        }
-
-        private void assertJobSource() {
-            mJobSourceBuilder.assertState();
         }
 
         private void assertState() {
@@ -153,7 +152,9 @@ public class JobForm {
                 throw new IllegalStateException("Job can not be scheduled without output format");
             }
             Preconditions.checkNotNull(mLabel, "Job can not be scheduled without label");
-            Preconditions.checkNotNull(mTrigger, "Job can not be scheduled without trigger");
+            Preconditions.checkNotNull(mSimpleTrigger, "Job can not be scheduled without simple trigger");
+            Preconditions.checkNotNull(mJobSource, "Job can not be scheduled without source");
+            Preconditions.checkNotNull(mRepositoryDestination, "Job can not be scheduled without repository destination");
             Preconditions.checkNotNull(mBaseOutputFilename, "Job can not be scheduled without output file name");
         }
     }

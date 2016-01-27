@@ -58,15 +58,4 @@ public class JobSimpleTriggerTest {
                 .withRecurrenceIntervalUnit(null)
                 .build();
     }
-
-    @Test
-    public void sets_start_type_immediate_by_default() throws Exception {
-        JobSimpleTrigger trigger = new JobSimpleTrigger.Builder()
-                .withOccurrenceCount(2)
-                .withRecurrenceInterval(2)
-                .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .build();
-        JobStartType startType = trigger.getStartType();
-        assertThat(startType, is(instanceOf(ImmediateStartType.class)));
-    }
 }

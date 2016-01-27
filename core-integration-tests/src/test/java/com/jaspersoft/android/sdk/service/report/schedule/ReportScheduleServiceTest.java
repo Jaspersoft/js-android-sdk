@@ -33,25 +33,30 @@ public class ReportScheduleServiceTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, 5);
 
-        JobTrigger trigger = new JobSimpleTrigger.Builder()
+        JobSimpleTrigger trigger = new JobSimpleTrigger.Builder()
                 .withOccurrenceCount(2)
                 .withRecurrenceInterval(2)
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
                 .build();
 
+
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withFolderUri("/temp")
+                .build();
+        JobSource.Builder source = new JobSource.Builder()
+                .withUri(bundle.getReportUri());
+
         JobForm.Builder formBuilder = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
-                .addRepositoryDestination().withFolderUri("/temp").done()
-                .addSource()
-                    .withUri(bundle.getReportUri())
-                .done()
+                .withRepositoryDestination(destination)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .withBaseOutputFilename("output")
-                .withTrigger(trigger);
+                .withSimpleTrigger(trigger);
         if (bundle.hasParams()) {
-            formBuilder.addSource().withParameters(bundle.getParams());
+            source.withParameters(bundle.getParams());
         }
+        formBuilder.withJobSource(source.build());
 
         JobData job = service.createJob(formBuilder.build());
         assertThat(job, is(notNullValue()));
