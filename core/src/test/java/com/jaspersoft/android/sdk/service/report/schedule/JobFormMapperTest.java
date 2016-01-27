@@ -75,7 +75,10 @@ public class JobFormMapperTest {
 
     @Test
     public void testTransform() throws Exception {
-        JobSimpleTrigger trigger = mTriggerBuilder.build();
+        JobSimpleTrigger trigger = mTriggerBuilder
+                // Force start type immediate
+                .withStartDate(null)
+                .build();
         JobForm form = mJobBuilder
                 .withSimpleTrigger(trigger)
                 .build();
@@ -129,6 +132,7 @@ public class JobFormMapperTest {
     public void should_transform_deffered_trigger() throws Exception {
         JobSimpleTrigger trigger = mTriggerBuilder
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
+                .withStartDate(START_DATE)
                 .build();
 
         JobForm form = mJobBuilder

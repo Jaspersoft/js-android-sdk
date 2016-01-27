@@ -37,15 +37,15 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class ReportOptionsMapper5_6PlusTest {
+public class ReportOptionsMapperTest {
     private static final String BASE_URL = "http://localhost";
     private static final String REPORT_URI = "my/uri";
 
-    private ReportOptionsMapper5_6Plus mapper;
+    private ReportOptionsMapper mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ReportOptionsMapper5_6Plus(BASE_URL);
+        mapper = new ReportOptionsMapper(BASE_URL){};
     }
 
     @Test
@@ -171,6 +171,13 @@ public class ReportOptionsMapper5_6PlusTest {
         ReportExecutionOptions criteria = ReportExecutionOptions.builder().build();
         ReportExecutionRequestOptions options = map(criteria);
         assertThat("Failed to map 'baseUrl' option", options.getReportUnitUri(), is(REPORT_URI));
+    }
+
+    @Test
+    public void should_always_map_async_true() {
+        ReportExecutionOptions criteria = ReportExecutionOptions.builder().build();
+        ReportExecutionRequestOptions options = map(criteria);
+        assertThat("Failed to map async flag", options.getAsync(), is(true));
     }
 
     private ReportExecutionRequestOptions map(ReportExecutionOptions criteria) {

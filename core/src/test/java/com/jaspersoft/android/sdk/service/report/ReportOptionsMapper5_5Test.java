@@ -26,13 +26,8 @@ package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,22 +46,6 @@ public class ReportOptionsMapper5_5Test {
     }
 
     @Test
-    public void should_map_format() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withFormat(ReportFormat.PDF)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'format' option", options.getOutputFormat(), is("pdf"));
-    }
-
-    @Test
-    public void should_map_html_by_default() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder().build();
-        ReportExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map HTML to 'format' option", options.getOutputFormat(), is("html"));
-    }
-
-    @Test
     public void should_not_map_markup() {
         ReportExecutionOptions criteria = ReportExecutionOptions.builder()
                 .withMarkupType(ReportMarkup.EMBEDDABLE)
@@ -76,42 +55,12 @@ public class ReportOptionsMapper5_5Test {
     }
 
     @Test
-    public void should_map_params() {
-        List<ReportParameter> params = Collections.<ReportParameter>emptyList();
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withParams(params)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'params' option", options.getParameters(), is(params));
-    }
-
-    @Test
-    public void should_map_pages() {
-        PageRange range = PageRange.parse("1-10");
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withPageRange(range)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'pages' option", options.getPages(), is("1-10"));
-    }
-
-    @Test
     public void should_not_map_anchor() {
         ReportExecutionOptions criteria = ReportExecutionOptions.builder()
                 .withAnchor("anchor")
                 .build();
         ExecutionRequestOptions options = map(criteria);
         assertThat("Failed to remove 'anchor' option", options.getAnchor(), is(nullValue()));
-    }
-
-
-    @Test
-    public void should_map_attachmentPrefix() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withAttachmentPrefix("./")
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'attachmentPrefix' option", options.getAttachmentsPrefix(), is(".%2F"));
     }
 
     @Test
@@ -124,51 +73,6 @@ public class ReportOptionsMapper5_5Test {
     }
 
     @Test
-    public void should_map_fresh_data_flag() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withFreshData(true)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'freshData' option", options.getFreshData(), is(true));
-    }
-
-    @Test
-    public void should_map_save_snapshot_flag() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withSaveSnapshot(true)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'saveSnapshot' option", options.getSaveDataSnapshot(), is(true));
-    }
-
-    @Test
-    public void should_map_interactiveness_flag() {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withInteractive(true)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'interactiveness' option", options.getInteractive(), is(true));
-    }
-
-    @Test
-    public void should_map_ignore_pagination_flag() throws Exception {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withIgnorePagination(true)
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'ignorePagination' option", options.getIgnorePagination(), is(true));
-    }
-
-    @Test
-    public void should_map_transformer_key() throws Exception {
-        ReportExecutionOptions criteria = ReportExecutionOptions.builder()
-                .withTransformerKey("key")
-                .build();
-        ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'transformerKey' option", options.getTransformerKey(), is("key"));
-    }
-
-    @Test
     public void should_not_map_baseUrl() {
         ReportExecutionOptions criteria = ReportExecutionOptions.builder().build();
         ReportExecutionRequestOptions options = map(criteria);
@@ -176,10 +80,10 @@ public class ReportOptionsMapper5_5Test {
     }
 
     @Test
-    public void should_map_report_uri() {
+    public void should_map_html_by_default() {
         ReportExecutionOptions criteria = ReportExecutionOptions.builder().build();
         ReportExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'baseUrl' option", options.getReportUnitUri(), is(REPORT_URI));
+        assertThat("Failed to map HTML to 'format' option", options.getOutputFormat(), is("html"));
     }
 
     private ReportExecutionRequestOptions map(ReportExecutionOptions criteria) {
