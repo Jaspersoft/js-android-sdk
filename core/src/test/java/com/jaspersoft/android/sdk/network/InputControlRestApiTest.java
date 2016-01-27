@@ -204,4 +204,28 @@ public class InputControlRestApiTest {
         assertThat(request, hasPath("/rest_v2/reports/my/uri/inputControls/1;2"));
         assertThat(request, wasMethod("GET"));
     }
+
+    @Test
+    public void list_input_controls_returns_empty_collection_on_204() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create204());
+
+        List<InputControl> expected = restApiUnderTest.requestInputControls("/my/uri", new LinkedHashSet<String>(Arrays.asList("1", "2")), false);
+        assertThat(expected, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void list_input_control_initial_states_returns_empty_collection_on_204() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create204());
+
+        List<InputControlState> expected = restApiUnderTest.requestInputControlsInitialStates("/my/uri", false);
+        assertThat(expected, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void list_input_control_states_returns_empty_collection_on_204() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create204());
+
+        List<InputControlState> expected = restApiUnderTest.requestInputControlsStates("/my/uri", Collections.<ReportParameter>emptyList(), false);
+        assertThat(expected, Matchers.is(Matchers.empty()));
+    }
 }
