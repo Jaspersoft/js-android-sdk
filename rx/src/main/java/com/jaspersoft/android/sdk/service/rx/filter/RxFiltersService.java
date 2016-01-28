@@ -92,6 +92,25 @@ public class RxFiltersService {
     }
 
     @NotNull
+    public Observable<List<InputControlState>> validateControls(@NotNull final String reportUri,
+                                                                @NotNull final List<InputControl> controls) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(controls, "Input controls should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
+            @Override
+            public Observable<List<InputControlState>> call() {
+                try {
+                    List<InputControlState> inputControlStates = mSyncDelegate.validateControls(reportUri, controls);
+                    return Observable.just(inputControlStates);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
     public Observable<Set<ReportOption>> listReportOptions(@NotNull final String reportUri) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
 
