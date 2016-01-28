@@ -84,14 +84,7 @@ public class RxRepositorySearchTaskTest {
     @Test
     public void should_call_delegate_for_hasNext() throws Exception {
         when(mSyncDelegate.hasNext()).thenReturn(true);
-
-        TestSubscriber<Boolean> test = new TestSubscriber<>();
-        mRxRepositorySearchTask.hasNext().subscribe(test);
-
-        test.assertNoErrors();
-        test.assertCompleted();
-        test.assertValueCount(1);
-
+        mRxRepositorySearchTask.hasNext();
         verify(mSyncDelegate).hasNext();
     }
 }
