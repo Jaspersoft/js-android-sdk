@@ -37,13 +37,7 @@ public class RxJobSearchTask {
         });
     }
 
-    @NotNull
-    public Observable<Boolean> hasNext() {
-        return Observable.defer(new Func0<Observable<Boolean>>() {
-            @Override
-            public Observable<Boolean> call() {
-                return Observable.just(mSyncDelegate.hasNext());
-            }
-        });
+    public boolean hasNext() {
+        return mSyncDelegate.hasNext();
     }
 }

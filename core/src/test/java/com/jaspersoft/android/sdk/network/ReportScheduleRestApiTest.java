@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobUnitEntity;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -16,8 +17,7 @@ import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.h
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasQuery.hasQuery;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 
 public class ReportScheduleRestApiTest {
@@ -45,10 +45,25 @@ public class ReportScheduleRestApiTest {
     public void search_with_no_params() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200().setBody(SEARCH_RESPONSE));
 
-        reportScheduleRestApi.searchJob(null);
+        List<JobUnitEntity> entities = reportScheduleRestApi.searchJob(null);
+        assertThat(entities, is(not(empty())));
+
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        String path = request.getPath();
-        assertThat("Should send no params", path, is("/rest_v2/jobs"));
+        assertThat( request, hasPath("/rest_v2/jobs"));
+        assertThat( request, wasMethod("GET"));
+    }
+
+
+    @Test
+    public void search_should_return_empty_collection_if_no_content() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create204());
+
+        List<JobUnitEntity> entities = reportScheduleRestApi.searchJob(null);
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(entities, is(empty()));
+
+        assertThat( request, hasPath("/rest_v2/jobs"));
+        assertThat( request, wasMethod("GET"));
     }
 
     @Test

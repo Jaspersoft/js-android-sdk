@@ -54,6 +54,7 @@ abstract class ReportOptionsMapper {
 
     public ReportExecutionRequestOptions transform(String reportUri, ReportExecutionOptions criteria) {
         ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest(reportUri);
+        options.withAsync(true);
         options.withBaseUrl(mBaseUrl);
         options.withFreshData(criteria.getFreshData());
         options.withSaveDataSnapshot(criteria.getSaveSnapshot());

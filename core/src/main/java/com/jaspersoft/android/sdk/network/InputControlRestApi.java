@@ -33,6 +33,7 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,7 +96,11 @@ public class InputControlRestApi {
                 .url(url)
                 .build();
 
-        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        Response response = mNetworkClient.makeCall(request);
+        if (response.code() == 204) {
+            return Collections.emptyList();
+        }
+
         InputControlCollection inputControlCollection = mNetworkClient.deserializeJson(response, InputControlCollection.class);
         return Collections.unmodifiableList(inputControlCollection.get());
     }
@@ -123,7 +128,11 @@ public class InputControlRestApi {
                 .url(url)
                 .build();
 
-        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        Response response = mNetworkClient.makeCall(request);
+        if (response.code() == 204) {
+            return Collections.emptyList();
+        }
+
         InputControlStateCollection inputControlStateCollection = mNetworkClient.deserializeJson(response, InputControlStateCollection.class);
         return Collections.unmodifiableList(inputControlStateCollection.get());
     }
@@ -168,7 +177,11 @@ public class InputControlRestApi {
                 .url(url)
                 .build();
 
-        com.squareup.okhttp.Response response = mNetworkClient.makeCall(request);
+        Response response = mNetworkClient.makeCall(request);
+        if (response.code() == 204) {
+            return Collections.emptyList();
+        }
+
         InputControlStateCollection inputControlStateCollection = mNetworkClient.deserializeJson(response, InputControlStateCollection.class);
         return Collections.unmodifiableList(inputControlStateCollection.get());
     }

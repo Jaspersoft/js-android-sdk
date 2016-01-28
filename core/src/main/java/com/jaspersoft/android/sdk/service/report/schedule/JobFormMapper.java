@@ -55,11 +55,12 @@ class JobFormMapper {
             simpleTriggerEntity.setRecurrenceIntervalUnit(mapInterval(recurrenceIntervalUnit));
 
             Date startDate = jobSimpleTrigger.getStartDate();
-            if (startDate != null) {
+            if (startDate == null) {
+                simpleTriggerEntity.setStartType(1);
+            } else {
                 simpleTriggerEntity.setStartDate(DATE_FORMAT.format(startDate));
                 simpleTriggerEntity.setStartType(2);
             }
-            simpleTriggerEntity.setStartType(1);
 
             Date stopDate = jobSimpleTrigger.getStopDate();
             if (stopDate != null) {
