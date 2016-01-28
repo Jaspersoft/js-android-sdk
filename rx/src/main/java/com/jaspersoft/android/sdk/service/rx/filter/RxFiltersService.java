@@ -93,7 +93,7 @@ public class RxFiltersService {
 
     @NotNull
     public Observable<List<InputControlState>> validateControls(@NotNull final String reportUri,
-                                                                @NotNull final List<InputControl> controls) {
+                                                                @NotNull final List<ReportParameter> controls) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
         Preconditions.checkNotNull(controls, "Input controls should not be null");
 

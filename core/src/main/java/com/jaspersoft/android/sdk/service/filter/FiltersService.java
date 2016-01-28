@@ -24,20 +24,17 @@ public class FiltersService {
     private final ReportControlsUseCase mReportControlsUseCase;
     private final RepositoryUseCase mRepositoryUseCase;
     private final ControlLocationMapper mControlLocationMapper;
-    private final ReportParamsExtractor mReportParamsExtractor;
 
     @TestOnly
     FiltersService(ReportOptionsUseCase reportOptionsUseCase,
                    ReportControlsUseCase reportControlsUseCase,
                    RepositoryUseCase repositoryUseCase,
-                   ControlLocationMapper controlLocationMapper,
-                   ReportParamsExtractor reportParamsExtractor
+                   ControlLocationMapper controlLocationMapper
     ) {
         mReportOptionsUseCase = reportOptionsUseCase;
         mReportControlsUseCase = reportControlsUseCase;
         mRepositoryUseCase = repositoryUseCase;
         mControlLocationMapper = controlLocationMapper;
-        mReportParamsExtractor = reportParamsExtractor;
     }
 
     @NotNull
@@ -51,14 +48,12 @@ public class FiltersService {
         RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultMapper, client.repositoryApi());
 
         ControlLocationMapper controlLocationMapper = new ControlLocationMapper();
-        ReportParamsExtractor reportParamsExtractor = new ReportParamsExtractor();
 
         return new FiltersService(
                 reportOptionsUseCase,
                 reportControlsUseCase,
                 repositoryUseCase,
-                controlLocationMapper,
-                reportParamsExtractor
+                controlLocationMapper
         );
     }
 
@@ -98,11 +93,10 @@ public class FiltersService {
 
     @NotNull
     public List<InputControlState> validateControls(@NotNull String reportUri,
-                                                    @NotNull List<InputControl> controls) throws ServiceException {
+                                                    @NotNull List<ReportParameter> parameters) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(controls, "Input controls should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
 
-        List<ReportParameter> parameters = mReportParamsExtractor.extractSelectedParams(controls);
         List<InputControlState> states = mReportControlsUseCase.requestControlsValues(reportUri, parameters, true);
 
         List<InputControlState> invalidStates = new ArrayList<>(states);
