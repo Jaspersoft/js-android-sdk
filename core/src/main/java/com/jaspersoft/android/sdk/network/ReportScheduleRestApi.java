@@ -44,6 +44,9 @@ public class ReportScheduleRestApi {
                 .build();
 
         Response response = mNetworkClient.makeCall(request);
+        if (response.code() == 204) {
+            return Collections.emptyList();
+        }
         JobsSearchResult searchResult = mNetworkClient.deserializeJson(response, JobsSearchResult.class);
         return Collections.unmodifiableList(searchResult.getJobSummary());
     }
