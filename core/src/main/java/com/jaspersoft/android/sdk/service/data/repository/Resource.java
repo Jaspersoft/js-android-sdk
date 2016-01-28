@@ -45,17 +45,20 @@ public class Resource {
     private final String mLabel;
     @NotNull
     private final String mDescription;
+    @NotNull
+    private final String mUri;
 
     public Resource(@Nullable Date creationDate,
                     @Nullable Date updateDate,
                     @NotNull ResourceType resourceType,
                     @NotNull String label,
-                    @NotNull String description) {
+                    @NotNull String description, @NotNull String uri) {
         mCreationDate = creationDate;
         mUpdateDate = updateDate;
         mResourceType = resourceType;
         mLabel = label;
         mDescription = description;
+        mUri = uri;
     }
 
     @Nullable
@@ -83,6 +86,11 @@ public class Resource {
         return mDescription;
     }
 
+    @NotNull
+    public String getUri() {
+        return mUri;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,12 +100,12 @@ public class Resource {
 
         if (mCreationDate != null ? !mCreationDate.equals(resource.mCreationDate) : resource.mCreationDate != null)
             return false;
-        if (mDescription != null ? !mDescription.equals(resource.mDescription) : resource.mDescription != null)
-            return false;
-        if (mLabel != null ? !mLabel.equals(resource.mLabel) : resource.mLabel != null) return false;
+        if (!mDescription.equals(resource.mDescription)) return false;
+        if (!mLabel.equals(resource.mLabel)) return false;
         if (mResourceType != resource.mResourceType) return false;
         if (mUpdateDate != null ? !mUpdateDate.equals(resource.mUpdateDate) : resource.mUpdateDate != null)
             return false;
+        if (!mUri.equals(resource.mUri)) return false;
 
         return true;
     }
@@ -106,9 +114,10 @@ public class Resource {
     public int hashCode() {
         int result = mCreationDate != null ? mCreationDate.hashCode() : 0;
         result = 31 * result + (mUpdateDate != null ? mUpdateDate.hashCode() : 0);
-        result = 31 * result + (mResourceType != null ? mResourceType.hashCode() : 0);
-        result = 31 * result + (mLabel != null ? mLabel.hashCode() : 0);
-        result = 31 * result + (mDescription != null ? mDescription.hashCode() : 0);
+        result = 31 * result + mResourceType.hashCode();
+        result = 31 * result + mLabel.hashCode();
+        result = 31 * result + mDescription.hashCode();
+        result = 31 * result + mUri.hashCode();
         return result;
     }
 

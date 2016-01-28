@@ -71,6 +71,7 @@ public class ResourceMapperTest {
         when(mResourceLookup.getResourceType()).thenReturn("reportUnit");
         when(mResourceLookup.getDescription()).thenReturn("description");
         when(mResourceLookup.getLabel()).thenReturn("label");
+        when(mResourceLookup.getUri()).thenReturn("/my/uri");
     }
 
     @Test
@@ -84,6 +85,7 @@ public class ResourceMapperTest {
         assertThat(resource.getDescription(), is("description"));
         assertThat(resource.getLabel(), is("label"));
         assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
+        assertThat(resource.getUri(), is("/my/uri"));
     }
 
     @Test
