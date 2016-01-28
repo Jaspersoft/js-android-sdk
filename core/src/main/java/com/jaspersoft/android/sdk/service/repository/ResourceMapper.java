@@ -71,6 +71,13 @@ class ResourceMapper {
         if (type != null) {
             resourceType = ResourceType.defaultParser().parse(type);
         }
-        return new Resource(creationDate, updateDate, resourceType, lookup.getLabel(), lookup.getDescription());
+        return new Resource(
+                creationDate,
+                updateDate,
+                resourceType,
+                lookup.getLabel(),
+                lookup.getDescription(),
+                lookup.getUri()
+        );
     }
 }

@@ -59,6 +59,8 @@ class ReportResourceMapper {
                 resourceType,
                 lookup.getLabel(),
                 lookup.getDescription(),
-                lookup.alwaysPromptControls());
+                lookup.getUri(),
+                lookup.alwaysPromptControls()
+        );
     }
 }

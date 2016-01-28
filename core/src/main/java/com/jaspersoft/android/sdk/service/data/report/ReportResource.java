@@ -43,8 +43,9 @@ public class ReportResource extends Resource {
                           @NotNull ResourceType resourceType,
                           @NotNull String label,
                           @NotNull String description,
+                          @NotNull String uri,
                           boolean alwaysPrompt) {
-        super(creationDate, updateDate, resourceType, label, description);
+        super(creationDate, updateDate, resourceType, label, description, uri);
         mAlwaysPrompt = alwaysPrompt;
     }
 
