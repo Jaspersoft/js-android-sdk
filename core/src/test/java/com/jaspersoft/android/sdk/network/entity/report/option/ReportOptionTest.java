@@ -51,13 +51,13 @@ public class ReportOptionTest {
             "label",
     })
     public void shouldHaveExposeAnnotationForField(String fieldName) throws NoSuchFieldException {
-        Field field = ReportOption.class.getDeclaredField(fieldName);
+        Field field = ReportOptionEntity.class.getDeclaredField(fieldName);
         assertThat(field, hasAnnotation(Expose.class));
     }
 
     @Test
     public void testEquals() throws Exception {
-        EqualsVerifier.forClass(ReportOption.class)
+        EqualsVerifier.forClass(ReportOptionEntity.class)
                 .suppress(Warning.NONFINAL_FIELDS)
                 .verify();
     }

@@ -41,10 +41,10 @@ public final class ReportOptionSet {
 
     @Expose
     @SerializedName("reportOptionsSummary")
-    private Set<ReportOption> mOptions = Collections.emptySet();
+    private Set<ReportOptionEntity> mOptions = Collections.emptySet();
 
     @NotNull
-    public Set<ReportOption> get() {
+    public Set<ReportOptionEntity> get() {
         return mOptions;
     }
 }

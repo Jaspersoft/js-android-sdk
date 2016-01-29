@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network;
 
 import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionSet;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
@@ -53,7 +53,7 @@ public class ReportOptionRestApi {
     }
 
     @NotNull
-    public Set<ReportOption> requestReportOptionsList(@Nullable String reportUnitUri) throws IOException, HttpException {
+    public Set<ReportOptionEntity> requestReportOptionsList(@Nullable String reportUnitUri) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
 
         HttpUrl url = new PathResolver.Builder()
@@ -85,7 +85,7 @@ public class ReportOptionRestApi {
     }
 
     @NotNull
-    public ReportOption createReportOption(
+    public ReportOptionEntity createReportOption(
             @Nullable String reportUnitUri,
             @Nullable String optionLabel,
             @Nullable List<ReportParameter> parameters,
@@ -116,7 +116,7 @@ public class ReportOptionRestApi {
                 .build();
 
         Response response = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(response, ReportOption.class);
+        return mNetworkClient.deserializeJson(response, ReportOptionEntity.class);
     }
 
     public void updateReportOption(@Nullable String reportUnitUri,

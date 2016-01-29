@@ -4,11 +4,10 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
-import com.jaspersoft.android.sdk.service.rx.report.RxReportService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.rules.ExpectedException.none;
@@ -51,7 +49,7 @@ public class RxFiltersServiceTest {
     @Mock
     ServiceException mServiceException;
 
-    private ReportOption fakeReportOption = new ReportOption();
+    private ReportOptionEntity fakeReportOption = new ReportOptionEntity();
 
     @Mock
     AuthorizedClient mAuthorizedClient;
@@ -126,7 +124,7 @@ public class RxFiltersServiceTest {
     public void should_delegate_service_exception_to_subscription_on_list_report_options() throws Exception {
         when(mSyncDelegate.listReportOptions(anyString())).thenThrow(mServiceException);
 
-        TestSubscriber<Set<ReportOption>> test = TestSubscriber.create();
+        TestSubscriber<Set<ReportOptionEntity>> test = TestSubscriber.create();
         rxFiltersService.listReportOptions(RESOURCE_URI).subscribe(test);
 
         test.assertError(mServiceException);
@@ -151,9 +149,9 @@ public class RxFiltersServiceTest {
     @Test
     public void should_execute_delegate_as_observable_on_list_report_options() throws Exception {
         when(mSyncDelegate.listReportOptions(anyString()))
-                .thenReturn(Collections.<ReportOption>emptySet());
+                .thenReturn(Collections.<ReportOptionEntity>emptySet());
 
-        TestSubscriber<Set<ReportOption>> test = TestSubscriber.create();
+        TestSubscriber<Set<ReportOptionEntity>> test = TestSubscriber.create();
         rxFiltersService.listReportOptions(RESOURCE_URI).subscribe(test);
 
         test.assertCompleted();
@@ -168,7 +166,7 @@ public class RxFiltersServiceTest {
         when(mSyncDelegate.createReportOption(anyString(), anyString(), anyListOf(ReportParameter.class), anyBoolean()))
                 .thenThrow(mServiceException);
 
-        TestSubscriber<ReportOption> test = TestSubscriber.create();
+        TestSubscriber<ReportOptionEntity> test = TestSubscriber.create();
         rxFiltersService.createReportOption(RESOURCE_URI, OPTION_LABEL, PARAMS, true).subscribe(test);
 
         test.assertError(mServiceException);
@@ -182,7 +180,7 @@ public class RxFiltersServiceTest {
         when(mSyncDelegate.createReportOption(anyString(), anyString(), anyListOf(ReportParameter.class), anyBoolean()))
                 .thenReturn(fakeReportOption);
 
-        TestSubscriber<ReportOption> test = TestSubscriber.create();
+        TestSubscriber<ReportOptionEntity> test = TestSubscriber.create();
         rxFiltersService.createReportOption(RESOURCE_URI, OPTION_LABEL, PARAMS, true).subscribe(test);
 
         test.assertCompleted();

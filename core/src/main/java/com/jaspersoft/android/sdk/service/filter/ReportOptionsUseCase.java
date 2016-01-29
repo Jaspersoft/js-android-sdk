@@ -3,7 +3,7 @@ package com.jaspersoft.android.sdk.service.filter;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
@@ -24,7 +24,7 @@ class ReportOptionsUseCase {
         mReportOptionRestApi = reportOptionRestApi;
     }
 
-    public Set<ReportOption> requestReportOptionsList(String reportUnitUri) throws ServiceException {
+    public Set<ReportOptionEntity> requestReportOptionsList(String reportUnitUri) throws ServiceException {
         try {
             return mReportOptionRestApi.requestReportOptionsList(reportUnitUri);
         } catch (HttpException e) {
@@ -34,7 +34,7 @@ class ReportOptionsUseCase {
         }
     }
 
-    public ReportOption createReportOption(String reportUri,
+    public ReportOptionEntity createReportOption(String reportUri,
                                            String optionLabel,
                                            List<ReportParameter> parameters,
                                            boolean overwrite) throws ServiceException {

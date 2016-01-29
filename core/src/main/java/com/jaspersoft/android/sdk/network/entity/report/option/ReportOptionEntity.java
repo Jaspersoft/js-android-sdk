@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportOption {
+public final class ReportOptionEntity {
 
     @Expose
     private String uri;
@@ -60,7 +60,7 @@ public final class ReportOption {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReportOption that = (ReportOption) o;
+        ReportOptionEntity that = (ReportOptionEntity) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;

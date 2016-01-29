@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.env.DashboardTestBundle;
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -38,10 +38,10 @@ public class FiltersServiceTest {
 
             String reportOptionLabel = "My Label";
             List<ReportParameter> params = bundle.getParams();
-            ReportOption reportOption =
+            ReportOptionEntity reportOption =
                     filtersService.createReportOption(reportUri, reportOptionLabel, params, true);
 
-            Set<ReportOption> reportOptions = filtersService.listReportOptions(reportUri);
+            Set<ReportOptionEntity> reportOptions = filtersService.listReportOptions(reportUri);
             assertThat(reportOptions, hasItem(reportOption));
 
             filtersService.updateReportOption(reportUri, reportOption.getId(), params);

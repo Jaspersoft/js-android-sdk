@@ -5,7 +5,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -111,14 +111,14 @@ public class FiltersService {
     }
 
     @NotNull
-    public Set<ReportOption> listReportOptions(@NotNull String reportUri) throws ServiceException {
+    public Set<ReportOptionEntity> listReportOptions(@NotNull String reportUri) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
 
         return mReportOptionsUseCase.requestReportOptionsList(reportUri);
     }
 
     @NotNull
-    public ReportOption createReportOption(@NotNull String reportUri,
+    public ReportOptionEntity createReportOption(@NotNull String reportUri,
                                            @NotNull String optionLabel,
                                            @NotNull List<ReportParameter> parameters,
                                            boolean overwrite) throws ServiceException {
