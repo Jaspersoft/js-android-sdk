@@ -5,7 +5,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
+import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -43,8 +43,9 @@ public class FiltersService {
 
         ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
 
+        ReportOptionMapper reportOptionMapper = new ReportOptionMapper();
         ReportControlsUseCase reportControlsUseCase = new ReportControlsUseCase(defaultMapper, client.inputControlApi());
-        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(defaultMapper, client.reportOptionsApi());
+        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(defaultMapper, client.reportOptionsApi(), reportOptionMapper);
         RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultMapper, client.repositoryApi());
 
         ControlLocationMapper controlLocationMapper = new ControlLocationMapper();
@@ -111,14 +112,14 @@ public class FiltersService {
     }
 
     @NotNull
-    public Set<ReportOptionEntity> listReportOptions(@NotNull String reportUri) throws ServiceException {
+    public Set<ReportOption> listReportOptions(@NotNull String reportUri) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
 
         return mReportOptionsUseCase.requestReportOptionsList(reportUri);
     }
 
     @NotNull
-    public ReportOptionEntity createReportOption(@NotNull String reportUri,
+    public ReportOption createReportOption(@NotNull String reportUri,
                                            @NotNull String optionLabel,
                                            @NotNull List<ReportParameter> parameters,
                                            boolean overwrite) throws ServiceException {

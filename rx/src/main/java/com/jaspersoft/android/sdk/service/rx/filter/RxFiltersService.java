@@ -4,10 +4,10 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
+import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import rx.Observable;
@@ -111,14 +111,14 @@ public class RxFiltersService {
     }
 
     @NotNull
-    public Observable<Set<ReportOptionEntity>> listReportOptions(@NotNull final String reportUri) {
+    public Observable<Set<ReportOption>> listReportOptions(@NotNull final String reportUri) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
 
-        return Observable.defer(new Func0<Observable<Set<ReportOptionEntity>>>() {
+        return Observable.defer(new Func0<Observable<Set<ReportOption>>>() {
             @Override
-            public Observable<Set<ReportOptionEntity>> call() {
+            public Observable<Set<ReportOption>> call() {
                 try {
-                    Set<ReportOptionEntity> reportOptions = mSyncDelegate.listReportOptions(reportUri);
+                    Set<ReportOption> reportOptions = mSyncDelegate.listReportOptions(reportUri);
                     return Observable.just(reportOptions);
                 } catch (ServiceException e) {
                     return Observable.error(e);
@@ -128,7 +128,7 @@ public class RxFiltersService {
     }
 
     @NotNull
-    public Observable<ReportOptionEntity> createReportOption(@NotNull final String reportUri,
+    public Observable<ReportOption> createReportOption(@NotNull final String reportUri,
                                                        @NotNull final String optionLabel,
                                                        @NotNull final List<ReportParameter> parameters,
                                                        final boolean overwrite) {
@@ -136,11 +136,11 @@ public class RxFiltersService {
         Preconditions.checkNotNull(optionLabel, "Option label should not be null");
         Preconditions.checkNotNull(parameters, "Parameters should not be null");
 
-        return Observable.defer(new Func0<Observable<ReportOptionEntity>>() {
+        return Observable.defer(new Func0<Observable<ReportOption>>() {
             @Override
-            public Observable<ReportOptionEntity> call() {
+            public Observable<ReportOption> call() {
                 try {
-                    ReportOptionEntity reportOption = mSyncDelegate.createReportOption(reportUri, optionLabel, parameters, overwrite);
+                    ReportOption reportOption = mSyncDelegate.createReportOption(reportUri, optionLabel, parameters, overwrite);
                     return Observable.just(reportOption);
                 } catch (ServiceException e) {
                     return Observable.error(e);

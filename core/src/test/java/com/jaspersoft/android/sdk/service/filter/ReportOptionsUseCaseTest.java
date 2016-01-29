@@ -3,8 +3,8 @@ package com.jaspersoft.android.sdk.service.filter;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.filter.ReportOptionsUseCase;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,10 +15,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.TestCase.fail;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReportOptionsUseCaseTest {
@@ -29,6 +30,8 @@ public class ReportOptionsUseCaseTest {
 
     @Mock
     ServiceExceptionMapper mExceptionMapper;
+    @Mock
+    ReportOptionMapper mReportOptionMapper;
     @Mock
     ReportOptionRestApi mReportOptionRestApi;
 
@@ -45,12 +48,17 @@ public class ReportOptionsUseCaseTest {
     public void setUp() throws Exception {
         initMocks(this);
         setupMocks();
-        reportOptionsUseCase = new ReportOptionsUseCase(mExceptionMapper, mReportOptionRestApi);
+        reportOptionsUseCase = new ReportOptionsUseCase(
+                mExceptionMapper, 
+                mReportOptionRestApi, 
+                mReportOptionMapper
+        );
     }
 
     @Test
     public void should_list_report_options() throws Exception {
         reportOptionsUseCase.requestReportOptionsList(REPORT_URI);
+        verify(mReportOptionMapper).transform(anySetOf(ReportOptionEntity.class));
         verify(mReportOptionRestApi).requestReportOptionsList(REPORT_URI);
     }
 
@@ -80,6 +88,7 @@ public class ReportOptionsUseCaseTest {
     @Test
     public void should_create_report_option() throws Exception {
         reportOptionsUseCase.createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
+        verify(mReportOptionMapper).transform(any(ReportOptionEntity.class));
         verify(mReportOptionRestApi).createReportOption(REPORT_URI, OPTION_LABEL, REPORT_PARAMETERS, true);
     }
 

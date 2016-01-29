@@ -57,7 +57,8 @@ public class FiltersServiceTest {
                 mReportOptionsUseCase,
                 mReportControlsUseCase,
                 mRepositoryUseCase,
-                mControlLocationMapper);
+                mControlLocationMapper
+        );
     }
 
     @Test
