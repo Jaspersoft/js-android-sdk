@@ -64,7 +64,7 @@ public class FiltersServiceTest {
     public void filters_service_should_list_resource_values(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            filtersService.listResourceValues(bundle.getReportUri(), false);
+            filtersService.listResourceStates(bundle.getReportUri(), false);
         }
     }
 

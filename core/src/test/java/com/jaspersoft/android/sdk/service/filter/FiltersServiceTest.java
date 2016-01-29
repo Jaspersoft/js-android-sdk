@@ -80,9 +80,22 @@ public class FiltersServiceTest {
     }
 
     @Test
-    public void should_delegate_load_cascade_controls_call() throws Exception {
+    public void should_delegate_list_controls_states() throws Exception {
         List<ReportParameter> parameters = Collections.emptyList();
-        mFiltersService.listResourceValues(RESOURCE_URI, false);
+        mFiltersService.listControlsStates(RESOURCE_URI, parameters, false);
+        verify(mReportControlsUseCase).requestControlsValues(RESOURCE_URI, parameters, false);
+    }
+
+    @Test
+    public void should_delegate_validate_controls_states() throws Exception {
+        List<ReportParameter> parameters = Collections.emptyList();
+        mFiltersService.validateControls(RESOURCE_URI, parameters, false);
+        verify(mReportControlsUseCase).requestControlsValues(RESOURCE_URI, parameters, false);
+    }
+
+    @Test
+    public void should_delegate_list_resources_call() throws Exception {
+        mFiltersService.listResourceStates(RESOURCE_URI, false);
         verify(mReportControlsUseCase).requestResourceValues(RESOURCE_URI, false);
     }
 
@@ -118,10 +131,38 @@ public class FiltersServiceTest {
     }
 
     @Test
-    public void should_not_list_controls_with_null_parameters() throws Exception {
+    public void should_not_list_controls_for_with_null_uri() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Report uri should not be null");
-        mFiltersService.listResourceValues(null, false);
+        mFiltersService.listResourceStates(null, false);
+    }
+
+    @Test
+    public void should_not_list_controls_states_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        mFiltersService.listControlsStates(null, Collections.<ReportParameter>emptyList(), false);
+    }
+
+    @Test
+    public void should_not_list_controls_states_with_null_parameters() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Parameters should not be null");
+        mFiltersService.listControlsStates(RESOURCE_URI, null, false);
+    }
+
+    @Test
+    public void should_not_validate_controls_states_with_null_uri() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Report uri should not be null");
+        mFiltersService.validateControls(null, Collections.<ReportParameter>emptyList(), false);
+    }
+
+    @Test
+    public void should_not_validate_controls_states_with_null_parameters() throws Exception {
+        expected.expect(NullPointerException.class);
+        expected.expectMessage("Parameters should not be null");
+        mFiltersService.validateControls(RESOURCE_URI, null, false);
     }
 
     @Test

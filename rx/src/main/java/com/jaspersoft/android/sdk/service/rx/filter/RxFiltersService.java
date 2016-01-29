@@ -71,16 +71,18 @@ public class RxFiltersService {
     }
 
     @NotNull
-    public Observable<List<InputControlState>> listResourceValues(@NotNull final String reportUri,
+    public Observable<List<InputControlState>> listControlsStates(@NotNull final String reportUri,
+                                                                  @NotNull final List<ReportParameter> controls,
                                                                   final boolean freshData
     ) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(controls, "Input controls should not be null");
 
         return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
             @Override
             public Observable<List<InputControlState>> call() {
                 try {
-                    List<InputControlState> inputControlStates = mSyncDelegate.listResourceValues(reportUri, freshData);
+                    List<InputControlState> inputControlStates = mSyncDelegate.listControlsStates(reportUri, controls, freshData);
                     return Observable.just(inputControlStates);
                 } catch (ServiceException e) {
                     return Observable.error(e);
@@ -102,6 +104,25 @@ public class RxFiltersService {
             public Observable<List<InputControlState>> call() {
                 try {
                     List<InputControlState> inputControlStates = mSyncDelegate.validateControls(reportUri, controls, freshData);
+                    return Observable.just(inputControlStates);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<List<InputControlState>> listResourceStates(@NotNull final String reportUri,
+                                                                  final boolean freshData
+    ) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
+            @Override
+            public Observable<List<InputControlState>> call() {
+                try {
+                    List<InputControlState> inputControlStates = mSyncDelegate.listResourceStates(reportUri, freshData);
                     return Observable.just(inputControlStates);
                 } catch (ServiceException e) {
                     return Observable.error(e);

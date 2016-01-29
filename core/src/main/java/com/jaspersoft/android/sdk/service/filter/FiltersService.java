@@ -83,21 +83,20 @@ public class FiltersService {
     }
 
     @NotNull
-    public List<InputControlState> listResourceValues(@NotNull String resourceUri,
+    public List<InputControlState> listControlsStates(@NotNull String reportUri,
+                                                      @NotNull List<ReportParameter> parameters,
                                                       boolean freshData) throws ServiceException {
-        Preconditions.checkNotNull(resourceUri, "Report uri should not be null");
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
 
-        return mReportControlsUseCase.requestResourceValues(resourceUri, freshData);
+        return mReportControlsUseCase.requestControlsValues(reportUri, parameters, freshData);
     }
 
     @NotNull
     public List<InputControlState> validateControls(@NotNull String reportUri,
                                                     @NotNull List<ReportParameter> parameters,
                                                     boolean freshData) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(parameters, "Parameters should not be null");
-
-        List<InputControlState> states = mReportControlsUseCase.requestControlsValues(reportUri, parameters, freshData);
+        List<InputControlState> states = listControlsStates(reportUri, parameters, freshData);
 
         List<InputControlState> invalidStates = new ArrayList<>(states);
         Iterator<InputControlState> iterator = invalidStates.iterator();
@@ -108,6 +107,14 @@ public class FiltersService {
         }
 
         return Collections.unmodifiableList(invalidStates);
+    }
+
+    @NotNull
+    public List<InputControlState> listResourceStates(@NotNull String resourceUri,
+                                                      boolean freshData) throws ServiceException {
+        Preconditions.checkNotNull(resourceUri, "Report uri should not be null");
+
+        return mReportControlsUseCase.requestResourceValues(resourceUri, freshData);
     }
 
     @NotNull
