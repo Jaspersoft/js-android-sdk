@@ -82,8 +82,8 @@ public class FiltersServiceTest {
     @Test
     public void should_delegate_load_cascade_controls_call() throws Exception {
         List<ReportParameter> parameters = Collections.emptyList();
-        mFiltersService.listControlsValues(RESOURCE_URI, parameters, false);
-        verify(mReportControlsUseCase).requestControlsValues(RESOURCE_URI, parameters, false);
+        mFiltersService.listResourceValues(RESOURCE_URI, false);
+        verify(mReportControlsUseCase).requestResourceValues(RESOURCE_URI, false);
     }
 
     @Test
@@ -118,17 +118,10 @@ public class FiltersServiceTest {
     }
 
     @Test
-    public void should_not_list_controls_values_with_null_uri() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Parameters should not be null");
-        mFiltersService.listControlsValues(RESOURCE_URI, null, false);
-    }
-
-    @Test
     public void should_not_list_controls_with_null_parameters() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Report uri should not be null");
-        mFiltersService.listControlsValues(null, Collections.<ReportParameter>emptyList(), false);
+        mFiltersService.listResourceValues(null, false);
     }
 
     @Test

@@ -76,6 +76,12 @@ public class ReportControlsUseCaseTest {
         verify(mRestApi).requestInputControls(REPORT_URI, null, false);
     }
 
+     @Test
+    public void should_request_resource_values() throws Exception {
+        mReportControlsUseCase.requestResourceValues(REPORT_URI, false);
+        verify(mRestApi).requestInputControlsInitialStates(REPORT_URI, false);
+    }
+
     @Test
     public void request_controls_adapt_io_exception() throws Exception {
         when(mRestApi.requestInputControls(anyString(), anySetOf(String.class), anyBoolean())).thenThrow(mIOException);

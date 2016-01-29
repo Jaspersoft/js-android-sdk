@@ -83,22 +83,21 @@ public class FiltersService {
     }
 
     @NotNull
-    public List<InputControlState> listControlsValues(@NotNull String reportUri,
-                                                      @NotNull List<ReportParameter> parameters,
+    public List<InputControlState> listResourceValues(@NotNull String resourceUri,
                                                       boolean freshData) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+        Preconditions.checkNotNull(resourceUri, "Report uri should not be null");
 
-        return mReportControlsUseCase.requestControlsValues(reportUri, parameters, freshData);
+        return mReportControlsUseCase.requestResourceValues(resourceUri, freshData);
     }
 
     @NotNull
     public List<InputControlState> validateControls(@NotNull String reportUri,
-                                                    @NotNull List<ReportParameter> parameters) throws ServiceException {
+                                                    @NotNull List<ReportParameter> parameters,
+                                                    boolean freshData) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
         Preconditions.checkNotNull(parameters, "Parameters should not be null");
 
-        List<InputControlState> states = mReportControlsUseCase.requestControlsValues(reportUri, parameters, true);
+        List<InputControlState> states = mReportControlsUseCase.requestControlsValues(reportUri, parameters, freshData);
 
         List<InputControlState> invalidStates = new ArrayList<>(states);
         Iterator<InputControlState> iterator = invalidStates.iterator();

@@ -4,7 +4,6 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
@@ -95,30 +94,30 @@ public class RxFiltersServiceTest {
 
     @Test
     public void should_delegate_service_exception_to_subscription_on_list_controls_values() throws Exception {
-        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mServiceException);
+        when(mSyncDelegate.listResourceValues(anyString(), anyBoolean())).thenThrow(mServiceException);
 
         TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
-        rxFiltersService.listControlsValues(RESOURCE_URI, PARAMS, false).subscribe(test);
+        rxFiltersService.listResourceValues(RESOURCE_URI, false).subscribe(test);
 
         test.assertError(mServiceException);
         test.assertNotCompleted();
 
-        verify(mSyncDelegate).listControlsValues(RESOURCE_URI, PARAMS, false);
+        verify(mSyncDelegate).listResourceValues(RESOURCE_URI, false);
     }
 
     @Test
     public void should_execute_delegate_as_observable_on_list_controls_values() throws Exception {
-        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class), anyBoolean()))
+        when(mSyncDelegate.listResourceValues(anyString(), anyBoolean()))
                 .thenReturn(Collections.<InputControlState>emptyList());
 
         TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
-        rxFiltersService.listControlsValues(RESOURCE_URI, PARAMS, false).subscribe(test);
+        rxFiltersService.listResourceValues(RESOURCE_URI, false).subscribe(test);
 
         test.assertCompleted();
         test.assertNoErrors();
         test.assertValueCount(1);
 
-        verify(mSyncDelegate).listControlsValues(RESOURCE_URI, PARAMS, false);
+        verify(mSyncDelegate).listResourceValues(RESOURCE_URI, false);
     }
 
     @Test

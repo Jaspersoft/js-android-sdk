@@ -12,7 +12,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -62,12 +61,10 @@ public class FiltersServiceTest {
 
     @Test
     @Parameters(method = "reports")
-    public void filters_service_should_list_input_cascades(ReportTestBundle bundle) throws Exception {
+    public void filters_service_should_list_resource_values(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            List<ReportParameter> params = bundle.getParams();
-            filtersService.listControlsValues(bundle.getReportUri(),
-                    Collections.singletonList(params.get(0)), false);
+            filtersService.listResourceValues(bundle.getReportUri(), false);
         }
     }
 
