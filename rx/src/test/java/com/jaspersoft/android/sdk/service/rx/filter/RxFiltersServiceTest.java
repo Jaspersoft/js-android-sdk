@@ -4,11 +4,11 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
+import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
-import com.jaspersoft.android.sdk.service.rx.report.RxReportService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.rules.ExpectedException.none;
@@ -50,8 +49,8 @@ public class RxFiltersServiceTest {
     ReportExecution mReportExecution;
     @Mock
     ServiceException mServiceException;
-
-    private ReportOption fakeReportOption = new ReportOption();
+    @Mock
+    ReportOption fakeReportOption;
 
     @Mock
     AuthorizedClient mAuthorizedClient;

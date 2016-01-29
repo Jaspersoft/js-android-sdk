@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.env.DashboardTestBundle;
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

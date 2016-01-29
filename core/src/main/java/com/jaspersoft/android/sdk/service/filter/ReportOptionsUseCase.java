@@ -3,7 +3,8 @@ package com.jaspersoft.android.sdk.service.filter;
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.ReportOptionRestApi;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
+import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 
@@ -18,15 +19,18 @@ import java.util.Set;
 class ReportOptionsUseCase {
     private final ServiceExceptionMapper mExceptionMapper;
     private final ReportOptionRestApi mReportOptionRestApi;
+    private final ReportOptionMapper mReportOptionMapper;
 
-    ReportOptionsUseCase(ServiceExceptionMapper exceptionMapper, ReportOptionRestApi reportOptionRestApi) {
+    ReportOptionsUseCase(ServiceExceptionMapper exceptionMapper, ReportOptionRestApi reportOptionRestApi, ReportOptionMapper reportOptionMapper) {
         mExceptionMapper = exceptionMapper;
         mReportOptionRestApi = reportOptionRestApi;
+        mReportOptionMapper = reportOptionMapper;
     }
 
     public Set<ReportOption> requestReportOptionsList(String reportUnitUri) throws ServiceException {
         try {
-            return mReportOptionRestApi.requestReportOptionsList(reportUnitUri);
+            Set<ReportOptionEntity> entities = mReportOptionRestApi.requestReportOptionsList(reportUnitUri);
+            return mReportOptionMapper.transform(entities);
         } catch (HttpException e) {
             throw mExceptionMapper.transform(e);
         } catch (IOException e) {
@@ -39,7 +43,8 @@ class ReportOptionsUseCase {
                                            List<ReportParameter> parameters,
                                            boolean overwrite) throws ServiceException {
         try {
-            return mReportOptionRestApi.createReportOption(reportUri, optionLabel, parameters, overwrite);
+            ReportOptionEntity entity = mReportOptionRestApi.createReportOption(reportUri, optionLabel, parameters, overwrite);
+            return mReportOptionMapper.transform(entity);
         } catch (HttpException e) {
             throw mExceptionMapper.transform(e);
         } catch (IOException e) {

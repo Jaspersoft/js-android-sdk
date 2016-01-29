@@ -25,7 +25,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOption;
+import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
@@ -147,7 +147,7 @@ public class ReportOptionRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200().setBody(reportOptionsList.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        Set<ReportOption> response = restApiUnderTest.requestReportOptionsList("/any/uri");
+        Set<ReportOptionEntity> response = restApiUnderTest.requestReportOptionsList("/any/uri");
         assertThat(response, is(not(empty())));
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
@@ -159,7 +159,7 @@ public class ReportOptionRestApiTest {
         MockResponse mockResponse = MockResponseFactory.create200().setBody(reportOption.asString());
         mWebMockRule.enqueue(mockResponse);
 
-        ReportOption reportOption = restApiUnderTest.createReportOption("/any/uri", "my label", REPORT_PARAMS, true);
+        ReportOptionEntity reportOption = restApiUnderTest.createReportOption("/any/uri", "my label", REPORT_PARAMS, true);
         assertThat(reportOption.getId(), is("my_label"));
         assertThat(reportOption.getLabel(), is("my label"));
         assertThat(reportOption.getUri(), is("/public/Samples/Reports/my_label"));
