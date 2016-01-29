@@ -13,26 +13,24 @@ import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class FiltersService {
-    private  ReportOptionsUseCase mReportOptionsUseCase;
-    private  ReportControlsUseCase mReportControlsUseCase;
-    private  RepositoryUseCase mRepositoryUseCase;
-    private  ControlLocationMapper mControlLocationMapper;
+    private final ReportOptionsUseCase mReportOptionsUseCase;
+    private final ReportControlsUseCase mReportControlsUseCase;
+    private final RepositoryUseCase mRepositoryUseCase;
+    private final ControlLocationMapper mControlLocationMapper;
 
     @TestOnly
     FiltersService(ReportOptionsUseCase reportOptionsUseCase,
                    ReportControlsUseCase reportControlsUseCase,
-                   RepositoryUseCase repositoryUseCase, 
-                   ControlLocationMapper controlLocationMapper) {
+                   RepositoryUseCase repositoryUseCase,
+                   ControlLocationMapper controlLocationMapper
+    ) {
         mReportOptionsUseCase = reportOptionsUseCase;
         mReportControlsUseCase = reportControlsUseCase;
         mRepositoryUseCase = repositoryUseCase;
@@ -51,7 +49,12 @@ public class FiltersService {
 
         ControlLocationMapper controlLocationMapper = new ControlLocationMapper();
 
-        return new FiltersService(reportOptionsUseCase, reportControlsUseCase, repositoryUseCase, controlLocationMapper);
+        return new FiltersService(
+                reportOptionsUseCase,
+                reportControlsUseCase,
+                repositoryUseCase,
+                controlLocationMapper
+        );
     }
 
     @NotNull
@@ -80,12 +83,31 @@ public class FiltersService {
 
     @NotNull
     public List<InputControlState> listControlsValues(@NotNull String reportUri,
-                                                            @NotNull List<ReportParameter> parameters,
-                                                            boolean freshData) throws ServiceException {
+                                                      @NotNull List<ReportParameter> parameters,
+                                                      boolean freshData) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
         Preconditions.checkNotNull(parameters, "Parameters should not be null");
 
         return mReportControlsUseCase.requestControlsValues(reportUri, parameters, freshData);
+    }
+
+    @NotNull
+    public List<InputControlState> validateControls(@NotNull String reportUri,
+                                                    @NotNull List<ReportParameter> parameters) throws ServiceException {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+        Preconditions.checkNotNull(parameters, "Parameters should not be null");
+
+        List<InputControlState> states = mReportControlsUseCase.requestControlsValues(reportUri, parameters, true);
+
+        List<InputControlState> invalidStates = new ArrayList<>(states);
+        Iterator<InputControlState> iterator = invalidStates.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().getError() == null) {
+                iterator.remove();
+            }
+        }
+
+        return Collections.unmodifiableList(invalidStates);
     }
 
     @NotNull
@@ -97,9 +119,9 @@ public class FiltersService {
 
     @NotNull
     public ReportOption createReportOption(@NotNull String reportUri,
-                                                 @NotNull String optionLabel,
-                                                 @NotNull List<ReportParameter> parameters,
-                                                 boolean overwrite) throws ServiceException {
+                                           @NotNull String optionLabel,
+                                           @NotNull List<ReportParameter> parameters,
+                                           boolean overwrite) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
         Preconditions.checkNotNull(optionLabel, "Option label should not be null");
         Preconditions.checkNotNull(parameters, "Parameters should not be null");
