@@ -12,6 +12,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -57,6 +58,26 @@ public class FiltersServiceTest {
     public void filters_service_should_list_report_input_controls(ReportTestBundle bundle) throws Exception {
         FiltersService filtersService = FiltersService.newService(bundle.getClient());
         filtersService.listReportControls(bundle.getReportUri());
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void filters_service_should_list_input_controls_states(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            List<ReportParameter> params = bundle.getParams();
+            FiltersService filtersService = FiltersService.newService(bundle.getClient());
+            filtersService.listControlsStates(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void filters_service_should_validate_input_controls(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            List<ReportParameter> params = bundle.getParams();
+            FiltersService filtersService = FiltersService.newService(bundle.getClient());
+            filtersService.validateControls(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+        }
     }
 
     @Test
