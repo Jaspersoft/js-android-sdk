@@ -69,6 +69,10 @@ public class ServerInfo {
         return "PRO".equals(edition);
     }
 
+    public String getEdition() {
+        return edition;
+    }
+
     public void setEdition(String edition) {
         this.edition = edition;
     }
