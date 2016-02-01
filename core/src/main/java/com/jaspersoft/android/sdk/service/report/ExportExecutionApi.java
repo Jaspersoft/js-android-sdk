@@ -99,7 +99,7 @@ class ExportExecutionApi {
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException ex) {
-                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
+                // Do nothing as soon as thread can be interrupted due to abandoned subscriptions
             }
         } while (!status.isReady());
 
