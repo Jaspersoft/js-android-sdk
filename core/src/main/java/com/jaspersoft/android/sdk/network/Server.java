@@ -81,38 +81,35 @@ public final class Server {
     }
 
     public static class Builder {
+        private String mBaseUrl;
+        private final OkHttpClient mOkHttpClient = new OkHttpClient();
+
         private Builder() {
         }
 
-        public OptionalBuilder withBaseUrl(String baseUrl) {
-            return new OptionalBuilder(baseUrl);
-        }
-    }
-
-    public static class OptionalBuilder {
-        private final String mBaseUrl;
-        private final OkHttpClient mOkHttpClient = new OkHttpClient();
-
-        private OptionalBuilder(String baseUrl) {
-            mBaseUrl = baseUrl;
+        public Builder withBaseUrl(String baseUrl) {
+            mBaseUrl = Utils.checkNotNull(baseUrl, "Base url should not be null");
+            return this;
         }
 
-        public OptionalBuilder withConnectionTimeOut(long timeout, TimeUnit unit) {
+        public Builder withConnectionTimeOut(long timeout, TimeUnit unit) {
             mOkHttpClient.setConnectTimeout(timeout, unit);
             return this;
         }
 
-        public OptionalBuilder withReadTimeout(long timeout, TimeUnit unit) {
+        public Builder withReadTimeout(long timeout, TimeUnit unit) {
             mOkHttpClient.setReadTimeout(timeout, unit);
             return this;
         }
 
-        public OptionalBuilder withProxy(Proxy proxy) {
+        public Builder withProxy(Proxy proxy) {
             mOkHttpClient.setProxy(proxy);
             return this;
         }
 
         public Server build() {
+            Utils.checkNotNull(mBaseUrl, "Server can not be created with null base url");
+
             NetworkClient.Builder networkBuilder = new NetworkClient.Builder()
                     .setBaseUrl(mBaseUrl)
                     .setGson(GsonFactory.create());
