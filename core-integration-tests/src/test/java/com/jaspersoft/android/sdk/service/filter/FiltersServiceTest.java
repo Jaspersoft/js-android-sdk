@@ -62,12 +62,30 @@ public class FiltersServiceTest {
 
     @Test
     @Parameters(method = "reports")
-    public void filters_service_should_list_input_cascades(ReportTestBundle bundle) throws Exception {
+    public void filters_service_should_list_input_controls_states(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            List<ReportParameter> params = bundle.getParams();
+            FiltersService filtersService = FiltersService.newService(bundle.getClient());
+            filtersService.listControlsStates(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void filters_service_should_validate_input_controls(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            List<ReportParameter> params = bundle.getParams();
+            FiltersService filtersService = FiltersService.newService(bundle.getClient());
+            filtersService.validateControls(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void filters_service_should_list_resource_values(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            List<ReportParameter> params = bundle.getParams();
-            filtersService.listControlsValues(bundle.getReportUri(),
-                    Collections.singletonList(params.get(0)), false);
+            filtersService.listResourceStates(bundle.getReportUri(), false);
         }
     }
 

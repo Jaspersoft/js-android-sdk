@@ -4,7 +4,6 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.report.option.ReportOptionEntity;
 import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
@@ -31,8 +30,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * TODO: investigate while tests broken during run. It looks like mockito fails to deliver proper mocking behavior.
- *
  * @author Tom Koptel
  * @since 2.0
  */
@@ -94,31 +91,81 @@ public class RxFiltersServiceTest {
     }
 
     @Test
-    public void should_delegate_service_exception_to_subscription_on_list_controls_values() throws Exception {
-        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mServiceException);
+    public void should_delegate_service_exception_to_subscription_on_validate_controls_states() throws Exception {
+        when(mSyncDelegate.validateControls(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mServiceException);
 
-        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
-        rxFiltersService.listControlsValues(RESOURCE_URI, PARAMS, false).subscribe(test);
+        TestSubscriber<List<InputControlState>> test = validateControls();
 
         test.assertError(mServiceException);
         test.assertNotCompleted();
 
-        verify(mSyncDelegate).listControlsValues(RESOURCE_URI, PARAMS, false);
+        verify(mSyncDelegate).validateControls(RESOURCE_URI, PARAMS, false);
     }
 
     @Test
-    public void should_execute_delegate_as_observable_on_list_controls_values() throws Exception {
-        when(mSyncDelegate.listControlsValues(anyString(), anyListOf(ReportParameter.class), anyBoolean()))
+    public void should_execute_delegate_as_observable_on_validate_controls_states() throws Exception {
+        when(mSyncDelegate.validateControls(anyString(), anyListOf(ReportParameter.class), anyBoolean()))
                 .thenReturn(Collections.<InputControlState>emptyList());
 
-        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
-        rxFiltersService.listControlsValues(RESOURCE_URI, PARAMS, false).subscribe(test);
+        TestSubscriber<List<InputControlState>> test = validateControls();
 
         test.assertCompleted();
         test.assertNoErrors();
         test.assertValueCount(1);
 
-        verify(mSyncDelegate).listControlsValues(RESOURCE_URI, PARAMS, false);
+        verify(mSyncDelegate).validateControls(RESOURCE_URI, PARAMS, false);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_controls_states() throws Exception {
+        when(mSyncDelegate.listControlsStates(anyString(), anyListOf(ReportParameter.class), anyBoolean())).thenThrow(mServiceException);
+
+        TestSubscriber<List<InputControlState>> test = listControlsStates();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).listControlsStates(RESOURCE_URI, PARAMS, false);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_list_controls_states() throws Exception {
+        when(mSyncDelegate.listResourceStates(anyString(), anyBoolean()))
+                .thenReturn(Collections.<InputControlState>emptyList());
+
+        TestSubscriber<List<InputControlState>> test = listControlsStates();
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).listControlsStates(RESOURCE_URI, PARAMS, false);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_resource_states() throws Exception {
+        when(mSyncDelegate.listResourceStates(anyString(), anyBoolean())).thenThrow(mServiceException);
+
+        TestSubscriber<List<InputControlState>> test = listResourceStates();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+
+        verify(mSyncDelegate).listResourceStates(RESOURCE_URI, false);
+    }
+
+    @Test
+    public void should_execute_delegate_as_observable_on_list_resource_states() throws Exception {
+        when(mSyncDelegate.listResourceStates(anyString(), anyBoolean()))
+                .thenReturn(Collections.<InputControlState>emptyList());
+
+        TestSubscriber<List<InputControlState>> test = listResourceStates();
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+
+        verify(mSyncDelegate).listResourceStates(RESOURCE_URI, false);
     }
 
     @Test
@@ -265,5 +312,23 @@ public class RxFiltersServiceTest {
     public void should_provide_impl_with_factory_method() throws Exception {
         RxFiltersService service = RxFiltersService.newService(mAuthorizedClient);
         assertThat(service, is(notNullValue()));
+    }
+
+    private TestSubscriber<List<InputControlState>> validateControls() {
+        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
+        rxFiltersService.validateControls(RESOURCE_URI, PARAMS, false).subscribe(test);
+        return test;
+    }
+
+    private TestSubscriber<List<InputControlState>> listControlsStates() {
+        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
+        rxFiltersService.listControlsStates(RESOURCE_URI, PARAMS, false).subscribe(test);
+        return test;
+    }
+
+    private TestSubscriber<List<InputControlState>> listResourceStates() {
+        TestSubscriber<List<InputControlState>> test = TestSubscriber.create();
+        rxFiltersService.listResourceStates(RESOURCE_URI, false).subscribe(test);
+        return test;
     }
 }

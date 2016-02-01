@@ -71,4 +71,14 @@ class ReportControlsUseCase {
             throw mExceptionMapper.transform(e);
         }
     }
+
+    public List<InputControlState> requestResourceValues(String resourceUri, boolean freshData) throws ServiceException {
+        try {
+            return mRestApi.requestInputControlsInitialStates(resourceUri, freshData);
+        } catch (HttpException e) {
+            throw mExceptionMapper.transform(e);
+        } catch (IOException e) {
+            throw mExceptionMapper.transform(e);
+        }
+    }
 }
