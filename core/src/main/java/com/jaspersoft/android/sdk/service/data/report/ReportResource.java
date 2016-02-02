@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.data.report;
 
+import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import org.jetbrains.annotations.NotNull;
@@ -38,14 +39,17 @@ import java.util.Date;
 public class ReportResource extends Resource {
     private final boolean mAlwaysPrompt;
 
-    public ReportResource(@Nullable Date creationDate,
-                          @Nullable Date updateDate,
-                          @NotNull ResourceType resourceType,
-                          @NotNull String label,
-                          @NotNull String description,
-                          @NotNull String uri,
-                          boolean alwaysPrompt) {
-        super(creationDate, updateDate, resourceType, label, description, uri);
+    public ReportResource(
+            @Nullable Date creationDate,
+            @Nullable Date updateDate,
+            @NotNull ResourceType resourceType,
+            @NotNull String label,
+            @NotNull String description,
+            @NotNull String uri,
+            @NotNull PermissionMask permissionMask,
+            boolean alwaysPrompt
+    ) {
+        super(creationDate, updateDate, resourceType, label, description, uri, permissionMask);
         mAlwaysPrompt = alwaysPrompt;
     }
 

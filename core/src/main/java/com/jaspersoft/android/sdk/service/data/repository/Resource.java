@@ -47,18 +47,25 @@ public class Resource {
     private final String mDescription;
     @NotNull
     private final String mUri;
+    @NotNull
+    private final PermissionMask mPermissionMask;
 
-    public Resource(@Nullable Date creationDate,
-                    @Nullable Date updateDate,
-                    @NotNull ResourceType resourceType,
-                    @NotNull String label,
-                    @NotNull String description, @NotNull String uri) {
+    public Resource(
+            @Nullable Date creationDate,
+            @Nullable Date updateDate,
+            @NotNull ResourceType resourceType,
+            @NotNull String label,
+            @NotNull String description,
+            @NotNull String uri,
+            @NotNull PermissionMask permissionMask
+    ) {
         mCreationDate = creationDate;
         mUpdateDate = updateDate;
         mResourceType = resourceType;
         mLabel = label;
         mDescription = description;
         mUri = uri;
+        mPermissionMask = permissionMask;
     }
 
     @Nullable
@@ -89,6 +96,11 @@ public class Resource {
     @NotNull
     public String getUri() {
         return mUri;
+    }
+
+    @NotNull
+    public PermissionMask getPermissionMask() {
+        return mPermissionMask;
     }
 
     @Override

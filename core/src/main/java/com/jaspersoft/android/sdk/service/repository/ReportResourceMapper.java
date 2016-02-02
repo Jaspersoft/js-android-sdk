@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 
 import java.text.ParseException;
@@ -60,6 +61,7 @@ class ReportResourceMapper {
                 lookup.getLabel(),
                 lookup.getDescription(),
                 lookup.getUri(),
+                PermissionMask.valueOf(lookup.getPermissionMask()),
                 lookup.alwaysPromptControls()
         );
     }

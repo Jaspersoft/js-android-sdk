@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +78,8 @@ class ResourceMapper {
                 resourceType,
                 lookup.getLabel(),
                 lookup.getDescription(),
-                lookup.getUri()
+                lookup.getUri(),
+                PermissionMask.valueOf(lookup.getPermissionMask())
         );
     }
 }
