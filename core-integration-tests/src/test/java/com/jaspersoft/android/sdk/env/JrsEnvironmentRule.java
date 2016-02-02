@@ -145,7 +145,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
     }
 
     private Server createServer(SampleServer sampleServer) {
-        Server.OptionalBuilder serverBuilder = Server.builder()
+        Server.Builder serverBuilder = Server.builder()
                 .withBaseUrl(sampleServer.getUrl())
                 .withConnectionTimeOut(30, TimeUnit.SECONDS)
                 .withReadTimeout(30, TimeUnit.SECONDS);

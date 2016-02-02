@@ -152,8 +152,10 @@ public class CriteriaMapperTest {
             "REPORT|reportUnit",
             "DASHBOARD|dashboard",
             "FOLDER|folder",
+            "REPORT_OPTION|reportOptions",
+            "FILE|file",
             "LEGACY_DASHBOARD|legacyDashboard",
-            "ALL|reportUnit:dashboard:legacyDashboard:folder",
+            "ALL|reportUnit:dashboard:legacyDashboard:folder:reportOptions:file",
             "REPORT:DASHBOARD|reportUnit:dashboard",
     })
     public void criteriaShouldIncludeTypeInParams(String flags, String types) throws Exception {

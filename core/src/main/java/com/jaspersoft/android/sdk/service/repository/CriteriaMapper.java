@@ -111,6 +111,16 @@ final class CriteriaMapper {
         if (includeFolder) {
             types.add("folder");
         }
+        boolean includeOptions =
+                (resourceMask & REPORT_OPTION) == REPORT_OPTION || (resourceMask & ALL) == ALL;
+        if (includeOptions) {
+            types.add("reportOptions");
+        }
+        boolean includeFile =
+                (resourceMask & FILE) == FILE || (resourceMask & ALL) == ALL;
+        if (includeFile) {
+            types.add("file");
+        }
 
         return types;
     }

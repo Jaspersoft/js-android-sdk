@@ -42,6 +42,8 @@ public final class RepositorySearchCriteria {
     public static int DASHBOARD = (1 << 2);
     public static int LEGACY_DASHBOARD = (1 << 3);
     public static int FOLDER = (1 << 4);
+    public static int REPORT_OPTION = (1 << 5);
+    public static int FILE = (1 << 6);
 
     private final int mLimit;
     private final int mOffset;
