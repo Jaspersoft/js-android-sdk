@@ -62,6 +62,7 @@ class ReportResourceMapper {
                 lookup.getDescription(),
                 lookup.getUri(),
                 PermissionMask.valueOf(lookup.getPermissionMask()),
+                lookup.getVersion(),
                 lookup.alwaysPromptControls()
         );
     }

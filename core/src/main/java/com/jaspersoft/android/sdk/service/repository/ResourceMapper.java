@@ -79,7 +79,8 @@ class ResourceMapper {
                 lookup.getLabel(),
                 lookup.getDescription(),
                 lookup.getUri(),
-                PermissionMask.valueOf(lookup.getPermissionMask())
+                PermissionMask.valueOf(lookup.getPermissionMask()),
+                lookup.getVersion()
         );
     }
 }

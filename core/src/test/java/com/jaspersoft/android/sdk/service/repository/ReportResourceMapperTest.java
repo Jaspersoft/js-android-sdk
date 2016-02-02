@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +61,8 @@ public class ReportResourceMapperTest {
         when(mReportLookup.getDescription()).thenReturn("description");
         when(mReportLookup.getLabel()).thenReturn("label");
         when(mReportLookup.alwaysPromptControls()).thenReturn(false);
+        when(mReportLookup.getPermissionMask()).thenReturn(0);
+        when(mReportLookup.getVersion()).thenReturn(100);
     }
 
     @Test
@@ -75,6 +78,7 @@ public class ReportResourceMapperTest {
         assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
         assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
         assertThat(resource.alwaysPromptControls(), is(false));
-
+        assertThat(resource.getVersion(), is(100));
+        assertThat(resource.getPermissionMask(), is(PermissionMask.NO_ACCESS));
     }
 }

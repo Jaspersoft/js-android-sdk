@@ -49,6 +49,7 @@ public class Resource {
     private final String mUri;
     @NotNull
     private final PermissionMask mPermissionMask;
+    private final int mVersion;
 
     public Resource(
             @Nullable Date creationDate,
@@ -57,7 +58,8 @@ public class Resource {
             @NotNull String label,
             @NotNull String description,
             @NotNull String uri,
-            @NotNull PermissionMask permissionMask
+            @NotNull PermissionMask permissionMask,
+            int version
     ) {
         mCreationDate = creationDate;
         mUpdateDate = updateDate;
@@ -66,6 +68,7 @@ public class Resource {
         mDescription = description;
         mUri = uri;
         mPermissionMask = permissionMask;
+        mVersion = version;
     }
 
     @Nullable
@@ -103,6 +106,10 @@ public class Resource {
         return mPermissionMask;
     }
 
+    public int getVersion() {
+        return mVersion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,10 +117,12 @@ public class Resource {
 
         Resource resource = (Resource) o;
 
+        if (mVersion != resource.mVersion) return false;
         if (mCreationDate != null ? !mCreationDate.equals(resource.mCreationDate) : resource.mCreationDate != null)
             return false;
         if (!mDescription.equals(resource.mDescription)) return false;
         if (!mLabel.equals(resource.mLabel)) return false;
+        if (mPermissionMask != resource.mPermissionMask) return false;
         if (mResourceType != resource.mResourceType) return false;
         if (mUpdateDate != null ? !mUpdateDate.equals(resource.mUpdateDate) : resource.mUpdateDate != null)
             return false;
@@ -130,6 +139,8 @@ public class Resource {
         result = 31 * result + mLabel.hashCode();
         result = 31 * result + mDescription.hashCode();
         result = 31 * result + mUri.hashCode();
+        result = 31 * result + mPermissionMask.hashCode();
+        result = 31 * result + mVersion;
         return result;
     }
 
@@ -141,6 +152,9 @@ public class Resource {
                 ", mResourceType=" + mResourceType +
                 ", mLabel='" + mLabel + '\'' +
                 ", mDescription='" + mDescription + '\'' +
+                ", mUri='" + mUri + '\'' +
+                ", mPermissionMask=" + mPermissionMask +
+                ", mVersion=" + mVersion +
                 '}';
     }
 }

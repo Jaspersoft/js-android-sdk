@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
@@ -72,6 +73,8 @@ public class ResourceMapperTest {
         when(mResourceLookup.getDescription()).thenReturn("description");
         when(mResourceLookup.getLabel()).thenReturn("label");
         when(mResourceLookup.getUri()).thenReturn("/my/uri");
+        when(mResourceLookup.getPermissionMask()).thenReturn(0);
+        when(mResourceLookup.getVersion()).thenReturn(100);
     }
 
     @Test
@@ -86,6 +89,8 @@ public class ResourceMapperTest {
         assertThat(resource.getLabel(), is("label"));
         assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
         assertThat(resource.getUri(), is("/my/uri"));
+        assertThat(resource.getVersion(), is(100));
+        assertThat(resource.getPermissionMask(), is(PermissionMask.NO_ACCESS));
     }
 
     @Test
