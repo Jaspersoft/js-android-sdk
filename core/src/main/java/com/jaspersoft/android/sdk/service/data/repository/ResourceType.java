@@ -31,6 +31,7 @@ package com.jaspersoft.android.sdk.service.data.repository;
 public enum ResourceType {
     folder,
     reportUnit,
+    reportOptions,
     dashboard,
     legacyDashboard,
     file,
