@@ -24,11 +24,15 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+@RunWith(JUnitParamsRunner.class)
 public class SortTypeTest {
     @Test
     public void testLabelEnum() throws Exception {
@@ -43,5 +47,17 @@ public class SortTypeTest {
     @Test
     public void testCreationDateEnum() throws Exception {
         assertThat(SortType.CREATION_DATE.toString(), is("creationDate"));
+    }
+
+    @Test
+    @Parameters({
+            "LABEL|label",
+            "DESCRIPTION|description",
+            "CREATION_DATE|creationDate",
+    })
+    public void should_map_raw_value(String value, String raw) {
+        SortType actual = SortType.valueOf(value);
+        SortType expected = SortType.fromRawValue(raw);
+        assertThat(expected, is(actual));
     }
 }

@@ -29,7 +29,7 @@ public class PermissionMaskTest {
     })
     public void mapWith(String value, int mask) {
         PermissionMask actual = PermissionMask.valueOf(value);
-        PermissionMask expected = PermissionMask.valueOf(mask);
+        PermissionMask expected = PermissionMask.fromRawValue(mask);
         assertThat(expected, is(actual));
     }
 
@@ -37,6 +37,6 @@ public class PermissionMaskTest {
     public void should_throw_illegal_argument_exception() throws Exception {
         expected.expectMessage("Undefined type of mask: '100'");
         expected.expect(IllegalArgumentException.class);
-        PermissionMask.valueOf(100);
+        PermissionMask.fromRawValue(100);
     }
 }

@@ -26,7 +26,7 @@ public enum PermissionMask {
         return mMask;
     }
 
-    public static PermissionMask valueOf(int mask) {
+    public static PermissionMask fromRawValue(int mask) {
         Map<Integer, PermissionMask> masks = new HashMap<>();
         masks.put(NO_ACCESS.getMask(), NO_ACCESS);
         masks.put(ADMINISTER.getMask(), ADMINISTER);

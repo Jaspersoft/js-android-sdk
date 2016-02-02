@@ -24,6 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Tom Koptel
  * @since 2.0
@@ -40,5 +43,19 @@ public enum SortType {
     @Override
     public String toString() {
         return mValue;
+    }
+
+    public static SortType fromRawValue(String value) {
+        Map<String, SortType> map = new HashMap<>(3);
+        map.put("label", LABEL);
+        map.put("description", DESCRIPTION);
+        map.put("creationDate", CREATION_DATE);
+
+        SortType sortType = map.get(value);
+        if (sortType == null) {
+            throw new IllegalArgumentException("There is no such sort type '" + value + "'");
+        }
+
+        return sortType;
     }
 }
