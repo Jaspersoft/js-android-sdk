@@ -67,12 +67,8 @@ public final class IntegrationEnv {
         return mGson.fromJson(reader, new TypeToken<List<SampleServer>>(){}.getType());
     }
 
-    public int reportExecNumber() {
-        return Integer.parseInt(config.getProperty("run.report.count"));
-    }
-
-    public int dashboardExecNumber() {
-        return Integer.parseInt(config.getProperty("run.dashboard.count"));
+    public int resourceExecNumber() {
+        return Integer.parseInt(config.getProperty("run.resource.count"));
     }
 
     @Override

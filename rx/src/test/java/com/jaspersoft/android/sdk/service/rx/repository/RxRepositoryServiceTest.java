@@ -25,12 +25,13 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
+import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -138,8 +139,36 @@ public class RxRepositoryServiceTest {
 
         test.assertError(mServiceException);
         test.assertNotCompleted();
+    }
 
-        verify(mSyncDelegate).fetchRootFolders();
+    @Test
+    public void should_delegate_fetch_file_details_call() throws Exception {
+        when(mSyncDelegate.fetchFileDetails(anyString())).thenReturn(null);
+
+        TestSubscriber<FileResource> test = getFileDetails();
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+    }
+
+    @Test
+    public void fetch_file_call_delegate_service_exception() throws Exception {
+        when(mSyncDelegate.fetchFileDetails(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<FileResource> test = getFileDetails();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+    }
+
+    private TestSubscriber<FileResource> getFileDetails() throws Exception {
+        TestSubscriber<FileResource> test = new TestSubscriber<>();
+        rxRepositoryService.fetchFileDetails(REPORT_URI).subscribe(test);
+
+        verify(mSyncDelegate).fetchFileDetails(REPORT_URI);
+
+        return test;
     }
 
     @Test

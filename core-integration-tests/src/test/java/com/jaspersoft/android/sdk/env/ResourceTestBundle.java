@@ -8,11 +8,11 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class DashboardTestBundle {
+public final class ResourceTestBundle {
     private final String mUri;
     private final ServerTestBundle serverTestBundle;
 
-    public DashboardTestBundle(String mUri, ServerTestBundle serverTestBundle) {
+    public ResourceTestBundle(String mUri, ServerTestBundle serverTestBundle) {
         this.mUri = mUri;
         this.serverTestBundle = serverTestBundle;
     }

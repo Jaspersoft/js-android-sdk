@@ -62,6 +62,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
     private Object[] mAnonymousClients;
     private Object[] mReports;
     private Object[] mDashboards;
+    private Object[] mFiles;
 
     public Object[] listAnonymousClients() {
         if (mAnonymousClients == null) {
@@ -162,6 +163,13 @@ public final class JrsEnvironmentRule extends ExternalResource {
         return mReports;
     }
 
+    public Object[] listFiles() {
+        if (mFiles == null) {
+            mFiles = loadFiles();
+        }
+        return mFiles;
+    }
+
     public Object[] listDashboards() {
         if (mDashboards == null) {
             mDashboards = loadDashboards();
@@ -170,7 +178,15 @@ public final class JrsEnvironmentRule extends ExternalResource {
     }
 
     private Object[] loadDashboards() {
-        List<DashboardTestBundle> bundle = new ArrayList<>();
+        return loadResources("dashboard");
+    }
+
+    private Object[] loadFiles() {
+        return loadResources("file");
+    }
+
+    private Object[] loadResources(String type) {
+        List<ResourceTestBundle> bundle = new ArrayList<>();
         Object[] clients = listAuthorizedClients();
 
         for (Object o : clients) {
@@ -178,13 +194,13 @@ public final class JrsEnvironmentRule extends ExternalResource {
             String baseUrl = sererBundle.getClient().getBaseUrl();
             final TestKitClient kitClient = getTestKitClient(baseUrl);
 
-            int reportsNumber = getLazyEnv().dashboardExecNumber();
+            int reportsNumber = getLazyEnv().resourceExecNumber();
 
-            ListResourcesUrisCommand listDashboardUris = new ListResourcesUrisCommand(reportsNumber, "dashboard");
+            ListResourcesUrisCommand listDashboardUris = new ListResourcesUrisCommand(reportsNumber, type);
             try {
                 List<String> uris = kitClient.getResourcesUris(listDashboardUris);
                 for (String uri : uris) {
-                    bundle.add(new DashboardTestBundle(uri, sererBundle));
+                    bundle.add(new ResourceTestBundle(uri, sererBundle));
                 }
             } catch (IOException | HttpException e) {
                 System.out.println(e);
@@ -208,7 +224,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
             String baseUrl = sererBundle.getClient().getBaseUrl();
             final TestKitClient kitClient = getTestKitClient(baseUrl);
 
-            int reportsNumber = getLazyEnv().reportExecNumber();
+            int reportsNumber = getLazyEnv().resourceExecNumber();
             ListResourcesUrisCommand listResourcesUris = new ListResourcesUrisCommand(reportsNumber, "reportUnit");
 
             try {
@@ -231,6 +247,7 @@ public final class JrsEnvironmentRule extends ExternalResource {
         Object[] result = new Object[bundle.size()];
         return bundle.toArray(result);
     }
+
 
     private IntegrationEnv getLazyEnv() {
         if (mIntegrationEnv == null) {

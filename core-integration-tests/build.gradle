@@ -53,7 +53,7 @@ ext {
 
 task prepIntegrationEnv() {
     def buildDir = file(envPath)
-    requiredProperties "servers.file.name", "run.report.count", "run.dashboard.count"
+    requiredProperties "servers.file.name", "run.resource.count"
     outputs.file new File(buildDir, envFileName)
     doFirst {
         copy {

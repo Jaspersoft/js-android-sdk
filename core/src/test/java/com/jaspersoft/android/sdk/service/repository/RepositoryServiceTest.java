@@ -97,9 +97,16 @@ public class RepositoryServiceTest {
     }
 
     @Test
-    public void fetch_should_delegate_request_on_usecase() throws Exception {
+    public void fetch_report_should_delegate_request_on_usecase() throws Exception {
         objectUnderTest.fetchReportDetails(REPORT_URI);
         verify(mRepositoryUseCase).getReportDetails(REPORT_URI);
+    }
+
+
+    @Test
+    public void fetch_file_should_delegate_request_on_usecase() throws Exception {
+        objectUnderTest.fetchFileDetails(REPORT_URI);
+        verify(mRepositoryUseCase).getFileDetails(REPORT_URI);
     }
 
     @Test
@@ -107,6 +114,13 @@ public class RepositoryServiceTest {
         expected.expectMessage("Report uri should not be null");
         expected.expect(NullPointerException.class);
         objectUnderTest.fetchReportDetails(null);
+    }
+
+    @Test
+    public void fetch_file_details_fails_with_null_uri() throws Exception {
+        expected.expectMessage("File uri should not be null");
+        expected.expect(NullPointerException.class);
+        objectUnderTest.fetchFileDetails(null);
     }
 
     @Test

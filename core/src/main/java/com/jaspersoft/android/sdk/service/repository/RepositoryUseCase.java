@@ -26,7 +26,9 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -61,7 +63,20 @@ class RepositoryUseCase {
             ServerInfo info = mInfoCacheManager.getInfo();
             SimpleDateFormat datetimeFormatPattern = info.getDatetimeFormatPattern();
             ReportLookup reportLookup = mRepositoryRestApi.requestReportResource(reportUri);
-            return mReportResourceMapper.transform(reportLookup, datetimeFormatPattern);
+            return mReportResourceMapper.toReportResource(reportLookup, datetimeFormatPattern);
+        } catch (HttpException e) {
+            throw mServiceExceptionMapper.transform(e);
+        } catch (IOException e) {
+            throw mServiceExceptionMapper.transform(e);
+        }
+    }
+
+    public FileResource getFileDetails(String resourceUri) throws ServiceException {
+        try {
+            ServerInfo info = mInfoCacheManager.getInfo();
+            SimpleDateFormat datetimeFormatPattern = info.getDatetimeFormatPattern();
+            FileLookup lookup = mRepositoryRestApi.requestFileResource(resourceUri);
+            return mReportResourceMapper.toFileResource(lookup, datetimeFormatPattern);
         } catch (HttpException e) {
             throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {

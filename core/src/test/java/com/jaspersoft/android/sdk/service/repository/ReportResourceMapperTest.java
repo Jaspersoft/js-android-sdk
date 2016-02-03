@@ -24,7 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
@@ -47,14 +49,56 @@ public class ReportResourceMapperTest {
 
     @Mock
     ReportLookup mReportLookup;
+    @Mock
+    FileLookup mFileLookup;
+
     private ReportResourceMapper mapper;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-
         mapper = new ReportResourceMapper();
+    }
 
+    @Test
+    public void should_map_report_lookup() throws Exception {
+        mockFileReport();
+
+        long creationTime = DATE_FORMAT.parse("2013-10-03 16:32:05").getTime();
+        long updateTime = DATE_FORMAT.parse("2013-11-03 16:32:05").getTime();
+
+        ReportResource resource = mapper.toReportResource(mReportLookup, DATE_FORMAT);
+        assertThat(resource.getCreationDate().getTime(), is(creationTime));
+        assertThat(resource.getUpdateDate().getTime(), is(updateTime));
+        assertThat(resource.getDescription(), is("description"));
+        assertThat(resource.getLabel(), is("label"));
+        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
+        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
+        assertThat(resource.alwaysPromptControls(), is(false));
+        assertThat(resource.getVersion(), is(100));
+        assertThat(resource.getPermissionMask(), is(PermissionMask.NO_ACCESS));
+    }
+
+    @Test
+    public void should_map_file_lookup() throws Exception {
+        mockFileLookup();
+
+        long creationTime = DATE_FORMAT.parse("2013-10-03 16:32:05").getTime();
+        long updateTime = DATE_FORMAT.parse("2013-11-03 16:32:05").getTime();
+
+        FileResource resource = mapper.toFileResource(mFileLookup, DATE_FORMAT);
+        assertThat(resource.getCreationDate().getTime(), is(creationTime));
+        assertThat(resource.getUpdateDate().getTime(), is(updateTime));
+        assertThat(resource.getDescription(), is("description"));
+        assertThat(resource.getLabel(), is("label"));
+        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
+        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
+        assertThat(resource.getType(), is(FileResource.Type.pdf));
+        assertThat(resource.getVersion(), is(100));
+        assertThat(resource.getPermissionMask(), is(PermissionMask.NO_ACCESS));
+    }
+
+    private void mockFileReport() {
         when(mReportLookup.getCreationDate()).thenReturn("2013-10-03 16:32:05");
         when(mReportLookup.getUpdateDate()).thenReturn("2013-11-03 16:32:05");
         when(mReportLookup.getResourceType()).thenReturn("reportUnit");
@@ -65,20 +109,14 @@ public class ReportResourceMapperTest {
         when(mReportLookup.getVersion()).thenReturn(100);
     }
 
-    @Test
-    public void testTransform() throws Exception {
-        long creationTime = DATE_FORMAT.parse("2013-10-03 16:32:05").getTime();
-        long updateTime = DATE_FORMAT.parse("2013-11-03 16:32:05").getTime();
-
-        ReportResource resource = mapper.transform(mReportLookup, DATE_FORMAT);
-        assertThat(resource.getCreationDate().getTime(), is(creationTime));
-        assertThat(resource.getUpdateDate().getTime(), is(updateTime));
-        assertThat(resource.getDescription(), is("description"));
-        assertThat(resource.getLabel(), is("label"));
-        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
-        assertThat(resource.getResourceType(), is(ResourceType.reportUnit));
-        assertThat(resource.alwaysPromptControls(), is(false));
-        assertThat(resource.getVersion(), is(100));
-        assertThat(resource.getPermissionMask(), is(PermissionMask.NO_ACCESS));
+    private void mockFileLookup() {
+        when(mFileLookup.getCreationDate()).thenReturn("2013-10-03 16:32:05");
+        when(mFileLookup.getUpdateDate()).thenReturn("2013-11-03 16:32:05");
+        when(mFileLookup.getResourceType()).thenReturn("reportUnit");
+        when(mFileLookup.getDescription()).thenReturn("description");
+        when(mFileLookup.getLabel()).thenReturn("label");
+        when(mFileLookup.getType()).thenReturn("pdf");
+        when(mFileLookup.getPermissionMask()).thenReturn(0);
+        when(mFileLookup.getVersion()).thenReturn(100);
     }
 }

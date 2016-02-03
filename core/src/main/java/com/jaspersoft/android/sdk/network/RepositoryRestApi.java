@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
+import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
@@ -104,6 +105,27 @@ public class RepositoryRestApi {
 
         com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
         return mNetworkClient.deserializeJson(rawResponse, ReportLookup.class);
+    }
+
+    @NotNull
+    public FileLookup requestFileResource(@Nullable String fileUri) throws IOException, HttpException {
+        Utils.checkNotNull(fileUri, "File uri should not be null");
+
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("resources")
+                .addPaths(fileUri)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/repository.file+json")
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
+        return mNetworkClient.deserializeJson(rawResponse, FileLookup.class);
     }
 
     @NotNull

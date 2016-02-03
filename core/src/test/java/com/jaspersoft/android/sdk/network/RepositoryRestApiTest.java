@@ -143,6 +143,15 @@ public class RepositoryRestApiTest {
         restApiUnderTest.requestFolderResource(null);
     }
 
+
+    @Test
+    public void requestForFileResourceShouldNotAcceptNullUri() throws Exception {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("File uri should not be null");
+
+        restApiUnderTest.requestFileResource(null);
+    }
+
     @Test
     public void requestForRequestDashboardComponentsdNotAcceptNullUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
@@ -250,6 +259,18 @@ public class RepositoryRestApiTest {
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request, containsHeader("Accept", "application/dashboardComponentsSchema+json"));
         assertThat(request, hasPath("/rest_v2/resources/my/uri_files/components?expanded=false"));
+        assertThat(request, wasMethod("GET"));
+    }
+
+    @Test
+    public void shouldRequestFileResource() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200());
+
+        restApiUnderTest.requestFileResource("/my/uri");
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/repository.file+json"));
+        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
         assertThat(request, wasMethod("GET"));
     }
 }

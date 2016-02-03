@@ -26,6 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
@@ -76,6 +77,12 @@ public class RepositoryService {
     public ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
         return mRepositoryUseCase.getReportDetails(reportUri);
+    }
+
+    @NotNull
+    public FileResource fetchFileDetails(@NotNull String fileUri) throws ServiceException {
+        Preconditions.checkNotNull(fileUri, "File uri should not be null");
+        return mRepositoryUseCase.getFileDetails(fileUri);
     }
 
     @NotNull

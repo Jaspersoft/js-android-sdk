@@ -24,7 +24,9 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
+import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.PermissionMask;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
@@ -39,7 +41,7 @@ import java.util.Date;
  */
 class ReportResourceMapper {
 
-    public ReportResource transform(ReportLookup lookup, SimpleDateFormat dateTimeFormat) {
+    public FileResource toFileResource(FileLookup lookup, SimpleDateFormat dateTimeFormat) {
         Date creationDate;
         Date updateDate;
 
@@ -55,7 +57,38 @@ class ReportResourceMapper {
         if (type != null) {
             resourceType = ResourceType.defaultParser().parse(type);
         }
-        return new ReportResource(creationDate,
+
+        return new FileResource(
+                creationDate,
+                updateDate,
+                resourceType,
+                lookup.getLabel(),
+                lookup.getDescription(),
+                lookup.getUri(),
+                PermissionMask.fromRawValue(lookup.getPermissionMask()),
+                lookup.getVersion(),
+                FileResource.Type.valueOf(lookup.getType())
+        );
+    }
+
+    public ReportResource toReportResource(ReportLookup lookup, SimpleDateFormat dateTimeFormat) {
+        Date creationDate;
+        Date updateDate;
+
+        try {
+            creationDate = dateTimeFormat.parse(String.valueOf(lookup.getCreationDate()));
+            updateDate = dateTimeFormat.parse(String.valueOf(lookup.getUpdateDate()));
+        } catch (ParseException e) {
+            creationDate = updateDate = null;
+        }
+
+        String type = lookup.getResourceType();
+        ResourceType resourceType = ResourceType.unknown;
+        if (type != null) {
+            resourceType = ResourceType.defaultParser().parse(type);
+        }
+        return new ReportResource(
+                creationDate,
                 updateDate,
                 resourceType,
                 lookup.getLabel(),

@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -61,12 +62,31 @@ public class RxRepositoryService {
 
     @NotNull
     public Observable<ReportResource> fetchReportDetails(@NotNull final String reportUri) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
         return Observable.defer(new Func0<Observable<ReportResource>>() {
             @Override
             public Observable<ReportResource> call() {
                 try {
                     ReportResource reportResource = mSyncDelegate.fetchReportDetails(reportUri);
                     return Observable.just(reportResource);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<FileResource> fetchFileDetails(@NotNull final String resourceUri) {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+
+        return Observable.defer(new Func0<Observable<FileResource>>() {
+            @Override
+            public Observable<FileResource> call() {
+                try {
+                    FileResource fileResource = mSyncDelegate.fetchFileDetails(resourceUri);
+                    return Observable.just(fileResource);
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }

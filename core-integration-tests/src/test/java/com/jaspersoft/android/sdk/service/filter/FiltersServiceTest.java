@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.service.filter;
 
-import com.jaspersoft.android.sdk.env.DashboardTestBundle;
+import com.jaspersoft.android.sdk.env.ResourceTestBundle;
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -91,7 +91,7 @@ public class FiltersServiceTest {
 
     @Test
     @Parameters(method = "dashboards")
-    public void filters_service_should_list_dashboard_input_controls(DashboardTestBundle bundle) throws Exception {
+    public void filters_service_should_list_dashboard_input_controls(ResourceTestBundle bundle) throws Exception {
         if (bundle.getVersion().greaterThanOrEquals(ServerVersion.v6)) {
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
             filtersService.listDashboardControls(bundle.getUri());

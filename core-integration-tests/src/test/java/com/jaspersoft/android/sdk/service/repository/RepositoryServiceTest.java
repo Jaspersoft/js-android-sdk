@@ -2,7 +2,9 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
+import com.jaspersoft.android.sdk.env.ResourceTestBundle;
 import com.jaspersoft.android.sdk.env.ServerTestBundle;
+import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import junitparams.JUnitParamsRunner;
@@ -56,11 +58,23 @@ public class RepositoryServiceTest {
         assertThat(reportResource, is(notNullValue()));
     }
 
+    @Test
+    @Parameters(method = "files")
+    public void repo_service_should_give_file_details(ResourceTestBundle bundle) throws Exception {
+        RepositoryService service = RepositoryService.newService(bundle.getClient());
+        FileResource fileResource = service.fetchFileDetails(bundle.getUri());
+        assertThat(fileResource, is(notNullValue()));
+    }
+
     private Object[] clients() {
         return sEnv.listAuthorizedClients();
     }
 
     private Object[] reports() {
         return sEnv.listReports();
+    }
+
+    private Object[] files() {
+        return sEnv.listFiles();
     }
 }

@@ -31,7 +31,6 @@ import com.google.gson.annotations.Expose;
  * @since 2.0
  */
 public class ReportLookup extends ResourceLookup {
-
     @Expose
     private boolean alwaysPromptControls;
 

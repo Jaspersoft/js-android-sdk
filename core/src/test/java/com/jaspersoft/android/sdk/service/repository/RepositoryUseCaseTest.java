@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
@@ -73,7 +74,18 @@ public class RepositoryUseCaseTest {
         useCase.getReportDetails(REPORT_URI);
 
         verify(infoCacheManager).getInfo();
-        verify(reportResourceMapper).transform(any(ReportLookup.class), any(SimpleDateFormat.class));
+        verify(reportResourceMapper).toReportResource(any(ReportLookup.class), any(SimpleDateFormat.class));
         verify(mRepositoryRestApi).requestReportResource(REPORT_URI);
+    }
+
+    @Test
+    public void testGetFileDetails() throws Exception {
+        when(infoCacheManager.getInfo()).thenReturn(mServerInfo);
+
+        useCase.getFileDetails(REPORT_URI);
+
+        verify(infoCacheManager).getInfo();
+        verify(reportResourceMapper).toFileResource(any(FileLookup.class), any(SimpleDateFormat.class));
+        verify(mRepositoryRestApi).requestFileResource(REPORT_URI);
     }
 }
