@@ -60,7 +60,7 @@ public class SearchUseCaseTest {
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat();
 
     @Mock
-    ResourceMapper mDataMapper;
+    ResourcesMapper mDataMapper;
     @Mock
     RepositoryRestApi mRepositoryRestApi;
     @Mock
@@ -99,7 +99,7 @@ public class SearchUseCaseTest {
         when(mRepositoryRestApi.searchResources(anyMapOf(String.class, Object.class))).thenReturn(mResult);
 
         List<Resource> resources = new ArrayList<Resource>();
-        when(mDataMapper.transform(anyCollectionOf(ResourceLookup.class), Matchers.any(SimpleDateFormat.class))).thenReturn(resources);
+        when(mDataMapper.toResources(anyCollectionOf(ResourceLookup.class), Matchers.any(SimpleDateFormat.class))).thenReturn(resources);
 
         SearchResult result = objectUnderTest.performSearch(mCriteria);
         assertThat(result, is(not(nullValue())));

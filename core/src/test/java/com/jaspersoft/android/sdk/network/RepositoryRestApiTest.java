@@ -24,6 +24,7 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
 import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
 import com.jaspersoft.android.sdk.test.MockResponseFactory;
 import com.jaspersoft.android.sdk.test.WebMockRule;
@@ -32,10 +33,13 @@ import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
@@ -44,6 +48,7 @@ import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasMethod
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasPath.hasPath;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecordedRequestHasQuery.hasQuery;
 import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -52,6 +57,7 @@ import static org.junit.Assert.assertThat;
  * @author Tom Koptel
  * @since 2.0
  */
+@RunWith(JUnitParamsRunner.class)
 public class RepositoryRestApiTest {
 
     @ResourceFile("json/all_resources.json")
@@ -128,28 +134,33 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForReportResourceShouldNotAcceptNullUri() throws Exception {
+    public void requestForResourceShouldNotAcceptNullUri() throws Exception {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Resource uri should not be null");
+
+        restApiUnderTest.requestResource(null, false);
+    }
+
+    @Test
+    public void requestForResourceByTypeShouldNotAcceptNullType() throws Exception {
+        mExpectedException.expect(NullPointerException.class);
+        mExpectedException.expectMessage("Report type should not be null");
+        restApiUnderTest.requestResource("/", null);
+    }
+
+    @Test
+    public void requestForResourceByTypeShouldNotAcceptNullUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report uri should not be null");
-
-        restApiUnderTest.requestReportResource(null);
+        restApiUnderTest.requestResource(null, "file");
     }
 
     @Test
-    public void requestForFolderResourceShouldNotAcceptNullUri() throws Exception {
+    public void requestForFileContentShouldNotAcceptNullUri() throws Exception {
         mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Folder uri should not be null");
+        mExpectedException.expectMessage("Resource uri should not be null");
 
-        restApiUnderTest.requestFolderResource(null);
-    }
-
-
-    @Test
-    public void requestForFileResourceShouldNotAcceptNullUri() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("File uri should not be null");
-
-        restApiUnderTest.requestFileResource(null);
+        restApiUnderTest.requestResourceOutput(null);
     }
 
     @Test
@@ -167,24 +178,6 @@ public class RepositoryRestApiTest {
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
         restApiUnderTest.searchResources(null);
-    }
-
-    @Test
-    public void requestReportResourceShouldThrowRestErrorOn500() throws Exception {
-        mExpectedException.expect(HttpException.class);
-
-        mWebMockRule.enqueue(MockResponseFactory.create500());
-
-        restApiUnderTest.requestReportResource("any_id");
-    }
-
-    @Test
-    public void requestFolderResourceShouldThrowRestErrorOn500() throws Exception {
-        mExpectedException.expect(HttpException.class);
-
-        mWebMockRule.enqueue(MockResponseFactory.create500());
-
-        restApiUnderTest.requestFolderResource("any_id");
     }
 
     @Test
@@ -227,30 +220,6 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldRequestReportResources() throws Exception {
-        mWebMockRule.enqueue(MockResponseFactory.create200());
-
-        restApiUnderTest.requestReportResource("/my/uri");
-
-        RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request, containsHeader("Accept", "application/repository.reportUnit+json"));
-        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
-        assertThat(request, wasMethod("GET"));
-    }
-
-    @Test
-    public void shouldRequestFolderResource() throws Exception {
-        mWebMockRule.enqueue(MockResponseFactory.create200());
-
-        restApiUnderTest.requestFolderResource("/my/uri");
-
-        RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request, containsHeader("Accept", "application/repository.folder+json"));
-        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
-        assertThat(request, wasMethod("GET"));
-    }
-
-    @Test
     public void shouldRequestDashboardComponents() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
@@ -263,14 +232,45 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void shouldRequestFileResource() throws Exception {
+    public void shouldRequestFileContent() throws Exception {
         mWebMockRule.enqueue(MockResponseFactory.create200());
 
-        restApiUnderTest.requestFileResource("/my/uri");
+        restApiUnderTest.requestResourceOutput("/my/uri");
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request, containsHeader("Accept", "application/repository.file+json"));
         assertThat(request, hasPath("/rest_v2/resources/my/uri"));
         assertThat(request, wasMethod("GET"));
     }
+
+    @Test
+    public void shouldRequestResource() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200());
+
+        restApiUnderTest.requestResource("/my/uri", false);
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/json"));
+        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
+        assertThat(request, hasQuery("expanded", "false"));
+        assertThat(request, wasMethod("GET"));
+    }
+
+    @Test
+    @Parameters({
+            "reportUnit|com.jaspersoft.android.sdk.network.entity.resource.ReportLookup",
+            "folder|com.jaspersoft.android.sdk.network.entity.resource.FolderLookup",
+            "file|com.jaspersoft.android.sdk.network.entity.resource.FileLookup"
+    })
+    public void shouldRequestReportResources(String type, String className) throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody("{}"));
+
+        ResourceLookup expected = restApiUnderTest.requestResource("/my/uri", type);
+        assertThat(expected, instanceOf(Class.forName(className)));
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", String.format("application/repository.%s+json", type)));
+        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
+        assertThat(request, wasMethod("GET"));
+    }
+
 }

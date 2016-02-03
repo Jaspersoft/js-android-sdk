@@ -39,7 +39,7 @@ import java.util.Date;
 public class ReportResource extends Resource {
     private final boolean mAlwaysPrompt;
 
-    public ReportResource(
+    private ReportResource(
             @Nullable Date creationDate,
             @Nullable Date updateDate,
             @NotNull ResourceType resourceType,
@@ -88,5 +88,39 @@ public class ReportResource extends Resource {
                 ", mDescription='" + getDescription() + '\'' +
                 ", mAlwaysPrompt=" + mAlwaysPrompt +
                 '}';
+    }
+
+    public static class Builder {
+        private final Resource.Builder mBuilder = new Resource.Builder();
+        private final AbstractResourceBuilder<Builder> mResourceBuilder;
+        private boolean alwaysPrompt;
+
+        public Builder() {
+            mResourceBuilder = new AbstractResourceBuilder<>(this);
+        }
+
+        public AbstractResourceBuilder addResource() {
+            return mResourceBuilder;
+        }
+
+        public Builder withAlwaysPrompt(boolean alwaysPrompt) {
+            this.alwaysPrompt = alwaysPrompt;
+            return this;
+        }
+
+        public ReportResource build() {
+            Resource resource = mResourceBuilder.getResourceBuilder().build();
+            return new ReportResource(
+                    resource.getCreationDate(),
+                    resource.getUpdateDate(),
+                    resource.getResourceType(),
+                    resource.getLabel(),
+                    resource.getDescription(),
+                    resource.getUri(),
+                    resource.getPermissionMask(),
+                    resource.getVersion(),
+                    alwaysPrompt
+            );
+        }
     }
 }

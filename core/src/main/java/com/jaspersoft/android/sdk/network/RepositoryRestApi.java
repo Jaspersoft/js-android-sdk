@@ -25,14 +25,11 @@
 package com.jaspersoft.android.sdk.network;
 
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
-import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.FolderLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ResourceSearchResult;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.network.entity.resource.*;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Map;
@@ -49,7 +46,7 @@ public class RepositoryRestApi {
     }
 
     @NotNull
-    public ResourceSearchResult searchResources(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
+    public ResourceSearchResult searchResources(@NotNull Map<String, Object> searchParams) throws IOException, HttpException {
         HttpUrl url = mNetworkClient.getBaseUrl()
                 .newBuilder()
                 .addPathSegment("rest_v2")
@@ -87,70 +84,62 @@ public class RepositoryRestApi {
     }
 
     @NotNull
-    public ReportLookup requestReportResource(@Nullable String resourceUri) throws IOException, HttpException {
-        Utils.checkNotNull(resourceUri, "Report uri should not be null");
+    public ResourceLookup requestResource(@NotNull String resourceUri, boolean expanded) throws IOException, HttpException {
+        Utils.checkNotNull(resourceUri, "Resource uri should not be null");
 
         HttpUrl url = new PathResolver.Builder()
                 .addPath("rest_v2")
                 .addPath("resources")
                 .addPaths(resourceUri)
                 .build()
-                .resolve(mNetworkClient.getBaseUrl());
+                .resolve(mNetworkClient.getBaseUrl())
+                .newBuilder()
+                .addQueryParameter("expanded", String.valueOf(expanded))
+                .build();
 
         Request request = new Request.Builder()
-                .addHeader("Accept", "application/repository.reportUnit+json")
+                .addHeader("Accept", "application/json")
                 .get()
                 .url(url)
                 .build();
 
         com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(rawResponse, ReportLookup.class);
+        return mNetworkClient.deserializeJson(rawResponse, ResourceLookup.class);
     }
 
     @NotNull
-    public FileLookup requestFileResource(@Nullable String fileUri) throws IOException, HttpException {
-        Utils.checkNotNull(fileUri, "File uri should not be null");
+    public ResourceLookup requestResource(@NotNull String reportUri, @NotNull String type) throws IOException, HttpException {
+        Utils.checkNotNull(reportUri, "Report uri should not be null");
+        Utils.checkNotNull(type, "Report type should not be null");
 
         HttpUrl url = new PathResolver.Builder()
                 .addPath("rest_v2")
                 .addPath("resources")
-                .addPaths(fileUri)
+                .addPaths(reportUri)
                 .build()
                 .resolve(mNetworkClient.getBaseUrl());
 
         Request request = new Request.Builder()
-                .addHeader("Accept", "application/repository.file+json")
+                .addHeader("Accept", String.format("application/repository.%s+json", type))
                 .get()
                 .url(url)
                 .build();
 
         com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(rawResponse, FileLookup.class);
+        if ("file".equals(type)) {
+            return mNetworkClient.deserializeJson(rawResponse, FileLookup.class);
+        }
+        if ("folder".equals(type)) {
+            return mNetworkClient.deserializeJson(rawResponse, FolderLookup.class);
+        }
+        if ("reportUnit".equals(type)) {
+            return mNetworkClient.deserializeJson(rawResponse, ReportLookup.class);
+        }
+        return mNetworkClient.deserializeJson(rawResponse, ResourceLookup.class);
     }
 
     @NotNull
-    public FolderLookup requestFolderResource(@Nullable String resourceUri) throws IOException, HttpException {
-        Utils.checkNotNull(resourceUri, "Folder uri should not be null");
-
-        HttpUrl url = new PathResolver.Builder()
-                .addPath("rest_v2")
-                .addPath("resources")
-                .addPaths(resourceUri)
-                .build()
-                .resolve(mNetworkClient.getBaseUrl());
-
-        Request request = new Request.Builder()
-                .addHeader("Accept", "application/repository.folder+json")
-                .get()
-                .url(url)
-                .build();
-
-        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(rawResponse, FolderLookup.class);
-    }
-
-    @NotNull
-    public DashboardComponentCollection requestDashboardComponents(@Nullable String resourceUri) throws IOException, HttpException {
+    public DashboardComponentCollection requestDashboardComponents(@NotNull String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Dashboard uri should not be null");
 
         HttpUrl url = new PathResolver.Builder()
@@ -172,5 +161,25 @@ public class RepositoryRestApi {
 
         com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
         return mNetworkClient.deserializeJson(rawResponse, DashboardComponentCollection.class);
+    }
+
+    @NotNull
+    public OutputResource requestResourceOutput(@NotNull String resourceUri) throws IOException, HttpException {
+        Utils.checkNotNull(resourceUri, "Resource uri should not be null");
+
+        HttpUrl url = new PathResolver.Builder()
+                .addPath("rest_v2")
+                .addPath("resources")
+                .addPaths(resourceUri)
+                .build()
+                .resolve(mNetworkClient.getBaseUrl());
+
+        Request request = new Request.Builder()
+                .get()
+                .url(url)
+                .build();
+
+        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
+        return new RetrofitOutputResource(rawResponse.body());
     }
 }

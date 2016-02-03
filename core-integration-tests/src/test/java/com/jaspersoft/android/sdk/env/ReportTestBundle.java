@@ -46,7 +46,7 @@ public final class ReportTestBundle {
         return Collections.unmodifiableList(parameters);
     }
 
-    public String getReportUri() {
+    public String getUri() {
         return reportUri;
     }
 

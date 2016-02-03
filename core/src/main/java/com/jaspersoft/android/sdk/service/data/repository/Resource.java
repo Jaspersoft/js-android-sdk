@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.data.repository;
 
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +52,7 @@ public class Resource {
     private final PermissionMask mPermissionMask;
     private final int mVersion;
 
-    public Resource(
+    protected Resource(
             @Nullable Date creationDate,
             @Nullable Date updateDate,
             @NotNull ResourceType resourceType,
@@ -156,5 +157,77 @@ public class Resource {
                 ", mPermissionMask=" + mPermissionMask +
                 ", mVersion=" + mVersion +
                 '}';
+    }
+
+    public static class Builder {
+        private Date creationDate;
+        private Date updateDate;
+        private ResourceType resourceType;
+        private String label;
+        private String description;
+        private String uri;
+        private PermissionMask permissionMask;
+        private int version;
+
+        public Builder withCreationDate(@Nullable Date creationDate) {
+            this.creationDate = creationDate;
+            return this;
+        }
+
+        public Builder withUpdateDate(@Nullable Date updateDate) {
+            this.updateDate = updateDate;
+            return this;
+        }
+
+        public Builder withResourceType(@NotNull ResourceType resourceType) {
+            this.resourceType = Preconditions.checkNotNull(resourceType, "Resource type == null");
+            return this;
+        }
+
+        public Builder withLabel(@NotNull String label) {
+            this.label = Preconditions.checkNotNull(label, "Label == null");
+            return this;
+        }
+
+        public Builder withDescription(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withUri(@NotNull String uri) {
+            this.uri = Preconditions.checkNotNull(uri, "Uri == null");
+            return this;
+        }
+
+        public Builder withPermissionMask(@NotNull PermissionMask permissionMask) {
+            this.permissionMask = Preconditions.checkNotNull(permissionMask, "Mask == null");
+            return this;
+        }
+
+        public Builder withVersion(int version) {
+            this.version = version;
+            return this;
+        }
+
+        protected void checkState() {
+            Preconditions.checkNotNull(resourceType, "Can not create resource without type");
+            Preconditions.checkNotNull(label, "Can not create resource without label");
+            Preconditions.checkNotNull(uri, "Can not create resource without uri");
+            Preconditions.checkNotNull(permissionMask, "Can not create resource without mask");
+        }
+
+        public Resource build() {
+            checkState();
+            return new Resource(
+                    creationDate,
+                    updateDate,
+                    resourceType,
+                    label,
+                    description,
+                    uri,
+                    permissionMask,
+                    version
+            );
+        }
     }
 }

@@ -63,7 +63,7 @@ public class ReportServiceTest {
                 .withFreshData(true)
                 .withInteractive(true)
                 .build();
-        return reportService.run(bundle.getReportUri(), executionOptions);
+        return reportService.run(bundle.getUri(), executionOptions);
     }
 
     private Object[] reports() {

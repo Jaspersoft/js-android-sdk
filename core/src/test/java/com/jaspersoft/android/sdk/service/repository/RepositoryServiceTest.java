@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import com.jaspersoft.android.sdk.test.Chain;
 import org.junit.Before;
@@ -35,14 +35,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -97,51 +98,48 @@ public class RepositoryServiceTest {
     }
 
     @Test
-    public void fetch_report_should_delegate_request_on_usecase() throws Exception {
-        objectUnderTest.fetchReportDetails(REPORT_URI);
-        verify(mRepositoryUseCase).getReportDetails(REPORT_URI);
-    }
-
-
-    @Test
-    public void fetch_file_should_delegate_request_on_usecase() throws Exception {
-        objectUnderTest.fetchFileDetails(REPORT_URI);
-        verify(mRepositoryUseCase).getFileDetails(REPORT_URI);
+    public void fetch_resource_details_should_delegate_request_on_usecase() throws Exception {
+        objectUnderTest.fetchResourceDetails(REPORT_URI, true);
+        verify(mRepositoryUseCase).getResourceDetails(REPORT_URI, true);
     }
 
     @Test
-    public void fetch_report_details_fails_with_null_uri() throws Exception {
-        expected.expectMessage("Report uri should not be null");
+    public void fetch_resource_details_by_type_should_delegate_request_on_usecase() throws Exception {
+        objectUnderTest.fetchResourceDetails(REPORT_URI, ResourceType.dashboard);
+        verify(mRepositoryUseCase).getResourceByType(REPORT_URI, ResourceType.dashboard);
+    }
+
+    @Test
+    public void fetch_resource_by_details_fails_with_null_type() throws Exception {
+        expected.expectMessage("Resource type should not be null");
         expected.expect(NullPointerException.class);
-        objectUnderTest.fetchReportDetails(null);
+        objectUnderTest.fetchResourceDetails("/my/uri", null);
     }
 
     @Test
-    public void fetch_file_details_fails_with_null_uri() throws Exception {
-        expected.expectMessage("File uri should not be null");
+    public void fetch_resource_content_fails_with_null_uri() throws Exception {
+        expected.expectMessage("Resource uri should not be null");
         expected.expect(NullPointerException.class);
-        objectUnderTest.fetchFileDetails(null);
+        objectUnderTest.fetchResourceContent(null);
+    }
+
+    @Test
+    public void fetch_resource_details_fails_with_null_uri() throws Exception {
+        expected.expectMessage("Resource uri should not be null");
+        expected.expect(NullPointerException.class);
+        objectUnderTest.fetchResourceDetails(null, false);
     }
 
     @Test
     public void fetch_root_folders_performs_two_lookups() throws Exception {
-        SearchResult rootFolderLookup = new SearchResult(Collections.singletonList(rootFolder), 0);
-        SearchResult publicFolderLookup = new SearchResult(Collections.singletonList(publicFolder), 0);
-        when(mSearchUseCase.performSearch(any(InternalCriteria.class)))
-                .then(Chain.of(rootFolderLookup, publicFolderLookup));
+        when(mRepositoryUseCase.getResourceByType(anyString(), any(ResourceType.class)))
+                .then(Chain.of(rootFolder, publicFolder));
         List<Resource> folders = objectUnderTest.fetchRootFolders();
 
         assertThat(folders, hasItem(rootFolder));
         assertThat(folders, hasItem(publicFolder));
 
-        InternalCriteria rootFolder = new InternalCriteria.Builder()
-                .folderUri("/")
-                .resourceMask(RepositorySearchCriteria.FOLDER)
-                .create();
-        verify(mSearchUseCase).performSearch(rootFolder);
-        InternalCriteria publicFolder = rootFolder.newBuilder()
-                .folderUri("/public")
-                .create();
-        verify(mSearchUseCase).performSearch(publicFolder);
+        verify(mRepositoryUseCase).getResourceByType("/", ResourceType.folder);
+        verify(mRepositoryUseCase).getResourceByType("/public", ResourceType.folder);
     }
 }
