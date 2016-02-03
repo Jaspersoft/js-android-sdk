@@ -5,6 +5,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.dashboard.DashboardControlComponent;
 import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
@@ -23,18 +24,18 @@ public class FiltersService {
     private final ReportOptionsUseCase mReportOptionsUseCase;
     private final ReportControlsUseCase mReportControlsUseCase;
     private final RepositoryUseCase mRepositoryUseCase;
-    private final ControlLocationMapper mControlLocationMapper;
+    private final DashboardComponentsMapper mDashboardComponentsMapper;
 
     @TestOnly
     FiltersService(ReportOptionsUseCase reportOptionsUseCase,
                    ReportControlsUseCase reportControlsUseCase,
                    RepositoryUseCase repositoryUseCase,
-                   ControlLocationMapper controlLocationMapper
+                   DashboardComponentsMapper dashboardComponentsMapper
     ) {
         mReportOptionsUseCase = reportOptionsUseCase;
         mReportControlsUseCase = reportControlsUseCase;
         mRepositoryUseCase = repositoryUseCase;
-        mControlLocationMapper = controlLocationMapper;
+        mDashboardComponentsMapper = dashboardComponentsMapper;
     }
 
     @NotNull
@@ -48,13 +49,13 @@ public class FiltersService {
         ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(defaultMapper, client.reportOptionsApi(), reportOptionMapper);
         RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultMapper, client.repositoryApi());
 
-        ControlLocationMapper controlLocationMapper = new ControlLocationMapper();
+        DashboardComponentsMapper dashboardComponentsMapper = new DashboardComponentsMapper();
 
         return new FiltersService(
                 reportOptionsUseCase,
                 reportControlsUseCase,
                 repositoryUseCase,
-                controlLocationMapper
+                dashboardComponentsMapper
         );
     }
 
@@ -63,7 +64,7 @@ public class FiltersService {
         Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
 
         DashboardComponentCollection componentCollection = mRepositoryUseCase.requestDashboardComponents(dashboardUri);
-        List<ControlLocation> locations = mControlLocationMapper.transform(dashboardUri, componentCollection);
+        List<ControlLocation> locations = mDashboardComponentsMapper.toLocations(dashboardUri, componentCollection);
 
         List<InputControl> controls = new ArrayList<>();
         for (ControlLocation location : locations) {
@@ -73,6 +74,15 @@ public class FiltersService {
         }
 
         return Collections.unmodifiableList(controls);
+    }
+
+    @NotNull
+    public List<DashboardControlComponent> listDashboardControlComponents(@NotNull String dashboardUri) throws ServiceException {
+        Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
+
+        DashboardComponentCollection componentCollection = mRepositoryUseCase.requestDashboardComponents(dashboardUri);
+        List<DashboardControlComponent> dashboardComponentsMapper = mDashboardComponentsMapper.toComponents(componentCollection);
+        return Collections.unmodifiableList(dashboardComponentsMapper);
     }
 
     @NotNull

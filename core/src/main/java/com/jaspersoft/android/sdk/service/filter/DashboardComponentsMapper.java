@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.service.filter;
 
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.dashboard.InputControlDashboardComponent;
+import com.jaspersoft.android.sdk.service.data.dashboard.DashboardControlComponent;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
@@ -10,8 +11,8 @@ import java.util.*;
  * @author Tom Koptel
  * @since 2.0
  */
-class ControlLocationMapper {
-    public List<ControlLocation> transform(String dashboardUri, DashboardComponentCollection componentCollection) {
+class DashboardComponentsMapper {
+    public List<ControlLocation> toLocations(String dashboardUri, DashboardComponentCollection componentCollection) {
         List<InputControlDashboardComponent> inputControlComponents = componentCollection.getInputControlComponents();
         Map<String, ControlLocation> locationMap = new HashMap<>(inputControlComponents.size());
 
@@ -30,6 +31,21 @@ class ControlLocationMapper {
         }
 
         return new ArrayList<>(locationMap.values());
+    }
+
+    public List<DashboardControlComponent> toComponents(DashboardComponentCollection componentCollection) {
+        List<InputControlDashboardComponent> inputControlComponents = componentCollection.getInputControlComponents();
+        List<DashboardControlComponent> components = new ArrayList<>(inputControlComponents.size());
+        for (InputControlDashboardComponent controlComponent : inputControlComponents) {
+            if (controlComponent != null) {
+                DashboardControlComponent component = new DashboardControlComponent(
+                        controlComponent.getId(),
+                        controlComponent.getOwnerResourceParameterName()
+                );
+                components.add(component);
+            }
+        }
+        return components;
     }
 
     @TestOnly

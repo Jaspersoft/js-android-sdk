@@ -4,6 +4,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.dashboard.DashboardControlComponent;
 import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
@@ -302,6 +303,27 @@ public class RxFiltersServiceTest {
     }
 
     @Test
+    public void should_execute_delegate_as_observable_on_delete_list_dashboard_control_components() throws Exception {
+        when(mSyncDelegate.listDashboardControlComponents(anyString()))
+                .thenReturn(Collections.<DashboardControlComponent>emptyList());
+
+        TestSubscriber<List<DashboardControlComponent>> test = listDashboardComponentsList();
+
+        test.assertCompleted();
+        test.assertNoErrors();
+        test.assertValueCount(1);
+    }
+
+    @Test
+    public void should_delegate_service_exception_to_subscription_on_list_dashboard_control_components() throws Exception {
+        when(mSyncDelegate.listDashboardControlComponents(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<List<DashboardControlComponent>> test = listDashboardComponentsList();
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+    }
+
+    @Test
     public void should_not_accept_null_for_factory_method() throws Exception {
         expected.expectMessage("Client should not be null");
         expected.expect(NullPointerException.class);
@@ -312,6 +334,13 @@ public class RxFiltersServiceTest {
     public void should_provide_impl_with_factory_method() throws Exception {
         RxFiltersService service = RxFiltersService.newService(mAuthorizedClient);
         assertThat(service, is(notNullValue()));
+    }
+
+    private TestSubscriber<List<DashboardControlComponent>> listDashboardComponentsList() throws ServiceException {
+        TestSubscriber<List<DashboardControlComponent>> test = TestSubscriber.create();
+        rxFiltersService.listDashboardControlComponents(RESOURCE_URI).subscribe(test);
+        verify(mSyncDelegate).listDashboardControlComponents(RESOURCE_URI);
+        return test;
     }
 
     private TestSubscriber<List<InputControlState>> validateControls() {

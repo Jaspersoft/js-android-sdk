@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.service.filter;
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.dashboard.InputControlDashboardComponent;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.dashboard.DashboardControlComponent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class FiltersServiceTest {
     RepositoryUseCase mRepositoryUseCase;
 
     @Mock
-    ControlLocationMapper mControlLocationMapper;
+    DashboardComponentsMapper mDashboardComponentsMapper;
 
     private FiltersService mFiltersService;
 
@@ -57,7 +58,7 @@ public class FiltersServiceTest {
                 mReportOptionsUseCase,
                 mReportControlsUseCase,
                 mRepositoryUseCase,
-                mControlLocationMapper
+                mDashboardComponentsMapper
         );
     }
 
@@ -68,15 +69,27 @@ public class FiltersServiceTest {
     }
 
     @Test
-    public void should_list_report_controls_call() throws Exception {
+    public void should_list_dashboard_controls_call() throws Exception {
         when(mRepositoryUseCase.requestDashboardComponents(anyString())).thenReturn(COMPONENTS);
-        when(mControlLocationMapper.transform(anyString(), any(DashboardComponentCollection.class))).thenReturn(LOCATIONS);
+        when(mDashboardComponentsMapper.toLocations(anyString(), any(DashboardComponentCollection.class))).thenReturn(LOCATIONS);
 
         mFiltersService.listDashboardControls(RESOURCE_URI);
 
         verify(mRepositoryUseCase).requestDashboardComponents(eq(RESOURCE_URI));
-        verify(mControlLocationMapper).transform(RESOURCE_URI, COMPONENTS);
+        verify(mDashboardComponentsMapper).toLocations(RESOURCE_URI, COMPONENTS);
         verify(mReportControlsUseCase).requestControls(LOCATION_URI, new HashSet<>(Arrays.asList("id")), false);
+    }
+
+    @Test
+    public void should_list_dashboard_control_components_call() throws Exception {
+        when(mRepositoryUseCase.requestDashboardComponents(anyString())).thenReturn(COMPONENTS);
+        when(mDashboardComponentsMapper.toComponents(any(DashboardComponentCollection.class))).thenReturn(
+                Collections.<DashboardControlComponent>emptyList());
+
+        mFiltersService.listDashboardControlComponents(RESOURCE_URI);
+
+        verify(mRepositoryUseCase).requestDashboardComponents(eq(RESOURCE_URI));
+        verify(mDashboardComponentsMapper).toComponents(COMPONENTS);
     }
 
     @Test

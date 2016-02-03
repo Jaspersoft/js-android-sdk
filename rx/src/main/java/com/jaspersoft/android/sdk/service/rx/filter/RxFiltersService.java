@@ -4,6 +4,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.control.InputControl;
 import com.jaspersoft.android.sdk.network.entity.control.InputControlState;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.data.dashboard.DashboardControlComponent;
 import com.jaspersoft.android.sdk.service.data.report.option.ReportOption;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.filter.FiltersService;
@@ -55,13 +56,31 @@ public class RxFiltersService {
 
     @NotNull
     public Observable<List<InputControl>> listDashboardControls(@NotNull final String dashboardUri) {
-        Preconditions.checkNotNull(dashboardUri, "Report uri should not be null");
+        Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
 
         return Observable.defer(new Func0<Observable<List<InputControl>>>() {
             @Override
             public Observable<List<InputControl>> call() {
                 try {
                     List<InputControl> inputControls = mSyncDelegate.listDashboardControls(dashboardUri);
+                    return Observable.just(inputControls);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<List<DashboardControlComponent>> listDashboardControlComponents(@NotNull final String dashboardUri) {
+        Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
+
+        return Observable.defer(new Func0<Observable<List<DashboardControlComponent>>>() {
+            @Override
+            public Observable<List<DashboardControlComponent>> call() {
+                try {
+                    List<DashboardControlComponent>inputControls =
+                            mSyncDelegate.listDashboardControlComponents(dashboardUri);
                     return Observable.just(inputControls);
                 } catch (ServiceException e) {
                     return Observable.error(e);

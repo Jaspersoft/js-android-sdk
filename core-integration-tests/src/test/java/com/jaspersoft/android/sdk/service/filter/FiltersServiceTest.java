@@ -97,6 +97,14 @@ public class FiltersServiceTest {
             filtersService.listDashboardControls(bundle.getUri());
         }
     }
+    @Test
+    @Parameters(method = "dashboards")
+    public void filters_service_should_list_dashboard_input_control_components(ResourceTestBundle bundle) throws Exception {
+        if (bundle.getVersion().greaterThanOrEquals(ServerVersion.v6)) {
+            FiltersService filtersService = FiltersService.newService(bundle.getClient());
+            filtersService.listDashboardControlComponents(bundle.getUri());
+        }
+    }
 
     private Object[] reports() {
         return sEnv.listReports();

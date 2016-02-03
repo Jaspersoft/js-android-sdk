@@ -62,7 +62,6 @@ public final class ReportTestBundle {
     public String toString() {
         return "ReportTestBundle{" +
                 "server=" + serverTestBundle +
-                "hasParams=" + hasParams() +
                 ", reportUri='" + reportUri + '\'' +
                 '}';
     }
