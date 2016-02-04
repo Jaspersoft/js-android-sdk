@@ -79,23 +79,6 @@ public class RxRepositoryService {
     }
 
     @NotNull
-    public Observable<Resource> fetchResourceDetails(@NotNull final String resourceUri, final boolean expanded) {
-        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
-
-        return Observable.defer(new Func0<Observable<Resource>>() {
-            @Override
-            public Observable<Resource> call() {
-                try {
-                    Resource resource = mSyncDelegate.fetchResourceDetails(resourceUri, expanded);
-                    return Observable.just(resource);
-                } catch (ServiceException e) {
-                    return Observable.error(e);
-                }
-            }
-        });
-    }
-
-    @NotNull
     public Observable<ResourceOutput> fetchResourceContent(@NotNull final String resourceUri) {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
 

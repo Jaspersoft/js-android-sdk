@@ -60,19 +60,6 @@ class RepositoryUseCase {
         mInfoCacheManager = infoCacheManager;
     }
 
-    public Resource getResourceDetails(String resourceUri, boolean expanded) throws ServiceException {
-        try {
-            ServerInfo info = mInfoCacheManager.getInfo();
-            SimpleDateFormat datetimeFormatPattern = info.getDatetimeFormatPattern();
-            ResourceLookup resourceLookup = mRepositoryRestApi.requestResource(resourceUri, expanded);
-            return mResourcesMapper.toResource(resourceLookup, datetimeFormatPattern);
-        } catch (HttpException e) {
-            throw mServiceExceptionMapper.transform(e);
-        } catch (IOException e) {
-            throw mServiceExceptionMapper.transform(e);
-        }
-    }
-
     public Resource getResourceByType(String resourceUri, ResourceType type) throws ServiceException {
         try {
             ServerInfo info = mInfoCacheManager.getInfo();

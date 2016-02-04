@@ -98,12 +98,6 @@ public class RepositoryServiceTest {
     }
 
     @Test
-    public void fetch_resource_details_should_delegate_request_on_usecase() throws Exception {
-        objectUnderTest.fetchResourceDetails(REPORT_URI, true);
-        verify(mRepositoryUseCase).getResourceDetails(REPORT_URI, true);
-    }
-
-    @Test
     public void fetch_resource_details_by_type_should_delegate_request_on_usecase() throws Exception {
         objectUnderTest.fetchResourceDetails(REPORT_URI, ResourceType.dashboard);
         verify(mRepositoryUseCase).getResourceByType(REPORT_URI, ResourceType.dashboard);
@@ -121,13 +115,6 @@ public class RepositoryServiceTest {
         expected.expectMessage("Resource uri should not be null");
         expected.expect(NullPointerException.class);
         objectUnderTest.fetchResourceContent(null);
-    }
-
-    @Test
-    public void fetch_resource_details_fails_with_null_uri() throws Exception {
-        expected.expectMessage("Resource uri should not be null");
-        expected.expect(NullPointerException.class);
-        objectUnderTest.fetchResourceDetails(null, false);
     }
 
     @Test

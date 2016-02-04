@@ -79,12 +79,6 @@ public class RepositoryService {
     }
 
     @NotNull
-    public Resource fetchResourceDetails(@NotNull String resourceUri, boolean expanded) throws ServiceException {
-        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
-        return mRepositoryUseCase.getResourceDetails(resourceUri, expanded);
-    }
-
-    @NotNull
     public ResourceOutput fetchResourceContent(@NotNull String resourceUri) throws ServiceException {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
         return mRepositoryUseCase.getResourceContent(resourceUri);

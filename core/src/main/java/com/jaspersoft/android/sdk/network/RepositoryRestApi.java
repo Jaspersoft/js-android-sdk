@@ -84,30 +84,6 @@ public class RepositoryRestApi {
     }
 
     @NotNull
-    public ResourceLookup requestResource(@NotNull String resourceUri, boolean expanded) throws IOException, HttpException {
-        Utils.checkNotNull(resourceUri, "Resource uri should not be null");
-
-        HttpUrl url = new PathResolver.Builder()
-                .addPath("rest_v2")
-                .addPath("resources")
-                .addPaths(resourceUri)
-                .build()
-                .resolve(mNetworkClient.getBaseUrl())
-                .newBuilder()
-                .addQueryParameter("expanded", String.valueOf(expanded))
-                .build();
-
-        Request request = new Request.Builder()
-                .addHeader("Accept", "application/json")
-                .get()
-                .url(url)
-                .build();
-
-        com.squareup.okhttp.Response rawResponse = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(rawResponse, ResourceLookup.class);
-    }
-
-    @NotNull
     public ResourceLookup requestResource(@NotNull String reportUri, @NotNull String type) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report uri should not be null");
         Utils.checkNotNull(type, "Report type should not be null");
