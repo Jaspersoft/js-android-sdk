@@ -50,10 +50,16 @@ public class SortTypeTest {
     }
 
     @Test
+    public void testAccessTimeEnum() throws Exception {
+        assertThat(SortType.ACCESS_TIME.toString(), is("accessTime"));
+    }
+
+    @Test
     @Parameters({
             "LABEL|label",
             "DESCRIPTION|description",
             "CREATION_DATE|creationDate",
+            "ACCESS_TIME|accessTime",
     })
     public void should_map_raw_value(String value, String raw) {
         SortType actual = SortType.valueOf(value);

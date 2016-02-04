@@ -43,6 +43,7 @@ class InternalCriteria {
     private final Boolean mForceTotalCount;
     private final String mQuery;
     private final SortType mSortBy;
+    private final AccessType mAccessType;
     private final String mFolderUri;
 
     private InternalCriteria(Builder builder) {
@@ -54,12 +55,13 @@ class InternalCriteria {
         mForceTotalCount = builder.forceTotalCount;
         mQuery = builder.query;
         mSortBy = builder.sort;
+        mAccessType = builder.accessType;
         mFolderUri = builder.folderUri;
     }
 
     @NotNull
     public static InternalCriteria from(RepositorySearchCriteria criteria) {
-        return new InternalCriteria.Builder()
+        return new Builder()
                 .limit(criteria.getLimit())
                 .offset(criteria.getOffset())
                 .resourceMask(criteria.getResourceMask())
@@ -67,6 +69,7 @@ class InternalCriteria {
                 .folderUri(criteria.getFolderUri())
                 .query(criteria.getQuery())
                 .sortBy(criteria.getSortBy())
+                .accessType(criteria.getAccessType())
                 .create();
     }
 
@@ -112,28 +115,22 @@ class InternalCriteria {
         return mSortBy;
     }
 
+    @Nullable
+    public AccessType getAccessType() {
+        return mAccessType;
+    }
+
     @NotNull
     public Builder newBuilder() {
         Builder builder = new InternalCriteria.Builder();
 
-        if (mRecursive != null) {
-            builder.recursive(mRecursive);
-        }
-        if (mForceFullPage != null) {
-            builder.forceFullPage(mForceFullPage);
-        }
-        if (mForceTotalCount != null) {
-            builder.forceTotalCount(mForceTotalCount);
-        }
-        if (mQuery != null) {
-            builder.query(mQuery);
-        }
-        if (mSortBy != null) {
-            builder.sortBy(mSortBy);
-        }
-        if (mFolderUri != null) {
-            builder.folderUri(mFolderUri);
-        }
+        builder.recursive(mRecursive);
+        builder.forceFullPage(mForceFullPage);
+        builder.forceTotalCount(mForceTotalCount);
+        builder.folderUri(mFolderUri);
+        builder.accessType(mAccessType);
+        builder.sortBy(mSortBy);
+        builder.query(mQuery);
 
         builder.resourceMask(mResourceMask);
         builder.limit(mLimit);
@@ -210,6 +207,8 @@ class InternalCriteria {
         @Nullable
         private SortType sort;
         @Nullable
+        private AccessType accessType;
+        @Nullable
         private String folderUri;
 
         public Builder limit(int limit) {
@@ -244,6 +243,7 @@ class InternalCriteria {
 
         /**
          * Internal use. Mutating sortBy value.
+         *
          * @param sort either 'label' or 'creationDate'
          * @return chain builder instance
          */
@@ -252,8 +252,14 @@ class InternalCriteria {
             return this;
         }
 
+        public Builder accessType(AccessType accessType) {
+            this.accessType = accessType;
+            return this;
+        }
+
         /**
          * Internal use. Mutating forceFullPage value.
+         *
          * @param forceFullPage either true or false
          * @return chain builder instance
          */
@@ -264,6 +270,7 @@ class InternalCriteria {
 
         /**
          * Internal use. Mutating forceTotalCount value.
+         *
          * @param forceTotalCount either true or false
          * @return chain builder instance
          */

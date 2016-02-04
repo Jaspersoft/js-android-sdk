@@ -52,6 +52,7 @@ public final class RepositorySearchCriteria {
 
     private final String mQuery;
     private final SortType mSort;
+    private final AccessType mAccessType;
     private final String mFolderUri;
 
     private RepositorySearchCriteria(Builder builder) {
@@ -61,6 +62,7 @@ public final class RepositorySearchCriteria {
         mRecursive = builder.recursive;
         mQuery = builder.query;
         mSort = builder.sortType;
+        mAccessType = builder.accessType;
         mFolderUri = builder.folderUri;
     }
 
@@ -106,6 +108,10 @@ public final class RepositorySearchCriteria {
         return mFolderUri;
     }
 
+    public AccessType getAccessType() {
+        return mAccessType;
+    }
+
     public static class Builder {
         private int limit = DEFAULT_LIMIT;
         private int offset = DEFAULT_OFFSET;
@@ -119,6 +125,8 @@ public final class RepositorySearchCriteria {
         private String folderUri;
         @Nullable
         private SortType sortType;
+        @Nullable
+        private AccessType accessType;
 
         public Builder withLimit(int limit) {
             checkArgument(limit >= 0, "Limit should be positive");
@@ -149,6 +157,11 @@ public final class RepositorySearchCriteria {
 
         public Builder withSortType(@Nullable SortType sortType) {
             this.sortType = sortType;
+            return this;
+        }
+
+        public Builder withAccessType(@Nullable AccessType accessType) {
+            this.accessType = accessType;
             return this;
         }
 

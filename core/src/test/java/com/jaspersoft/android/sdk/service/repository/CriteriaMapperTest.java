@@ -138,6 +138,18 @@ public class CriteriaMapperTest {
     }
 
     @Test
+    public void shouldIncludeAccessTypeInParams() {
+        InternalCriteria criteria = new InternalCriteria.Builder()
+                .accessType(AccessType.MODIFIED)
+                .create();
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("accessType", "modified");
+
+        assertThat(toMap(criteria), is(resultMap));
+    }
+
+    @Test
     public void shouldIgnoreEmptyQuery() {
         InternalCriteria criteria = new InternalCriteria.Builder()
                 .query("")

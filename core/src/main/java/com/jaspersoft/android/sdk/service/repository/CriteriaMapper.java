@@ -74,6 +74,10 @@ final class CriteriaMapper {
             params.put("sortBy", criteria.getSortBy().toString());
         }
 
+        if (criteria.getAccessType() != null) {
+            params.put("accessType", criteria.getAccessType().toString());
+        }
+
         if (criteria.getFolderUri() != null) {
             params.put("folderUri", criteria.getFolderUri());
         }

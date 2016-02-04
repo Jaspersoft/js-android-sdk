@@ -32,7 +32,7 @@ import java.util.Map;
  * @since 2.0
  */
 public enum SortType {
-    LABEL("label"), DESCRIPTION("description"), CREATION_DATE("creationDate");
+    LABEL("label"), DESCRIPTION("description"), CREATION_DATE("creationDate"), ACCESS_TIME("accessTime");
 
     private final String mValue;
 
@@ -46,10 +46,11 @@ public enum SortType {
     }
 
     public static SortType fromRawValue(String value) {
-        Map<String, SortType> map = new HashMap<>(3);
+        Map<String, SortType> map = new HashMap<>(4);
         map.put("label", LABEL);
         map.put("description", DESCRIPTION);
         map.put("creationDate", CREATION_DATE);
+        map.put("accessTime", ACCESS_TIME);
 
         SortType sortType = map.get(value);
         if (sortType == null) {
