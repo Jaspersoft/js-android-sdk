@@ -40,22 +40,6 @@ public class RepositorySearchCriteriaTest {
     public ExpectedException mExpectedException = ExpectedException.none();
 
     @Test
-    public void shouldIncludeSortByLabelInParams() {
-        RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
-                .withSortType(SortType.LABEL)
-                .build();
-        assertThat(criteria.getSortBy(), is(SortType.LABEL));
-    }
-
-    @Test
-    public void shouldIncludeSortByCreationDateInParams() {
-        RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
-                .withSortType(SortType.CREATION_DATE)
-                .build();
-        assertThat(criteria.getSortBy(), is(SortType.CREATION_DATE));
-    }
-
-    @Test
     public void shouldNotAcceptNegativeOffset() {
         mExpectedException.expect(IllegalArgumentException.class);
         mExpectedException.expectMessage("Offset should be positive");
