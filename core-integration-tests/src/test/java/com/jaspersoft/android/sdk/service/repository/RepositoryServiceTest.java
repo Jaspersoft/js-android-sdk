@@ -74,14 +74,6 @@ public class RepositoryServiceTest {
         assertThat(output, is(notNullValue()));
     }
 
-    @Test
-    @Parameters(method = "reports")
-    public void repo_service_should_give_resource_details(ReportTestBundle bundle) throws Exception {
-        RepositoryService service = RepositoryService.newService(bundle.getClient());
-        Resource resource = service.fetchResourceDetails(bundle.getUri(), true);
-        assertThat(resource, is(notNullValue()));
-    }
-
     private Object[] clients() {
         return sEnv.listAuthorizedClients();
     }

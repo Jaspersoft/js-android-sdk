@@ -156,41 +156,12 @@ public class RxRepositoryServiceTest {
         test.assertError(mServiceException);
         test.assertNotCompleted();
     }
-    @Test
-    public void should_delegate_fetch_resource_details_call() throws Exception {
-        when(mSyncDelegate.fetchResourceDetails(anyString(), anyBoolean())).thenReturn(null);
-
-        TestSubscriber<Resource> test = getResourceDetails();
-
-        test.assertNoErrors();
-        test.assertCompleted();
-        test.assertValueCount(1);
-    }
-
-    @Test
-    public void fetch_resource_details_call_delegate_service_exception() throws Exception {
-        when(mSyncDelegate.fetchResourceDetails(anyString(), anyBoolean())).thenThrow(mServiceException);
-
-        TestSubscriber<Resource> test = getResourceDetails();
-
-        test.assertError(mServiceException);
-        test.assertNotCompleted();
-    }
 
     private TestSubscriber<ResourceOutput> getFileContent() throws Exception {
         TestSubscriber<ResourceOutput> test = new TestSubscriber<>();
         rxRepositoryService.fetchResourceContent(REPORT_URI).subscribe(test);
 
         verify(mSyncDelegate).fetchResourceContent(REPORT_URI);
-
-        return test;
-    }
-
-    private TestSubscriber<Resource> getResourceDetails() throws Exception {
-        TestSubscriber<Resource> test = new TestSubscriber<>();
-        rxRepositoryService.fetchResourceDetails(REPORT_URI, true).subscribe(test);
-
-        verify(mSyncDelegate).fetchResourceDetails(REPORT_URI, true);
 
         return test;
     }

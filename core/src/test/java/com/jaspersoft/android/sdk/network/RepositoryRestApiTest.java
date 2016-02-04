@@ -134,14 +134,6 @@ public class RepositoryRestApiTest {
     }
 
     @Test
-    public void requestForResourceShouldNotAcceptNullUri() throws Exception {
-        mExpectedException.expect(NullPointerException.class);
-        mExpectedException.expectMessage("Resource uri should not be null");
-
-        restApiUnderTest.requestResource(null, false);
-    }
-
-    @Test
     public void requestForResourceByTypeShouldNotAcceptNullType() throws Exception {
         mExpectedException.expect(NullPointerException.class);
         mExpectedException.expectMessage("Report type should not be null");
@@ -239,19 +231,6 @@ public class RepositoryRestApiTest {
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
         assertThat(request, hasPath("/rest_v2/resources/my/uri"));
-        assertThat(request, wasMethod("GET"));
-    }
-
-    @Test
-    public void shouldRequestResource() throws Exception {
-        mWebMockRule.enqueue(MockResponseFactory.create200());
-
-        restApiUnderTest.requestResource("/my/uri", false);
-
-        RecordedRequest request = mWebMockRule.get().takeRequest();
-        assertThat(request, containsHeader("Accept", "application/json"));
-        assertThat(request, hasPath("/rest_v2/resources/my/uri"));
-        assertThat(request, hasQuery("expanded", "false"));
         assertThat(request, wasMethod("GET"));
     }
 
