@@ -4,9 +4,9 @@ import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
 import com.jaspersoft.android.sdk.env.ReportTestBundle;
 import com.jaspersoft.android.sdk.env.ResourceTestBundle;
 import com.jaspersoft.android.sdk.env.ServerTestBundle;
-import com.jaspersoft.android.sdk.service.data.report.FileResource;
-import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.ClassRule;
@@ -54,16 +54,32 @@ public class RepositoryServiceTest {
     @Parameters(method = "reports")
     public void repo_service_should_give_report_details(ReportTestBundle bundle) throws Exception {
         RepositoryService service = RepositoryService.newService(bundle.getClient());
-        ReportResource reportResource = service.fetchReportDetails(bundle.getReportUri());
-        assertThat(reportResource, is(notNullValue()));
+        Resource resource = service.fetchResourceDetails(bundle.getUri(), ResourceType.reportUnit);
+        assertThat(resource, is(notNullValue()));
     }
 
     @Test
     @Parameters(method = "files")
     public void repo_service_should_give_file_details(ResourceTestBundle bundle) throws Exception {
         RepositoryService service = RepositoryService.newService(bundle.getClient());
-        FileResource fileResource = service.fetchFileDetails(bundle.getUri());
-        assertThat(fileResource, is(notNullValue()));
+        Resource resource = service.fetchResourceDetails(bundle.getUri(), ResourceType.file);
+        assertThat(resource, is(notNullValue()));
+    }
+
+    @Test
+    @Parameters(method = "files")
+    public void repo_service_should_give_file_contents(ResourceTestBundle bundle) throws Exception {
+        RepositoryService service = RepositoryService.newService(bundle.getClient());
+        ResourceOutput output = service.fetchResourceContent(bundle.getUri());
+        assertThat(output, is(notNullValue()));
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void repo_service_should_give_resource_details(ReportTestBundle bundle) throws Exception {
+        RepositoryService service = RepositoryService.newService(bundle.getClient());
+        Resource resource = service.fetchResourceDetails(bundle.getUri(), true);
+        assertThat(resource, is(notNullValue()));
     }
 
     private Object[] clients() {

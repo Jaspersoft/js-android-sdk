@@ -26,16 +26,18 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.network.entity.resource.FileLookup;
-import com.jaspersoft.android.sdk.network.entity.resource.ReportLookup;
-import com.jaspersoft.android.sdk.service.data.report.FileResource;
-import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.network.entity.resource.ResourceLookup;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
+import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
 /**
@@ -45,25 +47,25 @@ import java.text.SimpleDateFormat;
 class RepositoryUseCase {
     private final ServiceExceptionMapper mServiceExceptionMapper;
     private final RepositoryRestApi mRepositoryRestApi;
-    private final ReportResourceMapper mReportResourceMapper;
+    private final ResourcesMapper mResourcesMapper;
     private final InfoCacheManager mInfoCacheManager;
 
     RepositoryUseCase(ServiceExceptionMapper serviceExceptionMapper,
                       RepositoryRestApi repositoryRestApi,
-                      ReportResourceMapper reportResourceMapper,
+                      ResourcesMapper resourcesMapper,
                       InfoCacheManager infoCacheManager) {
         mServiceExceptionMapper = serviceExceptionMapper;
         mRepositoryRestApi = repositoryRestApi;
-        mReportResourceMapper = reportResourceMapper;
+        mResourcesMapper = resourcesMapper;
         mInfoCacheManager = infoCacheManager;
     }
 
-    public ReportResource getReportDetails(String reportUri) throws ServiceException {
+    public Resource getResourceDetails(String resourceUri, boolean expanded) throws ServiceException {
         try {
             ServerInfo info = mInfoCacheManager.getInfo();
             SimpleDateFormat datetimeFormatPattern = info.getDatetimeFormatPattern();
-            ReportLookup reportLookup = mRepositoryRestApi.requestReportResource(reportUri);
-            return mReportResourceMapper.toReportResource(reportLookup, datetimeFormatPattern);
+            ResourceLookup resourceLookup = mRepositoryRestApi.requestResource(resourceUri, expanded);
+            return mResourcesMapper.toResource(resourceLookup, datetimeFormatPattern);
         } catch (HttpException e) {
             throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {
@@ -71,12 +73,28 @@ class RepositoryUseCase {
         }
     }
 
-    public FileResource getFileDetails(String resourceUri) throws ServiceException {
+    public Resource getResourceByType(String resourceUri, ResourceType type) throws ServiceException {
         try {
             ServerInfo info = mInfoCacheManager.getInfo();
             SimpleDateFormat datetimeFormatPattern = info.getDatetimeFormatPattern();
-            FileLookup lookup = mRepositoryRestApi.requestFileResource(resourceUri);
-            return mReportResourceMapper.toFileResource(lookup, datetimeFormatPattern);
+            ResourceLookup reportLookup = mRepositoryRestApi.requestResource(resourceUri, type.name());
+            return mResourcesMapper.toConcreteResource(reportLookup, datetimeFormatPattern, type);
+        } catch (HttpException e) {
+            throw mServiceExceptionMapper.transform(e);
+        } catch (IOException e) {
+            throw mServiceExceptionMapper.transform(e);
+        }
+    }
+
+    public ResourceOutput getResourceContent(String resourceUri) throws ServiceException  {
+        try {
+            final OutputResource resource = mRepositoryRestApi.requestResourceOutput(resourceUri);
+            return new ResourceOutput() {
+                @Override
+                public InputStream getStream() throws IOException {
+                    return resource.getStream();
+                }
+            };
         } catch (HttpException e) {
             throw mServiceExceptionMapper.transform(e);
         } catch (IOException e) {

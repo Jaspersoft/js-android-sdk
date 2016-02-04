@@ -45,12 +45,12 @@ import java.util.Map;
  * @since 2.0
  */
 class SearchUseCase {
-    private final ResourceMapper mDataMapper;
+    private final ResourcesMapper mDataMapper;
     private final RepositoryRestApi mRestApi;
     private final InfoCacheManager mInfoCacheManager;
     private final CallExecutor mCallExecutor;
 
-    SearchUseCase(ResourceMapper dataMapper,
+    SearchUseCase(ResourcesMapper dataMapper,
                   RepositoryRestApi restApi,
                   InfoCacheManager infoCacheManager,
                   CallExecutor callExecutor) {
@@ -68,7 +68,7 @@ class SearchUseCase {
             public SearchResult perform() throws IOException, HttpException {
                 Map<String, Object> criteria = CriteriaMapper.map(internalCriteria);
                 ResourceSearchResult response = mRestApi.searchResources(criteria);
-                List<Resource> resources = mDataMapper.transform(response.getResources(), dateTimeFormat);
+                List<Resource> resources = mDataMapper.toResources(response.getResources(), dateTimeFormat);
                 return new SearchResult(resources, response.getNextOffset());
             }
         };

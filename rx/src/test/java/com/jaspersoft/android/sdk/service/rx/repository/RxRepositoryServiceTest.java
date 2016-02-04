@@ -25,9 +25,10 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.service.data.report.FileResource;
 import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
@@ -46,7 +47,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -89,33 +90,6 @@ public class RxRepositoryServiceTest {
     }
 
     @Test
-    public void should_delegate_fetch_report_details_call() throws Exception {
-        when(mSyncDelegate.fetchReportDetails(anyString())).thenReturn(mReportResource);
-
-        TestSubscriber<ReportResource> test = new TestSubscriber<>();
-        rxRepositoryService.fetchReportDetails(REPORT_URI).subscribe(test);
-
-        test.assertNoErrors();
-        test.assertCompleted();
-        test.assertValueCount(1);
-
-        verify(mSyncDelegate).fetchReportDetails(REPORT_URI);
-    }
-
-    @Test
-    public void report_details_call_delegate_service_exception() throws Exception {
-        when(mSyncDelegate.fetchReportDetails(anyString())).thenThrow(mServiceException);
-
-        TestSubscriber<ReportResource> test = new TestSubscriber<>();
-        rxRepositoryService.fetchReportDetails(REPORT_URI).subscribe(test);
-
-        test.assertError(mServiceException);
-        test.assertNotCompleted();
-
-        verify(mSyncDelegate).fetchReportDetails(REPORT_URI);
-    }
-
-    @Test
     public void should_delegate_fetch_root_folders_call() throws Exception {
         List<Resource> folders = Collections.<Resource>emptyList();
         when(mSyncDelegate.fetchRootFolders()).thenReturn(folders);
@@ -142,10 +116,10 @@ public class RxRepositoryServiceTest {
     }
 
     @Test
-    public void should_delegate_fetch_file_details_call() throws Exception {
-        when(mSyncDelegate.fetchFileDetails(anyString())).thenReturn(null);
+    public void should_delegate_fetch_resource_by_details_call() throws Exception {
+        when(mSyncDelegate.fetchResourceDetails(anyString(), any(ResourceType.class))).thenReturn(null);
 
-        TestSubscriber<FileResource> test = getFileDetails();
+        TestSubscriber<Resource> test = getResourceDetailsByType();
 
         test.assertNoErrors();
         test.assertCompleted();
@@ -153,20 +127,79 @@ public class RxRepositoryServiceTest {
     }
 
     @Test
-    public void fetch_file_call_delegate_service_exception() throws Exception {
-        when(mSyncDelegate.fetchFileDetails(anyString())).thenThrow(mServiceException);
+    public void resource_by_details_call_delegate_service_exception() throws Exception {
+        when(mSyncDelegate.fetchResourceDetails(anyString(), any(ResourceType.class))).thenThrow(mServiceException);
 
-        TestSubscriber<FileResource> test = getFileDetails();
+        TestSubscriber<Resource> test = getResourceDetailsByType();
 
         test.assertError(mServiceException);
         test.assertNotCompleted();
     }
 
-    private TestSubscriber<FileResource> getFileDetails() throws Exception {
-        TestSubscriber<FileResource> test = new TestSubscriber<>();
-        rxRepositoryService.fetchFileDetails(REPORT_URI).subscribe(test);
+    @Test
+    public void should_delegate_fetch_file_content_call() throws Exception {
+        when(mSyncDelegate.fetchResourceContent(anyString())).thenReturn(null);
 
-        verify(mSyncDelegate).fetchFileDetails(REPORT_URI);
+        TestSubscriber<ResourceOutput> test = getFileContent();
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+    }
+
+    @Test
+    public void fetch_file_content_call_delegate_service_exception() throws Exception {
+        when(mSyncDelegate.fetchResourceContent(anyString())).thenThrow(mServiceException);
+
+        TestSubscriber<ResourceOutput> test = getFileContent();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+    }
+    @Test
+    public void should_delegate_fetch_resource_details_call() throws Exception {
+        when(mSyncDelegate.fetchResourceDetails(anyString(), anyBoolean())).thenReturn(null);
+
+        TestSubscriber<Resource> test = getResourceDetails();
+
+        test.assertNoErrors();
+        test.assertCompleted();
+        test.assertValueCount(1);
+    }
+
+    @Test
+    public void fetch_resource_details_call_delegate_service_exception() throws Exception {
+        when(mSyncDelegate.fetchResourceDetails(anyString(), anyBoolean())).thenThrow(mServiceException);
+
+        TestSubscriber<Resource> test = getResourceDetails();
+
+        test.assertError(mServiceException);
+        test.assertNotCompleted();
+    }
+
+    private TestSubscriber<ResourceOutput> getFileContent() throws Exception {
+        TestSubscriber<ResourceOutput> test = new TestSubscriber<>();
+        rxRepositoryService.fetchResourceContent(REPORT_URI).subscribe(test);
+
+        verify(mSyncDelegate).fetchResourceContent(REPORT_URI);
+
+        return test;
+    }
+
+    private TestSubscriber<Resource> getResourceDetails() throws Exception {
+        TestSubscriber<Resource> test = new TestSubscriber<>();
+        rxRepositoryService.fetchResourceDetails(REPORT_URI, true).subscribe(test);
+
+        verify(mSyncDelegate).fetchResourceDetails(REPORT_URI, true);
+
+        return test;
+    }
+
+    private TestSubscriber<Resource> getResourceDetailsByType() throws Exception {
+        TestSubscriber<Resource> test = new TestSubscriber<>();
+        rxRepositoryService.fetchResourceDetails(REPORT_URI, ResourceType.dashboard).subscribe(test);
+
+        verify(mSyncDelegate).fetchResourceDetails(REPORT_URI, ResourceType.dashboard);
 
         return test;
     }

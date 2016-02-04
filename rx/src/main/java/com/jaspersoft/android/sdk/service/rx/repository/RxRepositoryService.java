@@ -25,14 +25,14 @@
 package com.jaspersoft.android.sdk.service.rx.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.service.data.report.FileResource;
-import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
-import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchCriteria;
 import com.jaspersoft.android.sdk.service.repository.RepositorySearchTask;
+import com.jaspersoft.android.sdk.service.repository.RepositoryService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -61,15 +61,16 @@ public class RxRepositoryService {
     }
 
     @NotNull
-    public Observable<ReportResource> fetchReportDetails(@NotNull final String reportUri) {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+    public Observable<Resource> fetchResourceDetails(@NotNull final String resourceUri, final @NotNull ResourceType type) {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+        Preconditions.checkNotNull(type, "Resource type should not be null");
 
-        return Observable.defer(new Func0<Observable<ReportResource>>() {
+        return Observable.defer(new Func0<Observable<Resource>>() {
             @Override
-            public Observable<ReportResource> call() {
+            public Observable<Resource> call() {
                 try {
-                    ReportResource reportResource = mSyncDelegate.fetchReportDetails(reportUri);
-                    return Observable.just(reportResource);
+                    Resource resource = mSyncDelegate.fetchResourceDetails(resourceUri, type);
+                    return Observable.just(resource);
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }
@@ -78,15 +79,32 @@ public class RxRepositoryService {
     }
 
     @NotNull
-    public Observable<FileResource> fetchFileDetails(@NotNull final String resourceUri) {
+    public Observable<Resource> fetchResourceDetails(@NotNull final String resourceUri, final boolean expanded) {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
 
-        return Observable.defer(new Func0<Observable<FileResource>>() {
+        return Observable.defer(new Func0<Observable<Resource>>() {
             @Override
-            public Observable<FileResource> call() {
+            public Observable<Resource> call() {
                 try {
-                    FileResource fileResource = mSyncDelegate.fetchFileDetails(resourceUri);
-                    return Observable.just(fileResource);
+                    Resource resource = mSyncDelegate.fetchResourceDetails(resourceUri, expanded);
+                    return Observable.just(resource);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<ResourceOutput> fetchResourceContent(@NotNull final String resourceUri) {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+
+        return Observable.defer(new Func0<Observable<ResourceOutput>>() {
+            @Override
+            public Observable<ResourceOutput> call() {
+                try {
+                    ResourceOutput output = mSyncDelegate.fetchResourceContent(resourceUri);
+                    return Observable.just(output);
                 } catch (ServiceException e) {
                     return Observable.error(e);
                 }

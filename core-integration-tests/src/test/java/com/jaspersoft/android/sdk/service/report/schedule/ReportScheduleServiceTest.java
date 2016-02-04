@@ -44,7 +44,7 @@ public class ReportScheduleServiceTest {
                 .withFolderUri("/temp")
                 .build();
         JobSource.Builder source = new JobSource.Builder()
-                .withUri(bundle.getReportUri());
+                .withUri(bundle.getUri());
 
         JobForm.Builder formBuilder = new JobForm.Builder()
                 .withLabel("my label")

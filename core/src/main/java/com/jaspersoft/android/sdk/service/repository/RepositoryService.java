@@ -26,10 +26,9 @@ package com.jaspersoft.android.sdk.service.repository;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.RepositoryRestApi;
-import com.jaspersoft.android.sdk.service.data.report.FileResource;
-import com.jaspersoft.android.sdk.service.data.report.ReportResource;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
-import com.jaspersoft.android.sdk.service.data.repository.SearchResult;
+import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.*;
 import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
@@ -39,8 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -74,34 +72,29 @@ public class RepositoryService {
     }
 
     @NotNull
-    public ReportResource fetchReportDetails(@NotNull String reportUri) throws ServiceException {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        return mRepositoryUseCase.getReportDetails(reportUri);
+    public Resource fetchResourceDetails(@NotNull String resourceUri, @NotNull ResourceType type) throws ServiceException {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+        Preconditions.checkNotNull(type, "Resource type should not be null");
+        return mRepositoryUseCase.getResourceByType(resourceUri, type);
     }
 
     @NotNull
-    public FileResource fetchFileDetails(@NotNull String fileUri) throws ServiceException {
-        Preconditions.checkNotNull(fileUri, "File uri should not be null");
-        return mRepositoryUseCase.getFileDetails(fileUri);
+    public Resource fetchResourceDetails(@NotNull String resourceUri, boolean expanded) throws ServiceException {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+        return mRepositoryUseCase.getResourceDetails(resourceUri, expanded);
+    }
+
+    @NotNull
+    public ResourceOutput fetchResourceContent(@NotNull String resourceUri) throws ServiceException {
+        Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
+        return mRepositoryUseCase.getResourceContent(resourceUri);
     }
 
     @NotNull
     public List<Resource> fetchRootFolders() throws ServiceException {
-        InternalCriteria rootFolder = new InternalCriteria.Builder()
-                .folderUri("/")
-                .resourceMask(RepositorySearchCriteria.FOLDER)
-                .create();
-        List<Resource> folders = new ArrayList<>(10);
-        SearchResult result = mSearchUseCase.performSearch(rootFolder);
-        folders.addAll(result.getResources());
-
-        InternalCriteria publicFolder = rootFolder.newBuilder()
-                .folderUri("/public")
-                .create();
-        SearchResult publicFoldersResult = mSearchUseCase.performSearch(publicFolder);
-        folders.addAll(publicFoldersResult.getResources());
-
-        return Collections.unmodifiableList(folders);
+        Resource rootFolder = fetchResourceDetails("/", ResourceType.folder);
+        Resource publicFolder = fetchResourceDetails("/public", ResourceType.folder);
+        return Arrays.asList(rootFolder, publicFolder);
     }
 
     @NotNull
@@ -114,16 +107,16 @@ public class RepositoryService {
         CallExecutor callExecutor = new DefaultCallExecutor(defaultExMapper);
         InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
 
-        ResourceMapper resourceMapper = new ResourceMapper();
+        ResourcesMapper resourceMapper = new ResourcesMapper();
         SearchUseCase searchUseCase = new SearchUseCase(
                 resourceMapper,
                 repositoryRestApi,
                 cacheManager,
                 callExecutor
         );
-        ReportResourceMapper reportResourceMapper = new ReportResourceMapper();
+        ResourcesMapper resourcesMapper = new ResourcesMapper();
         RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultExMapper,
-                repositoryRestApi, reportResourceMapper, cacheManager);
+                repositoryRestApi, resourcesMapper, cacheManager);
         return new RepositoryService(searchUseCase, repositoryUseCase, cacheManager);
     }
 }

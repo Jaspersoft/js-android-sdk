@@ -33,7 +33,7 @@ public class FiltersServiceTest {
     @Parameters(method = "reports")
     public void filters_service_should_support_crud_for_report_option(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
-            String reportUri = bundle.getReportUri();
+            String reportUri = bundle.getUri();
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
 
             String reportOptionLabel = "My Label";
@@ -57,7 +57,7 @@ public class FiltersServiceTest {
     @Parameters(method = "reports")
     public void filters_service_should_list_report_input_controls(ReportTestBundle bundle) throws Exception {
         FiltersService filtersService = FiltersService.newService(bundle.getClient());
-        filtersService.listReportControls(bundle.getReportUri());
+        filtersService.listReportControls(bundle.getUri());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class FiltersServiceTest {
         if (bundle.hasParams()) {
             List<ReportParameter> params = bundle.getParams();
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            filtersService.listControlsStates(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+            filtersService.listControlsStates(bundle.getUri(), Collections.singletonList(params.get(0)), true);
         }
     }
 
@@ -76,7 +76,7 @@ public class FiltersServiceTest {
         if (bundle.hasParams()) {
             List<ReportParameter> params = bundle.getParams();
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            filtersService.validateControls(bundle.getReportUri(), Collections.singletonList(params.get(0)), true);
+            filtersService.validateControls(bundle.getUri(), Collections.singletonList(params.get(0)), true);
         }
     }
 
@@ -85,7 +85,7 @@ public class FiltersServiceTest {
     public void filters_service_should_list_resource_values(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
             FiltersService filtersService = FiltersService.newService(bundle.getClient());
-            filtersService.listResourceStates(bundle.getReportUri(), false);
+            filtersService.listResourceStates(bundle.getUri(), false);
         }
     }
 
