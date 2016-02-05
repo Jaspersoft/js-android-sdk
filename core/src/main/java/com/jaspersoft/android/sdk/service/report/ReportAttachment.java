@@ -51,6 +51,11 @@ public class ReportAttachment {
     }
 
     @NotNull
+    public String getFileName() {
+        return mFileName;
+    }
+
+    @NotNull
     public ResourceOutput download() throws ServiceException {
         return mExportExecutionApi.downloadAttachment(
                 mExecutionId,

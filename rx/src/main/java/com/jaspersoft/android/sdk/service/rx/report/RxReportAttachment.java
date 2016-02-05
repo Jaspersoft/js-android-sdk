@@ -46,6 +46,11 @@ public class RxReportAttachment {
     }
 
     @NotNull
+    public String getFileName() {
+        return mSyncDelegate.getFileName();
+    }
+
+    @NotNull
     public Observable<ResourceOutput> download() {
         return Observable.defer(new Func0<Observable<ResourceOutput>>() {
             @Override
