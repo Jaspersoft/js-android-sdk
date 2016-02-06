@@ -114,7 +114,7 @@ class ReportExecutionApi {
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException ex) {
-                // Do nothing as soon as thread can be interrupted due to abandoned subscriptions
+                throw new ServiceException("Unexpected error", ex, StatusCodes.UNDEFINED_ERROR);
             }
         } while (!expectedStatuses.contains(status));
 
