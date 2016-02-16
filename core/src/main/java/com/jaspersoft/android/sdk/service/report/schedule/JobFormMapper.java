@@ -16,7 +16,7 @@ import java.util.*;
  * @since 2.0
  */
 class JobFormMapper {
-    private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
 
@@ -43,43 +43,31 @@ class JobFormMapper {
         }
         entity.addOutputFormats(formats);
 
-
-        JobSimpleTrigger jobSimpleTrigger = form.getSimpleTrigger();
-        if (jobSimpleTrigger != null) {
-            JobSimpleTriggerEntity simpleTriggerEntity = new JobSimpleTriggerEntity();
-
-            simpleTriggerEntity.setOccurrenceCount(jobSimpleTrigger.getOccurrenceCount());
-            simpleTriggerEntity.setRecurrenceInterval(jobSimpleTrigger.getRecurrenceInterval());
-            simpleTriggerEntity.setCalendarName(jobSimpleTrigger.getCalendarName());
-
-            RecurrenceIntervalUnit recurrenceIntervalUnit = jobSimpleTrigger.getRecurrenceIntervalUnit();
-            simpleTriggerEntity.setRecurrenceIntervalUnit(mapInterval(recurrenceIntervalUnit));
-
-            Date startDate = jobSimpleTrigger.getStartDate();
-            if (startDate == null) {
-                simpleTriggerEntity.setStartType(1);
-            } else {
-                simpleTriggerEntity.setStartDate(DATE_FORMAT.format(startDate));
-                simpleTriggerEntity.setStartType(2);
-            }
-
-            Date stopDate = jobSimpleTrigger.getEndDate();
-            if (stopDate != null) {
-                simpleTriggerEntity.setEndDate(DATE_FORMAT.format(stopDate));
-            }
-
-            TimeZone timeZone = jobSimpleTrigger.getTimeZone();
-            if (timeZone != null) {
-                simpleTriggerEntity.setTimezone(timeZone.getID());
-            }
-
-            entity.setSimpleTrigger(simpleTriggerEntity);
-        }
-
         Integer version = form.getVersion();
         if (version != null) {
             entity.setVersion(version);
         }
+
+        JobSimpleTriggerEntity simpleTriggerEntity = new JobSimpleTriggerEntity();
+
+        Date startDate = form.getStartDate();
+        if (startDate == null) {
+            simpleTriggerEntity.setStartType(1);
+        } else {
+            simpleTriggerEntity.setStartDate(DATE_FORMAT.format(startDate));
+            simpleTriggerEntity.setStartType(2);
+        }
+
+        TimeZone timeZone = form.getTimeZone();
+        if (timeZone == null) {
+            timeZone = TimeZone.getDefault();
+        }
+        simpleTriggerEntity.setTimezone(timeZone.getID());
+
+        simpleTriggerEntity.setOccurrenceCount(1);
+        simpleTriggerEntity.setRecurrenceInterval(1);
+        simpleTriggerEntity.setRecurrenceIntervalUnit("DAY");
+        entity.setSimpleTrigger(simpleTriggerEntity);
 
         return entity;
     }
@@ -112,8 +100,19 @@ class JobFormMapper {
         }
 
         JobSimpleTriggerEntity triggerEntity = entity.getSimpleTrigger();
-        JobSimpleTrigger trigger = transformTrigger(triggerEntity);
-        builder.withSimpleTrigger(trigger);
+        String startDate = triggerEntity.getStartDate();
+        if (startDate != null) {
+            Date date = parseDate(startDate);
+            if (date != null) {
+                builder.withStartDate(date);
+            }
+        }
+
+        String timezone = triggerEntity.getTimezone();
+        if (timezone != null) {
+            TimeZone timeZone = TimeZone.getTimeZone(timezone);
+            builder.withTimeZone(timeZone);
+        }
 
         JobSource source = transformSource(entity);
         builder.withJobSource(source);
@@ -141,52 +140,6 @@ class JobFormMapper {
         }
 
         return builder.build();
-    }
-
-    @TestOnly
-    JobSimpleTrigger transformTrigger(JobSimpleTriggerEntity entity) {
-        JobSimpleTrigger.Builder triggerBuilder = new JobSimpleTrigger.Builder();
-
-        Integer occurrenceCount = entity.getOccurrenceCount();
-        if (occurrenceCount != null) {
-            triggerBuilder.withOccurrenceCount(occurrenceCount);
-        }
-
-        Integer recurrenceInterval = entity.getRecurrenceInterval();
-        if (recurrenceInterval != null) {
-            triggerBuilder.withRecurrenceInterval(recurrenceInterval);
-        }
-
-        String unit = entity.getRecurrenceIntervalUnit();
-        if (unit != null) {
-            RecurrenceIntervalUnit intervalUnit = RecurrenceIntervalUnit.valueOf(unit);
-            triggerBuilder.withRecurrenceIntervalUnit(intervalUnit);
-        }
-
-        String startDate = entity.getStartDate();
-        if (startDate != null) {
-            Date date = parseDate(startDate);
-            if (date != null) {
-                triggerBuilder.withStartDate(date);
-            }
-        }
-
-        String endDate = entity.getEndDate();
-        if (endDate != null) {
-            Date date = parseDate(endDate);
-            if (date != null) {
-                triggerBuilder.withEndDate(date);
-            }
-        }
-
-        triggerBuilder.withCalendarName(entity.getCalendarName());
-        String timezone = entity.getTimezone();
-        if (timezone != null) {
-            TimeZone timeZone = TimeZone.getTimeZone(timezone);
-            triggerBuilder.withTimeZone(timeZone);
-        }
-
-        return triggerBuilder.build();
     }
 
     public List<ReportParameter> mapParams(Map<String, Set<String>> parameters) {

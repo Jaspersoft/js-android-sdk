@@ -18,8 +18,6 @@ public class JobFormTest {
     public ExpectedException expected = none();
 
     @Mock
-    JobSimpleTrigger mJobTrigger;
-    @Mock
     JobSource mSource;
     @Mock
     RepositoryDestination mDestination;
@@ -40,20 +38,6 @@ public class JobFormTest {
     }
 
     @Test
-    public void should_not_allow_job_without_trigger() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Job can not be scheduled without simple trigger");
-
-        new JobForm.Builder()
-                .withLabel("my label")
-                .withRepositoryDestination(mDestination)
-                .withJobSource(mSource)
-                .withBaseOutputFilename("output")
-                .addOutputFormat(JobOutputFormat.HTML)
-                .build();
-    }
-
-    @Test
     public void should_not_allow_job_without_label() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Job can not be scheduled without label");
@@ -62,7 +46,6 @@ public class JobFormTest {
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -76,7 +59,6 @@ public class JobFormTest {
                 .withLabel("my label")
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -91,7 +73,6 @@ public class JobFormTest {
                 .withRepositoryDestination(mDestination)
                 .withBaseOutputFilename("output")
                 .addOutputFormat(JobOutputFormat.HTML)
-                .withSimpleTrigger(mJobTrigger)
                 .build();
     }
 
@@ -104,7 +85,6 @@ public class JobFormTest {
                 .withLabel("my label")
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
-                .withSimpleTrigger(mJobTrigger)
                 .addOutputFormat(JobOutputFormat.HTML)
                 .build();
     }
@@ -142,7 +122,6 @@ public class JobFormTest {
     public void form_new_builder() throws Exception {
         JobForm form = new JobForm.Builder()
                 .withLabel("my label")
-                .withSimpleTrigger(mJobTrigger)
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
@@ -151,7 +130,6 @@ public class JobFormTest {
         JobForm expected = form.newBuilder().build();
         assertThat(expected.getLabel(), is(form.getLabel()));
         assertThat(expected.getDescription(), is(form.getDescription()));
-        assertThat(expected.getSimpleTrigger(), is(form.getSimpleTrigger()));
         assertThat(expected.getRepositoryDestination(), is(form.getRepositoryDestination()));
         assertThat(expected.getSource(), is(form.getSource()));
         assertThat(expected.getBaseOutputFilename(), is(form.getBaseOutputFilename()));

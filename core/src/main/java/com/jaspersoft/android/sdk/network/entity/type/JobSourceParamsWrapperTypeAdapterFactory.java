@@ -20,6 +20,10 @@ final class JobSourceParamsWrapperTypeAdapterFactory extends CustomizedTypeAdapt
 
     @Override
     protected JsonElement afterRead(JsonElement element) {
+        if (element.isJsonNull()) {
+            return element;
+        }
+
         JsonObject params = new JsonObject();
         JsonObject root = element.getAsJsonObject();
         JsonObject parameterValues = root.get("parameterValues").getAsJsonObject();

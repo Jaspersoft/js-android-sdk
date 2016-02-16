@@ -4,10 +4,7 @@ import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tom Koptel
@@ -29,7 +26,10 @@ public class JobForm {
     @NotNull
     private final Set<JobOutputFormat> mOutputFormats;
     @Nullable
-    private final JobSimpleTrigger mSimpleTrigger;
+    private final Date mStartDate;
+    @Nullable
+    private final TimeZone mTimeZone;
+
 
     JobForm(Builder builder) {
         mVersion = builder.mVersion;
@@ -39,7 +39,8 @@ public class JobForm {
         mSource = builder.mJobSource;
         mRepositoryDestination = builder.mRepositoryDestination;
         mOutputFormats = builder.mOutputFormats;
-        mSimpleTrigger = builder.mSimpleTrigger;
+        mStartDate = builder.mStartDate;
+        mTimeZone = builder.mTimeZone;
     }
 
     @Nullable
@@ -78,8 +79,13 @@ public class JobForm {
     }
 
     @Nullable
-    public JobSimpleTrigger getSimpleTrigger() {
-        return mSimpleTrigger;
+    public Date getStartDate() {
+        return mStartDate;
+    }
+
+    @Nullable
+    public TimeZone getTimeZone() {
+        return mTimeZone;
     }
 
     @NotNull
@@ -91,7 +97,8 @@ public class JobForm {
                 .withBaseOutputFilename(mBaseOutputFilename)
                 .withJobSource(mSource)
                 .withRepositoryDestination(mRepositoryDestination)
-                .withSimpleTrigger(mSimpleTrigger)
+                .withStartDate(mStartDate)
+                .withTimeZone(mTimeZone)
                 .withDescription(mDescription)
                 .addOutputFormats(mOutputFormats);
     }
@@ -101,9 +108,10 @@ public class JobForm {
         private String mLabel;
         private String mDescription;
         private String mBaseOutputFilename;
-        private JobSimpleTrigger mSimpleTrigger;
         private RepositoryDestination mRepositoryDestination;
         private JobSource mJobSource;
+        private Date mStartDate;
+        private TimeZone mTimeZone;
 
         private final Set<JobOutputFormat> mOutputFormats = new HashSet<>(15);
 
@@ -151,8 +159,13 @@ public class JobForm {
             return this;
         }
 
-        public Builder withSimpleTrigger(@Nullable JobSimpleTrigger trigger) {
-            mSimpleTrigger = trigger;
+        public Builder withStartDate(@Nullable Date startDate) {
+            mStartDate = startDate;
+            return this;
+        }
+
+        public Builder withTimeZone(@Nullable TimeZone timeZone) {
+            mTimeZone = timeZone;
             return this;
         }
 
@@ -166,7 +179,6 @@ public class JobForm {
                 throw new IllegalStateException("Job can not be scheduled without output format");
             }
             Preconditions.checkNotNull(mLabel, "Job can not be scheduled without label");
-            Preconditions.checkNotNull(mSimpleTrigger, "Job can not be scheduled without simple trigger");
             Preconditions.checkNotNull(mJobSource, "Job can not be scheduled without source");
             Preconditions.checkNotNull(mRepositoryDestination, "Job can not be scheduled without repository destination");
             Preconditions.checkNotNull(mBaseOutputFilename, "Job can not be scheduled without output file name");
