@@ -53,6 +53,38 @@ public class RxReportScheduleService {
     }
 
     @NotNull
+    public Observable<JobData> updateJob(final int jobId, @NotNull final JobForm form) {
+        Preconditions.checkNotNull(form, "Job form should not be null");
+
+        return Observable.defer(new Func0<Observable<JobData>>() {
+            @Override
+            public Observable<JobData> call() {
+                try {
+                    JobData job = mSyncDelegate.updateJob(jobId, form);
+                    return Observable.just(job);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
+    public Observable<JobForm> readJob(@NotNull final int jobId) {
+        return Observable.defer(new Func0<Observable<JobForm>>() {
+            @Override
+            public Observable<JobForm> call() {
+                try {
+                    JobForm form = mSyncDelegate.readJob(jobId);
+                    return Observable.just(form);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    @NotNull
     public Observable<Set<Integer>> deleteJobs(@NotNull final Set<Integer> ids) {
         Preconditions.checkNotNull(ids, "Job ids should not be null");
         Preconditions.checkArgument(!ids.isEmpty(), "Job ids should not be empty");

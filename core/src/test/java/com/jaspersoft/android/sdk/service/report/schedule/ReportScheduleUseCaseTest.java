@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.TestCase.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +35,7 @@ public class ReportScheduleUseCaseTest {
     private static final JobSearchCriteria CRITERIA = JobSearchCriteria.empty();
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat();
     private static final Set<Integer> JOB_IDS = Collections.singleton(1);
+    private static final Integer JOB_ID = 1;
 
     @Mock
     ServiceExceptionMapper mExceptionMapper;
@@ -108,9 +111,30 @@ public class ReportScheduleUseCaseTest {
     }
 
     @Test
+    public void should_perform_update_job() throws Exception {
+        when(mScheduleRestApi.updateJob(anyInt(), any(JobFormEntity.class))).thenReturn(mJobDescriptor);
+
+        useCase.updateJob(JOB_ID, mJobForm);
+
+        verify(mJobDataMapper).transform(mJobDescriptor, SIMPLE_DATE_FORMAT);
+        verify(mScheduleRestApi).updateJob(JOB_ID, mJobFormEntity);
+    }
+
+    @Test
     public void should_perform_delete_jobs() throws Exception {
         useCase.deleteJobs(JOB_IDS);
         verify(mScheduleRestApi).deleteJobs(JOB_IDS);
+    }
+
+    @Test
+    public void should_perform_read_job() throws Exception {
+        when(mScheduleRestApi.requestJob(anyInt())).thenReturn(mJobFormEntity);
+
+        JobForm expected = useCase.readJob(JOB_ID);
+        assertThat(mJobForm, is(expected));
+
+        verify(mJobFormMapper).transform(mJobFormEntity);
+        verify(mScheduleRestApi).requestJob(JOB_ID);
     }
 
     @Test
@@ -184,6 +208,30 @@ public class ReportScheduleUseCaseTest {
         }
     }
 
+    @Test
+    public void read_job_adapts_io_exception() throws Exception {
+        when(mScheduleRestApi.requestJob(anyInt())).thenThrow(mIOException);
+
+        try {
+            useCase.readJob(JOB_ID);
+            fail("Should adapt IO exception");
+        } catch (ServiceException ex) {
+            verify(mExceptionMapper).transform(mIOException);
+        }
+    }
+
+    @Test
+    public void read_job_adapts_http_exception() throws Exception {
+        when(mScheduleRestApi.requestJob(anyInt())).thenThrow(mHttpException);
+
+        try {
+            useCase.readJob(JOB_ID);
+            fail("Should adapt HTTP exception");
+        } catch (ServiceException ex) {
+            verify(mExceptionMapper).transform(mHttpException);
+        }
+    }
+
     private void setupMocks() throws Exception {
         when(mInfoCacheManager.getInfo()).thenReturn(mServerInfo);
         when(mServerInfo.getDatetimeFormatPattern()).thenReturn(SIMPLE_DATE_FORMAT);
@@ -192,8 +240,10 @@ public class ReportScheduleUseCaseTest {
                 .thenReturn(SEARCH_PARAMS);
         when(mJobDataMapper.transform(any(JobDescriptor.class), any(SimpleDateFormat.class)))
                 .thenReturn(mJobData);
-         when(mJobFormMapper.transform(any(JobForm.class)))
+        when(mJobFormMapper.transform(any(JobForm.class)))
                 .thenReturn(mJobFormEntity);
+        when(mJobFormMapper.transform(any(JobFormEntity.class)))
+                .thenReturn(mJobForm);
         when(mJobUnitMapper.transform(anyListOf(JobUnitEntity.class), any(SimpleDateFormat.class)))
                 .thenReturn(Collections.singletonList(mJobUnit));
 

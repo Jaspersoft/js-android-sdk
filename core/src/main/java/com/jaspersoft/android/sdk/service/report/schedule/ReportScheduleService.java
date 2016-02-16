@@ -44,6 +44,17 @@ public class ReportScheduleService {
     }
 
     @NotNull
+    public JobData updateJob(int id, @NotNull JobForm form) throws ServiceException {
+        Preconditions.checkNotNull(form, "Job form should not be null");
+        return mUseCase.updateJob(id, form);
+    }
+
+    @NotNull
+    public JobForm readJob(@NotNull int jobId) throws ServiceException {
+        return mUseCase.readJob(jobId);
+    }
+
+    @NotNull
     public Set<Integer> deleteJobs(@NotNull Set<Integer> jobIds) throws ServiceException {
         Preconditions.checkNotNull(jobIds, "Job ids should not be null");
         Preconditions.checkArgument(!jobIds.isEmpty(), "Job ids should not be empty");

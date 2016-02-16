@@ -14,6 +14,8 @@ import java.util.Set;
  * @since 2.0
  */
 public class JobForm {
+    @Nullable
+    private final Integer mVersion;
     @NotNull
     private final String mLabel;
     @Nullable
@@ -30,6 +32,7 @@ public class JobForm {
     private final JobSimpleTrigger mSimpleTrigger;
 
     JobForm(Builder builder) {
+        mVersion = builder.mVersion;
         mLabel = builder.mLabel;
         mDescription = builder.mDescription;
         mBaseOutputFilename = builder.mBaseOutputFilename;
@@ -37,6 +40,11 @@ public class JobForm {
         mRepositoryDestination = builder.mRepositoryDestination;
         mOutputFormats = builder.mOutputFormats;
         mSimpleTrigger = builder.mSimpleTrigger;
+    }
+
+    @Nullable
+    public Integer getVersion() {
+        return mVersion;
     }
 
     @NotNull
@@ -77,6 +85,7 @@ public class JobForm {
     @NotNull
     public Builder newBuilder() {
         return new Builder()
+                .withVersion(mVersion)
                 .withLabel(mLabel)
                 .withDescription(mDescription)
                 .withBaseOutputFilename(mBaseOutputFilename)
@@ -88,6 +97,7 @@ public class JobForm {
     }
 
     public static class Builder {
+        private Integer mVersion;
         private String mLabel;
         private String mDescription;
         private String mBaseOutputFilename;
@@ -96,6 +106,11 @@ public class JobForm {
         private JobSource mJobSource;
 
         private final Set<JobOutputFormat> mOutputFormats = new HashSet<>(15);
+
+        public Builder withVersion(@Nullable Integer version) {
+            mVersion = version;
+            return this;
+        }
 
         public Builder withJobSource(@NotNull JobSource jobSource) {
             mJobSource = jobSource;
@@ -123,7 +138,6 @@ public class JobForm {
             mBaseOutputFilename = baseOutputFilename;
             return this;
         }
-
 
         public Builder addOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
             Preconditions.checkNotNull(outputFormats, "Formats should not be null");

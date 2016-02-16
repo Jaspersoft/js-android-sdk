@@ -29,6 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.network.entity.dashboard.DashboardComponentCollection;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionRequestOptions;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
@@ -59,6 +60,8 @@ public class GsonFactoryTest {
 
     @ResourceFile("json/dashboard_components.json")
     TestResource mComponents;
+    @ResourceFile("json/get_job.json")
+    TestResource mGetJobResponse;
 
     @Before
     public void setUp() throws Exception {
@@ -100,5 +103,12 @@ public class GsonFactoryTest {
         Gson gson = GsonFactory.create();
         DashboardComponentCollection components = gson.fromJson(mComponents.asString(), DashboardComponentCollection.class);
         assertThat(components.getInputControlComponents() , is(not(empty())));
+    }
+
+    @Test
+    public void should_deserialize_form_with_custom_rule() throws Exception {
+        Gson gson = GsonFactory.create();
+        JobFormEntity entity = gson.fromJson(mGetJobResponse.asString(), JobFormEntity.class);
+        assertThat(entity , is(notNullValue()));
     }
 }

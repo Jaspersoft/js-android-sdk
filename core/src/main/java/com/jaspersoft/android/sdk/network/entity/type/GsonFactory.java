@@ -40,6 +40,7 @@ public final class GsonFactory {
         gsonBuilder.registerTypeAdapterFactory(new InputControlTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new ReportExecutionRequestOptionsFactory());
         gsonBuilder.registerTypeAdapterFactory(new DashboardComponentTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new JobSourceParamsWrapperTypeAdapterFactory());
         return gsonBuilder.create();
     }
 }
