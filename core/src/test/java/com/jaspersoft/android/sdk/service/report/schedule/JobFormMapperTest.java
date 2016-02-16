@@ -16,9 +16,7 @@ import java.util.*;
 
 import static junitparams.JUnitParamsRunner.$;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class JobFormMapperTest {
@@ -30,10 +28,14 @@ public class JobFormMapperTest {
 
     private static Date START_DATE;
     private static Date END_DATE;
+
+    public static final String END_DATE_SRC = "2013-11-03 16:32:05";
+    public static final String START_DATE_SRC = "2013-10-03 16:32:05";
+
     static {
         try {
-            END_DATE = DATE_FORMAT.parse("2013-11-03 16:32:05");
-            START_DATE = DATE_FORMAT.parse("2013-10-03 16:32:05");
+            END_DATE = DATE_FORMAT.parse(END_DATE_SRC);
+            START_DATE = DATE_FORMAT.parse(START_DATE_SRC);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -54,7 +56,7 @@ public class JobFormMapperTest {
                 .withRecurrenceInterval(10)
                 .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
                 .withStartDate(START_DATE)
-                .withStopDate(END_DATE);
+                .withEndDate(END_DATE);
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
@@ -64,6 +66,7 @@ public class JobFormMapperTest {
                 .build();
 
         mJobBuilder = new JobForm.Builder()
+                .withVersion(100)
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
@@ -74,7 +77,7 @@ public class JobFormMapperTest {
     }
 
     @Test
-    public void testTransform() throws Exception {
+    public void should_map_form_to_entity() throws Exception {
         JobSimpleTrigger trigger = mTriggerBuilder
                 // Force start type immediate
                 .withStartDate(null)
@@ -84,6 +87,7 @@ public class JobFormMapperTest {
                 .build();
 
         JobFormEntity entity = mJobFormMapper.transform(form);
+        assertThat(entity.getVersion(), is(100));
         assertThat(entity.getLabel(), is("my label"));
         assertThat(entity.getDescription(), is("Description"));
         assertThat(entity.getRepositoryDestination(), is("/temp"));
@@ -95,7 +99,7 @@ public class JobFormMapperTest {
         assertThat(simpleTrigger.getTimezone(), is(TIME_ZONE.getID()));
         assertThat(simpleTrigger.getCalendarName(), is("calendar name"));
         assertThat(simpleTrigger.getStartType(), is(1));
-        assertThat(simpleTrigger.getEndDate(), is("2013-11-03 16:32"));
+        assertThat(simpleTrigger.getEndDate(), is("2013-11-03 16:32:05"));
         assertThat(simpleTrigger.getOccurrenceCount(), is(1));
         assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
         assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
@@ -142,7 +146,7 @@ public class JobFormMapperTest {
         JobFormEntity entity = mJobFormMapper.transform(form);
         JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
         assertThat(simpleTrigger.getStartType(), is(2));
-        assertThat(simpleTrigger.getStartDate(), is("2013-10-03 16:32"));
+        assertThat(simpleTrigger.getStartDate(), is("2013-10-03 16:32:05"));
     }
 
     @Test
@@ -150,6 +154,59 @@ public class JobFormMapperTest {
     public void should_map_interval_to_primitive(String type) throws Exception {
         String expected = mJobFormMapper.mapInterval(RecurrenceIntervalUnit.valueOf(type));
         assertThat(expected, is(type));
+    }
+
+    @Test
+    public void should_map_entity_form_to_data_type() throws Exception {
+        JobFormEntity entity = new JobFormEntity();
+        entity.setVersion(100);
+        entity.setSimpleTrigger(createEntityTrigger());
+        entity.setDescription("description");
+        entity.setLabel("label");
+        entity.setSourceUri("/my/uri");
+        entity.setSourceParameters(Collections.singletonMap("key", Collections.singleton("value")));
+        entity.addOutputFormats(Arrays.asList("PDF"));
+        entity.setRepositoryDestination("/folder/uri");
+        entity.setBaseOutputFilename("file.txt");
+
+        JobForm expected = mJobFormMapper.transform(entity);
+
+        assertThat(expected.getLabel(), is("label"));
+        assertThat(expected.getVersion(), is(100));
+        assertThat(expected.getDescription(), is("description"));
+        assertThat(expected.getOutputFormats(), hasItem(JobOutputFormat.PDF));
+        assertThat(expected.getRepositoryDestination().getFolderUri(), is("/folder/uri"));
+        assertThat(expected.getBaseOutputFilename(), is("file.txt"));
+        assertThat(expected.getSource().getUri(), is("/my/uri"));
+        assertThat(expected.getSource().getParameters(), hasItem(new ReportParameter("key", Collections.singleton("value"))));
+    }
+
+    @Test
+    public void should_map_entity_trigger_to_data_type() throws Exception {
+        JobSimpleTriggerEntity entity = createEntityTrigger();
+
+        JobSimpleTrigger expected = mJobFormMapper.transformTrigger(entity);
+
+        assertThat(expected.getOccurrenceCount(), is(100));
+        assertThat(expected.getRecurrenceInterval(), is(200));
+        assertThat(expected.getRecurrenceIntervalUnit(), is(RecurrenceIntervalUnit.DAY));
+
+        assertThat(expected.getStartDate(), is(START_DATE));
+        assertThat(expected.getEndDate(), is(END_DATE));
+        assertThat(expected.getCalendarName(), is("Gregorian"));
+        assertThat(expected.getTimeZone(), is(TIME_ZONE));
+    }
+
+    private JobSimpleTriggerEntity createEntityTrigger() {
+        JobSimpleTriggerEntity entity = new JobSimpleTriggerEntity();
+        entity.setOccurrenceCount(100);
+        entity.setRecurrenceInterval(200);
+        entity.setRecurrenceIntervalUnit("DAY");
+        entity.setStartDate(START_DATE_SRC);
+        entity.setEndDate(END_DATE_SRC);
+        entity.setCalendarName("Gregorian");
+        entity.setTimezone(TIME_ZONE.getID());
+        return entity;
     }
 
     private Object[] intervals() {

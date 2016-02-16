@@ -62,10 +62,23 @@ class ReportScheduleUseCase {
     }
 
     public JobData createJob(JobForm form) throws ServiceException {
+        return alterJob(form, null);
+    }
+
+    public JobData updateJob(int id, JobForm form) throws ServiceException {
+        return alterJob(form, id);
+    }
+
+    private JobData alterJob(JobForm form, Integer id) throws ServiceException {
         try {
             ServerInfo info = mCacheManager.getInfo();
             JobFormEntity formEntity = mJobFormMapper.transform(form);
-            JobDescriptor jobDescriptor = mScheduleRestApi.createJob(formEntity);
+            JobDescriptor jobDescriptor;
+            if (id == null) {
+                jobDescriptor = mScheduleRestApi.createJob(formEntity);
+            } else {
+                jobDescriptor = mScheduleRestApi.updateJob(id, formEntity);
+            }
             return mJobDataMapper.transform(jobDescriptor, info.getDatetimeFormatPattern());
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
@@ -77,6 +90,17 @@ class ReportScheduleUseCase {
     public Set<Integer> deleteJobs(Set<Integer> jobIds) throws ServiceException {
         try {
             return mScheduleRestApi.deleteJobs(jobIds);
+        } catch (IOException e) {
+            throw mExceptionMapper.transform(e);
+        } catch (HttpException e) {
+            throw mExceptionMapper.transform(e);
+        }
+    }
+
+    public JobForm readJob(int jobId) throws ServiceException {
+        try {
+            JobFormEntity entity = mScheduleRestApi.requestJob(jobId);
+            return mJobFormMapper.transform(entity);
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
         } catch (HttpException e) {

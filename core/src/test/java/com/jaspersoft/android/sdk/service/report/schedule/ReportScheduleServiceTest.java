@@ -63,10 +63,17 @@ public class ReportScheduleServiceTest {
     }
 
     @Test
-    public void should_reject_null_job_form() throws Exception {
+    public void should_reject_null_job_form_for_create() throws Exception {
         expected.expectMessage("Job form should not be null");
         expected.expect(NullPointerException.class);
         scheduleService.createJob(null);
+    }
+
+    @Test
+    public void should_reject_null_job_form_for_update() throws Exception {
+        expected.expectMessage("Job form should not be null");
+        expected.expect(NullPointerException.class);
+        scheduleService.updateJob(1, null);
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.jaspersoft.android.sdk.network.entity.schedule.*;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.squareup.okhttp.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class ReportScheduleRestApi {
     }
 
     @NotNull
-    public List<JobUnitEntity> searchJob(@Nullable Map<String, Object> searchParams) throws IOException, HttpException {
+    public List<JobUnitEntity> searchJob(@NotNull Map<String, Object> searchParams) throws IOException, HttpException {
         if (searchParams != null && searchParams.containsKey("example")) {
             throw new IllegalArgumentException("Current version does not support 'example' search parameter");
         }
@@ -53,20 +52,47 @@ public class ReportScheduleRestApi {
 
     @NotNull
     public JobDescriptor createJob(@NotNull JobFormEntity form) throws IOException, HttpException {
+        return alterJob(form, null);
+    }
+
+    @NotNull
+    public JobDescriptor updateJob(int id, @NotNull JobFormEntity form) throws IOException, HttpException {
+        return alterJob(form, id);
+    }
+
+    private JobDescriptor alterJob(JobFormEntity form, Integer id) throws IOException, HttpException {
         Preconditions.checkNotNull(form, "Job form should not be null");
 
-        HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/jobs");
+        String suffix = id == null ? "" : "/" + id;
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .resolve("rest_v2/jobs" + suffix);
 
         MediaType mediaType = MediaType.parse("application/job+json; charset=UTF-8");
         RequestBody jsonRequestBody = mNetworkClient.createRequestBody(form, mediaType);
+        Request.Builder request = new Request.Builder()
+                .addHeader("Accept", "application/job+json; charset=UTF-8")
+                .url(url);
+
+        if (id == null) {
+            request.put(jsonRequestBody);
+        } else {
+            request.post(jsonRequestBody);
+        }
+
+        Response response = mNetworkClient.makeCall(request.build());
+        return mNetworkClient.deserializeJson(response, JobDescriptor.class);
+    }
+
+    @NotNull
+    public JobFormEntity requestJob(int jobId) throws IOException, HttpException {
+        HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/jobs/" + jobId);
         Request request = new Request.Builder()
-                .put(jsonRequestBody)
+                .get()
                 .addHeader("Accept", "application/job+json; charset=UTF-8")
                 .url(url)
                 .build();
-
         Response response = mNetworkClient.makeCall(request);
-        return mNetworkClient.deserializeJson(response, JobDescriptor.class);
+        return mNetworkClient.deserializeJson(response, JobFormEntity.class);
     }
 
     @NotNull

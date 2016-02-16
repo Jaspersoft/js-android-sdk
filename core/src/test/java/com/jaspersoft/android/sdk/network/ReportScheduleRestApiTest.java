@@ -91,6 +91,20 @@ public class ReportScheduleRestApiTest {
     }
 
     @Test
+    public void updates_post_job_request() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody("{}"));
+
+        JobFormEntity form = new JobFormEntity();
+        reportScheduleRestApi.updateJob(1, form);
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/job+json; charset=UTF-8"));
+        assertThat(request, containsHeader("Content-Type", "application/job+json; charset=UTF-8"));
+        assertThat(request, hasPath("/rest_v2/jobs/1"));
+        assertThat(request, wasMethod("POST"));
+    }
+
+    @Test
     public void delete_jobs_operation_rejects_null_ids() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Job ids should not be null");
@@ -117,4 +131,17 @@ public class ReportScheduleRestApiTest {
         assertThat(request, hasQuery("id", "2"));
         assertThat(request, wasMethod("DELETE"));
     }
+
+    @Test
+    public void creates_get_jobs_request() throws Exception {
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody("{}"));
+
+        reportScheduleRestApi.requestJob(1);
+
+        RecordedRequest request = mWebMockRule.get().takeRequest();
+        assertThat(request, containsHeader("Accept", "application/job+json; charset=UTF-8"));
+        assertThat(request, wasMethod("GET"));
+        assertThat(request, hasPath("rest_v2/jobs/1"));
+    }
+
 }

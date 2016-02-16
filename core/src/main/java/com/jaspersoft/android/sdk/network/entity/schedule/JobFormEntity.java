@@ -15,6 +15,9 @@ public class JobFormEntity {
     private String label;
 
     @Expose
+    private int version;
+
+    @Expose
     private String description;
 
     @Expose
@@ -103,23 +106,32 @@ public class JobFormEntity {
         return trigger.getSimpleTrigger();
     }
 
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof JobFormEntity)) return false;
 
-        JobFormEntity that = (JobFormEntity) o;
+        JobFormEntity entity = (JobFormEntity) o;
 
-        if (baseOutputFilename != null ? !baseOutputFilename.equals(that.baseOutputFilename) : that.baseOutputFilename != null)
+        if (version != entity.version) return false;
+        if (baseOutputFilename != null ? !baseOutputFilename.equals(entity.baseOutputFilename) : entity.baseOutputFilename != null)
             return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (label != null ? !label.equals(that.label) : that.label != null) return false;
-        if (outputFormats != null ? !outputFormats.equals(that.outputFormats) : that.outputFormats != null)
+        if (description != null ? !description.equals(entity.description) : entity.description != null) return false;
+        if (label != null ? !label.equals(entity.label) : entity.label != null) return false;
+        if (outputFormats != null ? !outputFormats.equals(entity.outputFormats) : entity.outputFormats != null)
             return false;
-        if (repositoryDestination != null ? !repositoryDestination.equals(that.repositoryDestination) : that.repositoryDestination != null)
+        if (repositoryDestination != null ? !repositoryDestination.equals(entity.repositoryDestination) : entity.repositoryDestination != null)
             return false;
-        if (source != null ? !source.equals(that.source) : that.source != null) return false;
-        if (trigger != null ? !trigger.equals(that.trigger) : that.trigger != null) return false;
+        if (source != null ? !source.equals(entity.source) : entity.source != null) return false;
+        if (trigger != null ? !trigger.equals(entity.trigger) : entity.trigger != null) return false;
 
         return true;
     }
@@ -127,6 +139,7 @@ public class JobFormEntity {
     @Override
     public final int hashCode() {
         int result = label != null ? label.hashCode() : 0;
+        result = 31 * result + version;
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (baseOutputFilename != null ? baseOutputFilename.hashCode() : 0);
         result = 31 * result + (source != null ? source.hashCode() : 0);
@@ -135,6 +148,4 @@ public class JobFormEntity {
         result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
         return result;
     }
-
-
 }

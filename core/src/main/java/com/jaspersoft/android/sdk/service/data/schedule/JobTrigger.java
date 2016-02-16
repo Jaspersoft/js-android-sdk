@@ -17,18 +17,18 @@ public abstract class JobTrigger {
     @Nullable
     private final Date mStartDate;
     @Nullable
-    private final Date mStopDate;
+    private final Date mEndDate;
 
     protected JobTrigger(
             @Nullable TimeZone timeZone,
             @Nullable String calendarName,
             @Nullable Date startDate,
-            @Nullable Date stopDate
+            @Nullable Date endDate
     ) {
         mTimeZone = timeZone;
         mCalendarName = calendarName;
         mStartDate = startDate;
-        mStopDate = stopDate;
+        mEndDate = endDate;
     }
 
     @Nullable
@@ -47,8 +47,8 @@ public abstract class JobTrigger {
     }
 
     @Nullable
-    public Date getStopDate() {
-        return mStopDate;
+    public Date getEndDate() {
+        return mEndDate;
     }
 
 }

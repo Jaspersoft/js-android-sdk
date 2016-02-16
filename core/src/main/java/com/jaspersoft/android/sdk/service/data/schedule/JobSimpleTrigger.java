@@ -22,7 +22,7 @@ public class JobSimpleTrigger extends JobTrigger {
                 builder.mTimeZone,
                 builder.mCalendarName,
                 builder.mStartDate,
-                builder.mStopDate
+                builder.mEndDate
         );
 
         mOccurrenceCount = builder.mOccurrenceCount;
@@ -47,7 +47,7 @@ public class JobSimpleTrigger extends JobTrigger {
         private TimeZone mTimeZone;
         private String mCalendarName;
         private Date mStartDate;
-        private Date mStopDate;
+        private Date mEndDate;
         private Integer mOccurrenceCount;
         private Integer mRecurrenceInterval;
         private RecurrenceIntervalUnit mRecurrenceIntervalUnit;
@@ -67,8 +67,8 @@ public class JobSimpleTrigger extends JobTrigger {
             return this;
         }
 
-        public Builder withStopDate(@Nullable Date endDate) {
-            mStopDate = endDate;
+        public Builder withEndDate(@Nullable Date endDate) {
+            mEndDate = endDate;
             return this;
         }
 
