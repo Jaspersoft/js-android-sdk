@@ -34,7 +34,7 @@ public class ReportScheduleServiceTest {
 
         updateJob(bundle, service, job);
 
-        readJob(service, job);
+        readJob(service, job.getId());
 
         List<JobUnit> jobUnits = searchJob(service);
 
@@ -63,12 +63,6 @@ public class ReportScheduleServiceTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, 5);
 
-        JobSimpleTrigger trigger = new JobSimpleTrigger.Builder()
-                .withOccurrenceCount(2)
-                .withRecurrenceInterval(2)
-                .withRecurrenceIntervalUnit(RecurrenceIntervalUnit.DAY)
-                .build();
-
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
                 .build();
@@ -80,8 +74,7 @@ public class ReportScheduleServiceTest {
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
                 .addOutputFormat(JobOutputFormat.HTML)
-                .withBaseOutputFilename("output")
-                .withSimpleTrigger(trigger);
+                .withBaseOutputFilename("output");
         if (bundle.hasParams()) {
             source.withParameters(bundle.getParams());
         }
@@ -100,8 +93,7 @@ public class ReportScheduleServiceTest {
         return units;
     }
 
-    private void readJob(ReportScheduleService service, JobData job) throws ServiceException {
-        int jobId = job.getId();
+    private void readJob(ReportScheduleService service, int jobId) throws ServiceException {
         JobForm jobForm = service.readJob(jobId);
         assertThat(jobForm, is(notNullValue()));
     }
