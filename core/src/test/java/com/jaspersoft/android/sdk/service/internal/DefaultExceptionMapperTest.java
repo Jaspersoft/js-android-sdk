@@ -160,4 +160,49 @@ public class DefaultExceptionMapperTest {
         assertThat(serviceException.code(), is(StatusCodes.JOB_DUPLICATE_OUTPUT_FILE_NAME));
         assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
     }
+
+    @Test
+    public void should_transform_job_output_folder_does_not_exist() throws Exception {
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("error.report.job.output.folder.inexistent"));
+        when(mHttpException.code()).thenReturn(400);
+        when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
+
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
+        assertThat(serviceException.code(), is(StatusCodes.JOB_OUTPUT_FOLDER_DOES_NOT_EXIST));
+        assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
+    }
+
+    @Test
+    public void should_transform_job_output_folder_is_not_writable() throws Exception {
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("error.report.job.output.folder.notwriteable"));
+        when(mHttpException.code()).thenReturn(400);
+        when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
+
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
+        assertThat(serviceException.code(), is(StatusCodes.JOB_OUTPUT_FOLDER_IS_NOT_WRITABLE));
+        assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
+    }
+
+    @Test
+    public void should_transform_job_output_filename_invalid_chars() throws Exception {
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("error.invalid.chars"));
+        when(mDescriptor.getFieldByCode("error.invalid.chars")).thenReturn("baseOutputFilename");
+        when(mHttpException.code()).thenReturn(400);
+        when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
+
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
+        assertThat(serviceException.code(), is(StatusCodes.JOB_OUTPUT_FILENAME_INVALID_CHARS));
+        assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
+    }
+
+    @Test
+    public void should_transform_job_start_date_in_the_past() throws Exception {
+        when(mDescriptor.getErrorCodes()).thenReturn(Collections.singleton("error.before.current.date"));
+        when(mHttpException.code()).thenReturn(400);
+        when(mHttpException.getDescriptor()).thenReturn(mDescriptor);
+
+        ServiceException serviceException = defaultExceptionMapper.transform(mHttpException);
+        assertThat(serviceException.code(), is(StatusCodes.JOB_START_DATE_IN_THE_PAST));
+        assertThat(serviceException.getCause(), is(instanceOf(HttpException.class)));
+    }
 }

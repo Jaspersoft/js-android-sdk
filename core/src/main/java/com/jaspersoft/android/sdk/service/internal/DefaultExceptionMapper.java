@@ -28,6 +28,7 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -80,10 +81,20 @@ public final class DefaultExceptionMapper implements ServiceExceptionMapper {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.RESOURCE_NOT_FOUND);
         } else if (descriptor.getErrorCodes().contains("error.duplicate.report.job.output.filename")) {
             return new ServiceException("Duplicate job output file name", e, StatusCodes.JOB_DUPLICATE_OUTPUT_FILE_NAME);
+        } else if (descriptor.getErrorCodes().contains("error.before.current.date")) {
+            return new ServiceException("Start date cannot be in the past", e, StatusCodes.JOB_START_DATE_IN_THE_PAST);
+        } else if (descriptor.getErrorCodes().contains("error.report.job.output.folder.inexistent")) {
+            return new ServiceException("Output folder does not exist", e, StatusCodes.JOB_OUTPUT_FOLDER_DOES_NOT_EXIST);
+        } else if (descriptor.getErrorCodes().contains("error.report.job.output.folder.notwriteable")) {
+            return new ServiceException("Output folder does not exist", e, StatusCodes.JOB_OUTPUT_FOLDER_IS_NOT_WRITABLE);
+        } else if (descriptor.getErrorCodes().contains("error.invalid.chars")) {
+            String getFieldByCode = descriptor.getFieldByCode("error.invalid.chars");
+            if (getFieldByCode != null && getFieldByCode.contains("baseOutputFilename")) {
+                return new ServiceException("Start date cannot be in the past", e, StatusCodes.JOB_OUTPUT_FILENAME_INVALID_CHARS);
+            }
         } else if (descriptor.getErrorCodes().contains("export.pages.out.of.range")) {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.EXPORT_PAGE_OUT_OF_RANGE);
-        } else {
-            return mapHttpCodesToState(e);
         }
+        return mapHttpCodesToState(e);
     }
 }

@@ -72,4 +72,15 @@ public final class ErrorDescriptor {
                 ", parameters=" + Arrays.toString(parameters.toArray()) +
                 '}';
     }
+
+    public String getFieldByCode(String requestedErrorCode) {
+        if (error == null || error.isEmpty()) return null;
+
+        for (ErrorDescriptorItem item : error) {
+            if (item.getErrorCode().equals(requestedErrorCode)) {
+                return item.getField();
+            }
+        }
+        return null;
+    }
 }

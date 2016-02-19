@@ -51,6 +51,10 @@ public final class StatusCodes {
 
     // SCHEDULE
     public static final int JOB_DUPLICATE_OUTPUT_FILE_NAME = 500;
+    public static final int JOB_START_DATE_IN_THE_PAST = 501;
+    public static final int JOB_OUTPUT_FILENAME_INVALID_CHARS = 502;
+    public static final int JOB_OUTPUT_FOLDER_DOES_NOT_EXIST = 503;
+    public static final int JOB_OUTPUT_FOLDER_IS_NOT_WRITABLE = 504;
 
     private StatusCodes() {}
 }
