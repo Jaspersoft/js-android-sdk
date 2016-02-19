@@ -94,10 +94,12 @@ class JobFormMapper {
         builder.withBaseOutputFilename(entity.getBaseOutputFilename());
 
         Collection<String> formats = entity.getOutputFormats();
+        List<JobOutputFormat> formatList = new ArrayList<>();
         for (String format : formats) {
             JobOutputFormat out = JobOutputFormat.valueOf(format);
-            builder.addOutputFormat(out);
+            formatList.add(out);
         }
+        builder.withOutputFormats(formatList);
 
         JobSimpleTriggerEntity triggerEntity = entity.getSimpleTrigger();
         String startDate = triggerEntity.getStartDate();

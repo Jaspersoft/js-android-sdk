@@ -73,7 +73,7 @@ public class ReportScheduleServiceTest {
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .withBaseOutputFilename("output");
         if (bundle.hasParams()) {
             source.withParameters(bundle.getParams());

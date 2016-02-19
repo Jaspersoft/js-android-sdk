@@ -33,7 +33,7 @@ public class JobFormTest {
         expected.expectMessage("Job can not be scheduled without output format");
 
         new JobForm.Builder()
-                .addOutputFormats(Collections.<JobOutputFormat>emptySet())
+                .withOutputFormats(Collections.<JobOutputFormat>emptySet())
                 .build();
     }
 
@@ -46,7 +46,7 @@ public class JobFormTest {
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .build();
     }
 
@@ -59,7 +59,7 @@ public class JobFormTest {
                 .withLabel("my label")
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .build();
     }
 
@@ -72,7 +72,7 @@ public class JobFormTest {
                 .withLabel("my label")
                 .withRepositoryDestination(mDestination)
                 .withBaseOutputFilename("output")
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .build();
     }
 
@@ -85,7 +85,7 @@ public class JobFormTest {
                 .withLabel("my label")
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .build();
     }
 
@@ -107,15 +107,7 @@ public class JobFormTest {
     public void builder_should_not_accept_null_for_formats() throws Exception {
         expected.expect(NullPointerException.class);
         expected.expectMessage("Formats should not be null");
-        new JobForm.Builder().addOutputFormats(null);
-    }
-
-
-    @Test
-    public void builder_should_not_accept_null_for_format() throws Exception {
-        expected.expect(NullPointerException.class);
-        expected.expectMessage("Format should not be null");
-        new JobForm.Builder().addOutputFormat(null);
+        new JobForm.Builder().withOutputFormats(null);
     }
 
     @Test
@@ -125,7 +117,7 @@ public class JobFormTest {
                 .withRepositoryDestination(mDestination)
                 .withJobSource(mSource)
                 .withBaseOutputFilename("output")
-                .addOutputFormat(JobOutputFormat.HTML)
+                .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
                 .build();
         JobForm expected = form.newBuilder().build();
         assertThat(expected.getLabel(), is(form.getLabel()));

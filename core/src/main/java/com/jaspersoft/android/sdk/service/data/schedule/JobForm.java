@@ -100,7 +100,7 @@ public class JobForm {
                 .withStartDate(mStartDate)
                 .withTimeZone(mTimeZone)
                 .withDescription(mDescription)
-                .addOutputFormats(mOutputFormats);
+                .withOutputFormats(mOutputFormats);
     }
 
     public static class Builder {
@@ -113,7 +113,7 @@ public class JobForm {
         private Date mStartDate;
         private TimeZone mTimeZone;
 
-        private final Set<JobOutputFormat> mOutputFormats = new HashSet<>(15);
+        private Set<JobOutputFormat> mOutputFormats;
 
         public Builder withVersion(@Nullable Integer version) {
             mVersion = version;
@@ -147,15 +147,9 @@ public class JobForm {
             return this;
         }
 
-        public Builder addOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
+        public Builder withOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
             Preconditions.checkNotNull(outputFormats, "Formats should not be null");
-            mOutputFormats.addAll(Collections.unmodifiableCollection(outputFormats));
-            return this;
-        }
-
-        public Builder addOutputFormat(@NotNull JobOutputFormat outputFormat) {
-            Preconditions.checkNotNull(outputFormat, "Format should not be null");
-            mOutputFormats.add(outputFormat);
+            mOutputFormats = new HashSet<>(outputFormats);
             return this;
         }
 

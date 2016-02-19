@@ -55,6 +55,9 @@ public class JobFormMapperTest {
         JobSource source = new JobSource.Builder()
                 .withUri("/my/uri")
                 .build();
+        List<JobOutputFormat> jobOutputFormats = new ArrayList<>();
+        jobOutputFormats.add(JobOutputFormat.HTML);
+        jobOutputFormats.add(JobOutputFormat.CSV);
 
         mJobBuilder = new JobForm.Builder()
                 .withVersion(100)
@@ -62,8 +65,7 @@ public class JobFormMapperTest {
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
                 .withJobSource(source)
-                .addOutputFormat(JobOutputFormat.HTML)
-                .addOutputFormats(Collections.singletonList(JobOutputFormat.CSV))
+                .withOutputFormats(jobOutputFormats)
                 .withBaseOutputFilename("output")
                 .withStartDate(START_DATE)
                 .withTimeZone(TIME_ZONE);
