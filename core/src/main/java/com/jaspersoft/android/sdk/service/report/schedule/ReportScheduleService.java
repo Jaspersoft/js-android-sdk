@@ -7,8 +7,6 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.JobExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
-import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
-import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -165,8 +163,7 @@ public class ReportScheduleService {
         JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
         ServiceExceptionMapper exceptionMapper = JobExceptionMapper.getInstance();
 
-        InfoCache cache = new InMemoryInfoCache();
-        InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
 
         JobDataMapper jobDataMapper = new JobDataMapper();
         JobFormMapper jobFormMapper = new JobFormMapper();

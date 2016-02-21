@@ -37,7 +37,7 @@ public class InMemoryInfoCacheTest {
 
     @Before
     public void setUp() throws Exception {
-        mInfoCache = new InMemoryInfoCache();
+        mInfoCache = InMemoryInfoCache.INSTANCE;
     }
 
     @Test

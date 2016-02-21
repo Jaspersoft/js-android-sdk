@@ -30,8 +30,6 @@ import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.*;
-import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
-import com.jaspersoft.android.sdk.service.internal.info.InfoCache;
 import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -170,11 +168,10 @@ public class RepositoryService {
     public static RepositoryService newService(@NotNull AuthorizedClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
 
-        InfoCache cache = new InMemoryInfoCache();
         RepositoryRestApi repositoryRestApi = client.repositoryApi();
         ServiceExceptionMapper defaultExMapper = DefaultExceptionMapper.getInstance();
         CallExecutor callExecutor = new DefaultCallExecutor(defaultExMapper);
-        InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
+        InfoCacheManager cacheManager = InfoCacheManager.create(client);
 
         ResourcesMapper resourceMapper = new ResourcesMapper();
         SearchUseCase searchUseCase = new SearchUseCase(

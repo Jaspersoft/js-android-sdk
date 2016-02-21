@@ -97,15 +97,6 @@ class AuthRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        HttpUrl url1 = mNetworkClient.getBaseUrl().resolve("rest_v2/serverInfo/edition");
-        Request request1 = new Request.Builder()
-                .addHeader("Accept", "text/plain; charset=UTF-8")
-                .url(url1)
-                .get()
-                .build();
-        mNetworkClient.makeCall(request1);
-
-
         HttpUrl url2 = mNetworkClient.getBaseUrl().resolve("GetEncryptionKey");
 
         Request request2 = new Request.Builder()

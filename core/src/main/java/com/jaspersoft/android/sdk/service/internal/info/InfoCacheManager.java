@@ -46,10 +46,10 @@ public class InfoCacheManager {
         mInfoCache = infoCache;
     }
 
-    public static InfoCacheManager create(AuthorizedClient client, InfoCache cache) {
+    public static InfoCacheManager create(AuthorizedClient client) {
         ServerInfoService serverInfoService = ServerInfoService.newService(client);
         String baseUrl = client.getBaseUrl();
-        return new InfoCacheManager(baseUrl, serverInfoService, cache);
+        return new InfoCacheManager(baseUrl, serverInfoService, InMemoryInfoCache.INSTANCE);
     }
 
     public ServerInfo getInfo() throws ServiceException {
