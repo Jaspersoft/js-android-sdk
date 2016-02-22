@@ -9,12 +9,22 @@ import com.google.gson.annotations.Expose;
 class JobTriggerWrapper {
     @Expose
     private JobSimpleTriggerEntity simpleTrigger;
+    @Expose
+    private JobCalendarTriggerEntity calendarTrigger;
 
     public JobSimpleTriggerEntity getSimpleTrigger() {
         return simpleTrigger;
     }
 
+    public JobCalendarTriggerEntity getCalendarTrigger() {
+        return calendarTrigger;
+    }
+
     public void setSimpleTrigger(JobSimpleTriggerEntity simpleTrigger) {
         this.simpleTrigger = simpleTrigger;
+    }
+
+    public void setCalendarTrigger(JobCalendarTriggerEntity calendarTrigger) {
+        this.calendarTrigger = calendarTrigger;
     }
 }

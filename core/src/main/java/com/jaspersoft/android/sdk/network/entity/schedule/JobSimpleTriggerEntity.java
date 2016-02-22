@@ -8,17 +8,17 @@ import com.google.gson.annotations.Expose;
  */
 public class JobSimpleTriggerEntity extends JobTriggerEntity {
     @Expose
-    private Integer occurrenceCount;
+    private int occurrenceCount;
     @Expose
     private Integer recurrenceInterval;
     @Expose
     private String recurrenceIntervalUnit;
 
-    public Integer getOccurrenceCount() {
+    public int getOccurrenceCount() {
         return occurrenceCount;
     }
 
-    public void setOccurrenceCount(Integer occurrenceCount) {
+    public void setOccurrenceCount(int occurrenceCount) {
         this.occurrenceCount = occurrenceCount;
     }
 

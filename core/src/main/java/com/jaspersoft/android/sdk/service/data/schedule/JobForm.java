@@ -29,6 +29,8 @@ public class JobForm {
     private final Date mStartDate;
     @Nullable
     private final TimeZone mTimeZone;
+    @Nullable
+    private final Trigger mTrigger;
 
 
     JobForm(Builder builder) {
@@ -41,6 +43,7 @@ public class JobForm {
         mOutputFormats = builder.mOutputFormats;
         mStartDate = builder.mStartDate;
         mTimeZone = builder.mTimeZone;
+        mTrigger = builder.mTrigger;
     }
 
     @Nullable
@@ -88,6 +91,11 @@ public class JobForm {
         return mTimeZone;
     }
 
+    @Nullable
+    public Trigger getTrigger() {
+        return mTrigger;
+    }
+
     @NotNull
     public Builder newBuilder() {
         return new Builder()
@@ -100,7 +108,8 @@ public class JobForm {
                 .withStartDate(mStartDate)
                 .withTimeZone(mTimeZone)
                 .withDescription(mDescription)
-                .withOutputFormats(mOutputFormats);
+                .withOutputFormats(mOutputFormats)
+                .withTrigger(mTrigger);
     }
 
     public static class Builder {
@@ -114,6 +123,7 @@ public class JobForm {
         private TimeZone mTimeZone;
 
         private Set<JobOutputFormat> mOutputFormats;
+        private Trigger mTrigger;
 
         public Builder withVersion(@Nullable Integer version) {
             mVersion = version;
@@ -160,6 +170,11 @@ public class JobForm {
 
         public Builder withTimeZone(@Nullable TimeZone timeZone) {
             mTimeZone = timeZone;
+            return this;
+        }
+
+        public Builder withTrigger(@Nullable Trigger trigger) {
+            mTrigger = trigger;
             return this;
         }
 
