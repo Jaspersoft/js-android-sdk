@@ -133,7 +133,7 @@ public class ReportScheduleUseCaseTest {
         JobForm expected = useCase.readJob(JOB_ID);
         assertThat(mJobForm, is(expected));
 
-        verify(mJobFormMapper).transform(mJobFormEntity);
+        verify(mJobFormMapper).toDataForm(mJobFormEntity);
         verify(mScheduleRestApi).requestJob(JOB_ID);
     }
 
@@ -240,9 +240,9 @@ public class ReportScheduleUseCaseTest {
                 .thenReturn(SEARCH_PARAMS);
         when(mJobDataMapper.transform(any(JobDescriptor.class), any(SimpleDateFormat.class)))
                 .thenReturn(mJobData);
-        when(mJobFormMapper.transform(any(JobForm.class)))
+        when(mJobFormMapper.toFormEntity(any(JobForm.class)))
                 .thenReturn(mJobFormEntity);
-        when(mJobFormMapper.transform(any(JobFormEntity.class)))
+        when(mJobFormMapper.toDataForm(any(JobFormEntity.class)))
                 .thenReturn(mJobForm);
         when(mJobUnitMapper.transform(anyListOf(JobUnitEntity.class), any(SimpleDateFormat.class)))
                 .thenReturn(Collections.singletonList(mJobUnit));

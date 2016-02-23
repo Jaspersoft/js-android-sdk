@@ -72,7 +72,7 @@ class ReportScheduleUseCase {
     private JobData alterJob(JobForm form, Integer id) throws ServiceException {
         try {
             ServerInfo info = mCacheManager.getInfo();
-            JobFormEntity formEntity = mJobFormMapper.transform(form);
+            JobFormEntity formEntity = mJobFormMapper.toFormEntity(form);
             JobDescriptor jobDescriptor;
             if (id == null) {
                 jobDescriptor = mScheduleRestApi.createJob(formEntity);
@@ -100,7 +100,7 @@ class ReportScheduleUseCase {
     public JobForm readJob(int jobId) throws ServiceException {
         try {
             JobFormEntity entity = mScheduleRestApi.requestJob(jobId);
-            return mJobFormMapper.transform(entity);
+            return mJobFormMapper.toDataForm(entity);
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
         } catch (HttpException e) {

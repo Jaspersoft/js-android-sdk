@@ -74,6 +74,10 @@ public class JobFormEntity {
         trigger.setSimpleTrigger(simpleTrigger);
     }
 
+    public void setCalendarTrigger(JobCalendarTriggerEntity calendarTrigger) {
+        trigger.setCalendarTrigger(calendarTrigger);
+    }
+
     public String getLabel() {
         return label;
     }
@@ -104,6 +108,18 @@ public class JobFormEntity {
 
     public JobSimpleTriggerEntity getSimpleTrigger() {
         return trigger.getSimpleTrigger();
+    }
+
+    public JobCalendarTriggerEntity getCalendarTrigger() {
+        return trigger.getCalendarTrigger();
+    }
+
+    public JobTriggerEntity getTrigger() {
+        JobSimpleTriggerEntity simpleTrigger = getSimpleTrigger();
+        if (simpleTrigger == null) {
+            return getCalendarTrigger();
+        }
+        return simpleTrigger;
     }
 
     public void setVersion(int version) {
