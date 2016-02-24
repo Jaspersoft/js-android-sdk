@@ -59,19 +59,27 @@ public final class DefaultExceptionMapper implements ServiceExceptionMapper {
 
     @NotNull
     private static ServiceException mapHttpCodesToState(HttpException e) {
-        switch (e.code()) {
-            case 500:
-                return new ServiceException("Server encountered unexpected error", e, StatusCodes.INTERNAL_ERROR);
-            case 404:
-                return new ServiceException("Service exist but requested entity not found", e, StatusCodes.CLIENT_ERROR);
-            case 403:
-                return new ServiceException("User has no access to resource", e, StatusCodes.PERMISSION_DENIED_ERROR);
-            case 401:
-                return new ServiceException("User is not authorized", e, StatusCodes.AUTHORIZATION_ERROR);
-            case 400:
-                return new ServiceException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
-            default:
-                return new ServiceException("The operation failed with no more detailed information", e, StatusCodes.UNDEFINED_ERROR);
+        int code = e.code();
+        if (code >= 500) {
+            return new ServiceException("Server encountered unexpected error", e, StatusCodes.INTERNAL_ERROR);
+        } else {
+            ServiceException undefinedError = new ServiceException("The operation failed with no more detailed information", e, StatusCodes.UNDEFINED_ERROR);
+            if (code >= 400 && code < 500) {
+                switch (code) {
+                    case 404:
+                        return new ServiceException("Service exist but requested entity not found", e, StatusCodes.CLIENT_ERROR);
+                    case 403:
+                        return new ServiceException("User has no access to resource", e, StatusCodes.PERMISSION_DENIED_ERROR);
+                    case 401:
+                        return new ServiceException("User is not authorized", e, StatusCodes.AUTHORIZATION_ERROR);
+                    case 400:
+                        return new ServiceException("Some parameters in request not valid", e, StatusCodes.CLIENT_ERROR);
+                    default:
+                        return undefinedError;
+                }
+            } else {
+                return undefinedError;
+            }
         }
     }
 
