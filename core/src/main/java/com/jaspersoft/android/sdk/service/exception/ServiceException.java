@@ -24,12 +24,16 @@
 
 package com.jaspersoft.android.sdk.service.exception;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 public class ServiceException extends Exception {
     private final int mCode;
+    private List<String> mArguments = Collections.emptyList();
 
     public ServiceException(String message, Throwable cause, int code) {
         super(message, cause);
@@ -38,5 +42,17 @@ public class ServiceException extends Exception {
 
     public int code() {
         return mCode;
+    }
+
+    public void setArguments(List<String> arguments) {
+        if (arguments == null){
+            mArguments = Collections.emptyList();
+        } else {
+            mArguments = Collections.unmodifiableList(arguments);
+        }
+    }
+
+    public List<String> getArguments() {
+        return mArguments;
     }
 }

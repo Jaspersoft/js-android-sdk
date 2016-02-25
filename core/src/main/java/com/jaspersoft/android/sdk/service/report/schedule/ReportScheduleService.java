@@ -5,6 +5,7 @@ import com.jaspersoft.android.sdk.service.data.schedule.JobData;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.JobExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.info.InMemoryInfoCache;
@@ -66,7 +67,8 @@ public class ReportScheduleService {
         Preconditions.checkNotNull(client, "Client should not be null");
 
         JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
-        ServiceExceptionMapper exceptionMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
+        JobExceptionMapper exceptionMapper = new JobExceptionMapper(defaultMapper);
 
         InfoCache cache = new InMemoryInfoCache();
         InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
