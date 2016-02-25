@@ -55,6 +55,8 @@ public final class StatusCodes {
     public static final int JOB_OUTPUT_FILENAME_INVALID_CHARS = 502;
     public static final int JOB_OUTPUT_FOLDER_DOES_NOT_EXIST = 503;
     public static final int JOB_OUTPUT_FOLDER_IS_NOT_WRITABLE = 504;
+    public static final int JOB_LABEL_TOO_LONG = 505;
+    public static final int JOB_OUTPUT_FILENAME_TOO_LONG = 506;
 
     private StatusCodes() {}
 }

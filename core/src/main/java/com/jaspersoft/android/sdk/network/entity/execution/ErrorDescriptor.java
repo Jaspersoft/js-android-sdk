@@ -32,7 +32,7 @@ import java.util.*;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ErrorDescriptor {
+public class ErrorDescriptor {
     @Expose
     private String errorCode;
     @Expose
@@ -64,6 +64,18 @@ public final class ErrorDescriptor {
         return parameters;
     }
 
+    public ErrorDescriptorItem getInnerError(String errorCode) {
+        if (error == null || error.isEmpty()) {
+            return null;
+        }
+        for (ErrorDescriptorItem item : error) {
+            if (errorCode.equals(item.getErrorCode())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "ErrorDescriptor{" +
@@ -71,16 +83,5 @@ public final class ErrorDescriptor {
                 ", message='" + message + '\'' +
                 ", parameters=" + Arrays.toString(parameters.toArray()) +
                 '}';
-    }
-
-    public String getFieldByCode(String requestedErrorCode) {
-        if (error == null || error.isEmpty()) return null;
-
-        for (ErrorDescriptorItem item : error) {
-            if (item.getErrorCode().equals(requestedErrorCode)) {
-                return item.getField();
-            }
-        }
-        return null;
     }
 }
