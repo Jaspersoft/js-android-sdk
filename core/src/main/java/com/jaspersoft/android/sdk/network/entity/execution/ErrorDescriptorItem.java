@@ -2,7 +2,7 @@ package com.jaspersoft.android.sdk.network.entity.execution;
 
 import com.google.gson.annotations.Expose;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -14,7 +14,7 @@ public class ErrorDescriptorItem {
     @Expose
     private String field;
     @Expose
-    private Set<String> errorArguments;
+    private List<String> errorArguments;
 
     public String getErrorCode() {
         return errorCode;
@@ -24,7 +24,14 @@ public class ErrorDescriptorItem {
         return field;
     }
 
-    public Set<String> getErrorArguments() {
+    public List<String> getErrorArguments() {
         return errorArguments;
+    }
+
+    public String getErrorArgument(int index) {
+        if (errorArguments == null || errorArguments.isEmpty()) {
+            return null;
+        }
+        return errorArguments.get(index);
     }
 }
