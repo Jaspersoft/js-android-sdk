@@ -33,7 +33,7 @@ import java.util.Set;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ReportExecutionDescriptor {
     @Expose

@@ -25,8 +25,10 @@
 package com.jaspersoft.android.sdk.service.report;
 
 /**
+ * Currently supported formats of exports
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum ReportFormat {
     HTML, PDF, XLS

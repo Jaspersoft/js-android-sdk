@@ -33,16 +33,38 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
+ * Public API allows to wait for report completion, wait for report completion and performs export.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public abstract class ReportExecution {
+    /**
+     * Initiates report export process
+     *
+     * @param options allows to configure export process of JRS side
+     * @return export for corresponding execution
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public abstract ReportExport export(@NotNull ReportExportOptions options) throws ServiceException;
 
+    /**
+     * Performs series of requests until the status reach completion or fail response
+     *
+     * @return details of execution
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public abstract ReportMetadata waitForReportCompletion() throws ServiceException;
 
+    /**
+     * Updates and restart report execution
+     *
+     * @param newParameters that force execution process to be restarted
+     * @return new report execution
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public abstract ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException;
 }

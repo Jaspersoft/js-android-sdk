@@ -33,7 +33,7 @@ import java.io.InputStreamReader;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class NetworkClient {
     private final OkHttpClient mClient;

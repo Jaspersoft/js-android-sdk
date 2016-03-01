@@ -25,9 +25,20 @@
 package com.jaspersoft.android.sdk.network;
 
 /**
+ * Describes authentication policies.
+ * SDK keeps all session related stuff.
+ * Corresponding class is only way to alter behavior of restoration policy.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum AuthPolicy {
-    FAIL_FAST, RETRY;
+    /**
+     * If 401 error encountered SDK will not restore session
+     */
+    FAIL_FAST,
+    /**
+     * If 401 error encountered SDK will keep restoring session, while credentials are correct
+     */
+    RETRY;
 }

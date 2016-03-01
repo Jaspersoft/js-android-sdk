@@ -32,7 +32,7 @@ import java.io.InputStream;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class RetrofitOutputResource implements OutputResource {
     private final ResponseBody mResponse;

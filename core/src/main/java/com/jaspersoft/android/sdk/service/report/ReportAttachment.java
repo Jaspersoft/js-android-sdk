@@ -30,8 +30,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
 /**
+ * Public API that wraps concrete attachment requested by user.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportAttachment {
     private final ExportExecutionApi mExportExecutionApi;
@@ -50,11 +52,22 @@ public class ReportAttachment {
         mFileName = fileName;
     }
 
+    /**
+     * File name of attachment associated to file on JRS side
+     *
+     * @return file name with extension
+     */
     @NotNull
     public String getFileName() {
         return mFileName;
     }
 
+    /**
+     * Performs network operation that returns output of attachment
+     *
+     * @return output of export that wraps {@link java.io.InputStream}
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public ResourceOutput download() throws ServiceException {
         return mExportExecutionApi.downloadAttachment(

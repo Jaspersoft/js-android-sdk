@@ -53,7 +53,7 @@ import static org.hamcrest.core.IsNot.not;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @SuppressWarnings("unchecked")
 public class InputControlRestApiTest {

@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class JobForm {
     @Nullable
@@ -125,54 +125,114 @@ public class JobForm {
         private Set<JobOutputFormat> mOutputFormats;
         private Trigger mTrigger;
 
+        /**
+         * Allows to specify version of form. One is required for update operations.
+         *
+         * @param version can be any whole number that represents
+         * @return builder for convenient configuration
+         */
         public Builder withVersion(@Nullable Integer version) {
             mVersion = version;
             return this;
         }
 
+        /**
+         * Allows to specify report that was targeted for job execution.
+         *
+         * @param jobSource object that encapsulates job source metadata
+         * @return builder for convenient configuration
+         */
         public Builder withJobSource(@NotNull JobSource jobSource) {
             mJobSource = jobSource;
             return this;
         }
 
+        /**
+         * Allows to specify destination, such as output folder where result of schedule will be stored
+         *
+         * @param repositoryDestination the place where schedule execution artifacts will be stored
+         * @return builder for convenient configuration
+         */
         public Builder withRepositoryDestination(@NotNull RepositoryDestination repositoryDestination) {
             mRepositoryDestination = repositoryDestination;
             return this;
         }
 
+        /**
+         * Allows to specify the name of schedule job
+         *
+         * @param label name of job
+         * @return builder for convenient configuration
+         */
         public Builder withLabel(@NotNull String label) {
             Preconditions.checkNotNull(label, "Label should not be null");
             mLabel = label;
             return this;
         }
 
+        /**
+         * Allows to specify the description of schedule job
+         *
+         * @param description of job
+         * @return builder for convenient configuration
+         */
         public Builder withDescription(@Nullable String description) {
             mDescription = description;
             return this;
         }
 
+        /**
+         * Name of base output file
+         *
+         * @param baseOutputFilename any acceptable name that is restricted by set of invalid file system characters
+         * @return builder for convenient configuration
+         */
         public Builder withBaseOutputFilename(@NotNull String baseOutputFilename) {
             Preconditions.checkNotNull(baseOutputFilename, "Output file name should not be null");
             mBaseOutputFilename = baseOutputFilename;
             return this;
         }
 
+        /**
+         * Allows to specify collection of target output formats
+         *
+         * @param outputFormats any allowed job schedule formats
+         * @return builder for convenient configuration
+         */
         public Builder withOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
             Preconditions.checkNotNull(outputFormats, "Formats should not be null");
             mOutputFormats = new HashSet<>(outputFormats);
             return this;
         }
 
+        /**
+         * Allows to specify start data of job schedule execution
+         *
+         * @param startDate any future date. All dates supplied by this field would use default server timezone if one skipped
+         * @return builder for convenient configuration
+         */
         public Builder withStartDate(@Nullable Date startDate) {
             mStartDate = startDate;
             return this;
         }
 
+        /**
+         * Allows to specify respective timezone, so that time conversion issue will be resolved
+         *
+         * @param timeZone if value not supplied will fallback to JRS current time zone
+         * @return builder for convenient configuration
+         */
         public Builder withTimeZone(@Nullable TimeZone timeZone) {
             mTimeZone = timeZone;
             return this;
         }
 
+        /**
+         * Allows to specify either none, simple or calendar triggers
+         * 
+         * @param trigger specifies the frequency with which job will be executed
+         * @return builder for convenient configuration
+         */
         public Builder withTrigger(@Nullable Trigger trigger) {
             mTrigger = trigger;
             return this;

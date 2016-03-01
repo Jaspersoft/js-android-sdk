@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.containsString;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class IsRecordedRequestHasPath extends TypeSafeDiagnosingMatcher<RecordedRequest> {
     private final String mPath;

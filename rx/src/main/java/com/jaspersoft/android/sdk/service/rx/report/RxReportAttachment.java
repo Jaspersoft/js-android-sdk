@@ -34,8 +34,11 @@ import rx.functions.Func0;
 
 
 /**
+ * Public API that wraps concrete attachment requested by user.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxReportAttachment {
     private final ReportAttachment mSyncDelegate;
@@ -45,11 +48,21 @@ public class RxReportAttachment {
         mSyncDelegate = attachment;
     }
 
+    /**
+     * File name of attachment associated to file on JRS side
+     *
+     * @return file name with extension
+     */
     @NotNull
     public String getFileName() {
         return mSyncDelegate.getFileName();
     }
 
+    /**
+     * Performs network operation that returns output of attachment
+     *
+     * @return output of export that wraps {@link java.io.InputStream}
+     */
     @NotNull
     public Observable<ResourceOutput> download() {
         return Observable.defer(new Func0<Observable<ResourceOutput>>() {

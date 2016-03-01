@@ -33,7 +33,7 @@ import java.net.URLEncoder;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 abstract class ReportOptionsMapper {
     private final String mBaseUrl;

@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class TestResourceInjector {
     private final Object mTarget;

@@ -33,7 +33,7 @@ import java.net.URLEncoder;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 abstract class ExportOptionsMapper {
     private final String mBaseUrl;
@@ -73,7 +73,7 @@ abstract class ExportOptionsMapper {
             resultOptions.withAttachmentsPrefix(escapeAttachmentPrefix(prefix));
         }
 
-        ReportMarkup markup = options.getMarkup();
+        ReportMarkup markup = options.getMarkupType();
         if (markup != null) {
             resultOptions.withMarkupType(markup.toString().toLowerCase());
         }

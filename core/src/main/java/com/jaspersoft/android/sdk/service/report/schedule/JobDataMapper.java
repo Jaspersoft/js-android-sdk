@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class JobDataMapper {
     public JobData transform(JobDescriptor jobDescriptor, SimpleDateFormat dateTimeFormat) {

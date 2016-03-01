@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(JUnitParamsRunner.class)
 public class FiltersServiceTest {

@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network.entity.resource;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class FolderLookup extends ResourceLookup {
 

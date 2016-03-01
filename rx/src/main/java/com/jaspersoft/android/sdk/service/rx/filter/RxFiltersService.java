@@ -18,8 +18,116 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * The corresponding service exposes API related to the handling of input controls, input control states of both report and dashboard resources.
+ * Allows to validate input controls and load dashboard components.
+ * Also, one allows performing CRUD operations over report operations.
+ * All responses wrapped as Rx {@link rx.Observable}
+ *
+ * <pre>
+ * {@code
+ *
+ * Server server = Server.builder()
+ *         .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *         .build();
+ *
+ * Credentials credentials = SpringCredentials.builder()
+ *         .withPassword("phoneuser")
+ *         .withUsername("phoneuser")
+ *         .withOrganization("organization_1")
+ *         .build();
+ *
+ * AuthorizedClient client = server.newClient(credentials).create();
+ *
+ * final RxFiltersService service = RxFiltersService.newService(client);
+ *
+ * final String reportUri = "/my/report/uri";
+ * String dashboardUri = "/my/dashboard/uri";
+ *
+ * final Action1<Throwable> errorHandler = new Action1<Throwable>() {
+ *     &#064;
+ *     public void call(Throwable throwable) {
+ *         // handle API error
+ *     }
+ * };
+ *
+ * service.listDashboardControls(dashboardUri).subscribe(new Action1<List<InputControl>>() {
+ *     &#064;
+ *     public void call(List<InputControl> controls) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * service.listDashboardControlComponents(dashboardUri).subscribe(new Action1<List<DashboardControlComponent>>() {
+ *     &#064;
+ *     public void call(List<DashboardControlComponent> dashboardControlComponents) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * service.listReportControls(reportUri).subscribe(new Action1<List<InputControl>>() {
+ *     &#064;
+ *     public void call(List<InputControl> controls) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * boolean freshData = true;
+ * service.listResourceStates(reportUri, freshData).subscribe(new Action1<List<InputControlState>>() {
+ *     &#064;
+ *     public void call(List<InputControlState> inputControlStates) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * final List<ReportParameter> parameters = Collections.singletonList(
+ *         new ReportParameter("key", Collections.singleton("value"))
+ * );
+ * service.listControlsStates(reportUri, parameters, freshData).subscribe(new Action1<List<InputControlState>>() {
+ *     &#064;
+ *     public void call(List<InputControlState> inputControlStates) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * service.validateControls(reportUri, parameters, freshData).subscribe(new Action1<List<InputControlState>>() {
+ *     &#064;
+ *     public void call(List<InputControlState> inputControlStates) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * service.listReportOptions(reportUri).subscribe(new Action1<Set<ReportOption>>() {
+ *     &#064;
+ *     public void call(Set<ReportOption> reportOptions) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * boolean overwrite = true;
+ * service.createReportOption(reportUri, "report option", parameters, overwrite).subscribe(new Action1<ReportOption>() {
+ *     &#064;
+ *     public void call(ReportOption reportOption) {
+ *         String reportId = reportOption.getId();
+ *         service.updateReportOption(reportUri, reportId, parameters).subscribe(new Action1<Void>() {
+ *             &#064;
+ *             public void call(Void aVoid) {
+ *                 // success
+ *             }
+ *         }, errorHandler);
+ *
+ *         service.deleteReportOption(reportUri, reportId).subscribe(new Action1<Void>() {
+ *             &#064;
+ *             public void call(Void aVoid) {
+ *                 // success
+ *             }
+ *         }, errorHandler);
+ *     }
+ * }, errorHandler);
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxFiltersService {
 
@@ -30,6 +138,12 @@ public class RxFiltersService {
         mSyncDelegate = syncDelegate;
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param authorizedClient authorized network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static RxFiltersService newService(@NotNull AuthorizedClient authorizedClient) {
         Preconditions.checkNotNull(authorizedClient, "Client should not be null");
@@ -37,23 +151,12 @@ public class RxFiltersService {
         return new RxFiltersService(filtersService);
     }
 
-    @NotNull
-    public Observable<List<InputControl>> listReportControls(@NotNull final String reportUri) {
-        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-
-        return Observable.defer(new Func0<Observable<List<InputControl>>>() {
-            @Override
-            public Observable<List<InputControl>> call() {
-                try {
-                    List<InputControl> inputControls = mSyncDelegate.listReportControls(reportUri);
-                    return Observable.just(inputControls);
-                } catch (ServiceException e) {
-                    return Observable.error(e);
-                }
-            }
-        });
-    }
-
+    /**
+     * Performs network call that retrieves dashboard controls on the basis of passed uri
+     *
+     * @param dashboardUri unique dashboard uri
+     * @return list of dashboard input controls
+     */
     @NotNull
     public Observable<List<InputControl>> listDashboardControls(@NotNull final String dashboardUri) {
         Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
@@ -71,6 +174,12 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Performs network call that retrieves dashboard control components on the basis of passed uri
+     *
+     * @param dashboardUri unique dashboard uri
+     * @return list of dashboard control components
+     */
     @NotNull
     public Observable<List<DashboardControlComponent>> listDashboardControlComponents(@NotNull final String dashboardUri) {
         Preconditions.checkNotNull(dashboardUri, "Dashboard uri should not be null");
@@ -79,7 +188,7 @@ public class RxFiltersService {
             @Override
             public Observable<List<DashboardControlComponent>> call() {
                 try {
-                    List<DashboardControlComponent>inputControls =
+                    List<DashboardControlComponent> inputControls =
                             mSyncDelegate.listDashboardControlComponents(dashboardUri);
                     return Observable.just(inputControls);
                 } catch (ServiceException e) {
@@ -89,19 +198,50 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Performs network call that retrieves report controls on the basis of passed uri
+     *
+     * @param reportUri unique report uri
+     * @return list of report input controls
+     */
+    @NotNull
+    public Observable<List<InputControl>> listReportControls(@NotNull final String reportUri) {
+        Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+
+        return Observable.defer(new Func0<Observable<List<InputControl>>>() {
+            @Override
+            public Observable<List<InputControl>> call() {
+                try {
+                    List<InputControl> inputControls = mSyncDelegate.listReportControls(reportUri);
+                    return Observable.just(inputControls);
+                } catch (ServiceException e) {
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Performs network call that retrieves control states
+     *
+     * @param reportUri unique report uri
+     * @param parameters that are passed to load cascade states
+     * @param freshData flag that forces data to be retrieved directly from sources
+     * @return list of control states with corresponding report options
+     */
     @NotNull
     public Observable<List<InputControlState>> listControlsStates(@NotNull final String reportUri,
-                                                                  @NotNull final List<ReportParameter> controls,
+                                                                  @NotNull final List<ReportParameter> parameters,
                                                                   final boolean freshData
     ) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(controls, "Input controls should not be null");
+        Preconditions.checkNotNull(parameters, "Input controls should not be null");
 
         return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
             @Override
             public Observable<List<InputControlState>> call() {
                 try {
-                    List<InputControlState> inputControlStates = mSyncDelegate.listControlsStates(reportUri, controls, freshData);
+                    List<InputControlState> inputControlStates = mSyncDelegate.listControlsStates(reportUri, parameters, freshData);
                     return Observable.just(inputControlStates);
                 } catch (ServiceException e) {
                     return Observable.error(e);
@@ -110,19 +250,27 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Validates report parameters of corresponding input controls
+     *
+     * @param reportUri unique report uri
+     * @param parameters that are passed to validate input controls validity
+     * @param freshData flag that forces data to be retrieved directly from sources
+     * @return empty list if validation succeed otherwise collects states with corresponding errors
+     */
     @NotNull
     public Observable<List<InputControlState>> validateControls(@NotNull final String reportUri,
-                                                                @NotNull final List<ReportParameter> controls,
+                                                                @NotNull final List<ReportParameter> parameters,
                                                                 final boolean freshData
     ) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
-        Preconditions.checkNotNull(controls, "Input controls should not be null");
+        Preconditions.checkNotNull(parameters, "Input controls should not be null");
 
         return Observable.defer(new Func0<Observable<List<InputControlState>>>() {
             @Override
             public Observable<List<InputControlState>> call() {
                 try {
-                    List<InputControlState> inputControlStates = mSyncDelegate.validateControls(reportUri, controls, freshData);
+                    List<InputControlState> inputControlStates = mSyncDelegate.validateControls(reportUri, parameters, freshData);
                     return Observable.just(inputControlStates);
                 } catch (ServiceException e) {
                     return Observable.error(e);
@@ -131,6 +279,13 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Retrieves all input controls states
+     *
+     * @param reportUri unique report uri
+     * @param freshData flag that forces data to be retrieved directly from sources
+     * @return list of report input controls states
+     */
     @NotNull
     public Observable<List<InputControlState>> listResourceStates(@NotNull final String reportUri,
                                                                   final boolean freshData
@@ -150,6 +305,12 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * List report options of corresponding report
+     *
+     * @param reportUri unique report uri
+     * @return set of report options
+     */
     @NotNull
     public Observable<Set<ReportOption>> listReportOptions(@NotNull final String reportUri) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
@@ -167,6 +328,15 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Public API that allows create/override report option
+     *
+     * @param reportUri unique report uri
+     * @param optionLabel label of report option
+     * @param parameters that is associated with report option
+     * @param overwrite if passed true than will overwrite report with same label on serve side
+     * @return newly created/override report option
+     */
     @NotNull
     public Observable<ReportOption> createReportOption(@NotNull final String reportUri,
                                                        @NotNull final String optionLabel,
@@ -189,6 +359,13 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Updates report option with new report parameter
+     *
+     * @param reportUri unique report uri
+     * @param optionId unique identifier of corresponding report option
+     * @param parameters report values that are passed to override latest version of option
+     */
     @NotNull
     public Observable<Void> updateReportOption(@NotNull final String reportUri, @NotNull final String optionId, @NotNull final List<ReportParameter> parameters) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
@@ -208,6 +385,12 @@ public class RxFiltersService {
         });
     }
 
+    /**
+     * Deletes report option
+     *
+     * @param reportUri unique report uri
+     * @param optionId unique identifier of corresponding report option
+     */
     @NotNull
     public Observable<Void> deleteReportOption(@NotNull final String reportUri, @NotNull final String optionId) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");

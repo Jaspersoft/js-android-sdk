@@ -29,7 +29,7 @@ import java.io.InputStream;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public interface ResourceOutput {
     InputStream getStream() throws IOException;

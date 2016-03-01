@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class ResourceMapper extends AbstractResourceMapper<Resource, ResourceLookup> {
     public ResourceMapper(@NotNull SimpleDateFormat format) {

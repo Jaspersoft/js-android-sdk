@@ -38,14 +38,52 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
+ * Following module responsible for requesting metadata related to input controls and their states.
+ * The one allows to load initial states and validate states via POST API.
+ *
+ * <pre>
+ * {@code
+ *
+ *   Server server = Server.builder()
+ *       .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *       .build();
+ *
+ *   Credentials credentials = SpringCredentials.builder()
+ *       .withPassword("phoneuser")
+ *       .withUsername("phoneuser")
+ *       .withOrganization("organization_1")
+ *       .build();
+ *
+ *
+ *   AuthorizedClient client = server.newClient(credentials)
+ *       .create();
+ *   InputControlRestApi inputControlRestApi = client.inputControlApi();
+ *
+ *
+ *   boolean freshData = true;
+ *   String reportUri = "/report/uri";
+ *   try {
+ *       List<InputControlState> states = inputControlRestApi.requestInputControlsInitialStates(reportUri, freshData);
+ *
+ *       Set<String> controlIds = Collections.singleton("control_id");
+ *       boolean excludeState = true;
+ *       List<InputControl> controls = inputControlRestApi.requestInputControls(reportUri, controlIds, excludeState);
+ *
+ *       List<ReportParameter> parameters = Collections.singletonList(
+ *       new ReportParameter("param1", Collections.singleton("value")));
+ *       inputControlRestApi.requestInputControlsStates(reportUri, parameters, freshData);
+ *   } catch (IOException e) {
+ *       // handle socket issue
+ *   } catch (HttpException e) {
+ *       // handle network issue
+ *   }
+ * }
+ * </pre>
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class InputControlRestApi {
 
@@ -63,9 +101,11 @@ public class InputControlRestApi {
      * @param reportUri    uri of report
      * @param excludeState exclude field state which incorporates options values for control
      * @return unmodifiable list of {@link InputControl}
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
      */
     @NotNull
-    public List<InputControl> requestInputControls(@Nullable String reportUri,
+    public List<InputControl> requestInputControls(@NotNull String reportUri,
                                                    @Nullable Set<String> controlIds,
                                                    boolean excludeState) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
@@ -105,8 +145,17 @@ public class InputControlRestApi {
         return Collections.unmodifiableList(inputControlCollection.get());
     }
 
+    /**
+     * Retrieves initial states of input controls associated with particular report
+     *
+     * @param reportUri uri of report
+     * @param freshData whether data should be retrieved from cache or not
+     * @return unmodifiable list of {@link InputControlState}
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public List<InputControlState> requestInputControlsInitialStates(@Nullable String reportUri,
+    public List<InputControlState> requestInputControlsInitialStates(@NotNull String reportUri,
                                                                      boolean freshData) throws IOException, HttpException {
         Utils.checkNotNull(reportUri, "Report URI should not be null");
 
@@ -145,6 +194,8 @@ public class InputControlRestApi {
      * @param parameters {control_id: [value, value]} associated with input controls
      * @param freshData  whether data should be retrieved from cache or not
      * @return unmodifiable list of {@link InputControlState}
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
      */
     @NotNull
     public List<InputControlState> requestInputControlsStates(@NotNull String reportUri,

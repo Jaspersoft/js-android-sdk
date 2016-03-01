@@ -11,8 +11,12 @@ import java.util.TimeZone;
 import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkNotNull;
 
 /**
+ * Concrete implementation of abstract {@link Credentials}.
+ * Corresponding class wrapper introduces fields required to initiate
+ * Spring authorization on JRS side.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class SpringCredentials extends Credentials {
     private final String mUsername;
@@ -117,26 +121,59 @@ public final class SpringCredentials extends Credentials {
 
         private Builder() {}
 
+        /**
+         * Setter to provide username
+         *
+         * @param username used for authentication on JRS
+         * @return builder for convenient configuration
+         */
         public Builder withUsername(@NotNull String username) {
             mUsername = checkNotNull(username, "username == null");
             return this;
         }
 
+        /**
+         * Setter to provide password
+         *
+         * @param password used for authentication on JRS
+         * @return builder for convenient configuration
+         */
         public Builder withPassword(@NotNull String password) {
             mPassword = checkNotNull(password, "password == null");
             return this;
         }
 
+        /**
+         * Setter to provide organization. May be null value
+         *
+         * @param organization used for authentication on JRS
+         * @return builder for convenient configuration
+         */
         public Builder withOrganization(@Nullable String organization) {
             mOrganization = organization;
             return this;
         }
 
+        /**
+         * Setter to provide time zone. May be null value.
+         * You can provide time zone, so that JRS would respect it while generating appropriate dates.
+         * Used system time zone by default.
+         *
+         * @param timeZone your timezone
+         * @return builder for convenient configuration
+         */
         public Builder withTimeZone(@NotNull TimeZone timeZone) {
             mTimeZone = checkNotNull(timeZone, "timeZone == null");
             return this;
         }
 
+        /**
+         * Setter to provide locale. May be null value.
+         * Used system locale by default.
+         *
+         * @param locale you locale
+         * @return builder for convenient configuration
+         */
         public Builder withLocale(@NotNull Locale locale) {
             mLocale = checkNotNull(locale, "locale == null");
             return this;

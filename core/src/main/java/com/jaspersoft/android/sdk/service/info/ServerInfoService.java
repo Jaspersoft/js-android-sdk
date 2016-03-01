@@ -24,9 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.info;
 
-import com.jaspersoft.android.sdk.network.AnonymousClient;
-import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.network.ServerRestApi;
+import com.jaspersoft.android.sdk.network.*;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
@@ -39,8 +37,35 @@ import org.jetbrains.annotations.TestOnly;
 import java.io.IOException;
 
 /**
+ * The corresponding service allows to request server info
+ *
+ * <pre>
+ * {@code
+ *
+ *  Server server = Server.builder()
+ *          .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *          .build();
+ *
+ *  AnonymousClient anonymousClient = server.newClient().create();
+ *
+ *  Credentials credentials = SpringCredentials.builder()
+ *          .withPassword("phoneuser")
+ *          .withUsername("phoneuser")
+ *          .withOrganization("organization_1")
+ *          .build();
+ *
+ *  ServerInfoService service = ServerInfoService.newService(anonymousClient);
+ *  try {
+ *      ServerInfo serverInfo = service.requestServerInfo();
+ *  } catch (ServiceException e) {
+ *      // handle API exception
+ *  }
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ServerInfoService {
     private final ServerRestApi mRestApi;
@@ -56,6 +81,12 @@ public class ServerInfoService {
         mServiceExceptionMapper = serviceExceptionMapper;
     }
 
+    /**
+     * Performs request that returns serve info
+     *
+     * @return serve metadata that wraps latest serve info data
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public ServerInfo requestServerInfo() throws ServiceException {
         try {
@@ -68,6 +99,12 @@ public class ServerInfoService {
         }
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client anonymous network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static ServerInfoService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");

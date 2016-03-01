@@ -56,7 +56,7 @@ public class ReportExportOptionsMapper5_6And6_0Test {
     public void should_exclude_ignore_markup() throws Exception {
         ReportExportOptions criteria = ReportExportOptions.builder()
                 .withFormat(ReportFormat.PDF)
-                .withMarkup(ReportMarkup.EMBEDDABLE)
+                .withMarkupType(ReportMarkup.EMBEDDABLE)
                 .build();
         ExecutionRequestOptions options = mapper.transform(criteria);
         assertThat("Failed to remove 'markup' option", options.getIgnorePagination(), is(nullValue()));

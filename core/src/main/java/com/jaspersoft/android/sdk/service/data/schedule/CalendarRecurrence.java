@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class CalendarRecurrence extends Recurrence {
     @NotNull
@@ -78,41 +78,88 @@ public class CalendarRecurrence extends Recurrence {
             mHours = new HoursTimeFormat.Builder().build();
         }
 
+        /**
+         * Allows to specify the months on which the trigger should fire.
+         *
+         * @param months Use 0-indexed month indexes. I.e. 0 for Jan. and 11 for Dec.
+         * @return builder for convenient configuration
+         */
         public Builder withMonths(Integer... months) {
             mMonths = new HashSet<>(Arrays.asList(months));
             return this;
         }
 
+        /**
+         * Allows to specify the months on which the trigger should fire.
+         *
+         * @param months Use 0-indexed month indexes. I.e. 0 for Jan. and 11 for Dec.
+         * @return builder for convenient configuration
+         */
         public Builder withMonths(Set<Integer> months) {
             mMonths = months;
             return this;
         }
 
+        /**
+         * Allows to specify all months at once
+         *
+         * @return builder for convenient configuration
+         */
         public Builder withAllMonths() {
             mMonths = ALL_MONTHS;
             return this;
         }
 
+        /**
+         * Allows to specify the week days on which the trigger should fire.
+         *
+         * @param daysInWeek Use 1-indexed week day indexes. I.e. 1 for Sunday and 7 for Saturday
+         * @return builder for convenient configuration
+         */
         public Builder withDaysInWeek(Integer... daysInWeek) {
             mDaysType = DaysInWeek.create(daysInWeek);
             return this;
         }
 
+        /**
+         * Allows to specify the week days on which the trigger should fire.
+         *
+         * @param daysInWeek Use 1-indexed week day indexes. I.e. 1 for Sunday and 7 for Saturday
+         * @return builder for convenient configuration
+         */
         public Builder withDaysInWeek(Set<Integer> daysInWeek) {
             mDaysType = DaysInWeek.create(daysInWeek);
             return this;
         }
 
+        /**
+         * Allows to specify the value that determines the month days on which the trigger should fire.
+         *
+         * @param daysInMonth the pattern that determines the month days
+         * @return builder for convenient configuration
+         */
         public Builder withDaysInMonth(DaysInMonth daysInMonth) {
             mDaysType = daysInMonth;
             return this;
         }
 
+        /**
+         * Allows to specify the value that determines the minutes part of the trigger fire times.
+         *
+         * @param minutes the pattern can consist of the following tokens
+         * @return builder for convenient configuration
+         */
         public Builder withMinutes(MinutesTimeFormat minutes) {
             mMinutes = minutes;
             return this;
         }
 
+        /**
+         * Allows to specify the pattern that determines the hours at which the trigger should fire.
+         *
+         * @param hours the pattern can consist of the following tokens:
+         * @return builder for convenient configuration
+         */
         public Builder withHours(HoursTimeFormat hours) {
             mHours = hours;
             return this;

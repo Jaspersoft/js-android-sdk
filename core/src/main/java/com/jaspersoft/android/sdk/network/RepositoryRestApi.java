@@ -35,8 +35,53 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * Public API that allows searching within JRS repository, request resource details and content output, list dashboard components
+ *
+ * <pre>
+ * {@code
+ *
+ *    Server server = Server.builder()
+ *            .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *            .build();
+ *
+ *    Credentials credentials = SpringCredentials.builder()
+ *            .withPassword("phoneuser")
+ *            .withUsername("phoneuser")
+ *            .withOrganization("organization_1")
+ *            .build();
+ *
+ *
+ *    AuthorizedClient client = server.newClient(credentials)
+ *            .create();
+ *
+ *    RepositoryRestApi repositoryRestApi = client.repositoryApi();
+ *
+ *    String reportUri = "/my/report/uri";
+ *    String dashboardUri = "/my/dashboard/uri";
+ *    String reportType = "reportUnit";
+ *
+ *    try {
+ *        Map<String, Object> params = new HashMap<>();
+ *        params.put("q", "all reports");
+ *        ResourceSearchResult searchResult = repositoryRestApi.searchResources(params);
+ *
+ *
+ *        ResourceLookup lookup = repositoryRestApi.requestResource(reportUri, reportType);
+ *
+ *        OutputResource resource = repositoryRestApi.requestResourceOutput(reportUri);
+ *        InputStream resourceRawContent = resource.getStream();
+ *
+ *        DashboardComponentCollection components = repositoryRestApi.requestDashboardComponents(dashboardUri);
+ *    } catch (IOException e) {
+ *        // handle socket issue
+ *    } catch (HttpException e) {
+ *        // handle network issue
+ *    }
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RepositoryRestApi {
     private final NetworkClient mNetworkClient;
@@ -45,6 +90,14 @@ public class RepositoryRestApi {
         mNetworkClient = networkClient;
     }
 
+    /**
+     * Performs search requests
+     *
+     * @param searchParams one used to specify concrete requests
+     * @return search result collection that encapsulates offset, limit, total count metadata
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public ResourceSearchResult searchResources(@NotNull Map<String, Object> searchParams) throws IOException, HttpException {
         HttpUrl url = mNetworkClient.getBaseUrl()
@@ -83,15 +136,24 @@ public class RepositoryRestApi {
         return entity;
     }
 
+    /**
+     * Provides additional metadata for specific resource of specified type
+     *
+     * @param resourceUri uri we are requesting metadata for
+     * @param type of resource can be reportUnit, file, folder
+     * @return resource lookup subclass. See {@link FileLookup}, {@link FolderLookup}, {@link ReportLookup}
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public ResourceLookup requestResource(@NotNull String reportUri, @NotNull String type) throws IOException, HttpException {
-        Utils.checkNotNull(reportUri, "Report uri should not be null");
+    public ResourceLookup requestResource(@NotNull String resourceUri, @NotNull String type) throws IOException, HttpException {
+        Utils.checkNotNull(resourceUri, "Report uri should not be null");
         Utils.checkNotNull(type, "Report type should not be null");
 
         HttpUrl url = new PathResolver.Builder()
                 .addPath("rest_v2")
                 .addPath("resources")
-                .addPaths(reportUri)
+                .addPaths(resourceUri)
                 .build()
                 .resolve(mNetworkClient.getBaseUrl());
 
@@ -114,14 +176,22 @@ public class RepositoryRestApi {
         return mNetworkClient.deserializeJson(rawResponse, ResourceLookup.class);
     }
 
+    /**
+     * Provides collection of dashboard components
+     *
+     * @param dashboardUri uri associated with particular dashboard
+     * @return collection of of components. One encapsulate data related to the dashboard input controls
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public DashboardComponentCollection requestDashboardComponents(@NotNull String resourceUri) throws IOException, HttpException {
-        Utils.checkNotNull(resourceUri, "Dashboard uri should not be null");
+    public DashboardComponentCollection requestDashboardComponents(@NotNull String dashboardUri) throws IOException, HttpException {
+        Utils.checkNotNull(dashboardUri, "Dashboard uri should not be null");
 
         HttpUrl url = new PathResolver.Builder()
                 .addPath("rest_v2")
                 .addPath("resources")
-                .addPaths(resourceUri + "_files")
+                .addPaths(dashboardUri + "_files")
                 .addPath("components")
                 .build()
                 .resolve(mNetworkClient.getBaseUrl())
@@ -139,6 +209,14 @@ public class RepositoryRestApi {
         return mNetworkClient.deserializeJson(rawResponse, DashboardComponentCollection.class);
     }
 
+    /**
+     * Provides raw data of stream for specific resource
+     *
+     * @param resourceUri uri of resource we are requesting content of
+     * @return resource output
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public OutputResource requestResourceOutput(@NotNull String resourceUri) throws IOException, HttpException {
         Utils.checkNotNull(resourceUri, "Resource uri should not be null");

@@ -12,7 +12,7 @@ import java.util.*;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class JobFormMapper {
     private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";

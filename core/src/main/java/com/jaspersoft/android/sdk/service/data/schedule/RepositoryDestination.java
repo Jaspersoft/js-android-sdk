@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RepositoryDestination {
     private final String mFolderUri;
@@ -22,6 +22,12 @@ public class RepositoryDestination {
     public static class Builder {
         private String mFolderUri;
 
+        /**
+         * Allows to specify location where generated resource will reside
+         *
+         * @param folderUri unique identifier of folder on JRS side
+         * @return builder for convenient configuration
+         */
         public Builder withFolderUri(@NotNull String folderUri) {
             mFolderUri = Preconditions.checkNotNull(folderUri, "Repository folder uri should not be null");
             return this;

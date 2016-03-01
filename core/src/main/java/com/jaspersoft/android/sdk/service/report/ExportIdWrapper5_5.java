@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.service.data.report.PageRange;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class ExportIdWrapper5_5 extends ExportIdWrapper {
     private static class SingletonHolder {

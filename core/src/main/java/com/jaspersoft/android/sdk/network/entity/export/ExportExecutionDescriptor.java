@@ -31,7 +31,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.OutputResourceDescrip
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ExportExecutionDescriptor {
     @Expose

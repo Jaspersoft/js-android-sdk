@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import java.math.BigInteger;
@@ -33,8 +35,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
 /**
+ * Encrypt the passed value using RSA/NONE/NoPadding algorithm with the bouncy castle as a provider. Used by network layer API password encryption task.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class JSEncryptionAlgorithm {
     private static final String UTF_8 = "UTF-8";
@@ -54,7 +58,20 @@ public final class JSEncryptionAlgorithm {
         return new JSEncryptionAlgorithm(provider);
     }
 
-    public String encrypt(String modulus, String exponent, String text) {
+    /**
+     * Accept public data required for initialization of {@link RSAPublicKeySpec}.
+     * With generated public/private raw text encrypted.
+     *
+     * @param modulus the modulus
+     * @param exponent the public exponent
+     * @param text raw text target for encryption
+     * @return if encryption was success returns encrypted value otherwise raw one
+     */
+    public String encrypt(@NotNull String modulus, @NotNull String exponent, @NotNull String text) {
+        Utils.checkNotNull(modulus, "Modulus should not be null");
+        Utils.checkNotNull(exponent, "Exponent should not be null");
+        Utils.checkNotNull(text, "Raw text should not be null");
+
         try {
             PublicKey publicKey = createPublicKey(modulus, exponent);
 

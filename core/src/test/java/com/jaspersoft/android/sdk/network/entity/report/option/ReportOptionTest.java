@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(JUnitParamsRunner.class)
 public class ReportOptionTest {

@@ -6,7 +6,7 @@ import java.util.Collection;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class JobOutputFormatsEntity {
     @Expose

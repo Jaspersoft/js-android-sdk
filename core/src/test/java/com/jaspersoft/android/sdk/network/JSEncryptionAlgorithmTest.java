@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class JSEncryptionAlgorithmTest {
     private final static String PUBLIC_EXPONENT = "10001";

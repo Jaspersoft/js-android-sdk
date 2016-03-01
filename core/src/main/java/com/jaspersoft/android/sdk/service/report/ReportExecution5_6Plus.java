@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class ReportExecution5_6Plus extends AbstractReportExecution {
     private final ExportExecutionApi mExportExecutionApi;

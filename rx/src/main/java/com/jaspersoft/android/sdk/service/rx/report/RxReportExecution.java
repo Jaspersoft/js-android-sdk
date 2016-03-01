@@ -40,8 +40,11 @@ import rx.functions.Func0;
 import java.util.List;
 
 /**
+ * Public API allows to wait for report completion, wait for report completion and performs export.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxReportExecution {
     private final ReportExecution mSyncDelegate;
@@ -51,6 +54,12 @@ public class RxReportExecution {
         mSyncDelegate = reportExecution;
     }
 
+    /**
+     * Initiates report export process
+     *
+     * @param options allows to configure export process of JRS side
+     * @return export for corresponding execution
+     */
     @NotNull
     public Observable<RxReportExport> export(final @NotNull ReportExportOptions options) {
         Preconditions.checkNotNull(options, "Export options should not be null");
@@ -69,6 +78,11 @@ public class RxReportExecution {
         });
     }
 
+    /**
+     * Performs series of requests until the status reach completion or fail response
+     *
+     * @return details of execution
+     */
     @NotNull
     public Observable<ReportMetadata> waitForReportCompletion() {
         return Observable.defer(new Func0<Observable<ReportMetadata>>() {
@@ -84,6 +98,12 @@ public class RxReportExecution {
         });
     }
 
+    /**
+     * Updates and restart report execution
+     *
+     * @param newParameters that force execution process to be restarted
+     * @return new report execution
+     */
     @NotNull
     public Observable<RxReportExecution> updateExecution(@Nullable final List<ReportParameter> newParameters) {
         return Observable.defer(new Func0<Observable<RxReportExecution>>() {

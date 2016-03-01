@@ -33,7 +33,7 @@ import java.net.Proxy;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class SingleTimeAuthenticator implements Authenticator {
     private Authenticator mDelegate;

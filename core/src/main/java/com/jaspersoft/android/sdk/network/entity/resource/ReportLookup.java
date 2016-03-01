@@ -28,7 +28,7 @@ import com.google.gson.annotations.Expose;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportLookup extends ResourceLookup {
     @Expose

@@ -31,14 +31,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Represents particular Server configuration.
+ * With corresponding API you can configure two types of clients.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
+ * @see AuthorizedClient
+ * @see AnonymousClient
  */
 public final class Server {
     private final String mBaseUrl;
@@ -87,21 +90,51 @@ public final class Server {
         private Builder() {
         }
 
+        /**
+         * Sets the address of server to be used while performing REST calls.
+         *
+         * WARNING: your address of JRS should end by trailing slash.
+         * For instance, <a href="http://my.jasper/server-pro/"/>http://my.jasper/server-pro/</a>
+         *
+         * @param baseUrl the web address of JRS instance
+         * @return builder for convenient configuration
+         */
         public Builder withBaseUrl(String baseUrl) {
             mBaseUrl = Utils.checkNotNull(baseUrl, "Base url should not be null");
             return this;
         }
 
+        /**
+         * Sets the default connect timeout for new connections. A value of 0 means no timeout, otherwise
+         * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
+         *
+         * @see java.net.URLConnection#setConnectTimeout(int)
+         * @return builder for convenient configuration
+         */
         public Builder withConnectionTimeOut(long timeout, TimeUnit unit) {
             mOkHttpClient.setConnectTimeout(timeout, unit);
             return this;
         }
 
+        /**
+         * Sets the default read timeout for new connections. A value of 0 means no timeout, otherwise
+         * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
+         *
+         * @see java.net.URLConnection#setReadTimeout(int)
+         * @return builder for convenient configuration
+         */
         public Builder withReadTimeout(long timeout, TimeUnit unit) {
             mOkHttpClient.setReadTimeout(timeout, unit);
             return this;
         }
 
+        /**
+         * Sets the HTTP proxy that will be used by connections created by this
+         * client. To disable proxy use completely, call {@code setProxy(Proxy.NO_PROXY)}.
+         *
+         * @param proxy your proxy
+         * @return builder for convenient configuration
+         */
         public Builder withProxy(Proxy proxy) {
             mOkHttpClient.setProxy(proxy);
             return this;
@@ -120,13 +153,22 @@ public final class Server {
 
     public static class AnonymousClientBuilder {
         private final Server mServer;
-        private CookieHandler mCookieHandler =
-                new CookieManager(new InMemoryCookieStore(), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+        private CookieHandler mCookieHandler = CookieHandler.getDefault();
 
         AnonymousClientBuilder(Server server) {
             mServer = server;
         }
 
+        /**
+         * Sets the cookie handler to be used to read outgoing cookies and write
+         * incoming cookies.
+         *
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         * cookie handler will be used.
+         *
+         * @param cookieHandler custom cookie handler
+         * @return builder for convenient configuration
+         */
         public AnonymousClientBuilder withCookieHandler(CookieHandler cookieHandler) {
             mCookieHandler = cookieHandler;
             return this;
@@ -149,18 +191,37 @@ public final class Server {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
-        private CookieHandler mCookieHandler = new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+        private CookieHandler mCookieHandler = CookieHandler.getDefault();
 
         AuthorizedClientBuilder(Server server, Credentials credentials) {
             mServer = server;
             mCredentials = credentials;
         }
 
+        /**
+         * Sets authentication policy to be used while restoring session.
+         * By default SDK configured with retry policy.
+         *
+         * @param authenticationPolicy accepts currently supported auth policy type
+         * @return builder for convenient configuration
+         * @see AuthPolicy#FAIL_FAST
+         * @see AuthPolicy#RETRY
+         */
         public AuthorizedClientBuilder withAuthenticationPolicy(AuthPolicy authenticationPolicy) {
             mAuthenticationPolicy = authenticationPolicy;
             return this;
         }
 
+        /**
+         * Sets the cookie handler to be used to read outgoing cookies and write
+         * incoming cookies.
+         *
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         * cookie handler will be used.
+         *
+         * @param cookieHandler custom cookie handler
+         * @return builder for convenient configuration
+         */
         public AuthorizedClientBuilder withCookieHandler(CookieHandler cookieHandler) {
             mCookieHandler = cookieHandler;
             return this;

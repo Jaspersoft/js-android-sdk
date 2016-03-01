@@ -25,8 +25,10 @@
 package com.jaspersoft.android.sdk.network;
 
 /**
+ * The client that encapsulates all REST API objects that depend on JRS active session.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class AuthorizedClient extends AnonymousClient {
 
@@ -44,6 +46,11 @@ public class AuthorizedClient extends AnonymousClient {
         mAnonymousClient = anonymousClient;
     }
 
+    /**
+     * Provides instance of particular report execution API.
+     *
+     * @return api that implements report execution related calls
+     */
     public ReportExecutionRestApi reportExecutionApi() {
         if (mReportExecutionRestApi == null) {
             mReportExecutionRestApi = new ReportExecutionRestApi(mNetworkClient);
@@ -51,6 +58,11 @@ public class AuthorizedClient extends AnonymousClient {
         return mReportExecutionRestApi;
     }
 
+    /**
+     * Provides instance of particular report export API.
+     *
+     * @return api that implements report export related calls
+     */
     public ReportExportRestApi reportExportApi() {
         if (mReportExportRestApi == null) {
             mReportExportRestApi = new ReportExportRestApi(mNetworkClient);
@@ -58,6 +70,11 @@ public class AuthorizedClient extends AnonymousClient {
         return mReportExportRestApi;
     }
 
+    /**
+     * Provides instance of particular report options API.
+     *
+     * @return api that implements report export options calls
+     */
     public ReportOptionRestApi reportOptionsApi() {
         if (mReportOptionRestApi == null) {
             mReportOptionRestApi = new ReportOptionRestApi(mNetworkClient);
@@ -65,6 +82,11 @@ public class AuthorizedClient extends AnonymousClient {
         return mReportOptionRestApi;
     }
 
+    /**
+     * Provides instance of particular input controls API.
+     *
+     * @return api that implements input controls calls
+     */
     public InputControlRestApi inputControlApi() {
         if (mInputControlRestApi == null) {
             mInputControlRestApi = new InputControlRestApi(mNetworkClient);
@@ -72,6 +94,11 @@ public class AuthorizedClient extends AnonymousClient {
         return mInputControlRestApi;
     }
 
+    /**
+     * Provides instance of particular input controls API.
+     *
+     * @return api that implements input controls calls
+     */
     public RepositoryRestApi repositoryApi() {
         if (mRepositoryRestApi == null) {
             mRepositoryRestApi = new RepositoryRestApi(mNetworkClient);
@@ -79,6 +106,11 @@ public class AuthorizedClient extends AnonymousClient {
         return mRepositoryRestApi;
     }
 
+    /**
+     * Provides instance of particular report schedule API.
+     *
+     * @return api that implements report schedule calls
+     */
     public ReportScheduleRestApi reportScheduleApi() {
         if (mReportScheduleRestApi == null) {
             mReportScheduleRestApi = new ReportScheduleRestApi(mNetworkClient);
@@ -86,11 +118,17 @@ public class AuthorizedClient extends AnonymousClient {
         return mReportScheduleRestApi;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServerRestApi infoApi() {
         return mAnonymousClient.infoApi();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AuthenticationRestApi authenticationApi() {
         return mAnonymousClient.authenticationApi();

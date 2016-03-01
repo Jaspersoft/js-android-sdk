@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class GetServerInfoUseCase extends HttpUseCase<Info, Void> {
     private final String mBaseUrl;

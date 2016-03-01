@@ -30,7 +30,7 @@ import org.junit.rules.ExpectedException;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportExecutionRequestOptionsTest {
     @Rule

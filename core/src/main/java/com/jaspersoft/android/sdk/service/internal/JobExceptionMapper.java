@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class JobExceptionMapper extends AbstractServiceExceptionMapper {
     private static class SingletonHolder {

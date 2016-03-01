@@ -25,8 +25,10 @@
 package com.jaspersoft.android.sdk.network;
 
 /**
+ * The client that encapsulates all REST API objects that does not require JRS active session.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class AnonymousClient extends Client {
     private ServerRestApi mServerRestApi;
@@ -36,6 +38,11 @@ public class AnonymousClient extends Client {
         super(networkClient);
     }
 
+    /**
+     * Provides instance of particular info API.
+     *
+     * @return api that connects info related calls
+     */
     public ServerRestApi infoApi() {
         if (mServerRestApi == null) {
             mServerRestApi = new ServerRestApi(mNetworkClient);
@@ -43,6 +50,11 @@ public class AnonymousClient extends Client {
         return mServerRestApi;
     }
 
+    /**
+     * Provides instance of particular authentication API.
+     *
+     * @return api that verifies correctness of credentials
+     */
     public AuthenticationRestApi authenticationApi() {
         if (mAuthApi == null) {
             SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mNetworkClient);

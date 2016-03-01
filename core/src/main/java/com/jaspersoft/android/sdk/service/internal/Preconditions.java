@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Kevin Bourrillion
- * @since 2.0
+ * @since 2.3
  */
 public final class Preconditions {
     private Preconditions() {

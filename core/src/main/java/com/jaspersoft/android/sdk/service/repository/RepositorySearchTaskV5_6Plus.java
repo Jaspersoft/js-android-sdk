@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class RepositorySearchTaskV5_6Plus extends RepositorySearchTask {
     public static final List<Resource> EMPTY_RESPONSE = Collections.emptyList();

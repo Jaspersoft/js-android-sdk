@@ -38,7 +38,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class IsRecorderRequestContainsHeader extends TypeSafeDiagnosingMatcher<RecordedRequest> {
     private final String mHeaderName;

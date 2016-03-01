@@ -37,8 +37,77 @@ import rx.Observable;
 import rx.functions.Func0;
 
 /**
+ * The entry point that allows to start report execution.
+ * {@link ReportExecution} API allows to perform report export on later stages.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
+ * <pre>
+ * {@code
+ *
+ * Server server = Server.builder()
+ *         .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *         .build();
+ *
+ * Credentials credentials = SpringCredentials.builder()
+ *         .withPassword("phoneuser")
+ *         .withUsername("phoneuser")
+ *         .withOrganization("organization_1")
+ *         .build();
+ *
+ *
+ * AuthorizedClient client = server.newClient(credentials).create();
+ * RxReportService service = RxReportService.newService(client);
+ *
+ * ReportExecutionOptions options = ReportExecutionOptions.builder()
+ *         .withFormat(ReportFormat.HTML)
+ *         .withFreshData(true)
+ *         .withMarkupType(ReportMarkup.EMBEDDABLE)
+ *         .withInteractive(false)
+ *         .build();
+ *
+ * String reportUri = "/my/report/uri";
+ * service.run(reportUri, options).flatMap(new Func1<RxReportExecution, Observable<RxReportExport>>() {
+ *     &#064;
+ *     public Observable<RxReportExport> call(RxReportExecution rxReportExecution) {
+ *         ReportExportOptions exportOptions = ReportExportOptions.builder()
+ *                 .withFormat(ReportFormat.PDF)
+ *                 .withPageRange(PageRange.parse("1-100"))
+ *                 .build();
+ *         return rxReportExecution.export(exportOptions);
+ *     }
+ * }).flatMap(new Func1<RxReportExport, Observable<ReportExportOutput>>() {
+ *     &#064;
+ *     public Observable<ReportExportOutput> call(RxReportExport rxReportExport) {
+ *         return rxReportExport.download();
+ *     }
+ * }).flatMap(new Func1<ReportExportOutput, Observable<Void>>() {
+ *     &#064;
+ *     public Observable<Void> call(ReportExportOutput output) {
+ *         try {
+ *             InputStream content = output.getStream();
+ *             // save content
+ *         } catch (IOException e) {
+ *             return Observable.error(e);
+ *         }
+ *         return Observable.just(null);
+ *     }
+ * }).subscribe(new Action1<Void>() {
+ *     &#064;
+ *     public void call(Void aVoid) {
+ *         // success
+ *     }
+ * }, new Action1<Throwable>() {
+ *     &#064;
+ *     public void call(Throwable throwable) {
+ *         // handle error
+ *     }
+ * });
+
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxReportService {
     private final ReportService mSyncDelegate;
@@ -48,6 +117,13 @@ public class RxReportService {
         mSyncDelegate = reportService;
     }
 
+    /**
+     * Run report execution on the basis of passed options
+     *
+     * @param reportUri unique report uri
+     * @param execOptions options that configure execution on JRS
+     * @return object that encapsulates execution API
+     */
     @NotNull
     public Observable<RxReportExecution> run(@NotNull final String reportUri, @Nullable final ReportExecutionOptions execOptions) {
         Preconditions.checkNotNull(reportUri, "Report uri should not be null");
@@ -66,10 +142,16 @@ public class RxReportService {
         });
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client authorized network client
+     * @return instance of newly created service
+     */
     @NotNull
-    public static RxReportService newService(@NotNull AuthorizedClient authorizedClient) {
-        Preconditions.checkNotNull(authorizedClient, "Client should not be null");
-        ReportService reportService = ReportService.newService(authorizedClient);
+    public static RxReportService newService(@NotNull AuthorizedClient client) {
+        Preconditions.checkNotNull(client, "Client should not be null");
+        ReportService reportService = ReportService.newService(client);
         return new RxReportService(reportService);
     }
 }

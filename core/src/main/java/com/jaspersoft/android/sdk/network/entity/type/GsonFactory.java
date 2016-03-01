@@ -29,7 +29,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class GsonFactory {
     public static Gson create() {

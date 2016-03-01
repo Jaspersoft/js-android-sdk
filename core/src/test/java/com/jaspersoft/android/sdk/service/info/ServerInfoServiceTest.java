@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerInfoData.class})
