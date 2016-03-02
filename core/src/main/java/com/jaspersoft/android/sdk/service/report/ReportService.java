@@ -51,8 +51,7 @@ public abstract class ReportService {
         Preconditions.checkNotNull(client, "Client should not be null");
 
         InfoCacheManager cacheManager = InfoCacheManager.create(client, new InMemoryInfoCache());
-        ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
-        ServiceExceptionMapper reportMapper = new ReportExceptionMapper(defaultMapper);
+        ServiceExceptionMapper reportMapper = ReportExceptionMapper.getInstance();
 
         ReportServiceFactory reportServiceFactory = new ReportServiceFactory(cacheManager,
                 client.reportExecutionApi(),

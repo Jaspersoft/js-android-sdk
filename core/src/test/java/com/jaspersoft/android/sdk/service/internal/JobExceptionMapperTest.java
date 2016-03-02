@@ -9,7 +9,7 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        setExceptionMapper(new JobExceptionMapper(mDelegate));
+        setExceptionMapper(JobExceptionMapper.getInstance());
     }
 
     @Test
@@ -86,6 +86,4 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_LABEL_TOO_LONG);
     }
-
-
 }

@@ -18,29 +18,35 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.0
  */
-public class FiltersExceptionMapper implements ServiceExceptionMapper {
-    private final ServiceExceptionMapper mDelegate;
-
-    public FiltersExceptionMapper(ServiceExceptionMapper delegate) {
-        mDelegate = delegate;
+public class FiltersExceptionMapper extends AbstractServiceExceptionMapper {
+    private static class SingletonHolder {
+        private static final AbstractServiceExceptionMapper INSTANCE = new FiltersExceptionMapper();
     }
 
-    @NotNull
+    /**
+     * Initialization-on-demand holder idiom
+     *
+     * <a href="https://en.wikipedia.org/wiki/Singleton_pattern">SOURCE</a>
+
+     * @return job exception mapper
+     */
+    public static AbstractServiceExceptionMapper getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private final AbstractServiceExceptionMapper mDelegate;
+
+    private FiltersExceptionMapper() {
+        mDelegate = DefaultExceptionMapper.getInstance();
+    }
+
     @Override
-    public ServiceException transform(HttpException e) {
-        try {
-            ErrorDescriptor descriptor = e.getDescriptor();
-            if (descriptor == null) {
-                return mDelegate.transform(e);
-            } else {
-                return mapDescriptorToState(e, descriptor);
-            }
-        } catch (IOException ioEx) {
-            return transform(ioEx);
-        }
+    protected ServiceException mapHttpCodesToState(HttpException e) {
+        return mDelegate.mapHttpCodesToState(e);
     }
 
-    private ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
+    @Override
+    protected ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
         if (descriptor.getErrorCodes().contains("report.options.exception.label.exists.another.report")) {
             return new ServiceException("A Saved Options with that name already exists in this folder, under another report", e, StatusCodes.SAVED_VALUES_EXIST_IN_FOLDER);
         } else if (descriptor.getErrorCodes().contains("report.options.error.too.long.label")) {
@@ -53,12 +59,6 @@ public class FiltersExceptionMapper implements ServiceExceptionMapper {
             return exception;
         }
 
-        return mDelegate.transform(e);
-    }
-
-    @NotNull
-    @Override
-    public ServiceException transform(IOException e) {
         return mDelegate.transform(e);
     }
 }

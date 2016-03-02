@@ -38,16 +38,19 @@ import java.util.List;
  */
 final class ReportExecution5_6Plus extends AbstractReportExecution {
     private final ExportExecutionApi mExportExecutionApi;
+    private final ExportIdWrapper mExportIdWrapper;
     private final ExportFactory mExportFactory;
 
     ReportExecution5_6Plus(ExportExecutionApi exportExecutionApi,
                            ReportExecutionApi reportExecutionRestApi,
+                           ExportIdWrapper exportIdWrapper,
                            ExportFactory exportFactory,
                            String execId,
                            String reportUri,
                            long delay) {
         super(reportExecutionRestApi, execId, reportUri, delay);
         mExportExecutionApi = exportExecutionApi;
+        mExportIdWrapper = exportIdWrapper;
         mExportFactory = exportFactory;
     }
 
@@ -60,7 +63,8 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
         mExportExecutionApi.awaitReadyStatus(mExecId, exportId, mReportUri, mDelay);
         ReportExecutionDescriptor reportDescriptor = mReportExecutionApi.getDetails(mExecId);
 
-        return mExportFactory.create(reportDescriptor, mExecId, exportId);
+        mExportIdWrapper.wrap(exportDetails, options);
+        return mExportFactory.create(reportDescriptor, mExecId, mExportIdWrapper);
     }
 
     @NotNull

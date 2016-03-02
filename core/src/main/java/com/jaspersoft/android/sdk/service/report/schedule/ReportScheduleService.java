@@ -4,7 +4,6 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.schedule.JobData;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.JobExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
@@ -51,7 +50,7 @@ public class ReportScheduleService {
     }
 
     @NotNull
-    public JobForm readJob(@NotNull int jobId) throws ServiceException {
+    public JobForm readJob(int jobId) throws ServiceException {
         return mUseCase.readJob(jobId);
     }
 
@@ -67,8 +66,7 @@ public class ReportScheduleService {
         Preconditions.checkNotNull(client, "Client should not be null");
 
         JobSearchCriteriaMapper criteriaMapper = new JobSearchCriteriaMapper();
-        ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
-        JobExceptionMapper exceptionMapper = new JobExceptionMapper(defaultMapper);
+        ServiceExceptionMapper exceptionMapper = JobExceptionMapper.getInstance();
 
         InfoCache cache = new InMemoryInfoCache();
         InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);

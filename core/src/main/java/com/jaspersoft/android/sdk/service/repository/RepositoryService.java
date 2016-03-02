@@ -97,7 +97,7 @@ public class RepositoryService {
 
         InfoCache cache = new InMemoryInfoCache();
         RepositoryRestApi repositoryRestApi = client.repositoryApi();
-        ServiceExceptionMapper defaultExMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper defaultExMapper = DefaultExceptionMapper.getInstance();
         CallExecutor callExecutor = new DefaultCallExecutor(defaultExMapper);
         InfoCacheManager cacheManager = InfoCacheManager.create(client, cache);
 

@@ -28,7 +28,6 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -37,28 +36,27 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.0
  */
-public final class DefaultExceptionMapper implements ServiceExceptionMapper {
-    @NotNull
-    public ServiceException transform(IOException e) {
-        return new ServiceException("Failed to perform network request. Check network!", e, StatusCodes.NETWORK_ERROR);
+public final class DefaultExceptionMapper extends AbstractServiceExceptionMapper {
+    private static class SingletonHolder {
+        private static final AbstractServiceExceptionMapper INSTANCE = new DefaultExceptionMapper();
+    }
+
+    /**
+     * Initialization-on-demand holder idiom
+     *
+     * <a href="https://en.wikipedia.org/wiki/Singleton_pattern">SOURCE</a>
+
+     * @return default mapper
+     */
+    public static AbstractServiceExceptionMapper getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private DefaultExceptionMapper() {
     }
 
     @NotNull
-    public ServiceException transform(HttpException e) {
-        try {
-            ErrorDescriptor descriptor = e.getDescriptor();
-            if (descriptor == null) {
-                return mapHttpCodesToState(e);
-            } else {
-                return mapDescriptorToState(e, descriptor);
-            }
-        } catch (IOException ioEx) {
-            return transform(ioEx);
-        }
-    }
-
-    @NotNull
-    private static ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
+    protected ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
         if (descriptor.getErrorCodes().contains("resource.not.found")) {
             return new ServiceException(descriptor.getMessage(), e, StatusCodes.RESOURCE_NOT_FOUND);
         }
@@ -66,7 +64,7 @@ public final class DefaultExceptionMapper implements ServiceExceptionMapper {
     }
 
     @NotNull
-    private static ServiceException mapHttpCodesToState(HttpException e) {
+    protected ServiceException mapHttpCodesToState(HttpException e) {
         int code = e.code();
         if (code >= 500) {
             return new ServiceException("Server encountered unexpected error", e, StatusCodes.INTERNAL_ERROR);

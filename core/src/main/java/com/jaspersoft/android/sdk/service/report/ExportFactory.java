@@ -47,13 +47,13 @@ class ExportFactory {
     }
 
     @NotNull
-    public ReportExport create(ReportExecutionDescriptor descriptor, String execId, String exportId) throws ServiceException {
-        ExportDescriptor export = findExportDescriptor(descriptor, exportId);
+    public ReportExport create(ReportExecutionDescriptor descriptor, String execId, ExportIdWrapper exportIdWrapper) throws ServiceException {
+        ExportDescriptor export = findExportDescriptor(descriptor, exportIdWrapper.getServerId());
         if (export == null) {
             throw new ServiceException("Server returned malformed export details", null, StatusCodes.EXPORT_EXECUTION_FAILED);
         }
         List<ReportAttachment> attachments = mAttachmentsFactory.create(export, execId);
-        return new ReportExport(mExportExecutionApi, attachments, execId, exportId);
+        return new ReportExport(mExportExecutionApi, attachments, execId, exportIdWrapper.getExactId());
     }
 
     @Nullable

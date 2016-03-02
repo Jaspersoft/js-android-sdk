@@ -26,9 +26,6 @@ package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-import com.jaspersoft.android.sdk.service.internal.Call;
-import com.jaspersoft.android.sdk.service.internal.CallExecutor;
-import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 
 import java.io.IOException;
 
@@ -37,10 +34,10 @@ import java.io.IOException;
  * @since 2.0
  */
 public final class FakeCallExecutor implements CallExecutor {
-    private final DefaultExceptionMapper mExMapper;
+    private final AbstractServiceExceptionMapper mExMapper;
 
     public FakeCallExecutor() {
-        mExMapper = new DefaultExceptionMapper();
+        mExMapper = DefaultExceptionMapper.getInstance();
     }
 
     @Override

@@ -41,6 +41,7 @@ final class ReportService5_6Plus extends AbstractReportService {
         ReportExecution reportExecution = new ReportExecution5_6Plus(
                 mExportExecutionApi,
                 mReportExecutionApi,
+                ExportIdWrapper5_6Plus.getInstance(),
                 mExportFactory,
                 executionId,
                 reportUri,

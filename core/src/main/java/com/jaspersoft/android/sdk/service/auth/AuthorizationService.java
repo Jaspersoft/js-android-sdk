@@ -67,7 +67,7 @@ public class AuthorizationService {
     @NotNull
     public static AuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
-        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper serviceExceptionMapper = DefaultExceptionMapper.getInstance();
         return new AuthorizationService(client, serviceExceptionMapper);
     }
 }

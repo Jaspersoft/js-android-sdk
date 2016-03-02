@@ -64,6 +64,8 @@ public class ReportExecution5_6PlusTest {
     ReportExecutionApi mReportExecutionApi;
     @Mock
     ExportFactory mExportFactory;
+    @Mock
+    ExportIdWrapper mExportIdWrapper;
 
     @Mock
     ExportExecutionDescriptor exportDescriptor;
@@ -81,6 +83,7 @@ public class ReportExecution5_6PlusTest {
         reportExecution = new ReportExecution5_6Plus(
                 mExportExecutionApi,
                 mReportExecutionApi,
+                mExportIdWrapper,
                 mExportFactory,
                 EXEC_ID,
                 REPORT_URI,
@@ -98,7 +101,7 @@ public class ReportExecution5_6PlusTest {
         verify(mExportExecutionApi).start(EXEC_ID, EXPORT_OPTIONS);
         verify(mExportExecutionApi).awaitReadyStatus(EXEC_ID, EXPORT_ID, REPORT_URI, 0);
         verify(mReportExecutionApi).getDetails(EXEC_ID);
-        verify(mExportFactory).create(reportDescriptor, EXEC_ID, EXPORT_ID);
+        verify(mExportFactory).create(reportDescriptor, EXEC_ID, mExportIdWrapper);
     }
 
     @Test
