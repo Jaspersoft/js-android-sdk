@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptorItem;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.collections.Sets;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -66,6 +67,10 @@ public abstract class BaseExceptionMapperTest {
 
     void givenErrorDescriptorWithArguments(String... args) {
         when(mDescriptorItem.getErrorArguments()).thenReturn(Arrays.asList(args));
+    }
+
+    void givenErrorDescriptorWithParams(String... params) {
+        when(mDescriptor.getParameters()).thenReturn(Sets.newSet(params));
     }
 
     void whenTransformsHttpException() {

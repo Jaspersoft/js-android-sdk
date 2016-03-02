@@ -11,6 +11,8 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import com.jaspersoft.android.sdk.service.internal.ServiceExceptionMapper;
+import com.jaspersoft.android.sdk.service.internal.FiltersExceptionMapper;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -43,11 +45,12 @@ public class FiltersService {
         Preconditions.checkNotNull(client, "Client should not be null");
 
         ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
+        FiltersExceptionMapper exceptionMapper = new FiltersExceptionMapper(defaultMapper);
 
         ReportOptionMapper reportOptionMapper = new ReportOptionMapper();
-        ReportControlsUseCase reportControlsUseCase = new ReportControlsUseCase(defaultMapper, client.inputControlApi());
-        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(defaultMapper, client.reportOptionsApi(), reportOptionMapper);
-        RepositoryUseCase repositoryUseCase = new RepositoryUseCase(defaultMapper, client.repositoryApi());
+        ReportControlsUseCase reportControlsUseCase = new ReportControlsUseCase(exceptionMapper, client.inputControlApi());
+        ReportOptionsUseCase reportOptionsUseCase = new ReportOptionsUseCase(exceptionMapper, client.reportOptionsApi(), reportOptionMapper);
+        RepositoryUseCase repositoryUseCase = new RepositoryUseCase(exceptionMapper, client.repositoryApi());
 
         DashboardComponentsMapper dashboardComponentsMapper = new DashboardComponentsMapper();
 
