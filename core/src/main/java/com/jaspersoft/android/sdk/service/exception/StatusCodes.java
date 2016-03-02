@@ -58,5 +58,9 @@ public final class StatusCodes {
     public static final int JOB_LABEL_TOO_LONG = 505;
     public static final int JOB_OUTPUT_FILENAME_TOO_LONG = 506;
 
+    // FILTERS
+    public static final int SAVED_VALUES_EXIST_IN_FOLDER = 600;
+    public static final int SAVED_VALUES_LABEL_TOO_LONG = 601;
+
     private StatusCodes() {}
 }
