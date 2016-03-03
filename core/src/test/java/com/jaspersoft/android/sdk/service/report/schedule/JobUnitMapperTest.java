@@ -18,11 +18,11 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JobUnitMapperTest {
-    public static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static final String FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
     public static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
-    public static final String PREVIOUS_FIRE_TIME = "2013-10-03 16:32:05";
-    public static final String NEXT_FIRE_TIME = "2013-11-03 16:32:05";
+    public static final String PREVIOUS_FIRE_TIME = "2013-10-03T16:32:05";
+    public static final String NEXT_FIRE_TIME = "2013-11-03T16:32:05";
 
     @Mock
     JobUnitEntity mJobUnitEntity;
@@ -52,7 +52,7 @@ public class JobUnitMapperTest {
     @Test
     public void should_map_collection_of_units() throws Exception {
         List<JobUnitEntity> entities = Collections.singletonList(mJobUnitEntity);
-        List<JobUnit> expected = mJobUnitMapper.transform(entities, DATE_FORMAT);
+        List<JobUnit> expected = mJobUnitMapper.transform(entities);
         assertThat(expected.size(), is(1));
     }
 
@@ -61,7 +61,7 @@ public class JobUnitMapperTest {
         long previousFireTime = DATE_FORMAT.parse(PREVIOUS_FIRE_TIME).getTime();
         long nextFireTime = DATE_FORMAT.parse(NEXT_FIRE_TIME).getTime();
 
-        JobUnit expected = mJobUnitMapper.transform(mJobUnitEntity, DATE_FORMAT);
+        JobUnit expected = mJobUnitMapper.transform(mJobUnitEntity);
 
         assertThat(expected.getId(), is(1));
         assertThat(expected.getVersion(), is(100));
