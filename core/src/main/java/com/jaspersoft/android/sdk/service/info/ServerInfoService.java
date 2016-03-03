@@ -71,7 +71,7 @@ public class ServerInfoService {
     @NotNull
     public static ServerInfoService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
-        ServiceExceptionMapper serviceExceptionMapper = new DefaultExceptionMapper();
+        ServiceExceptionMapper serviceExceptionMapper = DefaultExceptionMapper.getInstance();
         return new ServerInfoService(client.infoApi(), ServerInfoTransformer.get(), serviceExceptionMapper);
     }
 }

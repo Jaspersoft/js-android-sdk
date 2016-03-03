@@ -44,8 +44,7 @@ public class FiltersService {
     public static FiltersService newService(@NotNull AuthorizedClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");
 
-        ServiceExceptionMapper defaultMapper = new DefaultExceptionMapper();
-        FiltersExceptionMapper exceptionMapper = new FiltersExceptionMapper(defaultMapper);
+        ServiceExceptionMapper exceptionMapper = FiltersExceptionMapper.getInstance();
 
         ReportOptionMapper reportOptionMapper = new ReportOptionMapper();
         ReportControlsUseCase reportControlsUseCase = new ReportControlsUseCase(exceptionMapper, client.inputControlApi());

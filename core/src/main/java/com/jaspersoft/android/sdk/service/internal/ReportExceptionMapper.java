@@ -25,36 +25,50 @@
 package com.jaspersoft.android.sdk.service.internal;
 
 import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public final class ReportExceptionMapper implements ServiceExceptionMapper {
-    private final ServiceExceptionMapper mDelegate;
-
-    public ReportExceptionMapper(ServiceExceptionMapper delegate) {
-        mDelegate = delegate;
+public final class ReportExceptionMapper extends AbstractServiceExceptionMapper {
+    private static class SingletonHolder {
+        private static final AbstractServiceExceptionMapper INSTANCE = new ReportExceptionMapper();
     }
 
-    @NotNull
+    /**
+     * Initialization-on-demand holder idiom
+     *
+     * <a href="https://en.wikipedia.org/wiki/Singleton_pattern">SOURCE</a>
+
+     * @return report exception mapper
+     */
+    public static AbstractServiceExceptionMapper getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private final AbstractServiceExceptionMapper mDelegate;
+
+    private ReportExceptionMapper() {
+        mDelegate = DefaultExceptionMapper.getInstance();
+    }
+
     @Override
-    public ServiceException transform(HttpException e) {
-        ServiceException exception = mDelegate.transform(e);
+    protected ServiceException mapHttpCodesToState(HttpException e) {
+        return mDelegate.mapHttpCodesToState(e);
+    }
+
+    @Override
+    protected ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
+        ServiceException exception = mDelegate.mapDescriptorToState(e, descriptor);
         if (exception.code() == StatusCodes.RESOURCE_NOT_FOUND) {
             return new ServiceException(exception.getMessage(), exception.getCause(), StatusCodes.REPORT_EXECUTION_INVALID);
         }
+        if (descriptor.getErrorCodes().contains("webservices.error.errorExportingReportUnit")) {
+            return new ServiceException(exception.getMessage(), exception.getCause(), StatusCodes.EXPORT_EXECUTION_FAILED);
+        }
         return exception;
-    }
-
-    @NotNull
-    @Override
-    public ServiceException transform(IOException e) {
-        return mDelegate.transform(e);
     }
 }

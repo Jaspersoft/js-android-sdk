@@ -5,38 +5,42 @@ import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptor;
 import com.jaspersoft.android.sdk.network.entity.execution.ErrorDescriptorItem;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
-public class JobExceptionMapper implements ServiceExceptionMapper {
-    private final ServiceExceptionMapper mDelegate;
-
-    public JobExceptionMapper(ServiceExceptionMapper delegate) {
-        mDelegate = delegate;
+public class JobExceptionMapper extends AbstractServiceExceptionMapper {
+    private static class SingletonHolder {
+        private static final AbstractServiceExceptionMapper INSTANCE = new JobExceptionMapper();
     }
 
-    @NotNull
+    /**
+     * Initialization-on-demand holder idiom
+     *
+     * <a href="https://en.wikipedia.org/wiki/Singleton_pattern">SOURCE</a>
+
+     * @return job exception mapper
+     */
+    public static AbstractServiceExceptionMapper getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private final AbstractServiceExceptionMapper mDelegate;
+
+    private JobExceptionMapper() {
+        mDelegate = DefaultExceptionMapper.getInstance();
+    }
+
     @Override
-    public ServiceException transform(HttpException e) {
-        try {
-            ErrorDescriptor descriptor = e.getDescriptor();
-            if (descriptor == null) {
-                return mDelegate.transform(e);
-            } else {
-                return mapDescriptorToState(e, descriptor);
-            }
-        } catch (IOException ioEx) {
-            return transform(ioEx);
-        }
+    protected ServiceException mapHttpCodesToState(HttpException e) {
+        return mDelegate.mapHttpCodesToState(e);
     }
 
-    private ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
+    @Override
+    protected ServiceException mapDescriptorToState(HttpException e, ErrorDescriptor descriptor) {
         if (descriptor.getErrorCodes().contains("error.duplicate.report.job.output.filename")) {
             return new ServiceException("Duplicate job output file name", e, StatusCodes.JOB_DUPLICATE_OUTPUT_FILE_NAME);
         } else if (descriptor.getErrorCodes().contains("error.before.current.date")) {
@@ -70,12 +74,6 @@ public class JobExceptionMapper implements ServiceExceptionMapper {
             }
         }
 
-        return mDelegate.transform(e);
-    }
-
-    @NotNull
-    @Override
-    public ServiceException transform(IOException e) {
         return mDelegate.transform(e);
     }
 }

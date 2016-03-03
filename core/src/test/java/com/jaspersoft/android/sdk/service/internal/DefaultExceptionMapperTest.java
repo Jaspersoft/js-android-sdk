@@ -37,7 +37,7 @@ public class DefaultExceptionMapperTest extends BaseExceptionMapperTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        setExceptionMapper(new DefaultExceptionMapper());
+        setExceptionMapper(DefaultExceptionMapper.getInstance());
     }
 
     @Test

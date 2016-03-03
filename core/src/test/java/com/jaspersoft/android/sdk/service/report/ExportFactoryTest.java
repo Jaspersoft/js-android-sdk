@@ -61,6 +61,8 @@ public class ExportFactoryTest {
     ReportExecutionDescriptor mReportExecutionDescriptor;
     @Mock
     ExportDescriptor mExportDescriptor;
+    @Mock
+    ExportIdWrapper mExportIdWrapper;
 
     private ExportFactory exportFactory;
 
@@ -68,13 +70,15 @@ public class ExportFactoryTest {
     public void setUp() throws Exception {
         exportFactory = new ExportFactory(mExportExecutionApi, mAttachmentsFactory);
 
+        when(mExportIdWrapper.getExactId()).thenReturn(EXPORT_ID);
+        when(mExportIdWrapper.getServerId()).thenReturn(EXPORT_ID);
         when(mExportDescriptor.getId()).thenReturn(EXPORT_ID);
         when(mReportExecutionDescriptor.getExports()).thenReturn(singleton(mExportDescriptor));
     }
 
     @Test
     public void should_create_export_if_details_fulfilled() throws Exception {
-        ReportExport result = exportFactory.create(mReportExecutionDescriptor, EXEC_ID, EXPORT_ID);
+        ReportExport result = exportFactory.create(mReportExecutionDescriptor, EXEC_ID, mExportIdWrapper);
         assertThat(result, is(notNullValue()));
         assertThat(result, is(instanceOf(ReportExport.class)));
 
@@ -86,7 +90,7 @@ public class ExportFactoryTest {
         when(mExportDescriptor.getId()).thenReturn("123122");
 
         try {
-            exportFactory.create(mReportExecutionDescriptor, EXEC_ID, EXPORT_ID);
+            exportFactory.create(mReportExecutionDescriptor, EXEC_ID, mExportIdWrapper);
             fail("Should throw ServiceException");
         } catch (ServiceException ex) {
             assertThat(ex.getMessage(), is("Server returned malformed export details"));

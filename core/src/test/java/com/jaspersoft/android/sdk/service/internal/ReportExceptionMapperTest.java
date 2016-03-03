@@ -13,7 +13,7 @@ public class ReportExceptionMapperTest extends BaseExceptionMapperTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        setExceptionMapper(new ReportExceptionMapper(mDelegate));
+        setExceptionMapper(ReportExceptionMapper.getInstance());
     }
 
     @Test
@@ -25,6 +25,16 @@ public class ReportExceptionMapperTest extends BaseExceptionMapperTest {
         whenTransformsHttpException();
 
         thenShouldHaveStatusCode(StatusCodes.REPORT_EXECUTION_INVALID);
+    }
+
+    @Test
+    public void should_handle_errorExportingReportUnit() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("webservices.error.errorExportingReportUnit");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.EXPORT_EXECUTION_FAILED);
     }
 
     private void givenDelegateReturnsCode(int code) {

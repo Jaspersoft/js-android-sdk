@@ -39,17 +39,21 @@ import java.util.List;
  */
 final class ReportExecution5_5 extends AbstractReportExecution {
     private final ExportExecutionApi mExportExecutionApi;
+    private final ExportIdWrapper mExportIdWrapper;
     private final ExportFactory mExportFactory;
     private final ReportExecutionOptions mReportExecutionOptions;
 
     ReportExecution5_5(ExportExecutionApi exportExecutionApi,
                        ReportExecutionApi reportExecutionRestApi,
-                       ExportFactory exportFactory, ReportExecutionOptions reportExecutionOptions,
+                       ExportIdWrapper exportIdWrapper,
+                       ExportFactory exportFactory,
+                       ReportExecutionOptions reportExecutionOptions,
                        String execId,
                        String reportUri,
                        long delay) {
         super(reportExecutionRestApi, execId, reportUri, delay);
         mExportExecutionApi = exportExecutionApi;
+        mExportIdWrapper = exportIdWrapper;
         mExportFactory = exportFactory;
         mReportExecutionOptions = reportExecutionOptions;
     }
@@ -58,9 +62,10 @@ final class ReportExecution5_5 extends AbstractReportExecution {
     @Override
     protected ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException {
         ExportExecutionDescriptor exportDetails = mExportExecutionApi.start(mExecId, options);
-        String exportId = exportDetails.getExportId();
         ReportExecutionDescriptor reportDescriptor = mReportExecutionApi.getDetails(mExecId);
-        return mExportFactory.create(reportDescriptor, mExecId, exportId);
+
+        mExportIdWrapper.wrap(exportDetails, options);
+        return mExportFactory.create(reportDescriptor, mExecId, mExportIdWrapper);
     }
 
     @NotNull
@@ -77,6 +82,7 @@ final class ReportExecution5_5 extends AbstractReportExecution {
         return new ReportExecution5_5(
                 mExportExecutionApi,
                 mReportExecutionApi,
+                mExportIdWrapper,
                 mExportFactory,
                 criteria,
                 executionId,

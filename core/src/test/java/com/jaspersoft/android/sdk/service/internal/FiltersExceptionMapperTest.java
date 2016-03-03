@@ -10,7 +10,7 @@ public class FiltersExceptionMapperTest extends BaseExceptionMapperTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        setExceptionMapper(new FiltersExceptionMapper(mDelegate));
+        setExceptionMapper(FiltersExceptionMapper.getInstance());
     }
 
     @Test
