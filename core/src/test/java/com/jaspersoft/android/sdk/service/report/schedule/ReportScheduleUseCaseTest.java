@@ -97,7 +97,7 @@ public class ReportScheduleUseCaseTest {
 
         verify(mSearchCriteriaMapper).transform(CRITERIA);
         verify(mScheduleRestApi).searchJob(SEARCH_PARAMS);
-        verify(mJobUnitMapper).transform(Collections.<JobUnitEntity>emptyList(), SIMPLE_DATE_FORMAT);
+        verify(mJobUnitMapper).transform(Collections.<JobUnitEntity>emptyList());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class ReportScheduleUseCaseTest {
                 .thenReturn(mJobFormEntity);
         when(mJobFormMapper.toDataForm(any(JobFormEntity.class)))
                 .thenReturn(mJobForm);
-        when(mJobUnitMapper.transform(anyListOf(JobUnitEntity.class), any(SimpleDateFormat.class)))
+        when(mJobUnitMapper.transform(anyListOf(JobUnitEntity.class)))
                 .thenReturn(Collections.singletonList(mJobUnit));
 
         when(mExceptionMapper.transform(any(HttpException.class))).thenReturn(mServiceException);

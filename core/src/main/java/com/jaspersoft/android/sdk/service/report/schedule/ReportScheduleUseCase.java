@@ -50,10 +50,9 @@ class ReportScheduleUseCase {
 
     public List<JobUnit> searchJob(JobSearchCriteria criteria) throws ServiceException {
         try {
-            ServerInfo info = mCacheManager.getInfo();
             Map<String, Object> searchParams = mSearchCriteriaMapper.transform(criteria);
             List<JobUnitEntity> jobUnitEntities = mScheduleRestApi.searchJob(searchParams);
-            return mJobUnitMapper.transform(jobUnitEntities, info.getDatetimeFormatPattern());
+            return mJobUnitMapper.transform(jobUnitEntities);
         } catch (IOException e) {
             throw mExceptionMapper.transform(e);
         } catch (HttpException e) {

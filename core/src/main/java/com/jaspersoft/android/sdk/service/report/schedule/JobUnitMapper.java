@@ -11,24 +11,30 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Tom Koptel
  * @since 2.0
  */
 class JobUnitMapper {
-    public List<JobUnit> transform(List<JobUnitEntity> entities, SimpleDateFormat dateTimeFormat) {
+
+    private static final String FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final SimpleDateFormat DATE_FORMAT =
+            new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
+
+    public List<JobUnit> transform(List<JobUnitEntity> entities) {
         List<JobUnit> list = new ArrayList<>(entities.size());
         for (JobUnitEntity entity : entities) {
             if (entity != null) {
-                JobUnit unit = transform(entity, dateTimeFormat);
+                JobUnit unit = transform(entity);
                 list.add(unit);
             }
         }
         return list;
     }
 
-    public JobUnit transform(JobUnitEntity entity, SimpleDateFormat dateTimeFormat) {
+    public JobUnit transform(JobUnitEntity entity) {
         JobUnit.Builder jobUnitBuilder = new JobUnit.Builder();
         jobUnitBuilder.withId(entity.getId());
         jobUnitBuilder.withVersion(entity.getVersion());
@@ -47,13 +53,13 @@ class JobUnitMapper {
 
             String nextFireTime = entityState.getNextFireTime();
             if (nextFireTime != null) {
-                Date nextFireDate = parseDateSilently(dateTimeFormat, nextFireTime);
+                Date nextFireDate = parseDateSilently(nextFireTime);
                 jobUnitBuilder.withNextFireTime(nextFireDate);
             }
 
             String previousFireTime = entityState.getPreviousFireTime();
             if (previousFireTime != null) {
-                Date previousFireDate = parseDateSilently(dateTimeFormat, previousFireTime);
+                Date previousFireDate = parseDateSilently(previousFireTime);
                 jobUnitBuilder.withPreviousFireTime(previousFireDate);
             }
         }
@@ -61,9 +67,9 @@ class JobUnitMapper {
         return jobUnitBuilder.build();
     }
 
-    private Date parseDateSilently(SimpleDateFormat dateTimeFormat, String nextFireTime) {
+    private Date parseDateSilently(String nextFireTime) {
         try {
-            return dateTimeFormat.parse(nextFireTime);
+            return DATE_FORMAT.parse(nextFireTime);
         } catch (ParseException ex) {
             return null;
         }
