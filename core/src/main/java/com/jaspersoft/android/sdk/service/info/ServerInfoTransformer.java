@@ -75,7 +75,7 @@ class ServerInfoTransformer {
     }
 
     private Set<String> parseFeatureSet(String features) {
-        String[] split = features.split(" ");
-        return new HashSet<String>(Arrays.asList(split));
+        String[] split = features != null ? features.split(" ") : new String[0];
+        return new HashSet<>(Arrays.asList(split));
     }
 }
