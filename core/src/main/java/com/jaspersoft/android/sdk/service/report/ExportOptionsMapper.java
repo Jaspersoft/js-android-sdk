@@ -43,13 +43,18 @@ abstract class ExportOptionsMapper {
     }
 
     public static ExportOptionsMapper create(ServerVersion serverVersion, String baseUrl) {
-        if (serverVersion.greaterThanOrEquals(ServerVersion.v6_2)) {
-            return new ExportOptionsMapper6_2(baseUrl);
-        }
         if (serverVersion.lessThanOrEquals(ServerVersion.v5_5)) {
             return new ExportOptionsMapper5_5(baseUrl);
         }
-        return new ExportOptionsMapper5_6and6_1(baseUrl);
+        if (serverVersion.greaterThanOrEquals(ServerVersion.v5_6) &&
+                serverVersion.lessThan(ServerVersion.v6)) {
+            return new ExportOptionsMapper5_6and6_0(baseUrl);
+        }
+        if (serverVersion.greaterThanOrEquals(ServerVersion.v6) &&
+                serverVersion.lessThan(ServerVersion.v6_2)) {
+            return new ExportOptionsMapper6_06and6_1(baseUrl);
+        }
+        return new ExportOptionsMapper6_2(baseUrl);
     }
 
     public ExecutionRequestOptions transform(ReportExportOptions options) {
@@ -66,6 +71,11 @@ abstract class ExportOptionsMapper {
         String prefix = options.getAttachmentPrefix();
         if (prefix != null) {
             resultOptions.withAttachmentsPrefix(escapeAttachmentPrefix(prefix));
+        }
+
+        ReportMarkup markup = options.getMarkup();
+        if (markup != null) {
+            resultOptions.withMarkupType(markup.toString().toLowerCase());
         }
 
         resultOptions.withIgnorePagination(options.getIgnorePagination());
