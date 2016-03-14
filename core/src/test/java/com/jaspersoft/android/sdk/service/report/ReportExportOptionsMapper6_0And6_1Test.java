@@ -25,7 +25,6 @@
 package com.jaspersoft.android.sdk.service.report;
 
 import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptions;
-import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,14 +32,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-public class ReportExportOptionsMapper5_6And6_1Test {
+public class ReportExportOptionsMapper6_0And6_1Test {
     private static final String BASE_URL = "http://localhost";
 
-    private ExportOptionsMapper5_6and6_1 mapper;
+    private ExportOptionsMapper6_06and6_1 mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ExportOptionsMapper5_6and6_1(BASE_URL);
+        mapper = new ExportOptionsMapper6_06and6_1(BASE_URL);
     }
 
     @Test

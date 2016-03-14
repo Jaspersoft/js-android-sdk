@@ -16,6 +16,7 @@ final class ExportOptionsMapper5_5 extends ExportOptionsMapper {
         ExecutionRequestOptions options = super.transform(criteria);
         options.withIgnorePagination(null);
         options.withBaseUrl(null);
+        options.withMarkupType(null);
         return options;
     }
 }

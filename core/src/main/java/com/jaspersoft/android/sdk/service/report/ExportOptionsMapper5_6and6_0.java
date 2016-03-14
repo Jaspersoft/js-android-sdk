@@ -30,8 +30,8 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptio
  * @author Tom Koptel
  * @since 2.0
  */
-final class ExportOptionsMapper5_6and6_1 extends ExportOptionsMapper {
-    ExportOptionsMapper5_6and6_1(String baseUrl) {
+final class ExportOptionsMapper5_6and6_0 extends ExportOptionsMapper {
+    ExportOptionsMapper5_6and6_0(String baseUrl) {
         super(baseUrl);
     }
 
@@ -39,6 +39,7 @@ final class ExportOptionsMapper5_6and6_1 extends ExportOptionsMapper {
     public ExecutionRequestOptions transform(ReportExportOptions criteria) {
         ExecutionRequestOptions options = super.transform(criteria);
         options.withIgnorePagination(null);
+        options.withMarkupType(null);
         return options;
     }
 }

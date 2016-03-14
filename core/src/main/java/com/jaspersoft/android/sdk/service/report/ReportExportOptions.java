@@ -35,6 +35,7 @@ import org.jetbrains.annotations.TestOnly;
  * @since 2.0
  */
 public final class ReportExportOptions {
+    private final ReportMarkup mMarkup;
     private final ReportFormat mFormat;
 
     private final PageRange mPageRange;
@@ -45,12 +46,14 @@ public final class ReportExportOptions {
     private final Boolean mAllowInlineScripts;
 
     @TestOnly
-    ReportExportOptions(ReportFormat format,
-                                PageRange pageRange,
-                                String attachmentPrefix,
-                                String anchor,
-                                Boolean ignorePagination,
-                                Boolean allowInlineScripts) {
+    ReportExportOptions(ReportMarkup markup,
+                        ReportFormat format,
+                        PageRange pageRange,
+                        String attachmentPrefix,
+                        String anchor,
+                        Boolean ignorePagination,
+                        Boolean allowInlineScripts) {
+        mMarkup = markup;
         mFormat = format;
         mPageRange = pageRange;
         mAttachmentPrefix = attachmentPrefix;
@@ -94,6 +97,11 @@ public final class ReportExportOptions {
         return mAllowInlineScripts;
     }
 
+    @Nullable
+    public ReportMarkup getMarkup() {
+        return mMarkup;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -109,6 +117,7 @@ public final class ReportExportOptions {
         if (mFormat != that.mFormat) return false;
         if (mIgnorePagination != null ? !mIgnorePagination.equals(that.mIgnorePagination) : that.mIgnorePagination != null)
             return false;
+        if (mMarkup != that.mMarkup) return false;
         if (mPageRange != null ? !mPageRange.equals(that.mPageRange) : that.mPageRange != null) return false;
 
         return true;
@@ -116,7 +125,8 @@ public final class ReportExportOptions {
 
     @Override
     public int hashCode() {
-        int result = mFormat != null ? mFormat.hashCode() : 0;
+        int result = mMarkup != null ? mMarkup.hashCode() : 0;
+        result = 31 * result + (mFormat != null ? mFormat.hashCode() : 0);
         result = 31 * result + (mPageRange != null ? mPageRange.hashCode() : 0);
         result = 31 * result + (mAttachmentPrefix != null ? mAttachmentPrefix.hashCode() : 0);
         result = 31 * result + (mAnchor != null ? mAnchor.hashCode() : 0);
@@ -146,6 +156,7 @@ public final class ReportExportOptions {
 
         private Boolean mIgnorePagination;
         private Boolean mAllowInlineScripts;
+        private ReportMarkup mMarkup;
 
         private Builder() {
         }
@@ -157,6 +168,11 @@ public final class ReportExportOptions {
 
         public Builder withPageRange(@Nullable PageRange pages) {
             mPageRange = pages;
+            return this;
+        }
+
+        public Builder withMarkup(@Nullable ReportMarkup markup) {
+            mMarkup = markup;
             return this;
         }
 
@@ -185,6 +201,7 @@ public final class ReportExportOptions {
                 throw new IllegalStateException("Format should be supplied");
             }
             return new ReportExportOptions(
+                    mMarkup,
                     mFormat,
                     mPageRange,
                     mAttachmentPrefix,
