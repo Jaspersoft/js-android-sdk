@@ -29,7 +29,7 @@ import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ServerVersion implements Comparable<ServerVersion> {
     private final String versionName;

@@ -2,7 +2,7 @@ package com.jaspersoft.android.sdk.service.data.schedule;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RepeatedEndDate extends EndDate {
     private final int mOccurrenceCount;

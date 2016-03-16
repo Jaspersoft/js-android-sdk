@@ -43,8 +43,76 @@ import java.util.List;
 
 
 /**
+ * Public API that allows to perform search request, list details and download content of resources, list root folders.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
+ * <pre>
+ * {@code
+ *
+ * Server server = Server.builder()
+ *         .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *         .build();
+ *
+ * Credentials credentials = SpringCredentials.builder()
+ *         .withPassword("phoneuser")
+ *         .withUsername("phoneuser")
+ *         .withOrganization("organization_1")
+ *         .build();
+ *
+ * AuthorizedClient client = server.newClient(credentials).create();
+ * RxRepositoryService service = RxRepositoryService.newService(client);
+ *
+ * Action1<Throwable> errorHandler = new Action1<Throwable>() {
+ *     &#064;
+ *     public void call(Throwable throwable) {
+ *         // handle error
+ *     }
+ * };
+ *
+ * String resourceUri = "/my/report/uri";
+ *
+ * service.fetchResourceContent(resourceUri).subscribe(new Action1<ResourceOutput>() {
+ *     &#064;
+ *     public void call(ResourceOutput resourceOutput) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
+ *         .withQuery("reports")
+ *         .withLimit(100)
+ *         .withOffset(0)
+ *         .build();
+ * RxRepositorySearchTask search = service.search(criteria);
+ * while (search.hasNext()) {
+ *     // returns by 100 items until end reached
+ *     search.nextLookup().subscribe(new Action1<List<Resource>>() {
+ *         &#064;
+ *         public void call(List<Resource> resources) {
+ *             // success
+ *         }
+ *     }, errorHandler);
+ * }
+ *
+ * service.fetchResourceDetails(resourceUri, ResourceType.file).subscribe(new Action1<Resource>() {
+ *     &#064;
+ *     public void call(Resource resource) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * service.fetchRootFolders().subscribe(new Action1<List<Resource>>() {
+ *     &#064;
+ *     public void call(List<Resource> resources) {
+ *         // success
+ *     }
+ * }, errorHandler);
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxRepositoryService {
     private final RepositoryService mSyncDelegate;
@@ -54,12 +122,25 @@ public class RxRepositoryService {
         mSyncDelegate = repositoryService;
     }
 
+    /**
+     * Performs search inside JRS repository
+     *
+     * @param criteria search options to control our search response
+     * @return task that wraps in iterator format bundle of search response
+     */
     @NotNull
     public RxRepositorySearchTask search(@Nullable RepositorySearchCriteria criteria) {
         RepositorySearchTask repositorySearchTask = mSyncDelegate.search(criteria);
         return new RxRepositorySearchTask(repositorySearchTask);
     }
 
+    /**
+     * Retrieves details of resources on the basis of supplied format
+     *
+     * @param resourceUri unique resource uri
+     * @param type        concrete type of resource. E.g. reportUnit, file
+     * @return subclass of {@link Resource} object
+     */
     @NotNull
     public Observable<Resource> fetchResourceDetails(@NotNull final String resourceUri, final @NotNull ResourceType type) {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
@@ -78,6 +159,12 @@ public class RxRepositoryService {
         });
     }
 
+    /**
+     * Performs download operation on concrete resource
+     *
+     * @param resourceUri unique resource uri
+     * @return output of resource that wraps {@link java.io.InputStream}
+     */
     @NotNull
     public Observable<ResourceOutput> fetchResourceContent(@NotNull final String resourceUri) {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
@@ -95,6 +182,11 @@ public class RxRepositoryService {
         });
     }
 
+    /**
+     * Returns predefined list of root repositories
+     *
+     * @return list of root repositories
+     */
     @NotNull
     public Observable<List<Resource>> fetchRootFolders() {
         return Observable.defer(new Func0<Observable<List<Resource>>>() {
@@ -110,10 +202,16 @@ public class RxRepositoryService {
         });
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client authorized network client
+     * @return instance of newly created service
+     */
     @NotNull
-    public static RxRepositoryService newService(@NotNull AuthorizedClient authorizedClient) {
-        Preconditions.checkNotNull(authorizedClient, "Client should not be null");
-        RepositoryService repositoryService = RepositoryService.newService(authorizedClient);
+    public static RxRepositoryService newService(@NotNull AuthorizedClient client) {
+        Preconditions.checkNotNull(client, "Client should not be null");
+        RepositoryService repositoryService = RepositoryService.newService(client);
         return new RxRepositoryService(repositoryService);
     }
 }

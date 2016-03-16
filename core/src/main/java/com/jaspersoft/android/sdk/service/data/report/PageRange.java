@@ -28,8 +28,10 @@ import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Provides convenient way to translate page range required for report export executions
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class PageRange {
     private final int mLowerBound;
@@ -40,18 +42,35 @@ public final class PageRange {
         mUpperBound = upperBound;
     }
 
+    /**
+     * @return lower bound of range
+     */
     public int getLowerBound() {
         return mLowerBound;
     }
 
+    /**
+     * @return upper bound of range
+     */
     public int getUpperBound() {
         return mUpperBound;
     }
 
+    /**
+     * Returns whether range was supplied during build process or not
+     *
+     * @return either true or false
+     */
     public boolean isRange() {
         return mUpperBound != Integer.MAX_VALUE;
     }
 
+    /**
+     * Factory method that parse the raw value
+     *
+     * @param pages accepted values single page or range format "{startPageNumber}-{endPageNumber}"
+     * @return range object on the basis of raw value
+     */
     @NotNull
     public static PageRange parse(@NotNull String pages) {
         Preconditions.checkNotNull(pages, "Pages should not be null");

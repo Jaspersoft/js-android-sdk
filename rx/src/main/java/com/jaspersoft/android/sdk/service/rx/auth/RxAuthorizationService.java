@@ -36,8 +36,44 @@ import rx.functions.Func0;
 
 
 /**
+ * The corresponding service allows to perform authorization related tasks by wrapping one in Rx {@link Observable}
+ *
+ * <pre>
+ * {@code
+ *
+ *  Server server = Server.builder()
+ *          .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *          .build();
+ *
+ *  AnonymousClient anonymousClient = server.newClient().create();
+ *
+ *  Credentials credentials = SpringCredentials.builder()
+ *          .withPassword("phoneuser")
+ *          .withUsername("phoneuser")
+ *          .withOrganization("organization_1")
+ *          .build();
+ *
+ *  RxAuthorizationService service = RxAuthorizationService.newService(anonymousClient);
+ *  service.authorize(credentials).subscribe(
+ *          new Action1<Credentials>() {
+ *              &#064;
+ *              public void call(Credentials credentials) {
+ *                  // success
+ *              }
+ *          },
+ *          new Action1<Throwable>() {
+ *              &#064;
+ *              public void call(Throwable throwable) {
+ *                  // handle API exception
+ *              }
+ *          }
+ *  );
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxAuthorizationService {
     private final AuthorizationService mSyncDelegate;
@@ -47,6 +83,12 @@ public class RxAuthorizationService {
         mSyncDelegate = service;
     }
 
+    /**
+     * Performs authorize call on basis of passed credentials
+     *
+     * @param credentials user sensitive data
+     * @return observable that emits credentials use has supplied if operation was successful
+     */
     @NotNull
     public Observable<Credentials> authorize(@NotNull final Credentials credentials) {
         return Observable.defer(new Func0<Observable<Credentials>>() {
@@ -62,6 +104,12 @@ public class RxAuthorizationService {
         });
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client anonymous network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static RxAuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");

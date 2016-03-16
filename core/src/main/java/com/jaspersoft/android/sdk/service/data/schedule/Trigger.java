@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class Trigger {
     @Nullable
@@ -40,17 +40,35 @@ public class Trigger {
         private String mCalendarName;
         private Recurrence mRecurrence;
 
+        /**
+         * Allows to specify name of the calendar to follow
+         *
+         * @param calendarName registered calendar name. User can register one on JRS side
+         * @return builder for convenient configuration
+         */
         public Builder withCalendarName(String calendarName) {
             mCalendarName = calendarName;
             return this;
         }
 
+        /**
+         * Allows to supply interval recurrence. This tells JRS to repeat schedule on interval basis.
+         *
+         * @param recurrence concrete implementation of interval recurrence
+         * @return builder for convenient configuration
+         */
         public SimpleTriggerBuilder withRecurrence(IntervalRecurrence recurrence) {
             mRecurrence = recurrence;
             return new SimpleTriggerBuilder(this);
         }
 
-         public CalendarTriggerBuilder withRecurrence(CalendarRecurrence recurrence) {
+        /**
+         * Allows to supply interval recurrence. This tells JRS to repeat schedule on calendar basis.
+         *
+         * @param recurrence concrete implementation of calendar recurrence
+         * @return builder for convenient configuration
+         */
+        public CalendarTriggerBuilder withRecurrence(CalendarRecurrence recurrence) {
             mRecurrence = recurrence;
             return new CalendarTriggerBuilder(this);
         }
@@ -65,11 +83,23 @@ public class Trigger {
             mBuilder = builder;
         }
 
+        /**
+         * Allows to specify concrete end date for simple trigger
+         *
+         * @param endDate should be any date in future
+         * @return builder for convenient configuration
+         */
         public SimpleTriggerBuilder withEndDate(UntilEndDate endDate) {
             mEndDate = endDate;
             return this;
         }
 
+        /**
+         * Allows to specify concrete repeat count in future
+         *
+         * @param endDate encapsulated repeat count
+         * @return builder for convenient configuration
+         */
         public SimpleTriggerBuilder withEndDate(RepeatedEndDate endDate) {
             mEndDate = endDate;
             return this;
@@ -89,6 +119,12 @@ public class Trigger {
             mBuilder = builder;
         }
 
+        /**
+         * Allows to specify concrete end date for calendar trigger
+         *
+         * @param endDate should be any date in future
+         * @return builder for convenient configuration builder for convenient configuration
+         */
         public CalendarTriggerBuilder withEndDate(UntilEndDate endDate) {
             mEndDate = endDate;
             return this;

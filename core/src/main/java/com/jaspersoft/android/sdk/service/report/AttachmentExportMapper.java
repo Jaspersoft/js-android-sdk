@@ -32,7 +32,7 @@ import java.io.InputStream;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class AttachmentExportMapper {
     public ResourceOutput transform(final OutputResource resource) {

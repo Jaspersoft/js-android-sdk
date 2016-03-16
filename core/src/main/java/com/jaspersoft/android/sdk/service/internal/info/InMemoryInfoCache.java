@@ -33,7 +33,7 @@ import java.util.WeakHashMap;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class InMemoryInfoCache implements InfoCache {
     private Map<String, ServerInfo> mCache = new WeakHashMap<>();

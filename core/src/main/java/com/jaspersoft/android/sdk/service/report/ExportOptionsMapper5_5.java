@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptio
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class ExportOptionsMapper5_5 extends ExportOptionsMapper {
     ExportOptionsMapper5_5(String baseUrl) {

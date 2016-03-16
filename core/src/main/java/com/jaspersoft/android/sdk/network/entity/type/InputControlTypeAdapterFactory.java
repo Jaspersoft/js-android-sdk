@@ -31,7 +31,7 @@ import com.jaspersoft.android.sdk.network.entity.control.InputControlCollection;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class InputControlTypeAdapterFactory extends CustomizedTypeAdapterFactory<InputControlCollection> {
     private static final String[] RULE_TYPES = {"dateTimeFormatValidationRule", "mandatoryValidationRule"};

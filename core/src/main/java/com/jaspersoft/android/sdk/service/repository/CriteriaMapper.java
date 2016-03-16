@@ -35,7 +35,7 @@ import static com.jaspersoft.android.sdk.service.repository.RepositorySearchCrit
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class CriteriaMapper {
     private CriteriaMapper() {

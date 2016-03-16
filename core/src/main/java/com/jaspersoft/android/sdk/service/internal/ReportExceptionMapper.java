@@ -31,7 +31,7 @@ import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ReportExceptionMapper extends AbstractServiceExceptionMapper {
     private static class SingletonHolder {

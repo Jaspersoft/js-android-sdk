@@ -26,8 +26,15 @@ package com.jaspersoft.android.sdk.service.report;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum ReportMarkup {
-    FULL, EMBEDDABLE
+    /**
+     * full HTML page with all generic parts like head, body etc.
+     */
+    FULL,
+    /**
+     * report specific part of full markup without inline scripts (used by visualize).
+     */
+    EMBEDDABLE
 }

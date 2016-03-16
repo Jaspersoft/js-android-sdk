@@ -40,7 +40,7 @@ import java.util.Set;
  * TODO refactor following module in easy testable units
  *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class AuthRestApi {
     private final NetworkClient mNetworkClient;

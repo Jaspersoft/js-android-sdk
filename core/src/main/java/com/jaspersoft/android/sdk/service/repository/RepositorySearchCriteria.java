@@ -31,7 +31,7 @@ import static com.jaspersoft.android.sdk.service.internal.Preconditions.checkArg
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class RepositorySearchCriteria {
     public static final int DEFAULT_OFFSET = 0;

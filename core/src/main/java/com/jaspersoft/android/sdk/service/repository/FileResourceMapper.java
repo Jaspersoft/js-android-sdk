@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class FileResourceMapper extends AbstractResourceMapper<FileResource, FileLookup> {
     public FileResourceMapper(@NotNull SimpleDateFormat format, @Nullable ResourceType backupType) {

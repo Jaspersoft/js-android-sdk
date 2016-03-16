@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class UtilsTest {
 

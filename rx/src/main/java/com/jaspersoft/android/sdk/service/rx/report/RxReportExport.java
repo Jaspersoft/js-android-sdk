@@ -37,8 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Public API that wraps concrete export requested by user.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxReportExport {
     private final ReportExport mSyncDelegate;
@@ -48,6 +51,11 @@ public class RxReportExport {
         mSyncDelegate = export;
     }
 
+    /**
+     * List of available attachments related to particular export
+     *
+     * @return attachments list or empty collection
+     */
     @NotNull
     public Observable<List<RxReportAttachment>> getAttachments() {
         return Observable.defer(new Func0<Observable<List<RxReportAttachment>>>() {
@@ -66,6 +74,11 @@ public class RxReportExport {
         });
     }
 
+    /**
+     * Performs network operation that returns output of export
+     *
+     * @return output of export that wraps {@link java.io.InputStream}
+     */
     @NotNull
     public Observable<ReportExportOutput> download() {
         return Observable.defer(new Func0<Observable<ReportExportOutput>>() {

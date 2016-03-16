@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class JobSearchCriteriaMapper {
 

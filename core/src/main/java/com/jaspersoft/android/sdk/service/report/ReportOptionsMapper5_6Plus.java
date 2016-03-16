@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class ReportOptionsMapper5_6Plus extends ReportOptionsMapper {
     protected ReportOptionsMapper5_6Plus(String baseUrl) {

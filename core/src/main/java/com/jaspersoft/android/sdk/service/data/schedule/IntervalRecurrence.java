@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class IntervalRecurrence extends Recurrence {
 
@@ -64,12 +64,24 @@ public final class IntervalRecurrence extends Recurrence {
         @NotNull
         private RecurrenceIntervalUnit mUnit;
 
+        /**
+         * Allows to specify the time interval at which the trigger should fire. The interval unit is provided separately.
+         *
+         * @param recurrenceInterval can be any whole number
+         * @return builder for convenient configuration
+         */
         public Builder withInterval(int recurrenceInterval) {
             mInterval = recurrenceInterval;
             return this;
         }
 
-        public Builder withUnit(RecurrenceIntervalUnit unit) {
+        /**
+         * Allows to specify the unit in which the trigger recurrence interval should be interpreted.
+         *
+         * @param unit supported values: MINUTE, HOUR, DAY, WEEK
+         * @return builder for convenient configuration
+         */
+        public Builder withUnit(@NotNull RecurrenceIntervalUnit unit) {
             mUnit = unit;
             return this;
         }

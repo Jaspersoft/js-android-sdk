@@ -4,7 +4,7 @@ import java.util.Date;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class UntilEndDate extends EndDate {
     private final Date mSpecifiedDate;

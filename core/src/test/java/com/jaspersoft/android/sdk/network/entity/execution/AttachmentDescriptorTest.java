@@ -39,7 +39,7 @@ import static com.jaspersoft.android.sdk.test.matcher.HasAnnotation.hasAnnotatio
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(JUnitParamsRunner.class)
 public class AttachmentDescriptorTest {

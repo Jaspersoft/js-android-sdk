@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class JobSource {
     private final String mUri;
@@ -40,11 +40,23 @@ public class JobSource {
             mParameters = new ArrayList<>();
         }
 
+        /**
+         * Allows to specify resource uri that will be used to schedule job
+         *
+         * @param uri unique identifier of resources in JRS domain
+         * @return builder for convenient configuration
+         */
         public Builder withUri(@NotNull String uri) {
             mUri = Preconditions.checkNotNull(uri, "Source uri should not be null");
             return this;
         }
 
+        /**
+         * Allows to specify report params that specify exact data requested by user
+         *
+         * @param parameters list of key/value pair where key corresponds to control state id and value represented by set of values
+         * @return builder for convenient configuration
+         */
         public Builder withParameters(@Nullable List<ReportParameter> parameters) {
             if (parameters != null) {
                 mParameters = Collections.unmodifiableList(parameters);

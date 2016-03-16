@@ -2,7 +2,7 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum JobSortType {
     NONE,

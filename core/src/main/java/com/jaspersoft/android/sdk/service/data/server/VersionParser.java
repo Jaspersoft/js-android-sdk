@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class VersionParser {
 

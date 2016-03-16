@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class ReportOptionsUseCase {
     private final ServiceExceptionMapper mExceptionMapper;

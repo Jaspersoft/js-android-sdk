@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescripto
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 abstract class ExportIdWrapper {
     protected ExportExecutionDescriptor mExportDetails;

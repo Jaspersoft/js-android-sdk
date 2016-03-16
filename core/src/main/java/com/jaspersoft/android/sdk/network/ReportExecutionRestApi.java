@@ -32,14 +32,57 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
+ * Public API that allows to initiate/update/cancel report execution and requests both details and state
+ *
+ * <pre>
+ * {@code
+ *
+ *   Server server = Server.builder()
+ *       .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *       .build();
+ *
+ *   Credentials credentials = SpringCredentials.builder()
+ *       .withPassword("phoneuser")
+ *       .withUsername("phoneuser")
+ *       .withOrganization("organization_1")
+ *       .build();
+ *
+ *
+ *   AuthorizedClient client = server.newClient(credentials)
+ *       .create();
+ *   ReportExecutionRestApi reportExecutionRestApi = client.reportExecutionApi();
+ *   ReportExecutionRequestOptions options = ReportExecutionRequestOptions.newRequest("/report/uri");
+ *
+ *   try {
+ *       // Initial details of execution
+ *       ReportExecutionDescriptor initialDetails = reportExecutionRestApi.runReportExecution(options);
+ *       String executionId = initialDetails.getExecutionId();
+ *
+ *       boolean cancelled = reportExecutionRestApi.cancelReportExecution(executionId);
+ *
+ *       List<ReportParameter> params = Collections.singletonList(
+ *          new ReportParameter("key", Collections.singleton("value"))
+ *       );
+ *       boolean updated = reportExecutionRestApi.updateReportExecution(executionId, params);
+ *
+ *       ReportExecutionDescriptor details = reportExecutionRestApi.requestReportExecutionDetails(executionId);
+ *
+ *       ExecutionStatus executionStatus = reportExecutionRestApi.requestReportExecutionStatus(executionId);
+ *   } catch (IOException e) {
+ *       // handle socket issue
+ *   } catch (HttpException e) {
+ *       // handle network issue
+ *   }
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportExecutionRestApi {
 
@@ -49,8 +92,16 @@ public class ReportExecutionRestApi {
         mNetworkClient = networkClient;
     }
 
+    /**
+     * Initiates report execution
+     *
+     * @param executionOptions describes execution configuration metadata
+     * @return details of execution invoked on server side
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public ReportExecutionDescriptor runReportExecution(@Nullable ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
+    public ReportExecutionDescriptor runReportExecution(@NotNull ReportExecutionRequestOptions executionOptions) throws IOException, HttpException {
         Utils.checkNotNull(executionOptions, "Execution options should not be null");
 
         HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/reportExecutions");
@@ -66,8 +117,16 @@ public class ReportExecutionRestApi {
         return mNetworkClient.deserializeJson(response, ReportExecutionDescriptor.class);
     }
 
+    /**
+     * Provides details of particular execution associated with passed id
+     *
+     * @param executionId unique identifier used to query details of report execution
+     * @return details of requested execution invoked on server side
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public ReportExecutionDescriptor requestReportExecutionDetails(@Nullable String executionId) throws IOException, HttpException {
+    public ReportExecutionDescriptor requestReportExecutionDetails(@NotNull String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
         HttpUrl url = mNetworkClient.getBaseUrl().resolve("rest_v2/reportExecutions")
@@ -85,8 +144,16 @@ public class ReportExecutionRestApi {
         return mNetworkClient.deserializeJson(response, ReportExecutionDescriptor.class);
     }
 
+    /**
+     * Provides status of report execution
+     *
+     * @param executionId unique identifier used to query status of report execution
+     * @return returns one of five states [execution, ready, cancelled, failed, queued]
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public ExecutionStatus requestReportExecutionStatus(@Nullable String executionId) throws IOException, HttpException {
+    public ExecutionStatus requestReportExecutionStatus(@NotNull String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
         HttpUrl url = mNetworkClient.getBaseUrl()
@@ -106,7 +173,15 @@ public class ReportExecutionRestApi {
         return mNetworkClient.deserializeJson(response, ExecutionStatus.class);
     }
 
-    public boolean cancelReportExecution(@Nullable String executionId) throws IOException, HttpException {
+    /**
+     * Cancels existing report execution
+     *
+     * @param executionId unique identifier used to cancel report execution
+     * @return flag that states whether execution cancelled or not
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
+    public boolean cancelReportExecution(@NotNull String executionId) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
 
         HttpUrl url = mNetworkClient.getBaseUrl()
@@ -128,8 +203,17 @@ public class ReportExecutionRestApi {
         return status != 204;
     }
 
-    public boolean updateReportExecution(@Nullable String executionId,
-                                         @Nullable List<ReportParameter> params) throws IOException, HttpException {
+    /**
+     * Updates existed report execution with new set of report parameters
+     *
+     * @param executionId unique identifier used to update report execution
+     * @param params the key value pair association that describes parameter id and its values
+     * @return flag that states whether operation updated or not
+     * @throws IOException if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
+    public boolean updateReportExecution(@NotNull String executionId,
+                                         @NotNull List<ReportParameter> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
         Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");

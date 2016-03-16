@@ -31,11 +31,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 /**
+ * Report export options that are required to initiate report export execution process
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ReportExportOptions {
-    private final ReportMarkup mMarkup;
+    private final ReportMarkup mMarkupType;
     private final ReportFormat mFormat;
 
     private final PageRange mPageRange;
@@ -46,14 +48,14 @@ public final class ReportExportOptions {
     private final Boolean mAllowInlineScripts;
 
     @TestOnly
-    ReportExportOptions(ReportMarkup markup,
+    ReportExportOptions(ReportMarkup markupType,
                         ReportFormat format,
                         PageRange pageRange,
                         String attachmentPrefix,
                         String anchor,
                         Boolean ignorePagination,
                         Boolean allowInlineScripts) {
-        mMarkup = markup;
+        mMarkupType = markupType;
         mFormat = format;
         mPageRange = pageRange;
         mAttachmentPrefix = attachmentPrefix;
@@ -98,8 +100,8 @@ public final class ReportExportOptions {
     }
 
     @Nullable
-    public ReportMarkup getMarkup() {
-        return mMarkup;
+    public ReportMarkup getMarkupType() {
+        return mMarkupType;
     }
 
     @Override
@@ -117,7 +119,7 @@ public final class ReportExportOptions {
         if (mFormat != that.mFormat) return false;
         if (mIgnorePagination != null ? !mIgnorePagination.equals(that.mIgnorePagination) : that.mIgnorePagination != null)
             return false;
-        if (mMarkup != that.mMarkup) return false;
+        if (mMarkupType != that.mMarkupType) return false;
         if (mPageRange != null ? !mPageRange.equals(that.mPageRange) : that.mPageRange != null) return false;
 
         return true;
@@ -125,7 +127,7 @@ public final class ReportExportOptions {
 
     @Override
     public int hashCode() {
-        int result = mMarkup != null ? mMarkup.hashCode() : 0;
+        int result = mMarkupType != null ? mMarkupType.hashCode() : 0;
         result = 31 * result + (mFormat != null ? mFormat.hashCode() : 0);
         result = 31 * result + (mPageRange != null ? mPageRange.hashCode() : 0);
         result = 31 * result + (mAttachmentPrefix != null ? mAttachmentPrefix.hashCode() : 0);
@@ -161,36 +163,84 @@ public final class ReportExportOptions {
         private Builder() {
         }
 
+        /**
+         * Allows to define output format of report. If not provided, then no export is executed
+         *
+         * @param format defines the initial exports format
+         * @return builder for convenient configuration
+         */
         public Builder withFormat(@NotNull ReportFormat format) {
             mFormat = Preconditions.checkNotNull(format, "Format should not be null");
             return this;
         }
 
+        /**
+         * Allows to specify how much pages to generate
+         *
+         * @param pages can be single page or range format
+         * @return builder for convenient configuration
+         */
         public Builder withPageRange(@Nullable PageRange pages) {
             mPageRange = pages;
             return this;
         }
 
-        public Builder withMarkup(@Nullable ReportMarkup markup) {
+        /**
+         * Affects HTML export only. Specifies what kind of HTML markup is requested.
+         *
+         * @param markup one of the available types
+         * @return builder for convenient configuration
+         */
+        public Builder withMarkupType(@Nullable ReportMarkup markup) {
             mMarkup = markup;
             return this;
         }
 
+        /**
+         * URL prefix for report attachments. This parameter matter for HTML output only.
+         * Placeholders {contextPath}, {reportExecutionId} and {exportOptions} can be used. They are replaced in runtime by corresponding values
+         *
+         * @param prefix {contextPath}/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/
+         * @return builder for convenient configuration
+         */
         public Builder withAttachmentPrefix(@Nullable String prefix) {
             mAttachmentPrefix = prefix;
             return this;
         }
 
+        /**
+         * Allows to start export execution starting from specified anchor.
+         * Anchor name. Has lower priority, than pages parameter.
+         * If pages parameter is specified, then anchor is ignored.
+         * If pages parameter isn't specified, then export will generate a page, where is an anchor with corresponding name.
+         *
+         * @param anchor the entry point of exact page
+         * @return builder for convenient configuration
+         */
         public Builder withAnchor(@Nullable String anchor) {
             mAnchor = anchor;
             return this;
         }
 
+        /**
+         * Allows to ignore pagination and combine all exports as single page
+         * The corresponding flag included for JRS instances starting from version 6.2
+         *
+         * @param ignorePagination indicates whether to combine pages in export
+         * @return builder for convenient configuration
+         */
         public Builder withIgnorePagination(boolean ignorePagination) {
             mIgnorePagination = ignorePagination;
             return this;
         }
 
+        /**
+         * Affects HTML export only. If true, then inline scripts are allowed, otherwise no inline script is included to the HTML export output.
+         * If markupType is "embeddable', then value of this parameter is ignored. No inline scripts in this case.
+         *
+         * @param allowInlineScripts flags whether include scripts or not
+         * @return builder for convenient configuration
+         */
         public Builder withAllowInlineScripts(boolean allowInlineScripts) {
             mAllowInlineScripts = allowInlineScripts;
             return this;

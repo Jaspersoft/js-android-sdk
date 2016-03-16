@@ -32,7 +32,7 @@ import org.jetbrains.annotations.TestOnly;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class InfoCacheManager {
     private final ServerInfoService mInfoService;

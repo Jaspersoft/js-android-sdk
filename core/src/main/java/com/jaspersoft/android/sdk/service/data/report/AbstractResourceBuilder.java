@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class AbstractResourceBuilder<Parent> {
     private final Resource.Builder mBuilder = new Resource.Builder();

@@ -33,7 +33,7 @@ import java.net.Proxy;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class RecoverableAuthenticator implements Authenticator {
     private final AuthStrategy mAuthStrategy;

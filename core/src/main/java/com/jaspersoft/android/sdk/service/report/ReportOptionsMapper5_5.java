@@ -28,7 +28,7 @@ import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionReques
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class ReportOptionsMapper5_5 extends ReportOptionsMapper {
     protected ReportOptionsMapper5_5(String baseUrl) {

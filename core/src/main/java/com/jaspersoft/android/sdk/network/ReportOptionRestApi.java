@@ -42,8 +42,55 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Public API that allows create/read/update/delete report options. Report option stands for filters user previously saved
+ *
+ * <pre>
+ * {@code
+ *
+ *    Server server = Server.builder()
+ *            .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *            .build();
+ *
+ *    Credentials credentials = SpringCredentials.builder()
+ *            .withPassword("phoneuser")
+ *            .withUsername("phoneuser")
+ *            .withOrganization("organization_1")
+ *            .build();
+ *
+ *
+ *    AuthorizedClient client = server.newClient(credentials)
+ *            .create();
+ *
+ *    ReportOptionRestApi reportOptionRestApi = client.reportOptionsApi();
+ *
+ *    String reportUri = "/my/uri";
+ *
+ *    try {
+ *        Set<ReportOptionEntity> options = reportOptionRestApi.requestReportOptionsList(reportUri);
+ *        List<ReportOptionEntity> optionsList = new ArrayList<>(options);
+ *        ReportOptionEntity option = optionsList.get(0);
+ *        String optionId = option.getId();
+ *
+ *        List<ReportParameter> parameters = Collections.singletonList(
+ *                new ReportParameter("key", Collections.singleton("value"))
+ *        );
+ *        reportOptionRestApi.updateReportOption(reportUri, optionId, parameters);
+ *        reportOptionRestApi.deleteReportOption(reportUri, optionId);
+ *
+ *
+ *        boolean ovewrite = true;
+ *        String label = "my label";
+ *        ReportOptionEntity reportOption = reportOptionRestApi.createReportOption(reportUri, label, parameters, true);
+ *    } catch (IOException e) {
+ *        // handle socket issue
+ *    } catch (HttpException e) {
+ *        // handle network issue
+ *    }
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportOptionRestApi {
     private final NetworkClient mNetworkClient;
@@ -52,8 +99,17 @@ public class ReportOptionRestApi {
         mNetworkClient = networkClient;
     }
 
+    /**
+     * Provides list of report options
+     *
+     * @param reportUnitUri uri to query options for
+     * @return list of report options DTO
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
-    public Set<ReportOptionEntity> requestReportOptionsList(@Nullable String reportUnitUri) throws IOException, HttpException {
+    public Set<ReportOptionEntity> requestReportOptionsList(
+            @NotNull String reportUnitUri) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
 
         HttpUrl url = new PathResolver.Builder()
@@ -84,11 +140,22 @@ public class ReportOptionRestApi {
         }
     }
 
+    /**
+     * Creates report option
+     *
+     * @param reportUnitUri uri of report we are creating report option for
+     * @param optionLabel   label of report option
+     * @param parameters    key/value pairs that represent parameters
+     * @param overwrite     tells whether to overwrite report option if the one with same label exists
+     * @return report option DTO
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public ReportOptionEntity createReportOption(
-            @Nullable String reportUnitUri,
-            @Nullable String optionLabel,
-            @Nullable List<ReportParameter> parameters,
+            @NotNull String reportUnitUri,
+            @NotNull String optionLabel,
+            @NotNull List<ReportParameter> parameters,
             boolean overwrite) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionLabel, "Option label should not be null");
@@ -119,9 +186,19 @@ public class ReportOptionRestApi {
         return mNetworkClient.deserializeJson(response, ReportOptionEntity.class);
     }
 
-    public void updateReportOption(@Nullable String reportUnitUri,
-                                   @Nullable String optionId,
-                                   @Nullable List<ReportParameter> parameters) throws IOException, HttpException {
+    /**
+     * Updates report options data
+     *
+     * @param reportUnitUri uri of report we are updating report option for
+     * @param optionId      unique identifier that is associated with particular report option
+     * @param parameters    key/value pairs that represent parameters
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
+    public void updateReportOption(
+            @NotNull String reportUnitUri,
+            @NotNull String optionId,
+            @NotNull List<ReportParameter> parameters) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
         Utils.checkNotNull(parameters, "Parameters values should not be null");
@@ -148,8 +225,17 @@ public class ReportOptionRestApi {
         mNetworkClient.makeCall(request);
     }
 
-    public void deleteReportOption(@Nullable String reportUnitUri,
-                                   @Nullable String optionId) throws IOException, HttpException {
+    /**
+     * Deletes report option
+     *
+     * @param reportUnitUri uri of report we are deleting report option for
+     * @param optionId      unique identifier that is associated with particular report option
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
+    public void deleteReportOption(
+            @Nullable String reportUnitUri,
+            @Nullable String optionId) throws IOException, HttpException {
         Utils.checkNotNull(reportUnitUri, "Report uri should not be null");
         Utils.checkNotNull(optionId, "Option id should not be null");
 

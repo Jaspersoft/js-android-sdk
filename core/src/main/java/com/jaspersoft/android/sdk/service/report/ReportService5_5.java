@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.report;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class ReportService5_5 extends AbstractReportService {
     protected ReportService5_5(ExportExecutionApi exportExecutionApi,

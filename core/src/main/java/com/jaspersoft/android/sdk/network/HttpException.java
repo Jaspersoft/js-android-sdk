@@ -38,10 +38,10 @@ import java.io.InputStreamReader;
 
 /**
  * Wrapper around exceptions which could pop up during request processing.
- * Motivation behind class was to incapsulate 3-d party errors in generic interface.
+ * Motivation behind class was to encapsulate 3-d party errors in generic interface.
  *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class HttpException extends Exception {
     private final int mCode;

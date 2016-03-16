@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(JUnitParamsRunner.class)
 public class ReportScheduleServiceTest {

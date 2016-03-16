@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})

@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class DashboardComponentCollection {
     private final List<InputControlDashboardComponent> mInputControlComponents;

@@ -44,7 +44,7 @@ import static org.hamcrest.core.Is.is;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(JUnitParamsRunner.class)
 public class ExecutionRequestOptionsTest {

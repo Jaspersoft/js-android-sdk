@@ -24,10 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.auth;
 
-import com.jaspersoft.android.sdk.network.AnonymousClient;
-import com.jaspersoft.android.sdk.network.AuthenticationRestApi;
-import com.jaspersoft.android.sdk.network.Credentials;
-import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.network.*;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.internal.DefaultExceptionMapper;
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -38,8 +35,35 @@ import org.jetbrains.annotations.TestOnly;
 import java.io.IOException;
 
 /**
+ * The corresponding service allows to perform authorization related tasks
+ *
+ * <pre>
+ * {@code
+ *
+ *  Server server = Server.builder()
+ *          .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *          .build();
+ *
+ *  AnonymousClient anonymousClient = server.newClient().create();
+ *
+ *  Credentials credentials = SpringCredentials.builder()
+ *          .withPassword("phoneuser")
+ *          .withUsername("phoneuser")
+ *          .withOrganization("organization_1")
+ *          .build();
+ *
+ *  AuthorizationService service = AuthorizationService.newService(anonymousClient);
+ *  try {
+ *      Credentials authorize = service.authorize(credentials);
+ *  } catch (ServiceException e) {
+ *      // handle API exception
+ *  }
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class AuthorizationService {
     private final AnonymousClient mClient;
@@ -47,11 +71,18 @@ public class AuthorizationService {
 
     @TestOnly
     AuthorizationService(AnonymousClient client,
-                              ServiceExceptionMapper mapper) {
+                         ServiceExceptionMapper mapper) {
         mServiceExceptionMapper = mapper;
         mClient = client;
     }
 
+    /**
+     * Performs authorize call on basis of passed credentials
+     *
+     * @param credentials user sensitive data
+     * @return credentials use has supplied if operation was successful
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     public Credentials authorize(Credentials credentials) throws ServiceException {
         try {
             AuthenticationRestApi authenticationRestApi = mClient.authenticationApi();
@@ -64,6 +95,12 @@ public class AuthorizationService {
         }
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client anonymous network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static AuthorizationService newService(@NotNull AnonymousClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");

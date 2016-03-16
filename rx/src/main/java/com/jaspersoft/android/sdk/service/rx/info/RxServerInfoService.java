@@ -35,8 +35,44 @@ import rx.Observable;
 import rx.functions.Func0;
 
 /**
+ * The corresponding service allows to request server info by wrapping one in Rx {@link Observable}
+ *
+ * <pre>
+ * {@code
+ *
+ *  Server server = Server.builder()
+ *          .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *          .build();
+ *
+ *  AnonymousClient anonymousClient = server.newClient().create();
+ *
+ *  Credentials credentials = SpringCredentials.builder()
+ *          .withPassword("phoneuser")
+ *          .withUsername("phoneuser")
+ *          .withOrganization("organization_1")
+ *          .build();
+ *
+ *  RxServerInfoService service = RxServerInfoService.newService(anonymousClient);
+ *  service.requestServerInfo().subscribe(
+ *          new Action1<Credentials>() {
+ *              &#064;
+ *              public void call(ServerInfo info) {
+ *                  // success
+ *              }
+ *          },
+ *          new Action1<Throwable>() {
+ *              &#064;
+ *              public void call(Throwable throwable) {
+ *                  // handle API exception
+ *              }
+ *          }
+ *  );
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxServerInfoService {
     private final ServerInfoService mSyncDelegate;
@@ -46,6 +82,11 @@ public class RxServerInfoService {
         mSyncDelegate = infoService;
     }
 
+    /**
+     * Performs request that returns serve info
+     *
+     * @return observable serve metadata that wraps latest serve info data
+     */
     @NotNull
     public Observable<ServerInfo> requestServerInfo() {
         return Observable.defer(new Func0<Observable<ServerInfo>>() {
@@ -61,6 +102,12 @@ public class RxServerInfoService {
         });
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param anonymousClient anonymous network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static RxServerInfoService newService(@NotNull AnonymousClient anonymousClient) {
         Preconditions.checkNotNull(anonymousClient, "Client should not be null");

@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.network;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class Utils {
     private Utils() {

@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 final class RepositorySearchTaskProxy extends RepositorySearchTask {
     private final SearchTaskFactory mSearchTaskFactory;

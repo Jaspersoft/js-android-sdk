@@ -26,7 +26,7 @@ package com.jaspersoft.android.sdk.service.data.repository;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum ResourceType {
     folder,

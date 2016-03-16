@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ResponseBody.class})

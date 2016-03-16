@@ -24,8 +24,7 @@
 
 package com.jaspersoft.android.sdk.service.repository;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.network.RepositoryRestApi;
+import com.jaspersoft.android.sdk.network.*;
 import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 import com.jaspersoft.android.sdk.service.data.repository.Resource;
 import com.jaspersoft.android.sdk.service.data.repository.ResourceType;
@@ -42,8 +41,51 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Public API that allows to perform search request, list details and download content of resources, list root folders.
+ *
+ * <pre>
+ * {@code
+ *
+ *  Server server = Server.builder()
+ *          .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *          .build();
+ *
+ *  Credentials credentials = SpringCredentials.builder()
+ *          .withPassword("phoneuser")
+ *          .withUsername("phoneuser")
+ *          .withOrganization("organization_1")
+ *          .build();
+ *
+ *  AuthorizedClient client = server.newClient(credentials).create();
+ *  RepositoryService service = RepositoryService.newService(client);
+ *
+ *  String resourceUri = "/my/report/uri";
+ *  try {
+ *      ResourceOutput output = service.fetchResourceContent(resourceUri);
+ *
+ *      RepositorySearchCriteria criteria = RepositorySearchCriteria.builder()
+ *              .withQuery("reports")
+ *              .withLimit(100)
+ *              .withOffset(0)
+ *              .build();
+ *      RepositorySearchTask search = service.search(criteria);
+ *      while (search.hasNext()) {
+ *          // returns by 100 items until end reached
+ *          List<Resource> resources = search.nextLookup();
+ *      }
+ *
+ *      Resource resource = service.fetchResourceDetails(resourceUri, ResourceType.file);
+ *
+ *      List<Resource> rootFolders = service.fetchRootFolders();
+ *  } catch (ServiceException e) {
+ *      // handle API exception
+ *  }
+ *
+ * }
+ * </pre>
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RepositoryService {
     private final SearchUseCase mSearchUseCase;
@@ -60,6 +102,12 @@ public class RepositoryService {
         mInfoCacheManager = infoCacheManager;
     }
 
+    /**
+     * Performs search inside JRS repository
+     *
+     * @param criteria search options to control search response
+     * @return task that wraps in iterator format bundle of search response
+     */
     @NotNull
     public RepositorySearchTask search(@Nullable RepositorySearchCriteria criteria) {
         if (criteria == null) {
@@ -71,6 +119,14 @@ public class RepositoryService {
         return new RepositorySearchTaskProxy(searchTaskFactory);
     }
 
+    /**
+     * Retrieves details of resources on the basis of supplied format
+     *
+     * @param resourceUri unique resource uri
+     * @param type concrete type of resource. E.g. reportUnit, file
+     * @return subclass of {@link Resource} object
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public Resource fetchResourceDetails(@NotNull String resourceUri, @NotNull ResourceType type) throws ServiceException {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
@@ -78,12 +134,25 @@ public class RepositoryService {
         return mRepositoryUseCase.getResourceByType(resourceUri, type);
     }
 
+    /**
+     * Performs download operation on concrete resource
+     *
+     * @param resourceUri unique resource uri
+     * @return output of resource that wraps {@link java.io.InputStream}
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public ResourceOutput fetchResourceContent(@NotNull String resourceUri) throws ServiceException {
         Preconditions.checkNotNull(resourceUri, "Resource uri should not be null");
         return mRepositoryUseCase.getResourceContent(resourceUri);
     }
 
+    /**
+     * Returns predefined list of root repositories
+     *
+     * @return list of root repositories
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public List<Resource> fetchRootFolders() throws ServiceException {
         Resource rootFolder = fetchResourceDetails("/", ResourceType.folder);
@@ -91,6 +160,12 @@ public class RepositoryService {
         return Arrays.asList(rootFolder, publicFolder);
     }
 
+    /**
+     * Factory method to create new service
+     *
+     * @param client authorized network client
+     * @return instance of newly created service
+     */
     @NotNull
     public static RepositoryService newService(@NotNull AuthorizedClient client) {
         Preconditions.checkNotNull(client, "Client should not be null");

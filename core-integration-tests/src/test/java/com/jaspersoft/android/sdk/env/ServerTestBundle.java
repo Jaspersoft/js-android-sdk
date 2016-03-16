@@ -7,7 +7,7 @@ import com.jaspersoft.android.sdk.testkit.dto.Info;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ServerTestBundle {
     private final SpringCredentials mCredentials;

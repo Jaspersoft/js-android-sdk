@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ReportExecutionOptions {
     private final Boolean mFreshData;
@@ -253,57 +253,115 @@ public final class ReportExecutionOptions {
 
         /**
          * Configuration for report interactiveness
-         * <p/>
-         * NOTICE: This flag ignored for JRS 5.6 where we are forcing disable state
+         * <p>NOTICE: This flag ignored for JRS 5.6 where we are forcing disable state</p>
          *
          * @param interactive weather report should be mInteractive or not
-         * @return builder instance
+         * @return builder for convenient configuration
          */
         public Builder withInteractive(@Nullable Boolean interactive) {
             mInteractive = interactive;
             return this;
         }
 
+        /**
+         * Allows to ignore pagination and combine all exports as single page
+         *
+         * @param ignorePagination indicates whether to combine pages in export
+         * @return builder for convenient configuration
+         */
         public Builder withIgnorePagination(@Nullable Boolean ignorePagination) {
             mIgnorePagination = ignorePagination;
             return this;
         }
 
+        /**
+         * Affects HTML export only. If true, then inline scripts are allowed, otherwise no inline script is included to the HTML export output.
+         * If markupType is "embeddable', then value of this parameter is ignored. No inline scripts in this case.
+         *
+         * @param allowInlineScripts flags whether include scripts or not
+         * @return builder for convenient configuration
+         */
         public Builder withAllowInlineScripts(@Nullable Boolean allowInlineScripts) {
             mAllowInlineScripts = allowInlineScripts;
             return this;
         }
 
+        /**
+         * Used when requesting a report as a JasperPrint object. Such transformers are pluggable as JR extensions.
+         *
+         * @param transformerKey  JR generic print element transformers (net.sf.jasperreports.engine.export.GenericElementTransformer).
+         * @return builder for convenient configuration
+         */
         public Builder withTransformerKey(@Nullable String transformerKey) {
             mTransformerKey = transformerKey;
             return this;
         }
 
+        /**
+         * URL prefix for report attachments. This parameter matter for HTML output only.
+         * Placeholders {contextPath}, {reportExecutionId} and {exportOptions} can be used. They are replaced in runtime by corresponding values
+         *
+         * @param prefix {contextPath}/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/
+         * @return builder for convenient configuration
+         */
         public Builder withAttachmentPrefix(@Nullable String prefix) {
             mAttachmentPrefix = prefix;
             return this;
         }
 
+        /**
+         * Allows to start export execution starting from specified anchor.
+         * Anchor name. Has lower priority, than pages parameter.
+         * If pages parameter is specified, then anchor is ignored.
+         * If pages parameter isn't specified, then export will generate a page, where is an anchor with corresponding name.
+         *
+         * @param anchor the entry point of exact page
+         * @return builder for convenient configuration
+         */
         public Builder withAnchor(@Nullable String anchor) {
             mAnchor = anchor;
             return this;
         }
 
+        /**
+         * Affects HTML export only. Specifies what kind of HTML markup is requested.
+         *
+         * @param markup one of the available types
+         * @return builder for convenient configuration
+         */
         public Builder withMarkupType(@Nullable ReportMarkup markup) {
             mMarkupType = markup;
             return this;
         }
 
+        /**
+         * Allows to define output format of report. If not provided, then no export is executed
+         *
+         * @param format defines the initial exports format
+         * @return builder for convenient configuration
+         */
         public Builder withFormat(@Nullable ReportFormat format) {
             mFormat = format;
             return this;
         }
 
+        /**
+         * Allows to specify how much pages to generate
+         *
+         * @param pageRange can be single page or range format
+         * @return builder for convenient configuration
+         */
         public Builder withPageRange(@Nullable PageRange pageRange) {
             mPageRange = pageRange;
             return this;
         }
 
+        /**
+         * Allows to specify report params that specify exact data requested by user
+         *
+         * @param params list of key/value pair where key corresponds to control state id and value represented by set of values
+         * @return builder for convenient configuration
+         */
         public Builder withParams(@Nullable List<ReportParameter> params) {
             mParams = params;
             return this;

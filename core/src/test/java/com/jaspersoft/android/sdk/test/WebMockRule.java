@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class WebMockRule extends ExternalResource {
     private MockWebServer server;

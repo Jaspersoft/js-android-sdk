@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 class DashboardComponentsMapper {
     public List<ControlLocation> toLocations(String dashboardUri, DashboardComponentCollection componentCollection) {

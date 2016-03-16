@@ -31,12 +31,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
+ * Wraps search results as iterator object.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public abstract class RepositorySearchTask {
+    /**
+     * Provides list of resources on the basis of search criteria
+     *
+     * @return list of jobs
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public abstract List<Resource> nextLookup() throws ServiceException;
 
+    /**
+     * Provides flag whether task reached end or not
+     *
+     * @return true if API able to perform new lookup
+     */
     public abstract boolean hasNext();
 }

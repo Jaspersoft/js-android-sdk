@@ -29,7 +29,7 @@ import java.util.Map;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public enum SortType {
     LABEL("label"), DESCRIPTION("description"), CREATION_DATE("creationDate"), ACCESS_TIME("accessTime");

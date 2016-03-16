@@ -35,8 +35,11 @@ import rx.functions.Func0;
 import java.util.List;
 
 /**
+ * Wraps search results as iterator object.
+ * All responses wrapped as Rx {@link rx.Observable}.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class RxRepositorySearchTask {
     private final RepositorySearchTask mSyncDelegate;
@@ -46,6 +49,11 @@ public class RxRepositorySearchTask {
         mSyncDelegate = repositorySearchTask;
     }
 
+    /**
+     * Provides list of resources on the basis of search criteria
+     *
+     * @return list of jobs
+     */
     @NotNull
     public Observable<List<Resource>> nextLookup() {
         return Observable.defer(new Func0<Observable<List<Resource>>>() {
@@ -61,6 +69,11 @@ public class RxRepositorySearchTask {
         });
     }
 
+    /**
+     * Provides flag whether task reached end or not
+     *
+     * @return true if API able to perform new lookup
+     */
     public boolean hasNext() {
         return mSyncDelegate.hasNext();
     }

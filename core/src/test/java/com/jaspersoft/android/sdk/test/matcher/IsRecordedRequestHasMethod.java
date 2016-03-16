@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class IsRecordedRequestHasMethod extends TypeSafeDiagnosingMatcher<RecordedRequest> {
     private final String mMethod;

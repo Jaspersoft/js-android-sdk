@@ -6,7 +6,7 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public final class ResourceTestBundle {
     private final String mUri;

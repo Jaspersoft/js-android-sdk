@@ -33,8 +33,39 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 /**
+ * Public API allows requesting server info public information
+ *
+ * <pre>
+ * {@code
+ *
+ *    Server server = Server.builder()
+ *            .withBaseUrl("http://mobiledemo2.jaspersoft.com/jasperserver-pro/")
+ *            .build();
+ *
+ *    AnonymousClient client = server.newClient().create();
+ *    ServerRestApi restApi = client.infoApi();
+ *
+ *    try {
+ *        ServerInfoData serverInfoData = restApi.requestServerInfo();
+ *
+ *        String edition = restApi.requestEdition();
+ *        String editionName = restApi.requestEditionName();
+ *        String version = restApi.requestVersion();
+ *        String build = restApi.requestBuild();
+ *        String licenseType = restApi.requestLicenseType();
+ *        String expiration = restApi.requestExpiration();
+ *        String features = restApi.requestFeatures();
+ *        String dateFormatPattern = restApi.requestDateFormatPattern();
+ *        String dateTimeFormatPattern = restApi.requestDateTimeFormatPattern();
+ *    } catch (IOException e) {
+ *        // handle socket issue
+ *    } catch (HttpException e) {
+ *        // handle network issue
+ *    }
+ * }
+ * </pre>
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ServerRestApi {
 
@@ -44,6 +75,13 @@ public class ServerRestApi {
         mClientWrapper = networkClient;
     }
 
+    /**
+     * Provides server info metadata as whole DTO object
+     *
+     * @return server info publicly available metadata
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public ServerInfoData requestServerInfo() throws IOException, HttpException {
         HttpUrl httpUrl = mClientWrapper.getBaseUrl().resolve("rest_v2/serverInfo");
@@ -56,46 +94,109 @@ public class ServerRestApi {
         return mClientWrapper.deserializeJson(response, ServerInfoData.class);
     }
 
+    /**
+     * Provides build number of JRS
+     *
+     * @return build number
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestBuild() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/build");
     }
 
+    /**
+     * Provides edition of JRS
+     *
+     * @return PRO or CE
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestEdition() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/edition");
     }
 
+    /**
+     * Provides version of JRS
+     *
+     * @return version of current JRS
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestVersion() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/version");
     }
 
+    /**
+     * Provides comma separated feature list
+     *
+     * @return list of features
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestFeatures() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/features");
     }
 
+    /**
+     * Provides edition name that corresponds to type of JRS
+     *
+     * @return edition name. E.g. Enterprise
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestEditionName() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/editionName");
     }
 
+    /**
+     * Provides license type of particular JRS instance
+     *
+     * @return license type
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestLicenseType() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/licenseType");
     }
 
+    /**
+     * Provides expiration date of license
+     *
+     * @return expiration date
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestExpiration() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/expiration");
     }
 
+    /**
+     * Provides JRS date format
+     *
+     * @return date format
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestDateFormatPattern() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/dateFormatPattern");
     }
 
+    /**
+     * Provides JRS data time format
+     *
+     * @return date time format
+     * @throws IOException   if socket was closed abruptly due to network issues
+     * @throws HttpException if rest service encountered any status code above 300
+     */
     @NotNull
     public String requestDateTimeFormatPattern() throws IOException, HttpException {
         return plainRequest("rest_v2/serverInfo/datetimeFormatPattern");

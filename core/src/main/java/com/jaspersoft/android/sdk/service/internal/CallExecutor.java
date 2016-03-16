@@ -28,7 +28,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 /**
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public interface CallExecutor {
     <T> T execute(Call<T> call) throws ServiceException;

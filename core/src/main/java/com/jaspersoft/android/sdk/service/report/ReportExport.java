@@ -33,8 +33,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Public API that wraps concrete export requested by user.
+ *
  * @author Tom Koptel
- * @since 2.0
+ * @since 2.3
  */
 public class ReportExport {
     private final ExportExecutionApi mExportExecutionApi;
@@ -53,11 +55,22 @@ public class ReportExport {
         mExportId = exportId;
     }
 
+    /**
+     * List of available attachments related to particular export
+     *
+     * @return attachments list or empty collection
+     */
     @NotNull
     public List<ReportAttachment> getAttachments() {
         return Collections.unmodifiableList(mAttachments);
     }
 
+    /**
+     * Performs network operation that returns output of export
+     *
+     * @return output of export that wraps {@link java.io.InputStream}
+     * @throws ServiceException wraps both http/network/api related errors
+     */
     @NotNull
     public ReportExportOutput download() throws ServiceException {
         return mExportExecutionApi.downloadExport(mExecutionId, mExportId);
