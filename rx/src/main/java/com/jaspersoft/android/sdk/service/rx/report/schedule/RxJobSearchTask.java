@@ -53,4 +53,11 @@ public class RxJobSearchTask {
     public boolean hasNext() {
         return mSyncDelegate.hasNext();
     }
+
+    /**
+     * TODO javadoc
+     */
+    public JobSearchTask toBlocking() {
+        return mSyncDelegate;
+    }
 }

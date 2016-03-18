@@ -119,4 +119,19 @@ public class RxReportExecution {
             }
         });
     }
+
+    /**
+     * TODO javadoc
+     */
+    public ReportExecution toBlocking() {
+        return mSyncDelegate;
+    }
+
+    /**
+     * TODO javadoc
+     */
+    @NotNull
+    public String getExecutionId() {
+        return mSyncDelegate.getExecutionId();
+    }
 }

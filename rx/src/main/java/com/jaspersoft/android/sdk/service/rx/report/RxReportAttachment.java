@@ -77,4 +77,11 @@ public class RxReportAttachment {
             }
         });
     }
+
+    /**
+     * TODO javadoc
+     */
+    public ReportAttachment toBlocking() {
+        return mSyncDelegate;
+    }
 }

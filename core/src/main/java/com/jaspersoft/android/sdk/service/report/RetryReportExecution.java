@@ -74,4 +74,10 @@ final class RetryReportExecution extends ReportExecution {
     public ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException {
         return mDelegate.updateExecution(newParameters);
     }
+
+    @NotNull
+    @Override
+    public String getExecutionId() {
+        return mDelegate.getExecutionId();
+    }
 }

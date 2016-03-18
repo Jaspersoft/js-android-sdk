@@ -116,4 +116,11 @@ public class RxAuthorizationService {
         AuthorizationService service = AuthorizationService.newService(client);
         return new RxAuthorizationService(service);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public AuthorizationService toBlocking() {
+        return mSyncDelegate;
+    }
 }

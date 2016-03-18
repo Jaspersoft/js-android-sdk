@@ -75,4 +75,11 @@ public class ReportExport {
     public ReportExportOutput download() throws ServiceException {
         return mExportExecutionApi.downloadExport(mExecutionId, mExportId);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public String getExportId() {
+        return mExportId;
+    }
 }

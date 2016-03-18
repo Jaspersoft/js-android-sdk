@@ -77,4 +77,11 @@ public class RxRepositorySearchTask {
     public boolean hasNext() {
         return mSyncDelegate.hasNext();
     }
+
+    /**
+     * TODO javadoc
+     */
+    public RepositorySearchTask toBlocking() {
+        return mSyncDelegate;
+    }
 }

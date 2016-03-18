@@ -154,4 +154,11 @@ public class RxReportService {
         ReportService reportService = ReportService.newService(client);
         return new RxReportService(reportService);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public ReportService toBlocking() {
+        return mSyncDelegate;
+    }
 }

@@ -67,4 +67,10 @@ public abstract class ReportExecution {
      */
     @NotNull
     public abstract ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException;
+
+    /**
+     * TODO javadoc
+     */
+    @NotNull
+    public abstract String getExecutionId();
 }

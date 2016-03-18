@@ -214,4 +214,11 @@ public class RxRepositoryService {
         RepositoryService repositoryService = RepositoryService.newService(client);
         return new RxRepositoryService(repositoryService);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public RepositoryService toBlocking() {
+        return mSyncDelegate;
+    }
 }
