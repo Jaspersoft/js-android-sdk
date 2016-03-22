@@ -66,10 +66,17 @@ class AuthRestApi {
             }
         }
 
-        HttpUrl url = mNetworkClient.getBaseUrl().resolve("j_spring_security_check");
+        HttpUrl baseUrl = mNetworkClient.getBaseUrl();
+        HttpUrl url = baseUrl.resolve("j_spring_security_check");
+
+        String scheme = baseUrl.scheme();
+        String host = baseUrl.host();
+        int port = baseUrl.port();
+        String xdm = scheme + "://" + host + ":" + port;
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("x-jasper-xdm", xdm)
                 .post(formBody.build())
                 .build();
 

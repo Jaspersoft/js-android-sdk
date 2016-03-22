@@ -31,12 +31,14 @@ import com.jaspersoft.android.sdk.test.resource.ResourceFile;
 import com.jaspersoft.android.sdk.test.resource.TestResource;
 import com.jaspersoft.android.sdk.test.resource.inject.TestResourceInjector;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.core.Is.is;
+import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -111,7 +113,7 @@ public class AuthRestApiTest {
         mWebMockRule.enqueue(encryptionKey);
 
         EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
-        assertThat(keyResponse, is(notNullValue()));
+        assertThat(keyResponse, Is.is(notNullValue()));
     }
 
     @Test
@@ -128,6 +130,22 @@ public class AuthRestApiTest {
         mWebMockRule.enqueue(encryptionKey);
 
         EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
-        assertThat(keyResponse.isAvailable(), is(false));
+        assertThat(keyResponse.isAvailable(), Is.is(false));
+    }
+
+    @Test
+    public void should_include_header_csrf_header() throws Exception {
+        String rootUrl = mWebMockRule.getRootUrl();
+        MockResponse cookieResponse = MockResponseFactory.create302()
+                .addHeader("Location", rootUrl + LOCATION_SUCCESS)
+                .addHeader("Set-Cookie", "cookie=12");
+
+        mWebMockRule.enqueue(cookieResponse);
+
+        apiUnderTest.springAuth("joeuser", "joeuser", null, null);
+
+        String xdm = rootUrl.substring(0, rootUrl.length() - 1);
+        RecordedRequest response = mWebMockRule.get().takeRequest();
+        assertThat(response, containsHeader("x-jasper-xdm", xdm));
     }
 }
