@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
+apply plugin: 'java'
+
+description = 'js-android-sdk-rx'
+version = clientModuleVersion
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+ext {
+    PUBLISH_GROUP_ID = group
+    PUBLISH_ARTIFACT_ID = description
+    PUBLISH_VERSION = clientModuleVersion
+}
+
+dependencies {
+    compile project(':js-android-sdk-core')
+    compile 'io.reactivex:rxjava:1.1.0'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-integration:1.3'
+    testCompile('org.mockito:mockito-core:1.10.19') {
+        exclude group: 'org.hamcrest'
+    }
+}
+
+apply from: '../scripts/release-artifact.gradle'

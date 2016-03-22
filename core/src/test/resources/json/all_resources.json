@@ -1,0 +1,83 @@
+{
+  "resourceLookup": [
+    {
+      "version": 2,
+      "permissionMask": 1,
+      "creationDate": "2015-06-05T07:21:11",
+      "updateDate": "2014-05-14T17:38:49",
+      "label": "01. Geographic Results by Segment",
+      "description": "Sample HTML5 multi-axis column chart from Domain showing Sales, Units, and $ Per Square Foot by Country and Store Type with various filters",
+      "uri": "/public/Samples/Ad_Hoc_Views/01__Geographic_Results_by_Segment",
+      "resourceType": "adhocDataView"
+    },
+    {
+      "version": 2,
+      "permissionMask": 1,
+      "creationDate": "2015-06-05T07:21:12",
+      "updateDate": "2014-04-25T16:06:57",
+      "label": "03. Store Segment Performance Report",
+      "description": "Sample OLAP chart with HTML5 Grouped Bar chart and Filter. Created from an Ad Hoc View.",
+      "uri": "/public/Samples/Reports/03._Store_Segment_Performance_Report",
+      "resourceType": "reportUnit"
+    },
+    {
+      "version": 1,
+      "permissionMask": 1,
+      "creationDate": "2015-06-05T07:21:37",
+      "updateDate": "2015-05-04T21:05:55",
+      "label": "1. Supermart Dashboard",
+      "description": "Sample containing 5 Dashlets and Filter wiring. One Dashlet is a report with hyperlinks, the other Dashlets are defined as part of the Dashboard.",
+      "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard",
+      "resourceType": "dashboard"
+    },
+    {
+      "version": 1,
+      "permissionMask": 1,
+      "creationDate": "2015-06-05T07:21:39",
+      "updateDate": "2015-04-20T20:46:58",
+      "label": "3.1 Sales Metrics",
+      "description": "Sample containing Sales related data, hyperlinks, and a hidden filter for embedded Visualize.js demo.",
+      "uri": "/public/Samples/Dashboards/3.1_Sales_Metrics",
+      "resourceType": "legacyDashboard"
+    },
+    {
+      "version": 2,
+      "permissionMask": 1,
+      "creationDate": "2015-06-04T13:26:23",
+      "updateDate": "2015-05-27T22:03:29",
+      "label": "A4 Landscape",
+      "uri": "/public/templates/a4_landscape.510.jrxml",
+      "resourceType": "file"
+    },
+    {
+      "version": 0,
+      "permissionMask": 1,
+      "creationDate": "2015-01-13T01:00:33",
+      "updateDate": "2014-12-18T09:59:47",
+      "label": "Ad Hoc Components",
+      "description": "Ad Hoc Components",
+      "uri": "/public/adhoc",
+      "resourceType": "folder"
+    },
+    {
+      "version": 2,
+      "permissionMask": 1,
+      "creationDate": "2015-06-04T13:26:25",
+      "updateDate": "2015-05-27T22:03:38",
+      "label": "Audit Archive Domain",
+      "description": "Use this domain to build audit archive reports",
+      "uri": "/public/audit/domains/AuditArchiveDomain",
+      "resourceType": "semanticLayerDataSource"
+    },
+    {
+      "version": 2,
+      "permissionMask": 1,
+      "creationDate": "2015-06-04T13:26:24",
+      "updateDate": "2015-05-27T22:03:36",
+      "label": "Audit Data Source",
+      "description": "Audit Data Source",
+      "uri": "/public/audit/datasources/AuditDataSource",
+      "resourceType": "jndiJdbcDataSource"
+    }
+  ]
+}

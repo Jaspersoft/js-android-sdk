@@ -1,0 +1,10 @@
+{
+  "dateFormatPattern": "yyyy-MM-dd",
+  "datetimeFormatPattern": "yyyy-MM-dd'T'HH:mm:ss",
+  "version": "6.1",
+  "edition": "PRO",
+  "editionName": "Enterprise for AWS",
+  "licenseType": "Commercial",
+  "build": "20150527_1447",
+  "features": "Fusion AHD EXP DB AUD ANA MT "
+}

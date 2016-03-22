@@ -1,0 +1,69 @@
+/*
+ * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * http://community.jaspersoft.com/project/jaspermobile-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile for Android.
+ *
+ * TIBCO Jaspersoft Mobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
+package com.jaspersoft.android.sdk.service.repository;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+@RunWith(JUnitParamsRunner.class)
+public class SortTypeTest {
+    @Test
+    public void testLabelEnum() throws Exception {
+        assertThat(SortType.LABEL.toString(), is("label"));
+    }
+
+    @Test
+    public void testDescriptionEnum() throws Exception {
+        assertThat(SortType.DESCRIPTION.toString(), is("description"));
+    }
+
+    @Test
+    public void testCreationDateEnum() throws Exception {
+        assertThat(SortType.CREATION_DATE.toString(), is("creationDate"));
+    }
+
+    @Test
+    public void testAccessTimeEnum() throws Exception {
+        assertThat(SortType.ACCESS_TIME.toString(), is("accessTime"));
+    }
+
+    @Test
+    @Parameters({
+            "LABEL|label",
+            "DESCRIPTION|description",
+            "CREATION_DATE|creationDate",
+            "ACCESS_TIME|accessTime",
+    })
+    public void should_map_raw_value(String value, String raw) {
+        SortType actual = SortType.valueOf(value);
+        SortType expected = SortType.fromRawValue(raw);
+        assertThat(expected, is(actual));
+    }
+}

@@ -1,0 +1,128 @@
+/*
+ * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-properties-plugin:1.4.4'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'net.saliman.properties'
+
+dependencies {
+    compile project(':js-android-sdk-core')
+
+    testCompile 'org.hamcrest:hamcrest-integration:1.3'
+    testCompile('pl.pragmatists:JUnitParams:1.0.4') {
+        exclude group: 'org.hamcrest'
+    }
+    testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
+}
+
+ext {
+    buildSystemPath = "${rootDir}/buildsystem/"
+    envPath = "${projectDir}/build/env"
+    envFileName = "integration_env.properties"
+    testPropertiesName = "test-env.properties"
+    testServersName = "test-servers.json"
+}
+
+task prepIntegrationEnv() {
+    def buildDir = file(envPath)
+    requiredProperties "servers.file.name", "run.resource.count"
+    outputs.file new File(buildDir, envFileName)
+    doFirst {
+        copy {
+            from file(buildSystemPath)
+            include envFileName
+            into buildDir
+            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: project.filterTokens)
+        }
+    }
+}
+
+task copyConfig << {
+    def resourceDir = file("${projectDir}/src/test/resources")
+
+    def loadProperties = { source ->
+        Properties properties = new Properties()
+        def stream = new FileInputStream(source)
+        try {
+            properties.load(stream)
+        } finally {
+            stream.close()
+        }
+        return properties
+    }
+    def loadEnvProperties = {
+        return loadProperties(new File(envPath, envFileName))
+    }
+    def copyServerConfigurationList = {
+        def envProperties = loadEnvProperties()
+        def serverConfigPath = envProperties["servers.config.file"]
+
+        def fileToCopy
+        def isConfigResidesInProject = rootProject.file(serverConfigPath).exists()
+        if (isConfigResidesInProject) {
+            fileToCopy = rootProject.file(serverConfigPath)
+        }
+        def isFileResidesOnSystem = file(serverConfigPath).exists()
+        if (isFileResidesOnSystem) {
+            fileToCopy = file(serverConfigPath)
+        }
+        if (fileToCopy == null) {
+            throw new GradleException("Failed to localate servers list configuration on file system. Path: ${serverConfigPath}")
+        }
+
+        copy {
+            from fileToCopy
+            into resourceDir
+            rename { String fileName -> testServersName }
+        }
+    }
+    def createTestEnvProperties = {
+        def envProperties = loadEnvProperties()
+        def testEnv = file("${resourceDir}/${testPropertiesName}")
+        testEnv.createNewFile()
+
+        Properties props = new Properties()
+        props += envProperties
+        props.remove("servers.config.file")
+        def stream = new FileOutputStream(testEnv)
+        try {
+            props.store(stream, null)
+        } finally {
+            stream.close()
+        }
+    }
+
+    copyServerConfigurationList()
+    createTestEnvProperties()
+}
+
+copyConfig.dependsOn prepIntegrationEnv
+compileJava.dependsOn copyConfig

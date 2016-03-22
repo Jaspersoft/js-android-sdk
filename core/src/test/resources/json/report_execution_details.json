@@ -1,0 +1,53 @@
+{
+  "status": "ready",
+  "totalPages": 47,
+  "requestId": "f3a9805a-4089-4b53-b9e9-b54752f91586",
+  "reportURI": "/reports/samples/AllAccounts",
+  "exports": [
+    {
+      "id": "195a65cb-1762-450a-be2b-1196a02bb625",
+      "options": {
+        "outputFormat": "html",
+        "attachmentsPrefix": "./images/",
+        "allowInlineScripts": false
+      },
+      "status": "ready",
+      "outputResource": {
+        "contentType": "text/html"
+      },
+      "attachments": [
+        {
+          "contentType": "image/png",
+          "fileName": "img_0_46_0"
+        },
+        {
+          "contentType": "image/png",
+          "fileName": "img_0_0_0"
+        },
+        {
+          "contentType": "image/jpeg",
+          "fileName": "img_0_46_1"
+        }
+      ]
+    },
+    {
+      "id": "4bac4889-0e63-4f09-bbe8-9593674f0700",
+      "options": {
+        "outputFormat": "html",
+        "attachmentsPrefix": "{contextPath}/rest_v2/reportExecutions/{reportExecutionId}/exports/{exportExecutionId}/attachments/",
+        "baseUrl": "http://localhost:8080/jasperserver-pro",
+        "allowInlineScripts": true
+      },
+      "status": "ready",
+      "outputResource": {
+        "contentType": "text/html"
+      },
+      "attachments": [
+        {
+          "contentType": "image/png",
+          "fileName": "img_0_0_0"
+        }
+      ]
+    }
+  ]
+}

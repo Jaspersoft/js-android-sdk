@@ -30,36 +30,31 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath "com.github.dcendents:android-maven-plugin:1.2"
     }
 }
 
 subprojects {
     group = 'com.jaspersoft.android.sdk'
 
-    ext.clientModuleVersion = '1.11'
-    ext.clientModuleVersionCode = 9011100
-
-    ext.androidMinSdkVersion = 9
-    ext.androidBuildToolsVersion = '21.1.2'
-    ext.androidCompileSdkVersion = 21
-    ext.androidTargetSdkVersion = 21
+    ext.clientModuleVersion = '2.3'
 
     repositories {
         jcenter()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-        maven { url "file://${System.getenv("ANDROID_HOME")}/extras/android/m2repository" }
     }
 }
 
-apply plugin: 'java'  // ensure clean is also triggered for root build folder
+
+// ensure clean is also triggered for root build folder
+apply plugin: 'java'
 apply plugin: 'build-dashboard'
 
 buildDashboard {
     reports.html.destination = "build/"
 }
 
-test.reports.html.enabled = false     // just clean up dashboard from not generated reports
-test.reports.junitXml.enabled = false // just clean up dashboard from not generated reports
+// just clean up dashboard from not generated reports
+test.reports.html.enabled = false
+// just clean up dashboard from not generated reports
+test.reports.junitXml.enabled = false
 

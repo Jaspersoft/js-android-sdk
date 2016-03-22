@@ -1,0 +1,253 @@
+[
+  {
+    "id": "DashboardProperties",
+    "type": "dashboardProperties",
+    "name": "DashboardProperties",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showDashletBorders": false,
+    "dashletMargin": 4,
+    "dashletPadding": 1
+  },
+  {
+    "type": "reportUnit",
+    "label": "13. Top Fives Report",
+    "resource": "/public/Samples/Reports/TopFivesReport",
+    "id": "13__Top_Fives_Report",
+    "name": "Top Fives",
+    "scaleToFit": "container",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showTitleBar": true,
+    "showRefreshButton": false,
+    "showMaximizeButton": true,
+    "dataSourceUri": "/public/Samples/Reports/TopFivesReport",
+    "parameters": [
+      {
+        "id": "endMonth",
+        "uri": "/public/Samples/Resources/Input_Controls/endMonth",
+        "label": "End Month"
+      },
+      {
+        "id": "startMonth",
+        "uri": "/public/Samples/Resources/Input_Controls/startMonth",
+        "label": "Start Month"
+      }
+    ]
+  },
+  {
+    "type": "chart",
+    "label": "Sales Trend",
+    "resource": "/temp/tmpAdv_1414686450998_tqqd",
+    "id": "Sales_Trend",
+    "name": "Sales Trend",
+    "scaleToFit": "container",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showTitleBar": true,
+    "showRefreshButton": false,
+    "showMaximizeButton": true,
+    "dataSourceUri": "/organizations/organization_1/adhoc/topics/CrosstabDemo",
+    "parameters": [
+      {
+        "id": "store_country_1",
+        "label": "Store Country",
+        "valueType": "java.lang.String",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414686450998_tqqd",
+        "multipleValues": true
+      }
+    ],
+    "exposeOutputsToFilterManager": false,
+    "dashletHyperlinkTarget": "",
+    "outputParameters": [
+      {
+        "id": "Measures",
+        "label": "Measures",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "the_date",
+        "label": "Date",
+        "valueType": "java.sql.Timestamp",
+        "multipleValues": false
+      }
+    ]
+  },
+  {
+    "type": "chart",
+    "label": "Geo Mix",
+    "resource": "/temp/tmpAdv_1414686673912_uhun",
+    "id": "Geo_Mix",
+    "name": "Demographic Mix",
+    "scaleToFit": "container",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showTitleBar": true,
+    "showRefreshButton": false,
+    "showMaximizeButton": true,
+    "dataSourceUri": "/organizations/organization_1/adhoc/topics/CrosstabDemo",
+    "parameters": [
+      {
+        "id": "store_country_1",
+        "label": "Store Country",
+        "valueType": "java.lang.String",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414686673912_uhun",
+        "multipleValues": true
+      },
+      {
+        "id": "store_sales_1",
+        "label": "Store Sales is greater than",
+        "valueType": "java.lang.Double",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414686673912_uhun",
+        "multipleValues": false
+      }
+    ],
+    "exposeOutputsToFilterManager": false,
+    "dashletHyperlinkTarget": "",
+    "outputParameters": [
+      {
+        "id": "Measures",
+        "label": "Measures",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "c_gender",
+        "label": "Customer Gender",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "product_category",
+        "label": "Product Category",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      }
+    ]
+  },
+  {
+    "type": "chart",
+    "label": "Store Type Metrics",
+    "resource": "/temp/tmpAdv_1414687065368_jiwe",
+    "id": "Store_Type_Metrics",
+    "name": "Store Type Metrics",
+    "scaleToFit": "container",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showTitleBar": true,
+    "showRefreshButton": false,
+    "showMaximizeButton": true,
+    "dataSourceUri": "/temp/sl_topic_aac28513-99c0-45bf-abba-00118531224d",
+    "parameters": [
+      {
+        "id": "sales__store__region__sales_country_1",
+        "label": "Country",
+        "valueType": "java.lang.String",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414687065368_jiwe",
+        "multipleValues": true
+      }
+    ],
+    "exposeOutputsToFilterManager": false,
+    "dashletHyperlinkTarget": "",
+    "outputParameters": [
+      {
+        "id": "Measures",
+        "label": "Measures",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "sales_fact_ALL.sales__store.sales__store__region.sales__store__region__sales_state_province",
+        "label": "State",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "sales_fact_ALL.sales__store.sales__store__store_type",
+        "label": "Store Type",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      }
+    ]
+  },
+  {
+    "type": "chart",
+    "label": "ASP Performance",
+    "resource": "/temp/tmpAdv_1414696815261_ulel",
+    "id": "ASP_Performance",
+    "name": "Price Performance",
+    "scaleToFit": "container",
+    "autoRefresh": false,
+    "refreshInterval": 15,
+    "refreshIntervalUnit": "second",
+    "showTitleBar": true,
+    "showRefreshButton": false,
+    "showMaximizeButton": true,
+    "dataSourceUri": "/organizations/organization_1/adhoc/topics/CrosstabDemo",
+    "parameters": [
+      {
+        "id": "store_country_1",
+        "label": "Store Country",
+        "valueType": "java.lang.String",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414696815261_ulel",
+        "multipleValues": true
+      },
+      {
+        "id": "product_family_1",
+        "label": "Product Family",
+        "valueType": "java.lang.String",
+        "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard_files/tmpAdv_1414696815261_ulel",
+        "multipleValues": true
+      }
+    ],
+    "exposeOutputsToFilterManager": false,
+    "dashletHyperlinkTarget": "",
+    "outputParameters": [
+      {
+        "id": "Measures",
+        "label": "Measures",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "product_family",
+        "label": "Product Family",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      },
+      {
+        "id": "store_state",
+        "label": "Store State",
+        "valueType": "java.lang.String",
+        "multipleValues": false
+      }
+    ]
+  },
+  {
+    "type": "filterGroup",
+    "name": "Filter Group",
+    "id": "Filter_Group",
+    "filtersPerRow": 1,
+    "buttonsPosition": "bottom",
+    "applyButton": false,
+    "resetButton": false
+  },
+  {
+    "type": "inputControl",
+    "label": "Country:",
+    "resource": "/public/AAT1_files/tmpAdv_1414686450998_tqqd_files/store_country_1",
+    "id": "Store_Country",
+    "name": "Store Country",
+    "ownerResourceId": "/temp/tmpAdv_1414686450998_tqqd",
+    "ownerResourceParameterName": "store_country_1",
+    "masterDependencies": [],
+    "parentId": "Filter_Group",
+    "position": 1
+  }
+]
