@@ -130,4 +130,21 @@ public class AuthRestApiTest {
         EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
         assertThat(keyResponse.isAvailable(), is(false));
     }
+
+    @Test
+    public void shouldReturnEmptyEncryptionKeyIfApiReturns401Error() throws Exception {
+        MockResponse anonymousCookie = MockResponseFactory.create200()
+                .setBody("6.1")
+                .addHeader("Set-Cookie", "cookie1=12");
+
+        String malformedJson = "{Error: Key generation is off}";
+        MockResponse encryptionKey = MockResponseFactory.create401()
+                .setBody(malformedJson);
+
+        mWebMockRule.enqueue(anonymousCookie);
+        mWebMockRule.enqueue(encryptionKey);
+
+        EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
+        assertThat(keyResponse.isAvailable(), is(false));
+    }
 }

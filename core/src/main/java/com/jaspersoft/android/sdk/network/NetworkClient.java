@@ -67,6 +67,11 @@ class NetworkClient {
         return new String(response.body().bytes());
     }
 
+    public Response makeRawCall(Request request) throws IOException {
+        com.squareup.okhttp.Call call1 = mClient.newCall(request);
+        return call1.execute();
+    }
+
     public Response makeCall(Request request) throws IOException, HttpException {
         com.squareup.okhttp.Call call1 = mClient.newCall(request);
         Response response = call1.execute();

@@ -114,8 +114,13 @@ class AuthRestApi {
                 .get()
                 .build();
         try {
-            Response response = mNetworkClient.makeCall(request2);
-            return mNetworkClient.deserializeJson(response, EncryptionKey.class);
+            Response response = mNetworkClient.makeRawCall(request2);
+            int code = response.code();
+            if (code >= 200 && code < 300) {
+                return mNetworkClient.deserializeJson(response, EncryptionKey.class);
+            } else {
+                return EncryptionKey.empty();
+            }
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when security option is disabled on JRS side.
