@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static com.jaspersoft.android.sdk.test.matcher.IsRecorderRequestContainsHeader.containsHeader;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -104,12 +105,8 @@ public class AuthRestApiTest {
 
     @Test
     public void shouldReturnEncryptionKeyIfApiAvailable() throws Exception {
-        MockResponse anonymousCookie = MockResponseFactory.create200()
-                .setBody("6.1")
-                .addHeader("Set-Cookie", "cookie1=12");
         MockResponse encryptionKey = MockResponseFactory.create200()
                 .setBody(mKey.asString());
-        mWebMockRule.enqueue(anonymousCookie);
         mWebMockRule.enqueue(encryptionKey);
 
         EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();
@@ -118,15 +115,10 @@ public class AuthRestApiTest {
 
     @Test
     public void shouldReturnEmptyEncryptionKeyIfApiNotAvailable() throws Exception {
-        MockResponse anonymousCookie = MockResponseFactory.create200()
-                .setBody("6.1")
-                .addHeader("Set-Cookie", "cookie1=12");
-
         String malformedJson = "{Error: Key generation is off}";
         MockResponse encryptionKey = MockResponseFactory.create200()
                 .setBody(malformedJson);
 
-        mWebMockRule.enqueue(anonymousCookie);
         mWebMockRule.enqueue(encryptionKey);
 
         EncryptionKey keyResponse = apiUnderTest.requestEncryptionMetadata();

@@ -28,15 +28,17 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class InMemoryInfoCache implements InfoCache {
-    private Map<String, ServerInfo> mCache = new WeakHashMap<>();
+enum InMemoryInfoCache implements InfoCache {
+    INSTANCE;
+
+    private Map<String, ServerInfo> mCache = new HashMap<>();
 
     @Nullable
     @Override
