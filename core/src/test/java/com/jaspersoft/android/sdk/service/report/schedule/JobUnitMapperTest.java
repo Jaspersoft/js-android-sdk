@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -18,11 +17,12 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JobUnitMapperTest {
-    public static final String FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
-    public static final String PREVIOUS_FIRE_TIME = "2013-10-03T16:32:05";
-    public static final String NEXT_FIRE_TIME = "2013-11-03T16:32:05";
+    private static final SimpleDateFormat PREVIOUS_FIRE_TIME_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    private static final SimpleDateFormat NEXT_FIRE_TIME_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    private static final String PREVIOUS_FIRE_TIME = "2016-03-24T00:00:00+02:00";
+    private static final String NEXT_FIRE_TIME = "2016-03-21T12:18:08.979+02:00";
 
     @Mock
     JobUnitEntity mJobUnitEntity;
@@ -58,8 +58,8 @@ public class JobUnitMapperTest {
 
     @Test
     public void should_map_entity_to_service_counterpart() throws Exception {
-        long previousFireTime = DATE_FORMAT.parse(PREVIOUS_FIRE_TIME).getTime();
-        long nextFireTime = DATE_FORMAT.parse(NEXT_FIRE_TIME).getTime();
+        long previousFireTime = PREVIOUS_FIRE_TIME_FORMAT.parse(PREVIOUS_FIRE_TIME).getTime();
+        long nextFireTime = NEXT_FIRE_TIME_FORMAT.parse(NEXT_FIRE_TIME).getTime();
 
         JobUnit expected = mJobUnitMapper.transform(mJobUnitEntity);
 
