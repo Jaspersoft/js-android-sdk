@@ -5,13 +5,13 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobUnitEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOwner;
 import com.jaspersoft.android.sdk.service.data.schedule.JobState;
 import com.jaspersoft.android.sdk.service.data.schedule.JobUnit;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Tom Koptel
@@ -19,9 +19,14 @@ import java.util.Locale;
  */
 class JobUnitMapper {
 
-    private static final String FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
+    private static final SimpleDateFormat FORMAT_WITH_ZONE =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
+    private static final SimpleDateFormat FORMAT_WITH_MILLISECONDS_ZONE =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+
+    private static final SimpleDateFormat FORMAT_WITHOUT_MILLISECONDS_ZONE =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     public List<JobUnit> transform(List<JobUnitEntity> entities) {
         List<JobUnit> list = new ArrayList<>(entities.size());
@@ -53,13 +58,13 @@ class JobUnitMapper {
 
             String nextFireTime = entityState.getNextFireTime();
             if (nextFireTime != null) {
-                Date nextFireDate = parseDateSilently(nextFireTime);
+                Date nextFireDate = parseDate(nextFireTime);
                 jobUnitBuilder.withNextFireTime(nextFireDate);
             }
 
             String previousFireTime = entityState.getPreviousFireTime();
             if (previousFireTime != null) {
-                Date previousFireDate = parseDateSilently(previousFireTime);
+                Date previousFireDate = parseDate(previousFireTime);
                 jobUnitBuilder.withPreviousFireTime(previousFireDate);
             }
         }
@@ -67,10 +72,23 @@ class JobUnitMapper {
         return jobUnitBuilder.build();
     }
 
-    private Date parseDateSilently(String nextFireTime) {
+    @Nullable
+    private Date parseDate(String rawDate) {
+        Date date = parseSilently(FORMAT_WITH_ZONE, rawDate);
+        if (date == null) {
+            date = parseSilently(FORMAT_WITH_MILLISECONDS_ZONE, rawDate);
+        }
+        if (date == null) {
+            date = parseSilently(FORMAT_WITHOUT_MILLISECONDS_ZONE, rawDate);
+        }
+        return date;
+    }
+
+    @Nullable
+    private Date parseSilently(SimpleDateFormat format, String raw) {
         try {
-            return DATE_FORMAT.parse(nextFireTime);
-        } catch (ParseException ex) {
+            return format.parse(raw);
+        } catch (ParseException e) {
             return null;
         }
     }
