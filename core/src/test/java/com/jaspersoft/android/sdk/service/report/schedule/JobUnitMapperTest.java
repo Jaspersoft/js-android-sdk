@@ -28,6 +28,9 @@ public class JobUnitMapperTest {
     JobUnitEntity mJobUnitEntity;
     @Mock
     JobStateEntity mStateEntity;
+    @Mock
+    JobUnitDateParser jobUnitDateParser;
+
     private JobUnitMapper mJobUnitMapper;
 
     @Before
@@ -46,7 +49,7 @@ public class JobUnitMapperTest {
         when(mStateEntity.getNextFireTime()).thenReturn(NEXT_FIRE_TIME);
         when(mStateEntity.getValue()).thenReturn("NORMAL");
 
-        mJobUnitMapper = new JobUnitMapper();
+        mJobUnitMapper = new JobUnitMapper(jobUnitDateParser);
     }
 
     @Test
