@@ -85,9 +85,8 @@ class AuthRestApi {
         int statusCode = response.code();
         if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
             String location = response.headers().get("Location");
-            HttpUrl locationUrl = HttpUrl.parse(location);
-            String errorQueryParameter = locationUrl.queryParameter("error");
-            if (errorQueryParameter != null) {
+            boolean error = location.contains("error");
+            if (error) {
                 com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
                         .protocol(response.protocol())
                         .request(response.request())

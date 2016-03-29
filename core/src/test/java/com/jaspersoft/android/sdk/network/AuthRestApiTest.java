@@ -73,7 +73,7 @@ public class AuthRestApiTest {
     }
 
     @Test
-    public void shouldReturnResponseForSuccessRedirect() throws Exception {
+    public void should_parse_success_full_location_path() throws Exception {
         MockResponse mockResponse = MockResponseFactory.create302()
                 .addHeader("Set-Cookie", "cookie1=12")
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_SUCCESS);
@@ -83,11 +83,33 @@ public class AuthRestApiTest {
     }
 
     @Test
-    public void shouldRiseErrorForErrorRedirect() throws Exception {
+    public void should_parse_success_relative_location_path() throws Exception {
+        MockResponse mockResponse = MockResponseFactory.create302()
+                .addHeader("Set-Cookie", "cookie1=12")
+                .addHeader("Location", LOCATION_SUCCESS);
+        mWebMockRule.enqueue(mockResponse);
+
+        apiUnderTest.springAuth("joeuser", "joeuser", null, null);
+    }
+
+    @Test
+    public void should_parse_error_full_location_path() throws Exception {
         mExpectedException.expect(HttpException.class);
 
         MockResponse mockResponse = MockResponseFactory.create302()
                 .addHeader("Location", mWebMockRule.getRootUrl() + LOCATION_ERROR)
+                .addHeader("Set-Cookie", "cookie1");
+        mWebMockRule.enqueue(mockResponse);
+
+        apiUnderTest.springAuth("joeuser", "joeuser", "null", null);
+    }
+
+    @Test
+    public void should_parse_error_relative_location_path() throws Exception {
+        mExpectedException.expect(HttpException.class);
+
+        MockResponse mockResponse = MockResponseFactory.create302()
+                .addHeader("Location", LOCATION_ERROR)
                 .addHeader("Set-Cookie", "cookie1");
         mWebMockRule.enqueue(mockResponse);
 
