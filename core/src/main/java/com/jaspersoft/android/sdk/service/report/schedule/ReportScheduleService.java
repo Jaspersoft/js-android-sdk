@@ -167,7 +167,9 @@ public class ReportScheduleService {
 
         JobDataMapper jobDataMapper = new JobDataMapper();
         JobFormMapper jobFormMapper = new JobFormMapper();
-        JobUnitMapper jobUnitMapper = new JobUnitMapper();
+
+        JobUnitDateParser parser = JobUnitDateParser.Factory.createParser();
+        JobUnitMapper jobUnitMapper = new JobUnitMapper(parser);
 
         ReportScheduleUseCase reportScheduleUseCase = new ReportScheduleUseCase(
                 exceptionMapper,
