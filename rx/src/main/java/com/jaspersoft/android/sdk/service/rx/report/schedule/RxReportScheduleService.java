@@ -231,4 +231,11 @@ public class RxReportScheduleService {
         ReportScheduleService scheduleService = ReportScheduleService.newService(client);
         return new RxReportScheduleService(scheduleService);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public ReportScheduleService toBlocking() {
+        return mSyncDelegate;
+    }
 }

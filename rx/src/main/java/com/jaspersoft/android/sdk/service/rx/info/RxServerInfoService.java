@@ -114,4 +114,11 @@ public class RxServerInfoService {
         ServerInfoService service = ServerInfoService.newService(anonymousClient);
         return new RxServerInfoService(service);
     }
+
+    /**
+     * TODO javadoc
+     */
+    public ServerInfoService toBlocking() {
+        return mSyncDelegate;
+    }
 }

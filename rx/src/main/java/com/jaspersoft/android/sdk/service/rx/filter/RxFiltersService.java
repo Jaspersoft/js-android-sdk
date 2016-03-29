@@ -410,4 +410,11 @@ public class RxFiltersService {
             }
         });
     }
+
+    /**
+     * TODO javadoc
+     */
+    public FiltersService toBlocking() {
+        return mSyncDelegate;
+    }
 }

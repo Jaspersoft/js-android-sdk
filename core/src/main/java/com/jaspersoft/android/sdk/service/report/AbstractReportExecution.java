@@ -83,4 +83,10 @@ abstract class AbstractReportExecution extends ReportExecution {
 
     @NotNull
     protected abstract ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException;
+
+    @NotNull
+    @Override
+    public String getExecutionId() {
+        return mExecId;
+    }
 }

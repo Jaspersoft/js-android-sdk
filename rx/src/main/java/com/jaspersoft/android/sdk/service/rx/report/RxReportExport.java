@@ -93,4 +93,18 @@ public class RxReportExport {
             }
         });
     }
+
+    /**
+     * TODO javadoc
+     */
+    public String getExportId() {
+        return mSyncDelegate.getExportId();
+    }
+
+    /**
+     * TODO javadoc
+     */
+    public ReportExport toBlocking() {
+        return mSyncDelegate;
+    }
 }
