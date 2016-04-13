@@ -300,7 +300,7 @@ class JobFormMapper {
 
             if (occurrenceCount < 0 && endDate != null) {
                 triggerBuilder.withEndDate(new UntilEndDate(endDate));
-            } else if (occurrenceCount > 0) {
+            } else {
                 triggerBuilder.withEndDate(new RepeatedEndDate(occurrenceCount));
             }
 
