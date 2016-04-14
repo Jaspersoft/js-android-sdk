@@ -42,6 +42,7 @@ public class JobUnitMapperTest {
         when(mJobUnitEntity.getLabel()).thenReturn("label");
         when(mJobUnitEntity.getDescription()).thenReturn("description");
         when(mJobUnitEntity.getReportUnitURI()).thenReturn("/my/uri");
+        when(mJobUnitEntity.getReportLabel()).thenReturn("report label");
         when(mJobUnitEntity.getOwner()).thenReturn("jasperadmin|organization_1");
 
         when(mJobUnitEntity.getState()).thenReturn(mStateEntity);
@@ -71,6 +72,7 @@ public class JobUnitMapperTest {
         assertThat(expected.getLabel(), is("label"));
         assertThat(expected.getDescription(), is("description"));
         assertThat(expected.getReportUri(), is("/my/uri"));
+        assertThat(expected.getReportLabel(), is("report label"));
         assertThat(expected.getOwner().toString(), is("jasperadmin|organization_1"));
         assertThat(expected.getState().toString(), is("NORMAL"));
         assertThat(expected.getPreviousFireTime().getTime(), is(previousFireTime));

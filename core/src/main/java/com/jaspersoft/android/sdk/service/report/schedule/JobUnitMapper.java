@@ -38,6 +38,7 @@ class JobUnitMapper {
         jobUnitBuilder.withId(entity.getId());
         jobUnitBuilder.withVersion(entity.getVersion());
         jobUnitBuilder.withLabel(entity.getLabel());
+        jobUnitBuilder.withReportLabel(entity.getReportLabel());
         jobUnitBuilder.withReportUri(entity.getReportUnitURI());
         jobUnitBuilder.withDescription(entity.getDescription());
 

@@ -21,6 +21,7 @@ public class JobUnitTest {
             "version",
             "reportUnitURI",
             "label",
+            "reportLabel",
             "owner",
             "state",
     })
