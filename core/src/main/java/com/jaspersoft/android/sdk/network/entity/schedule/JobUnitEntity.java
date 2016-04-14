@@ -14,6 +14,8 @@ public class JobUnitEntity {
     @Expose
     private String reportUnitURI;
     @Expose
+    private String reportLabel;
+    @Expose
     private String label;
     @Expose
     private String description;
@@ -32,6 +34,10 @@ public class JobUnitEntity {
 
     public String getReportUnitURI() {
         return reportUnitURI;
+    }
+
+    public String getReportLabel() {
+        return reportLabel;
     }
 
     public String getLabel() {
@@ -59,6 +65,7 @@ public class JobUnitEntity {
 
         if (id != that.id) return false;
         if (version != that.version) return false;
+        if (reportLabel != null ? !reportLabel.equals(that.reportLabel) : that.reportLabel != null) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (owner != null ? !owner.equals(that.owner) : that.owner != null) return false;
         if (reportUnitURI != null ? !reportUnitURI.equals(that.reportUnitURI) : that.reportUnitURI != null)
@@ -72,6 +79,7 @@ public class JobUnitEntity {
         int result = id;
         result = 31 * result + version;
         result = 31 * result + (reportUnitURI != null ? reportUnitURI.hashCode() : 0);
+        result = 31 * result + (reportLabel != null ? reportLabel.hashCode() : 0);
         result = 31 * result + (label != null ? label.hashCode() : 0);
         result = 31 * result + (owner != null ? owner.hashCode() : 0);
         return result;
