@@ -18,6 +18,8 @@ public class JobUnit {
     @NotNull
     private final String mLabel;
     @NotNull
+    private final String mReportLabel;
+    @NotNull
     private final String mDescription;
     @NotNull
     private final JobOwner mOwner;
@@ -28,10 +30,12 @@ public class JobUnit {
     @Nullable
     private final Date mNextFireTime;
 
+
     private JobUnit(Builder builder) {
         mId = builder.mId;
         mVersion = builder.mVersion;
         mReportUri = builder.mReportUri;
+        mReportLabel = builder.mReportLabel;
         mLabel = builder.mLabel;
         mDescription = builder.mDescription;
         mOwner = builder.mOwner;
@@ -59,6 +63,11 @@ public class JobUnit {
     }
 
     @NotNull
+    public String getReportLabel() {
+        return mReportLabel;
+    }
+
+    @NotNull
     public String getDescription() {
         return mDescription;
     }
@@ -83,39 +92,39 @@ public class JobUnit {
         return mNextFireTime;
     }
 
-
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JobUnit)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         JobUnit jobUnit = (JobUnit) o;
 
         if (mId != jobUnit.mId) return false;
         if (mVersion != jobUnit.mVersion) return false;
-        if (!mDescription.equals(jobUnit.mDescription)) return false;
+        if (!mReportUri.equals(jobUnit.mReportUri)) return false;
         if (!mLabel.equals(jobUnit.mLabel)) return false;
-        if (!mNextFireTime.equals(jobUnit.mNextFireTime)) return false;
+        if (!mReportLabel.equals(jobUnit.mReportLabel)) return false;
+        if (!mDescription.equals(jobUnit.mDescription)) return false;
         if (!mOwner.equals(jobUnit.mOwner)) return false;
+        if (mState != jobUnit.mState) return false;
         if (mPreviousFireTime != null ? !mPreviousFireTime.equals(jobUnit.mPreviousFireTime) : jobUnit.mPreviousFireTime != null)
             return false;
-        if (!mReportUri.equals(jobUnit.mReportUri)) return false;
-        if (mState != jobUnit.mState) return false;
+        return !(mNextFireTime != null ? !mNextFireTime.equals(jobUnit.mNextFireTime) : jobUnit.mNextFireTime != null);
 
-        return true;
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         int result = mId;
         result = 31 * result + mVersion;
         result = 31 * result + mReportUri.hashCode();
         result = 31 * result + mLabel.hashCode();
+        result = 31 * result + mReportLabel.hashCode();
         result = 31 * result + mDescription.hashCode();
         result = 31 * result + mOwner.hashCode();
         result = 31 * result + mState.hashCode();
         result = 31 * result + (mPreviousFireTime != null ? mPreviousFireTime.hashCode() : 0);
-        result = 31 * result + mNextFireTime.hashCode();
+        result = 31 * result + (mNextFireTime != null ? mNextFireTime.hashCode() : 0);
         return result;
     }
 
@@ -123,6 +132,7 @@ public class JobUnit {
         private int mId;
         private int mVersion;
         private String mReportUri;
+        private String mReportLabel;
         private String mLabel;
         private String mDescription;
         private JobOwner mOwner;
@@ -142,6 +152,11 @@ public class JobUnit {
 
         public Builder withReportUri(@NotNull String reportUri) {
             mReportUri = Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+            return this;
+        }
+
+        public Builder withReportLabel(@NotNull String reportLabel) {
+            mReportLabel = Preconditions.checkNotNull(reportLabel, "Report label should not be null");
             return this;
         }
 
@@ -180,6 +195,7 @@ public class JobUnit {
                 mDescription = "";
             }
             Preconditions.checkNotNull(mReportUri, "Job unit should contain report uri");
+            Preconditions.checkNotNull(mReportLabel, "Job unit should contain report label");
             Preconditions.checkNotNull(mLabel, "Job unit should contain label");
             Preconditions.checkNotNull(mOwner, "Job unit should contain owner");
             Preconditions.checkNotNull(mState, "Job unit should contain state");
