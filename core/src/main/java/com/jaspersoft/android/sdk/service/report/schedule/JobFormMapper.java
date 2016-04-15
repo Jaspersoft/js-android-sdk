@@ -178,9 +178,17 @@ class JobFormMapper {
 
         calendarTrigger.setMinutes(recurrence.getMinutes().toString());
         calendarTrigger.setHours(recurrence.getHours().toString());
-        calendarTrigger.setMonths(recurrence.getMonths());
+        calendarTrigger.setMonths(mapMonthsToEntity(recurrence.getMonths()));
 
         entity.setCalendarTrigger(calendarTrigger);
+    }
+
+    private Set<Integer> mapMonthsToEntity(Set<Integer> dataMonths) {
+        HashSet<Integer> entityMonths = new HashSet<>();
+        for (Integer dataMonth : dataMonths) {
+            entityMonths.add(dataMonth + 1);
+        }
+        return entityMonths;
     }
 
     private Map<String, Set<String>> mapSourceParamValues(List<ReportParameter> params) {
@@ -315,11 +323,11 @@ class JobFormMapper {
         CalendarRecurrence.Builder recurrenceBuilder = new CalendarRecurrence.Builder()
                 .withMinutes(MinutesTimeFormat.parse(calendarTrigger.getMinutes()))
                 .withHours(HoursTimeFormat.parse(calendarTrigger.getHours()))
-                .withMonths(toIntArray(calendarTrigger.getMonths()));
+                .withMonths(mapMonthsToData(calendarTrigger.getMonths()));
 
         String daysType = calendarTrigger.getDaysType();
         if ("WEEK".equals(daysType)) {
-            recurrenceBuilder.withDaysInWeek(toIntArray(calendarTrigger.getWeekDays()));
+            recurrenceBuilder.withDaysInWeek(mapDaysInWeekToData(calendarTrigger.getWeekDays()));
         } else if ("MONTH".equals(daysType)) {
             recurrenceBuilder.withDaysInMonth(DaysInMonth.valueOf(calendarTrigger.getMonthDays()));
         }
@@ -343,9 +351,21 @@ class JobFormMapper {
         form.withTrigger(trigger);
     }
 
-    private Integer[] toIntArray(Set<Integer> integers) {
-        Integer[] ints = new Integer[integers.size()];
-        integers.toArray(ints);
+    private Integer[] mapMonthsToData(Set<Integer> monthSet) {
+        List<Integer> monthList = new ArrayList<>(monthSet);
+        int size = monthSet.size();
+        Integer[] result = new Integer[size];
+
+        for (int i = 0; i < size; i++) {
+            result[i] = monthList.get(i) - 1;
+        }
+
+        return result;
+    }
+
+    private Integer[] mapDaysInWeekToData(Set<Integer> days) {
+        Integer[] ints = new Integer[days.size()];
+        days.toArray(ints);
         return ints;
     }
 
