@@ -166,9 +166,6 @@ public class CalendarRecurrence extends Recurrence {
         }
 
         public CalendarRecurrence build() {
-            if (mMonths.isEmpty()) {
-                throw new IllegalArgumentException("At lease one month should be specified");
-            }
             validateMonths();
             return new CalendarRecurrence(mMonths, mDaysType, mMinutes, mHours);
         }

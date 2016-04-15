@@ -116,6 +116,14 @@ public final class StatusCodes {
      * Job was created/updated with output filename that exceed 100 characters
      */
     public static final int JOB_OUTPUT_FILENAME_TOO_LONG = 506;
+    /**
+     * Job was created/updated with calendar trigger and empty months
+     */
+    public static final int JOB_TRIGGER_MONTHS_EMPTY = 507;
+   /**
+     * Job was created/updated with calendar trigger and empty week days
+     */
+    public static final int JOB_TRIGGER_WEEK_DAYS_EMPTY = 508;
 
     // FILTERS
     /**
