@@ -15,6 +15,7 @@ import java.util.*;
  * @since 2.3
  */
 class JobFormMapper {
+    private static final Integer[] ALL_WEEK_DAYS = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};
     private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
@@ -326,8 +327,10 @@ class JobFormMapper {
                 .withMonths(mapMonthsToData(calendarTrigger.getMonths()));
 
         String daysType = calendarTrigger.getDaysType();
-        if ("WEEK".equals(daysType)) {
-            recurrenceBuilder.withDaysInWeek(mapDaysInWeekToData(calendarTrigger.getWeekDays()));
+        if ("ALL".equals(daysType)) {
+            recurrenceBuilder.withDaysInWeek(ALL_WEEK_DAYS);
+        } else if ("WEEK".equals(daysType)) {
+            recurrenceBuilder.withDaysInWeek(calendarTrigger.getWeekDays());
         } else if ("MONTH".equals(daysType)) {
             recurrenceBuilder.withDaysInMonth(DaysInMonth.valueOf(calendarTrigger.getMonthDays()));
         }
@@ -361,12 +364,6 @@ class JobFormMapper {
         }
 
         return result;
-    }
-
-    private Integer[] mapDaysInWeekToData(Set<Integer> days) {
-        Integer[] ints = new Integer[days.size()];
-        days.toArray(ints);
-        return ints;
     }
 
     public List<ReportParameter> mapParams(Map<String, Set<String>> parameters) {

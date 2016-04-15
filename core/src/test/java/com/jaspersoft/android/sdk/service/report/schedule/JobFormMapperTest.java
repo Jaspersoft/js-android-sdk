@@ -423,7 +423,8 @@ public class JobFormMapperTest {
         assertThat(calendarRecurrence.getMinutes().toString(), is("30"));
         assertThat(calendarRecurrence.getHours().toString(), is("3"));
         assertThat(calendarRecurrence.getMonths(), hasItems(Calendar.FEBRUARY));
-        assertThat(endDate.getSpecifiedDate(), is(END_DATE));
+        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
+        assertThat(daysType.getDays(), hasItems(Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY));
     }
 
     @Test
