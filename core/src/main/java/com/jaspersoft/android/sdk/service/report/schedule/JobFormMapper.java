@@ -151,6 +151,7 @@ class JobFormMapper {
 
         JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
         calendarTrigger.setCalendarName(trigger.getCalendarName());
+        mapCommonTriggerFieldsOnEntity(form, calendarTrigger);
 
         DaysType daysType = recurrence.getDaysType();
         if (daysType == null) {

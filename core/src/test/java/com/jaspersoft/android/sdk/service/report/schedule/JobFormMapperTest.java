@@ -253,6 +253,7 @@ public class JobFormMapperTest {
                 .build();
 
         JobForm form = mForm.newBuilder()
+                .withStartDate(null)
                 .withTrigger(trigger)
                 .build();
 
@@ -267,6 +268,7 @@ public class JobFormMapperTest {
         assertThat(calendarTrigger.getDaysType(), is("ALL"));
         assertThat(calendarTrigger.getWeekDays(), is(empty()));
         assertThat(calendarTrigger.getMonthDays(), is(""));
+        assertThat(calendarTrigger.getStartType(), is(1));
     }
 
     @Test
