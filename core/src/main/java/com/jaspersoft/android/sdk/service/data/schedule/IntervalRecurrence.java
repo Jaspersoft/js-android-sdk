@@ -58,6 +58,13 @@ public final class IntervalRecurrence extends Recurrence {
                 '}';
     }
 
+    @NotNull
+    public Builder newBuilder() {
+        return new Builder()
+                .withUnit(mUnit)
+                .withInterval(mInterval);
+    }
+
     public static class Builder {
         @NotNull
         private Integer mInterval;

@@ -15,6 +15,7 @@ import java.util.*;
  * @since 2.3
  */
 class JobFormMapper {
+    private static final Integer[] ALL_WEEK_DAYS = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};
     private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
@@ -150,6 +151,7 @@ class JobFormMapper {
 
         JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
         calendarTrigger.setCalendarName(trigger.getCalendarName());
+        mapCommonTriggerFieldsOnEntity(form, calendarTrigger);
 
         DaysType daysType = recurrence.getDaysType();
         if (daysType == null) {
@@ -178,9 +180,17 @@ class JobFormMapper {
 
         calendarTrigger.setMinutes(recurrence.getMinutes().toString());
         calendarTrigger.setHours(recurrence.getHours().toString());
-        calendarTrigger.setMonths(recurrence.getMonths());
+        calendarTrigger.setMonths(mapMonthsToEntity(recurrence.getMonths()));
 
         entity.setCalendarTrigger(calendarTrigger);
+    }
+
+    private Set<Integer> mapMonthsToEntity(Set<Integer> dataMonths) {
+        HashSet<Integer> entityMonths = new HashSet<>();
+        for (Integer dataMonth : dataMonths) {
+            entityMonths.add(dataMonth + 1);
+        }
+        return entityMonths;
     }
 
     private Map<String, Set<String>> mapSourceParamValues(List<ReportParameter> params) {
@@ -300,7 +310,7 @@ class JobFormMapper {
 
             if (occurrenceCount < 0 && endDate != null) {
                 triggerBuilder.withEndDate(new UntilEndDate(endDate));
-            } else if (occurrenceCount > 0) {
+            } else {
                 triggerBuilder.withEndDate(new RepeatedEndDate(occurrenceCount));
             }
 
@@ -315,11 +325,13 @@ class JobFormMapper {
         CalendarRecurrence.Builder recurrenceBuilder = new CalendarRecurrence.Builder()
                 .withMinutes(MinutesTimeFormat.parse(calendarTrigger.getMinutes()))
                 .withHours(HoursTimeFormat.parse(calendarTrigger.getHours()))
-                .withMonths(toIntArray(calendarTrigger.getMonths()));
+                .withMonths(mapMonthsToData(calendarTrigger.getMonths()));
 
         String daysType = calendarTrigger.getDaysType();
-        if ("WEEK".equals(daysType)) {
-            recurrenceBuilder.withDaysInWeek(toIntArray(calendarTrigger.getWeekDays()));
+        if ("ALL".equals(daysType)) {
+            recurrenceBuilder.withDaysInWeek(ALL_WEEK_DAYS);
+        } else if ("WEEK".equals(daysType)) {
+            recurrenceBuilder.withDaysInWeek(calendarTrigger.getWeekDays());
         } else if ("MONTH".equals(daysType)) {
             recurrenceBuilder.withDaysInMonth(DaysInMonth.valueOf(calendarTrigger.getMonthDays()));
         }
@@ -343,10 +355,16 @@ class JobFormMapper {
         form.withTrigger(trigger);
     }
 
-    private Integer[] toIntArray(Set<Integer> integers) {
-        Integer[] ints = new Integer[integers.size()];
-        integers.toArray(ints);
-        return ints;
+    private Integer[] mapMonthsToData(Set<Integer> monthSet) {
+        List<Integer> monthList = new ArrayList<>(monthSet);
+        int size = monthSet.size();
+        Integer[] result = new Integer[size];
+
+        for (int i = 0; i < size; i++) {
+            result[i] = monthList.get(i) - 1;
+        }
+
+        return result;
     }
 
     public List<ReportParameter> mapParams(Map<String, Set<String>> parameters) {

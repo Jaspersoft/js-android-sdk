@@ -86,4 +86,26 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_LABEL_TOO_LONG);
     }
+
+    @Test
+    public void should_transform_job_missing_months() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.not.empty");
+        givenErrorDescriptorWithField("trigger.months");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_TRIGGER_MONTHS_EMPTY);
+    }
+
+    @Test
+    public void should_transform_job_missing_week_days() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.not.empty");
+        givenErrorDescriptorWithField("trigger.weekDays");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_TRIGGER_WEEK_DAYS_EMPTY);
+    }
 }

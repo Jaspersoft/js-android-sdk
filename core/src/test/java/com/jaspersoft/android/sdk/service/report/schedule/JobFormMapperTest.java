@@ -241,7 +241,7 @@ public class JobFormMapperTest {
     @Test
     public void should_map_calendar_trigger() throws Exception {
         CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1)
+                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
                 .withHours(HoursTimeFormat.parse("1"))
                 .withMinutes(MinutesTimeFormat.parse("2"))
                 .build();
@@ -253,6 +253,7 @@ public class JobFormMapperTest {
                 .build();
 
         JobForm form = mForm.newBuilder()
+                .withStartDate(null)
                 .withTrigger(trigger)
                 .build();
 
@@ -267,12 +268,13 @@ public class JobFormMapperTest {
         assertThat(calendarTrigger.getDaysType(), is("ALL"));
         assertThat(calendarTrigger.getWeekDays(), is(empty()));
         assertThat(calendarTrigger.getMonthDays(), is(""));
+        assertThat(calendarTrigger.getStartType(), is(1));
     }
 
     @Test
     public void should_map_calendar_trigger_with_day_type_days_in_week() throws Exception {
         CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1)
+                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
                 .withHours(HoursTimeFormat.parse("1"))
                 .withMinutes(MinutesTimeFormat.parse("2"))
                 .withDaysInWeek(Calendar.MONDAY, Calendar.THURSDAY)
@@ -300,7 +302,7 @@ public class JobFormMapperTest {
     @Test
     public void should_map_calendar_trigger_with_day_type_days_in_month() throws Exception {
         CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1)
+                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
                 .withHours(HoursTimeFormat.parse("1"))
                 .withMinutes(MinutesTimeFormat.parse("2"))
                 .withDaysInMonth(DaysInMonth.valueOf("1"))
@@ -406,7 +408,7 @@ public class JobFormMapperTest {
     @Test
     public void should_map_calendar_trigger_with_all_type() throws Exception {
         JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
-        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
+        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY + 1)));
         calendarTrigger.setMinutes("30");
         calendarTrigger.setHours("3");
         calendarTrigger.setDaysType("ALL");
@@ -423,13 +425,14 @@ public class JobFormMapperTest {
         assertThat(calendarRecurrence.getMinutes().toString(), is("30"));
         assertThat(calendarRecurrence.getHours().toString(), is("3"));
         assertThat(calendarRecurrence.getMonths(), hasItems(Calendar.FEBRUARY));
-        assertThat(endDate.getSpecifiedDate(), is(END_DATE));
+        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
+        assertThat(daysType.getDays(), hasItems(Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY));
     }
 
     @Test
     public void should_map_calendar_trigger_with_week_type() throws Exception {
         JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
-        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY + 1)));
+        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
         calendarTrigger.setWeekDays(new HashSet<>(Arrays.asList(Calendar.MONDAY)));
         calendarTrigger.setDaysType("WEEK");
 

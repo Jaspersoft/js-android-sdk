@@ -53,18 +53,18 @@ public class CalendarRecurrence extends Recurrence {
 
     public static class Builder {
         private static final HashSet<Integer> ALL_MONTHS = new HashSet<>(Arrays.asList(
-                Calendar.JANUARY + 1,
-                Calendar.FEBRUARY + 1,
-                Calendar.MARCH + 1,
-                Calendar.APRIL + 1,
-                Calendar.MAY + 1,
-                Calendar.JUNE + 1,
-                Calendar.JULY + 1,
-                Calendar.AUGUST + 1,
-                Calendar.SEPTEMBER + 1,
-                Calendar.OCTOBER + 1,
-                Calendar.NOVEMBER + 1,
-                Calendar.DECEMBER + 1
+                Calendar.JANUARY,
+                Calendar.FEBRUARY,
+                Calendar.MARCH,
+                Calendar.APRIL,
+                Calendar.MAY,
+                Calendar.JUNE,
+                Calendar.JULY,
+                Calendar.AUGUST,
+                Calendar.SEPTEMBER,
+                Calendar.OCTOBER,
+                Calendar.NOVEMBER,
+                Calendar.DECEMBER
         ));
 
         private Set<Integer> mMonths = Collections.emptySet();
@@ -166,9 +166,6 @@ public class CalendarRecurrence extends Recurrence {
         }
 
         public CalendarRecurrence build() {
-            if (mMonths.isEmpty()) {
-                throw new IllegalArgumentException("At lease one month should be specified");
-            }
             validateMonths();
             return new CalendarRecurrence(mMonths, mDaysType, mMinutes, mHours);
         }
