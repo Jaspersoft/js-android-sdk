@@ -155,8 +155,8 @@ public class JobUnit {
             return this;
         }
 
-        public Builder withReportLabel(@NotNull String reportLabel) {
-            mReportLabel = Preconditions.checkNotNull(reportLabel, "Report label should not be null");
+        public Builder withReportLabel(@Nullable String reportLabel) {
+            mReportLabel = reportLabel;
             return this;
         }
 
@@ -195,7 +195,6 @@ public class JobUnit {
                 mDescription = "";
             }
             Preconditions.checkNotNull(mReportUri, "Job unit should contain report uri");
-            Preconditions.checkNotNull(mReportLabel, "Job unit should contain report label");
             Preconditions.checkNotNull(mLabel, "Job unit should contain label");
             Preconditions.checkNotNull(mOwner, "Job unit should contain owner");
             Preconditions.checkNotNull(mState, "Job unit should contain state");
