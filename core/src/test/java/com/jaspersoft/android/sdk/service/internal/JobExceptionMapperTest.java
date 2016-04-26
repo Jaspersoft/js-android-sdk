@@ -129,4 +129,26 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH);
     }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_hours() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.hours");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_HOURS);
+    }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_minutes() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.minutes");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_MINUTES);
+    }
 }

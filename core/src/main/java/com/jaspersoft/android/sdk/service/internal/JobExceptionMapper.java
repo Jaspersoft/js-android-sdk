@@ -92,6 +92,10 @@ public class JobExceptionMapper extends AbstractServiceExceptionMapper {
 
             if ("trigger.monthDays".equals(field)) {
                 return new ServiceException("Wrong format for days in the month for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH);
+            } else if ("trigger.hours".equals(field)) {
+                return new ServiceException("Wrong format for hours in day for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_HOURS);
+            } else if ("trigger.minutes".equals(field)) {
+                return new ServiceException("Wrong format for minutes in hour for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_MINUTES);
             }
         }
 
