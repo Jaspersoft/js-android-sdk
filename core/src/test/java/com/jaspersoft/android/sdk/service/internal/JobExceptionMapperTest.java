@@ -118,4 +118,15 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_CREATION_INTERNAL_ERROR);
     }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_month_days() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.monthDays");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH);
+    }
 }

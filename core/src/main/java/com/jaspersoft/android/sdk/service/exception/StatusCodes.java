@@ -128,6 +128,10 @@ public final class StatusCodes {
      * Job trigger configuration incorrect we can not create schedule
      */
     public static final int JOB_CREATION_INTERNAL_ERROR = 509;
+   /**
+     * Job calendar trigger incorrect pattern for days in the month field
+     */
+    public static final int JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH = 510;
 
     // FILTERS
     /**
