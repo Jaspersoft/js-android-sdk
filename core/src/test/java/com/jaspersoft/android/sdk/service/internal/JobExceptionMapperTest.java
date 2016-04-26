@@ -108,4 +108,47 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_TRIGGER_WEEK_DAYS_EMPTY);
     }
+
+    @Test
+    public void should_transform_job_trigger_can_not_be_created() throws Exception {
+        givenHttpErrorWithDescriptor(500);
+        givenErrorDescriptorByCode("unexpected.error");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CREATION_INTERNAL_ERROR);
+    }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_month_days() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.monthDays");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH);
+    }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_hours() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.hours");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_HOURS);
+    }
+
+    @Test
+    public void should_transform_job_calendar_trigger_incorrect_format_minutes() throws Exception {
+        givenHttpErrorWithDescriptor(400);
+        givenErrorDescriptorByCode("error.pattern");
+        givenErrorDescriptorWithField("trigger.minutes");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CALENDAR_PATTERN_ERROR_MINUTES);
+    }
 }

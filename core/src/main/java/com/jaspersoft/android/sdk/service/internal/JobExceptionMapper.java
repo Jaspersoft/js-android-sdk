@@ -84,6 +84,19 @@ public class JobExceptionMapper extends AbstractServiceExceptionMapper {
             } else if ("trigger.months".equals(field)) {
                 return new ServiceException("At lease one month should be specified", e, StatusCodes.JOB_TRIGGER_MONTHS_EMPTY);
             }
+        } else if (errorCodes.contains("unexpected.error")) {
+            return new ServiceException(descriptor.getMessage(), e, StatusCodes.JOB_CREATION_INTERNAL_ERROR);
+        } else if (errorCodes.contains("error.pattern")) {
+            ErrorDescriptorItem innerError = descriptor.getInnerError("error.pattern");
+            String field = innerError.getField();
+
+            if ("trigger.monthDays".equals(field)) {
+                return new ServiceException("Wrong format for days in the month for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH);
+            } else if ("trigger.hours".equals(field)) {
+                return new ServiceException("Wrong format for hours in day for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_HOURS);
+            } else if ("trigger.minutes".equals(field)) {
+                return new ServiceException("Wrong format for minutes in hour for calendar recurrence", e, StatusCodes.JOB_CALENDAR_PATTERN_ERROR_MINUTES);
+            }
         }
 
         return mDelegate.transform(e);
