@@ -84,6 +84,8 @@ public class JobExceptionMapper extends AbstractServiceExceptionMapper {
             } else if ("trigger.months".equals(field)) {
                 return new ServiceException("At lease one month should be specified", e, StatusCodes.JOB_TRIGGER_MONTHS_EMPTY);
             }
+        } else if (errorCodes.contains("unexpected.error")) {
+            return new ServiceException(descriptor.getMessage(), e, StatusCodes.JOB_CREATION_INTERNAL_ERROR);
         }
 
         return mDelegate.transform(e);

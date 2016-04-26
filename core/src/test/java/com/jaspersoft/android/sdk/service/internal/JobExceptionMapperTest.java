@@ -108,4 +108,14 @@ public class JobExceptionMapperTest extends BaseExceptionMapperTest {
 
         thenShouldHaveStatusCode(StatusCodes.JOB_TRIGGER_WEEK_DAYS_EMPTY);
     }
+
+    @Test
+    public void should_transform_job_trigger_can_not_be_created() throws Exception {
+        givenHttpErrorWithDescriptor(500);
+        givenErrorDescriptorByCode("unexpected.error");
+
+        whenTransformsHttpException();
+
+        thenShouldHaveStatusCode(StatusCodes.JOB_CREATION_INTERNAL_ERROR);
+    }
 }

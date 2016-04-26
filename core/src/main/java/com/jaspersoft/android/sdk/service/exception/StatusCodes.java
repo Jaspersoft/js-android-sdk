@@ -124,6 +124,10 @@ public final class StatusCodes {
      * Job was created/updated with calendar trigger and empty week days
      */
     public static final int JOB_TRIGGER_WEEK_DAYS_EMPTY = 508;
+   /**
+     * Job trigger configuration incorrect we can not create schedule
+     */
+    public static final int JOB_CREATION_INTERNAL_ERROR = 509;
 
     // FILTERS
     /**
