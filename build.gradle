@@ -37,6 +37,7 @@ subprojects {
     group = 'com.jaspersoft.android.sdk'
 
     ext.clientModuleVersion = '2.5-SNAPSHOT'
+    ext.jacocoVersion = '0.7.6.201602180812'
 
     repositories {
         jcenter()
@@ -47,6 +48,7 @@ subprojects {
 
 // ensure clean is also triggered for root build folder
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'build-dashboard'
 
 buildDashboard {
