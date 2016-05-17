@@ -46,12 +46,14 @@ public class JobFormMapperTest {
     JobTriggerMapper mJobTriggerMapper;
     @Mock
     JobSourceMapper mJobSourceMapper;
+    @Mock
+    JobRepoDestinationMapper mJobRepoDestinationMapper;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper);
+        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper, mJobRepoDestinationMapper);
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
@@ -99,14 +101,6 @@ public class JobFormMapperTest {
     }
 
     @Test
-    public void should_map_form_destination_on_entity() throws Exception {
-        mJobFormMapper.mapFormDestinationOnEntity(mForm, mEntity);
-
-        assertThat(mEntity.getRepositoryDestination(), is("/temp"));
-    }
-
-
-    @Test
     public void should_map_form_formats_on_entity() throws Exception {
         mJobFormMapper.mapFormFormatsOnEntity(mForm, mEntity);
 
@@ -117,7 +111,6 @@ public class JobFormMapperTest {
     public void should_map_entity_common_fields_to_form() throws Exception {
         JobForm.Builder form = new JobForm.Builder();
         mJobFormMapper.mapEntityCommonFieldsToForm(form, mPreparedEntity);
-        mJobFormMapper.mapEntityDestinationToForm(form, mPreparedEntity);
         mJobFormMapper.mapEntityFormatsToForm(form, mPreparedEntity);
 
         JobForm expected = form.build();
@@ -125,7 +118,6 @@ public class JobFormMapperTest {
         assertThat(expected.getVersion(), is(100));
         assertThat(expected.getDescription(), is("description"));
         assertThat(expected.getOutputFormats(), hasItem(JobOutputFormat.PDF));
-        assertThat(expected.getRepositoryDestination().getFolderUri(), is("/folder/uri"));
         assertThat(expected.getBaseOutputFilename(), is("file.txt"));
     }
 }

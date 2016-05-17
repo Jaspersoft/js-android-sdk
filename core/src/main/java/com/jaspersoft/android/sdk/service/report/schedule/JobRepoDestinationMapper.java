@@ -26,13 +26,26 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-abstract class JobMapper {
-    public abstract void mapFormOnEntity(JobForm form, JobFormEntity entity);
+class JobRepoDestinationMapper extends JobMapper {
+    static final JobRepoDestinationMapper INSTANCE = new JobRepoDestinationMapper();
 
-    public abstract void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity);
+    @Override
+    public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
+        RepositoryDestination repositoryDestination = form.getRepositoryDestination();
+        entity.setRepositoryDestination(repositoryDestination.getFolderUri());
+    }
+
+    @Override
+    public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
+        RepositoryDestination.Builder builder = new RepositoryDestination.Builder();
+        builder.withFolderUri(entity.getRepositoryDestination());
+        RepositoryDestination destination = builder.build();
+        form.withRepositoryDestination(destination);
+    }
 }

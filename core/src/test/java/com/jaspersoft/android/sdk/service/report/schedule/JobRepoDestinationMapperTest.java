@@ -26,13 +26,43 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-abstract class JobMapper {
-    public abstract void mapFormOnEntity(JobForm form, JobFormEntity entity);
+public class JobRepoDestinationMapperTest {
+    private final JobFormFactory formFactory = new JobFormFactory();
+    private JobRepoDestinationMapper mapperUnderTest;
 
-    public abstract void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity);
+    @Before
+    public void setUp() throws Exception {
+        mapperUnderTest = new JobRepoDestinationMapper();
+    }
+
+    @Test
+    public void should_map_form_destination_on_entity() throws Exception {
+        JobFormEntity mappedEntity = formFactory.givenJobFormEntityWithValues();
+        JobForm form = formFactory.givenJobFormWithValues();
+
+        mapperUnderTest.mapFormOnEntity(form, mappedEntity);
+
+        assertThat(mappedEntity.getRepositoryDestination(), is("/temp"));
+    }
+
+    @Test
+    public void should_map_entity_common_fields_to_form() throws Exception {
+        JobFormEntity mappedEntity = formFactory.givenJobFormEntityWithValues();
+        JobForm.Builder form = formFactory.givenJobFormBuilderWithValues();
+
+        mapperUnderTest.mapEntityOnForm(form, mappedEntity);
+
+        JobForm expected = form.build();
+        assertThat(expected.getRepositoryDestination().getFolderUri(), is("/folder/uri"));
+    }
 }

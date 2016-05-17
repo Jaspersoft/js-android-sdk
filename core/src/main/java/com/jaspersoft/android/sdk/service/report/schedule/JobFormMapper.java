@@ -3,7 +3,6 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
-import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
@@ -19,16 +18,23 @@ import java.util.Set;
 class JobFormMapper {
     private final JobTriggerMapper mTriggerMapper;
     private final JobSourceMapper mJobSourceMapper;
+    private final JobRepoDestinationMapper mJobRepoDestinationMapper;
 
-    JobFormMapper(JobTriggerMapper triggerMapper, JobSourceMapper jobSourceMapper) {
+    JobFormMapper(
+            JobTriggerMapper triggerMapper,
+            JobSourceMapper jobSourceMapper,
+            JobRepoDestinationMapper jobRepoDestinationMapper
+    ) {
         mTriggerMapper = triggerMapper;
         mJobSourceMapper = jobSourceMapper;
+        mJobRepoDestinationMapper = jobRepoDestinationMapper;
     }
 
     private static class InstanceHolder {
         private final static JobFormMapper INSTANCE = new JobFormMapper(
                 JobTriggerMapper.INSTANCE,
-                JobSourceMapper.INSTANCE
+                JobSourceMapper.INSTANCE,
+                JobRepoDestinationMapper.INSTANCE
         );
     }
 
@@ -40,9 +46,10 @@ class JobFormMapper {
     public JobFormEntity toFormEntity(@NotNull JobForm form) {
         JobFormEntity entity = new JobFormEntity();
         mapFormToCommonEntityFields(form, entity);
-        mapFormDestinationOnEntity(form, entity);
-        mJobSourceMapper.mapFormOnEntity(form, entity);
         mapFormFormatsOnEntity(form, entity);
+
+        mJobRepoDestinationMapper.mapFormOnEntity(form, entity);
+        mJobSourceMapper.mapFormOnEntity(form, entity);
         mTriggerMapper.mapFormOnEntity(form, entity);
         return entity;
     }
@@ -60,12 +67,6 @@ class JobFormMapper {
     }
 
     @TestOnly
-    void mapFormDestinationOnEntity(JobForm form, JobFormEntity entity) {
-        RepositoryDestination repositoryDestination = form.getRepositoryDestination();
-        entity.setRepositoryDestination(repositoryDestination.getFolderUri());
-    }
-
-    @TestOnly
     void mapFormFormatsOnEntity(JobForm form, JobFormEntity entity) {
         Set<JobOutputFormat> outputFormats = form.getOutputFormats();
         Collection<String> formats = new ArrayList<>(outputFormats.size());
@@ -79,9 +80,10 @@ class JobFormMapper {
     public JobForm toDataForm(@NotNull JobFormEntity entity) {
         JobForm.Builder form = new JobForm.Builder();
         mapEntityCommonFieldsToForm(form, entity);
-        mJobSourceMapper.mapEntityOnForm(form, entity);
-        mapEntityDestinationToForm(form, entity);
         mapEntityFormatsToForm(form, entity);
+
+        mJobRepoDestinationMapper.mapEntityOnForm(form, entity);
+        mJobSourceMapper.mapEntityOnForm(form, entity);
         mTriggerMapper.mapEntityOnForm(form, entity);
         return form.build();
     }
@@ -103,13 +105,5 @@ class JobFormMapper {
             formatList.add(out);
         }
         form.withOutputFormats(formatList);
-    }
-
-    @TestOnly
-    void mapEntityDestinationToForm(JobForm.Builder form, JobFormEntity entity) {
-        RepositoryDestination.Builder builder = new RepositoryDestination.Builder();
-        builder.withFolderUri(entity.getRepositoryDestination());
-        RepositoryDestination destination = builder.build();
-        form.withRepositoryDestination(destination);
     }
 }
