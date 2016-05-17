@@ -41,7 +41,7 @@ public class JobTriggerMapperTest {
 
         whenMapsEntityToForm();
 
-        verify(mSimpleTriggerMapper).toDataForm(formBuilder, providedFormEntity);
+        verify(mSimpleTriggerMapper).mapEntityOnForm(formBuilder, providedFormEntity);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class JobTriggerMapperTest {
 
         whenMapsEntityToForm();
 
-        verify(mCalendarTriggerMapper).toDataForm(formBuilder, providedFormEntity);
+        verify(mCalendarTriggerMapper).mapEntityOnForm(formBuilder, providedFormEntity);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class JobTriggerMapperTest {
 
         whenMapsEntityToForm();
 
-        verify(mNoneTriggerMapper).toDataForm(formBuilder, providedFormEntity);
+        verify(mNoneTriggerMapper).mapEntityOnForm(formBuilder, providedFormEntity);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class JobTriggerMapperTest {
 
         whenMapsFormToEntity();
 
-        verify(mSimpleTriggerMapper).toTriggerEntity(providedForm, mappedFormEntity);
+        verify(mSimpleTriggerMapper).mapFormOnEntity(providedForm, mappedFormEntity);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class JobTriggerMapperTest {
 
         whenMapsFormToEntity();
 
-        verify(mCalendarTriggerMapper).toTriggerEntity(providedForm, mappedFormEntity);
+        verify(mCalendarTriggerMapper).mapFormOnEntity(providedForm, mappedFormEntity);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class JobTriggerMapperTest {
 
         whenMapsFormToEntity();
 
-        verify(mNoneTriggerMapper).toTriggerEntity(providedForm, mappedFormEntity);
+        verify(mNoneTriggerMapper).mapFormOnEntity(providedForm, mappedFormEntity);
     }
 
     private void givenEntityFormWithSimpleTrigger() {
@@ -138,10 +138,10 @@ public class JobTriggerMapperTest {
     }
 
     private void whenMapsEntityToForm() {
-        mapperUnderTest.toDataForm(formBuilder, providedFormEntity);
+        mapperUnderTest.mapEntityOnForm(formBuilder, providedFormEntity);
     }
 
     private void whenMapsFormToEntity() {
-        mapperUnderTest.toTriggerEntity(providedForm, mappedFormEntity);
+        mapperUnderTest.mapFormOnEntity(providedForm, mappedFormEntity);
     }
 }

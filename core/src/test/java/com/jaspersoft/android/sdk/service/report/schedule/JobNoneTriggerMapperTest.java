@@ -28,7 +28,7 @@ public class JobNoneTriggerMapperTest {
                 .withStartDate(null) // immediate start type
                 .build();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobSimpleTriggerEntity simpleTrigger = formEntity.getSimpleTrigger();
         assertThat(simpleTrigger.getOccurrenceCount(), is(1));
@@ -43,7 +43,7 @@ public class JobNoneTriggerMapperTest {
         JobFormEntity formEntity = formFactory.givenNewJobFormEntity();
         JobForm form = formFactory.givenJobFormWithValues();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobSimpleTriggerEntity simpleTrigger = formEntity.getSimpleTrigger();
         assertThat(simpleTrigger.getStartType(), is(2));
@@ -62,7 +62,7 @@ public class JobNoneTriggerMapperTest {
 
         jobFormEntity.setSimpleTrigger(simpleTrigger);
 
-        mapperUnderTest.toDataForm(formBuilder, jobFormEntity);
+        mapperUnderTest.mapEntityOnForm(formBuilder, jobFormEntity);
         JobForm expected = formBuilder.build();
 
         assertThat(expected.getStartDate(), is(formFactory.provideStartDate()));

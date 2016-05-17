@@ -12,7 +12,7 @@ class JobNoneTriggerMapper extends BaseTriggerMapper {
     final static JobNoneTriggerMapper INSTANCE = new JobNoneTriggerMapper();
 
     @Override
-    public void toTriggerEntity(JobForm form, JobFormEntity entity) {
+    public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         JobSimpleTriggerEntity triggerEntity = new JobSimpleTriggerEntity();
 
         mapCommonTriggerFieldsOnEntity(form, triggerEntity);
@@ -24,7 +24,7 @@ class JobNoneTriggerMapper extends BaseTriggerMapper {
     }
 
     @Override
-    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+    public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
         mapCommonEntityTriggerFieldsOnEntity(form, entity);
     }
 }

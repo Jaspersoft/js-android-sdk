@@ -11,7 +11,12 @@ import com.jaspersoft.android.sdk.service.data.schedule.Trigger;
  * @author Tom Koptel
  * @since 2.5
  */
-class JobTriggerMapper {
+class JobTriggerMapper extends JobMapper {
+    final static JobTriggerMapper INSTANCE = new JobTriggerMapper(
+            JobCalendarTriggerMapper.INSTANCE,
+            JobSimpleTriggerMapper.INSTANCE,
+            JobNoneTriggerMapper.INSTANCE);
+
     private final JobCalendarTriggerMapper mCalendarTriggerMapper;
     private final JobSimpleTriggerMapper mSimpleTriggerMapper;
     private final JobNoneTriggerMapper mNoneTriggerMapper;
@@ -26,38 +31,29 @@ class JobTriggerMapper {
         mNoneTriggerMapper = noneTriggerMapper;
     }
 
-    private static class InstanceHolder {
-        private final static JobTriggerMapper INSTANCE = new JobTriggerMapper(
-                JobCalendarTriggerMapper.INSTANCE,
-                JobSimpleTriggerMapper.INSTANCE,
-                JobNoneTriggerMapper.INSTANCE);
-    }
-
-    public static JobTriggerMapper getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    public void toTriggerEntity(JobForm form, JobFormEntity entity) {
+    @Override
+    public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         Trigger trigger = form.getTrigger();
 
         if (trigger == null) {
-            mNoneTriggerMapper.toTriggerEntity(form, entity);
+            mNoneTriggerMapper.mapFormOnEntity(form, entity);
         } else {
             Recurrence recurrence = trigger.getRecurrence();
 
             if (recurrence instanceof CalendarRecurrence) {
-                mCalendarTriggerMapper.toTriggerEntity(form, entity);
+                mCalendarTriggerMapper.mapFormOnEntity(form, entity);
             } else {
-                mSimpleTriggerMapper.toTriggerEntity(form, entity);
+                mSimpleTriggerMapper.mapFormOnEntity(form, entity);
             }
         }
     }
 
-    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+    @Override
+    public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
         JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
 
         if (simpleTrigger == null) {
-            mCalendarTriggerMapper.toDataForm(form, entity);
+            mCalendarTriggerMapper.mapEntityOnForm(form, entity);
         } else {
             Integer recurrenceInterval = simpleTrigger.getRecurrenceInterval();
             String recurrenceIntervalUnit = simpleTrigger.getRecurrenceIntervalUnit();
@@ -66,9 +62,9 @@ class JobTriggerMapper {
                     (recurrenceInterval != null && recurrenceIntervalUnit != null);
 
             if (triggerIsSimpleType) {
-                mSimpleTriggerMapper.toDataForm(form, entity);
+                mSimpleTriggerMapper.mapEntityOnForm(form, entity);
             } else {
-                mNoneTriggerMapper.toDataForm(form, entity);
+                mNoneTriggerMapper.mapEntityOnForm(form, entity);
             }
         }
     }

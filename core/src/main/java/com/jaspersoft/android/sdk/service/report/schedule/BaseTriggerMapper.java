@@ -15,7 +15,7 @@ import java.util.TimeZone;
  * @author Tom Koptel
  * @since 2.5
  */
-abstract class BaseTriggerMapper {
+abstract class BaseTriggerMapper extends JobMapper {
     private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";
     private static final SimpleDateFormat DATE_FORMAT =
             new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
@@ -72,8 +72,4 @@ abstract class BaseTriggerMapper {
     protected SimpleDateFormat getCommandDateFormat() {
         return DATE_FORMAT;
     }
-
-    public abstract void toTriggerEntity(JobForm form, JobFormEntity entity);
-
-    public abstract void toDataForm(JobForm.Builder form, JobFormEntity entity);
 }

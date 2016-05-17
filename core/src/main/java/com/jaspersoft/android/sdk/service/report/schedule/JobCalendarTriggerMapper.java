@@ -23,7 +23,7 @@ class JobCalendarTriggerMapper extends BaseTriggerMapper {
     final static JobCalendarTriggerMapper INSTANCE = new JobCalendarTriggerMapper();
 
     @Override
-    public void toTriggerEntity(JobForm form, JobFormEntity entity) {
+    public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         Trigger trigger = form.getTrigger();
         CalendarRecurrence recurrence = (CalendarRecurrence) trigger.getRecurrence();
 
@@ -64,7 +64,7 @@ class JobCalendarTriggerMapper extends BaseTriggerMapper {
     }
 
     @Override
-    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+    public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
         JobCalendarTriggerEntity calendarTrigger = entity.getCalendarTrigger();
 
         CalendarRecurrence.Builder recurrenceBuilder = new CalendarRecurrence.Builder()

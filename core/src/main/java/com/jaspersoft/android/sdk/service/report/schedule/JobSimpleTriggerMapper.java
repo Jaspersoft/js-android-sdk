@@ -14,7 +14,7 @@ class JobSimpleTriggerMapper extends BaseTriggerMapper {
     final static JobSimpleTriggerMapper INSTANCE = new JobSimpleTriggerMapper();
 
     @Override
-    public void toTriggerEntity(JobForm form, JobFormEntity entity) {
+    public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         Trigger trigger = form.getTrigger();
         EndDate endDate = trigger.getEndDate();
 
@@ -40,7 +40,7 @@ class JobSimpleTriggerMapper extends BaseTriggerMapper {
     }
 
     @Override
-    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+    public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
         mapCommonEntityTriggerFieldsOnEntity(form, entity);
 
         JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();

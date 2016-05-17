@@ -1,6 +1,5 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
@@ -45,12 +44,14 @@ public class JobFormMapperTest {
 
     @Mock
     JobTriggerMapper mJobTriggerMapper;
+    @Mock
+    JobSourceMapper mJobSourceMapper;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        mJobFormMapper = new JobFormMapper(mJobTriggerMapper);
+        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper);
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
@@ -104,12 +105,6 @@ public class JobFormMapperTest {
         assertThat(mEntity.getRepositoryDestination(), is("/temp"));
     }
 
-    @Test
-    public void should_map_form_source_on_entity() throws Exception {
-        mJobFormMapper.mapFormSourceOnEntity(mForm, mEntity);
-
-        assertThat(mEntity.getSourceUri(), is("/my/uri"));
-    }
 
     @Test
     public void should_map_form_formats_on_entity() throws Exception {
@@ -119,36 +114,9 @@ public class JobFormMapperTest {
     }
 
     @Test
-    public void should_map_source_param_values() throws Exception {
-        List<ReportParameter> parameters = Collections.singletonList(
-                new ReportParameter("key", Collections.singleton("value")));
-
-        JobSource source = new JobSource.Builder()
-                .withUri("/my/uri")
-                .withParameters(parameters)
-                .build();
-
-        JobForm form = mJobBuilder
-                .withJobSource(source)
-                .build();
-        JobFormEntity entity = mJobFormMapper.toFormEntity(form);
-
-
-        Map<String, Set<String>> params = entity.getSourceParameters();
-        Collection<String> values = new ArrayList<>();
-        for (Map.Entry<String, Set<String>> entry : params.entrySet()) {
-            values.addAll(entry.getValue());
-        }
-
-        assertThat(params.keySet(), hasItem("key"));
-        assertThat(values, hasItem("value"));
-    }
-
-    @Test
     public void should_map_entity_common_fields_to_form() throws Exception {
         JobForm.Builder form = new JobForm.Builder();
         mJobFormMapper.mapEntityCommonFieldsToForm(form, mPreparedEntity);
-        mJobFormMapper.mapEntitySourceToForm(form, mPreparedEntity);
         mJobFormMapper.mapEntityDestinationToForm(form, mPreparedEntity);
         mJobFormMapper.mapEntityFormatsToForm(form, mPreparedEntity);
 
@@ -159,9 +127,5 @@ public class JobFormMapperTest {
         assertThat(expected.getOutputFormats(), hasItem(JobOutputFormat.PDF));
         assertThat(expected.getRepositoryDestination().getFolderUri(), is("/folder/uri"));
         assertThat(expected.getBaseOutputFilename(), is("file.txt"));
-
-        JobSource source = expected.getSource();
-        assertThat(source.getUri(), is("/my/uri"));
-        assertThat(source.getParameters(), hasItem(new ReportParameter("key", Collections.singleton("value"))));
     }
 }

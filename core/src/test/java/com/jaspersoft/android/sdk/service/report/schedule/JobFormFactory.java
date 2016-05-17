@@ -105,4 +105,8 @@ class JobFormFactory {
     public Date provideStartDate() {
         return START_DATE;
     }
+
+    public Collection<JobOutputFormat> provideOutputFormats() {
+        return mFormats;
+    }
 }

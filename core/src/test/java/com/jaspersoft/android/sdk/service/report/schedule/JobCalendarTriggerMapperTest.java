@@ -46,7 +46,7 @@ public class JobCalendarTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobCalendarTriggerEntity calendarTrigger = formEntity.getCalendarTrigger();
         assertThat(calendarTrigger.getCalendarName(), is("Gregorian"));
@@ -77,7 +77,7 @@ public class JobCalendarTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobCalendarTriggerEntity calendarTrigger = formEntity.getCalendarTrigger();
         assertThat(calendarTrigger.getMonths(), hasItems(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1));
@@ -105,7 +105,7 @@ public class JobCalendarTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobCalendarTriggerEntity calendarTrigger = formEntity.getCalendarTrigger();
         assertThat(calendarTrigger.getMonths(), hasItems(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1));
@@ -129,7 +129,7 @@ public class JobCalendarTriggerMapperTest {
         formEntity.setCalendarTrigger(calendarTrigger);
 
         JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
-        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        mapperUnderTest.mapEntityOnForm(jobFormBuilder, formEntity);
         JobForm expected = jobFormBuilder.build();
         Trigger trigger = expected.getTrigger();
 
@@ -153,7 +153,7 @@ public class JobCalendarTriggerMapperTest {
         formEntity.setCalendarTrigger(calendarTrigger);
 
         JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
-        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        mapperUnderTest.mapEntityOnForm(jobFormBuilder, formEntity);
         JobForm expected = jobFormBuilder.build();
         Trigger trigger = expected.getTrigger();
 
@@ -173,7 +173,7 @@ public class JobCalendarTriggerMapperTest {
         formEntity.setCalendarTrigger(calendarTrigger);
 
         JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
-        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        mapperUnderTest.mapEntityOnForm(jobFormBuilder, formEntity);
         JobForm expected = jobFormBuilder.build();
         Trigger trigger = expected.getTrigger();
 

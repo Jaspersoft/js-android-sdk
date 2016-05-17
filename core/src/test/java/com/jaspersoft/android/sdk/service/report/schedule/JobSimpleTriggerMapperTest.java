@@ -37,7 +37,7 @@ public class JobSimpleTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-        mapperUnderTest.toTriggerEntity(form, formEntity);
+        mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobSimpleTriggerEntity simpleTrigger = formEntity.getSimpleTrigger();
         assertThat(simpleTrigger.getCalendarName(), is("Gregorian"));
@@ -62,7 +62,7 @@ public class JobSimpleTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-         mapperUnderTest.toTriggerEntity(form, formEntity);
+         mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobSimpleTriggerEntity simpleTrigger = formEntity.getSimpleTrigger();
         assertThat(simpleTrigger.getOccurrenceCount(), is(100));
@@ -86,7 +86,7 @@ public class JobSimpleTriggerMapperTest {
                 .withTrigger(trigger)
                 .build();
 
-         mapperUnderTest.toTriggerEntity(form, formEntity);
+         mapperUnderTest.mapFormOnEntity(form, formEntity);
 
         JobSimpleTriggerEntity simpleTrigger = formEntity.getSimpleTrigger();
         assertThat(simpleTrigger.getEndDate(), is(formFactory.provideEndDateSrc()));
@@ -105,7 +105,7 @@ public class JobSimpleTriggerMapperTest {
         formEntity.setSimpleTrigger(simpleTrigger);
 
         JobForm.Builder formBuilder = formFactory.givenJobFormBuilderWithValues();
-        mapperUnderTest.toDataForm(formBuilder, formEntity);
+        mapperUnderTest.mapEntityOnForm(formBuilder, formEntity);
         JobForm expected = formBuilder.build();
 
         Trigger trigger = expected.getTrigger();
@@ -129,7 +129,7 @@ public class JobSimpleTriggerMapperTest {
 
         JobForm.Builder formBuilder = formFactory.givenJobFormBuilderWithValues();
 
-        mapperUnderTest.toDataForm(formBuilder, formEntity);
+        mapperUnderTest.mapEntityOnForm(formBuilder, formEntity);
         JobForm expected = formBuilder.build();
         Trigger trigger = expected.getTrigger();
 
