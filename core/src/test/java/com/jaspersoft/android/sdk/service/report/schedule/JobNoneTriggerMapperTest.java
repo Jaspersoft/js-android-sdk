@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 public class JobNoneTriggerMapperTest {
 
     private JobNoneTriggerMapper mapperUnderTest;
 
     private final JobFormFactory formFactory = new JobFormFactory();
-    private final JobFormEntityFactory formEntityFactory = new JobFormEntityFactory();
 
     @Before
     public void setUp() throws Exception {
@@ -23,7 +23,7 @@ public class JobNoneTriggerMapperTest {
 
     @Test
     public void should_map_on_entity() throws Exception {
-        JobFormEntity formEntity = formEntityFactory.givenNewJobFormEntity();
+        JobFormEntity formEntity = formFactory.givenNewJobFormEntity();
         JobForm form = formFactory.givenJobFormBuilderWithValues()
                 .withStartDate(null) // immediate start type
                 .build();
@@ -40,7 +40,7 @@ public class JobNoneTriggerMapperTest {
 
     @Test
     public void should_map_start_date_on_entity() throws Exception {
-        JobFormEntity formEntity = formEntityFactory.givenNewJobFormEntity();
+        JobFormEntity formEntity = formFactory.givenNewJobFormEntity();
         JobForm form = formFactory.givenJobFormWithValues();
 
         mapperUnderTest.toTriggerEntity(form, formEntity);
@@ -49,4 +49,25 @@ public class JobNoneTriggerMapperTest {
         assertThat(simpleTrigger.getStartType(), is(2));
         assertThat(simpleTrigger.getStartDate(), is(formFactory.provideStartDateSrc()));
     }
+
+    @Test
+    public void should_map_none_trigger_type_as_simple_one() throws Exception {
+        JobForm.Builder formBuilder = formFactory.givenJobFormBuilderWithValues();
+        JobFormEntity jobFormEntity = formFactory.givenJobFormEntityWithValues();
+
+        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
+        simpleTrigger.setOccurrenceCount(1);
+        simpleTrigger.setStartDate(formFactory.provideStartDateSrc());
+        simpleTrigger.setTimezone(formFactory.provideTimeZone().getID());
+
+        jobFormEntity.setSimpleTrigger(simpleTrigger);
+
+        mapperUnderTest.toDataForm(formBuilder, jobFormEntity);
+        JobForm expected = formBuilder.build();
+
+        assertThat(expected.getStartDate(), is(formFactory.provideStartDate()));
+        assertThat(expected.getTimeZone(), is(formFactory.provideTimeZone()));
+        assertThat(expected.getTrigger(), is(nullValue()));
+    }
+
 }

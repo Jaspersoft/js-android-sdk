@@ -6,7 +6,9 @@ import com.jaspersoft.android.sdk.service.data.schedule.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -15,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 
 public class JobCalendarTriggerMapperTest {
     private final JobFormFactory formFactory = new JobFormFactory();
-    private final JobFormEntityFactory formEntityFactory = new JobFormEntityFactory();
 
     private JobCalendarTriggerMapper mapperUnderTest;
     private JobFormEntity formEntity;
@@ -23,7 +24,7 @@ public class JobCalendarTriggerMapperTest {
     @Before
     public void setUp() throws Exception {
         mapperUnderTest = JobCalendarTriggerMapper.INSTANCE;
-        formEntity = formEntityFactory.givenNewJobFormEntity();
+        formEntity = formFactory.givenNewJobFormEntity();
     }
 
     @Test
@@ -72,7 +73,7 @@ public class JobCalendarTriggerMapperTest {
                 .withRecurrence(recurrence)
                 .build();
 
-        JobForm form =  formFactory.givenJobFormBuilderWithValues()
+        JobForm form = formFactory.givenJobFormBuilderWithValues()
                 .withTrigger(trigger)
                 .build();
 
@@ -113,5 +114,72 @@ public class JobCalendarTriggerMapperTest {
         assertThat(calendarTrigger.getDaysType(), is("MONTH"));
         assertThat(calendarTrigger.getWeekDays(), is(empty()));
         assertThat(calendarTrigger.getMonthDays(), is("1"));
+    }
+
+
+    @Test
+    public void should_map_calendar_trigger_with_all_type() throws Exception {
+        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
+        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY + 1)));
+        calendarTrigger.setMinutes("30");
+        calendarTrigger.setHours("3");
+        calendarTrigger.setDaysType("ALL");
+        calendarTrigger.setEndDate(formFactory.provideEndDateSrc());
+
+        formEntity.setCalendarTrigger(calendarTrigger);
+
+        JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
+        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        JobForm expected = jobFormBuilder.build();
+        Trigger trigger = expected.getTrigger();
+
+        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
+        UntilEndDate endDate = (UntilEndDate) trigger.getEndDate();
+
+        assertThat(calendarRecurrence.getMinutes().toString(), is("30"));
+        assertThat(calendarRecurrence.getHours().toString(), is("3"));
+        assertThat(calendarRecurrence.getMonths(), hasItems(Calendar.FEBRUARY));
+        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
+        assertThat(daysType.getDays(), hasItems(Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY));
+    }
+
+    @Test
+    public void should_map_calendar_trigger_with_week_type() throws Exception {
+        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
+        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
+        calendarTrigger.setWeekDays(new HashSet<>(Arrays.asList(Calendar.MONDAY)));
+        calendarTrigger.setDaysType("WEEK");
+
+        formEntity.setCalendarTrigger(calendarTrigger);
+
+        JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
+        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        JobForm expected = jobFormBuilder.build();
+        Trigger trigger = expected.getTrigger();
+
+        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
+
+        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
+        assertThat(daysType.getDays(), hasItems(Calendar.MONDAY));
+    }
+
+    @Test
+    public void should_map_calendar_trigger_with_month_type() throws Exception {
+        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
+        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
+        calendarTrigger.setDaysType("MONTH");
+        calendarTrigger.setMonthDays("1");
+
+        formEntity.setCalendarTrigger(calendarTrigger);
+
+        JobForm.Builder jobFormBuilder = formFactory.givenJobFormBuilderWithValues();
+        mapperUnderTest.toDataForm(jobFormBuilder, formEntity);
+        JobForm expected = jobFormBuilder.build();
+        Trigger trigger = expected.getTrigger();
+
+        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
+
+        DaysInMonth daysType = (DaysInMonth) calendarRecurrence.getDaysType();
+        assertThat(daysType.toString(), is("1"));
     }
 }

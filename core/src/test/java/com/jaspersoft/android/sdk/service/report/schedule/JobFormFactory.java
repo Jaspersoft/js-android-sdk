@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
 import com.jaspersoft.android.sdk.service.data.schedule.JobSource;
@@ -39,6 +40,7 @@ class JobFormFactory {
     private final JobSource mSource;
     private final List<JobOutputFormat> mFormats = Arrays.asList(JobOutputFormat.HTML, JobOutputFormat.CSV);
     private final RepositoryDestination mDestination;
+    private final JobFormEntity mJobFormEntity;
 
     public JobFormFactory() {
         mFormBuilder = new JobForm.Builder();
@@ -48,8 +50,8 @@ class JobFormFactory {
         mSource = new JobSource.Builder()
                 .withUri("/my/uri")
                 .build();
+        mJobFormEntity = new JobFormEntity();
     }
-
 
     public JobForm.Builder givenJobFormBuilderWithValues() {
         return mFormBuilder.withVersion(100)
@@ -67,6 +69,23 @@ class JobFormFactory {
         return givenJobFormBuilderWithValues().build();
     }
 
+    public JobFormEntity givenNewJobFormEntity() {
+        return mJobFormEntity;
+    }
+
+    public JobFormEntity givenJobFormEntityWithValues() {
+        mJobFormEntity.setVersion(100);
+        mJobFormEntity.setDescription("description");
+        mJobFormEntity.setLabel("label");
+        mJobFormEntity.setSourceUri("/my/uri");
+        mJobFormEntity.setSourceParameters(Collections.singletonMap("key", Collections.singleton("value")));
+        mJobFormEntity.addOutputFormats(Arrays.asList("PDF"));
+        mJobFormEntity.setRepositoryDestination("/folder/uri");
+        mJobFormEntity.setBaseOutputFilename("file.txt");
+
+        return mJobFormEntity;
+    }
+
     public TimeZone provideTimeZone() {
         return TIME_ZONE;
     }
@@ -81,5 +100,9 @@ class JobFormFactory {
 
     public Date provideEndDate() {
         return END_DATE;
+    }
+
+    public Date provideStartDate() {
+        return START_DATE;
     }
 }

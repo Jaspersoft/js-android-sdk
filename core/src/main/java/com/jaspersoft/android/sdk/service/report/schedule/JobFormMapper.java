@@ -1,13 +1,14 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.schedule.*;
-import com.jaspersoft.android.sdk.service.data.schedule.*;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
+import com.jaspersoft.android.sdk.service.data.schedule.JobSource;
+import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -15,19 +16,6 @@ import java.util.*;
  * @since 2.3
  */
 class JobFormMapper {
-    private static final Integer[] ALL_WEEK_DAYS = {
-            Calendar.SUNDAY,
-            Calendar.MONDAY,
-            Calendar.TUESDAY,
-            Calendar.WEDNESDAY,
-            Calendar.THURSDAY,
-            Calendar.FRIDAY,
-            Calendar.SATURDAY
-    };
-    private static final String FORMAT_PATTERN = "yyyy-MM-dd HH:mm";
-    private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
-
     private final JobTriggerMapper mTriggerMapper;
 
     JobFormMapper(JobTriggerMapper triggerMapper) {
@@ -106,7 +94,7 @@ class JobFormMapper {
         mapEntitySourceToForm(form, entity);
         mapEntityDestinationToForm(form, entity);
         mapEntityFormatsToForm(form, entity);
-        mapEntityTriggerToForm(form, entity);
+        mTriggerMapper.toDataForm(form, entity);
         return form.build();
     }
 
@@ -152,132 +140,11 @@ class JobFormMapper {
         form.withRepositoryDestination(destination);
     }
 
-    @TestOnly
-    void mapEntityTriggerToForm(JobForm.Builder form, JobFormEntity entity) {
-        JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
-
-        mapEntityCommonTriggerFields(form, entity);
-        if (simpleTrigger == null) {
-            mapEntityCalendarTrigger(form, entity);
-        } else {
-            mapEntitySimpleTrigger(form, entity);
-        }
-    }
-
-    private void mapEntityCommonTriggerFields(JobForm.Builder form, JobFormEntity entity) {
-        JobTriggerEntity triggerEntity = entity.getTrigger();
-        String startDate = triggerEntity.getStartDate();
-        if (startDate != null) {
-            Date date = parseDate(startDate);
-            if (date != null) {
-                form.withStartDate(date);
-            }
-        }
-
-        String timezone = triggerEntity.getTimezone();
-        if (timezone != null) {
-            TimeZone timeZone = TimeZone.getTimeZone(timezone);
-            form.withTimeZone(timeZone);
-        }
-    }
-
-    private void mapEntitySimpleTrigger(JobForm.Builder form, JobFormEntity entity) {
-        JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
-
-        int occurrenceCount = simpleTrigger.getOccurrenceCount();
-        Integer recurrenceInterval = simpleTrigger.getRecurrenceInterval();
-        String recurrenceIntervalUnit = simpleTrigger.getRecurrenceIntervalUnit();
-
-        boolean triggerIsSimpleType =
-                (recurrenceInterval != null && recurrenceIntervalUnit != null);
-
-        if (triggerIsSimpleType) {
-            Date endDate = null;
-            String endDateString = simpleTrigger.getEndDate();
-            if (endDateString != null) {
-                endDate = parseDate(endDateString);
-            }
-
-            IntervalRecurrence recurrence = new IntervalRecurrence.Builder()
-                    .withInterval(recurrenceInterval)
-                    .withUnit(RecurrenceIntervalUnit.valueOf(recurrenceIntervalUnit))
-                    .build();
-            Trigger.SimpleTriggerBuilder triggerBuilder = new Trigger.Builder()
-                    .withCalendarName(simpleTrigger.getCalendarName())
-                    .withRecurrence(recurrence);
-
-            if (occurrenceCount < 0 && endDate != null) {
-                triggerBuilder.withEndDate(new UntilEndDate(endDate));
-            } else {
-                triggerBuilder.withEndDate(new RepeatedEndDate(occurrenceCount));
-            }
-
-            Trigger trigger = triggerBuilder.build();
-            form.withTrigger(trigger);
-        }
-    }
-
-    private void mapEntityCalendarTrigger(JobForm.Builder form, JobFormEntity entity) {
-        JobCalendarTriggerEntity calendarTrigger = entity.getCalendarTrigger();
-
-        CalendarRecurrence.Builder recurrenceBuilder = new CalendarRecurrence.Builder()
-                .withMinutes(MinutesTimeFormat.parse(calendarTrigger.getMinutes()))
-                .withHours(HoursTimeFormat.parse(calendarTrigger.getHours()))
-                .withMonths(mapMonthsToData(calendarTrigger.getMonths()));
-
-        String daysType = calendarTrigger.getDaysType();
-        if ("ALL".equals(daysType)) {
-            recurrenceBuilder.withDaysInWeek(ALL_WEEK_DAYS);
-        } else if ("WEEK".equals(daysType)) {
-            recurrenceBuilder.withDaysInWeek(calendarTrigger.getWeekDays());
-        } else if ("MONTH".equals(daysType)) {
-            recurrenceBuilder.withDaysInMonth(DaysInMonth.valueOf(calendarTrigger.getMonthDays()));
-        }
-
-        CalendarRecurrence calendarRecurrence = recurrenceBuilder.build();
-        Trigger.CalendarTriggerBuilder triggerBuilder = new Trigger.Builder()
-                .withCalendarName(calendarTrigger.getCalendarName())
-                .withRecurrence(calendarRecurrence);
-
-        Date endDate = null;
-        String endDateString = calendarTrigger.getEndDate();
-        if (endDateString != null) {
-            endDate = parseDate(endDateString);
-        }
-
-        if (endDate != null) {
-            triggerBuilder.withEndDate(new UntilEndDate(endDate));
-        }
-
-        Trigger trigger = triggerBuilder.build();
-        form.withTrigger(trigger);
-    }
-
-    private Integer[] mapMonthsToData(Set<Integer> monthSet) {
-        List<Integer> monthList = new ArrayList<>(monthSet);
-        int size = monthSet.size();
-        Integer[] result = new Integer[size];
-
-        for (int i = 0; i < size; i++) {
-            result[i] = monthList.get(i) - 1;
-        }
-
-        return result;
-    }
-
     public List<ReportParameter> mapParams(Map<String, Set<String>> parameters) {
         List<ReportParameter> params = new ArrayList<>(parameters.size());
         for (Map.Entry<String, Set<String>> entry : parameters.entrySet()) {
             params.add(new ReportParameter(entry.getKey(), entry.getValue()));
         }
         return params;
-    }
-
-    private Date parseDate(String target) {
-        try {
-            return DATE_FORMAT.parse(target);
-        } catch (ParseException e) {
-            return null;
-        }
     }
 }

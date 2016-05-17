@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTriggerEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.CalendarRecurrence;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.Recurrence;
@@ -12,8 +13,8 @@ import com.jaspersoft.android.sdk.service.data.schedule.Trigger;
  */
 class JobTriggerMapper {
     private final JobCalendarTriggerMapper mCalendarTriggerMapper;
-    private final JobNoneTriggerMapper mNoneTriggerMapper;
     private final JobSimpleTriggerMapper mSimpleTriggerMapper;
+    private final JobNoneTriggerMapper mNoneTriggerMapper;
 
     JobTriggerMapper(
             JobCalendarTriggerMapper calendarTriggerMapper,
@@ -48,6 +49,26 @@ class JobTriggerMapper {
                 mCalendarTriggerMapper.toTriggerEntity(form, entity);
             } else {
                 mSimpleTriggerMapper.toTriggerEntity(form, entity);
+            }
+        }
+    }
+
+    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+        JobSimpleTriggerEntity simpleTrigger = entity.getSimpleTrigger();
+
+        if (simpleTrigger == null) {
+            mCalendarTriggerMapper.toDataForm(form, entity);
+        } else {
+            Integer recurrenceInterval = simpleTrigger.getRecurrenceInterval();
+            String recurrenceIntervalUnit = simpleTrigger.getRecurrenceIntervalUnit();
+
+            boolean triggerIsSimpleType =
+                    (recurrenceInterval != null && recurrenceIntervalUnit != null);
+
+            if (triggerIsSimpleType) {
+                mSimpleTriggerMapper.toDataForm(form, entity);
+            } else {
+                mNoneTriggerMapper.toDataForm(form, entity);
             }
         }
     }

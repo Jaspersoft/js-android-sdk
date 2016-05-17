@@ -1,10 +1,11 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobCalendarTriggerEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
-import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTriggerEntity;
-import com.jaspersoft.android.sdk.service.data.schedule.*;
+import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFormat;
+import com.jaspersoft.android.sdk.service.data.schedule.JobSource;
+import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,14 +26,11 @@ public class JobFormMapperTest {
     private static final TimeZone TIME_ZONE = TimeZone.getDefault();
 
     private static Date START_DATE;
-    private static Date END_DATE;
 
-    public static final String END_DATE_SRC = "2013-11-03 16:32";
     public static final String START_DATE_SRC = "2013-10-03 16:32";
 
     static {
         try {
-            END_DATE = DATE_FORMAT.parse(END_DATE_SRC);
             START_DATE = DATE_FORMAT.parse(START_DATE_SRC);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -120,8 +118,6 @@ public class JobFormMapperTest {
         assertThat(mEntity.getOutputFormats(), hasItems("HTML", "CSV"));
     }
 
-
-
     @Test
     public void should_map_source_param_values() throws Exception {
         List<ReportParameter> parameters = Collections.singletonList(
@@ -164,125 +160,8 @@ public class JobFormMapperTest {
         assertThat(expected.getRepositoryDestination().getFolderUri(), is("/folder/uri"));
         assertThat(expected.getBaseOutputFilename(), is("file.txt"));
 
-
         JobSource source = expected.getSource();
         assertThat(source.getUri(), is("/my/uri"));
         assertThat(source.getParameters(), hasItem(new ReportParameter("key", Collections.singleton("value"))));
-    }
-
-    @Test
-    public void should_map_none_trigger_type_as_simple_one() throws Exception {
-        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
-        simpleTrigger.setOccurrenceCount(1);
-        simpleTrigger.setStartDate(START_DATE_SRC);
-        simpleTrigger.setTimezone(TIME_ZONE.getID());
-        mPreparedEntity.setSimpleTrigger(simpleTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-
-        assertThat(expected.getStartDate(), is(START_DATE));
-        assertThat(expected.getTimeZone(), is(TIME_ZONE));
-        assertThat(expected.getTrigger(), is(nullValue()));
-    }
-
-    @Test
-    public void should_map_simple_trigger_with_occurrence_count() throws Exception {
-        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
-        simpleTrigger.setOccurrenceCount(1);
-        simpleTrigger.setRecurrenceIntervalUnit("DAY");
-        simpleTrigger.setCalendarName("Gregorian");
-        simpleTrigger.setRecurrenceInterval(100);
-        mPreparedEntity.setSimpleTrigger(simpleTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-        Trigger trigger = expected.getTrigger();
-
-        IntervalRecurrence recurrence = (IntervalRecurrence) trigger.getRecurrence();
-        RepeatedEndDate endDate = (RepeatedEndDate) trigger.getEndDate();
-
-        assertThat(recurrence.getInterval(), is(100));
-        assertThat(recurrence.getUnit(), is(RecurrenceIntervalUnit.DAY));
-        assertThat(endDate.getOccurrenceCount(), is(1));
-    }
-
-    @Test
-    public void should_map_simple_trigger_with_end_date() throws Exception {
-        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
-        simpleTrigger.setOccurrenceCount(-1);
-        simpleTrigger.setRecurrenceInterval(1);
-        simpleTrigger.setRecurrenceIntervalUnit("DAY");
-        simpleTrigger.setEndDate(END_DATE_SRC);
-
-        mPreparedEntity.setSimpleTrigger(simpleTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-        Trigger trigger = expected.getTrigger();
-
-        IntervalRecurrence recurrence = (IntervalRecurrence) trigger.getRecurrence();
-        UntilEndDate endDate = (UntilEndDate) trigger.getEndDate();
-
-        assertThat(recurrence.getInterval(), is(1));
-        assertThat(recurrence.getUnit(), is(RecurrenceIntervalUnit.DAY));
-        assertThat(endDate.getSpecifiedDate(), is(END_DATE));
-    }
-
-    @Test
-    public void should_map_calendar_trigger_with_all_type() throws Exception {
-        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
-        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY + 1)));
-        calendarTrigger.setMinutes("30");
-        calendarTrigger.setHours("3");
-        calendarTrigger.setDaysType("ALL");
-        calendarTrigger.setEndDate(END_DATE_SRC);
-
-        mPreparedEntity.setCalendarTrigger(calendarTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-        Trigger trigger = expected.getTrigger();
-
-        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
-        UntilEndDate endDate = (UntilEndDate) trigger.getEndDate();
-
-        assertThat(calendarRecurrence.getMinutes().toString(), is("30"));
-        assertThat(calendarRecurrence.getHours().toString(), is("3"));
-        assertThat(calendarRecurrence.getMonths(), hasItems(Calendar.FEBRUARY));
-        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
-        assertThat(daysType.getDays(), hasItems(Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY));
-    }
-
-    @Test
-    public void should_map_calendar_trigger_with_week_type() throws Exception {
-        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
-        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
-        calendarTrigger.setWeekDays(new HashSet<>(Arrays.asList(Calendar.MONDAY)));
-        calendarTrigger.setDaysType("WEEK");
-
-        mPreparedEntity.setCalendarTrigger(calendarTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-        Trigger trigger = expected.getTrigger();
-
-        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
-
-        DaysInWeek daysType = (DaysInWeek) calendarRecurrence.getDaysType();
-        assertThat(daysType.getDays(), hasItems(Calendar.MONDAY));
-    }
-
-    @Test
-    public void should_map_calendar_trigger_with_month_type() throws Exception {
-        JobCalendarTriggerEntity calendarTrigger = new JobCalendarTriggerEntity();
-        calendarTrigger.setMonths(new HashSet<>(Arrays.asList(Calendar.FEBRUARY)));
-        calendarTrigger.setDaysType("MONTH");
-        calendarTrigger.setMonthDays("1");
-
-        mPreparedEntity.setCalendarTrigger(calendarTrigger);
-
-        JobForm expected = mJobFormMapper.toDataForm(mPreparedEntity);
-        Trigger trigger = expected.getTrigger();
-
-        CalendarRecurrence calendarRecurrence = (CalendarRecurrence) trigger.getRecurrence();
-
-        DaysInMonth daysType = (DaysInMonth) calendarRecurrence.getDaysType();
-        assertThat(daysType.toString(), is("1"));
     }
 }

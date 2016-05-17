@@ -12,16 +12,14 @@ import static org.hamcrest.Matchers.is;
 public class JobSimpleTriggerMapperTest {
 
     private final JobFormFactory formFactory = new JobFormFactory();
-    private final JobFormEntityFactory formEntityFactory = new JobFormEntityFactory();
     private JobSimpleTriggerMapper mapperUnderTest;
     private JobFormEntity formEntity;
 
     @Before
     public void setUp() throws Exception {
         mapperUnderTest = JobSimpleTriggerMapper.INSTANCE;
-        formEntity = formEntityFactory.givenNewJobFormEntity();
+        formEntity = formFactory.givenJobFormEntityWithValues();
     }
-
 
     @Test
     public void should_map_simple_trigger_with_infinite_value_on_entity() throws Exception {
@@ -95,5 +93,51 @@ public class JobSimpleTriggerMapperTest {
         assertThat(simpleTrigger.getOccurrenceCount(), is(-1));
         assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
         assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
+    }
+
+    @Test
+    public void should_map_simple_trigger_with_occurrence_count() throws Exception {
+        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
+        simpleTrigger.setOccurrenceCount(1);
+        simpleTrigger.setRecurrenceIntervalUnit("DAY");
+        simpleTrigger.setCalendarName("Gregorian");
+        simpleTrigger.setRecurrenceInterval(100);
+        formEntity.setSimpleTrigger(simpleTrigger);
+
+        JobForm.Builder formBuilder = formFactory.givenJobFormBuilderWithValues();
+        mapperUnderTest.toDataForm(formBuilder, formEntity);
+        JobForm expected = formBuilder.build();
+
+        Trigger trigger = expected.getTrigger();
+
+        IntervalRecurrence recurrence = (IntervalRecurrence) trigger.getRecurrence();
+        RepeatedEndDate endDate = (RepeatedEndDate) trigger.getEndDate();
+
+        assertThat(recurrence.getInterval(), is(100));
+        assertThat(recurrence.getUnit(), is(RecurrenceIntervalUnit.DAY));
+        assertThat(endDate.getOccurrenceCount(), is(1));
+    }
+
+    @Test
+    public void should_map_simple_trigger_with_end_date() throws Exception {
+        JobSimpleTriggerEntity simpleTrigger = new JobSimpleTriggerEntity();
+        simpleTrigger.setOccurrenceCount(-1);
+        simpleTrigger.setRecurrenceInterval(1);
+        simpleTrigger.setRecurrenceIntervalUnit("DAY");
+        simpleTrigger.setEndDate(formFactory.provideEndDateSrc());
+        formEntity.setSimpleTrigger(simpleTrigger);
+
+        JobForm.Builder formBuilder = formFactory.givenJobFormBuilderWithValues();
+
+        mapperUnderTest.toDataForm(formBuilder, formEntity);
+        JobForm expected = formBuilder.build();
+        Trigger trigger = expected.getTrigger();
+
+        IntervalRecurrence recurrence = (IntervalRecurrence) trigger.getRecurrence();
+        UntilEndDate endDate = (UntilEndDate) trigger.getEndDate();
+
+        assertThat(recurrence.getInterval(), is(1));
+        assertThat(recurrence.getUnit(), is(RecurrenceIntervalUnit.DAY));
+        assertThat(endDate.getSpecifiedDate(), is(formFactory.provideEndDate()));
     }
 }

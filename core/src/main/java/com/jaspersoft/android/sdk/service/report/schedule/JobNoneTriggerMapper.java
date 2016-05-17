@@ -22,4 +22,9 @@ class JobNoneTriggerMapper extends BaseTriggerMapper {
 
         entity.setSimpleTrigger(triggerEntity);
     }
+
+    @Override
+    public void toDataForm(JobForm.Builder form, JobFormEntity entity) {
+        mapCommonEntityTriggerFieldsOnEntity(form, entity);
+    }
 }
