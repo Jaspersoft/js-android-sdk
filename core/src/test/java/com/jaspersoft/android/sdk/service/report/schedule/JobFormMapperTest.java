@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobSimpleTriggerEntity
 import com.jaspersoft.android.sdk.service.data.schedule.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +15,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JobFormMapperTest {
 
@@ -43,9 +45,14 @@ public class JobFormMapperTest {
     private JobFormEntity mEntity;
     private JobFormEntity mPreparedEntity;
 
+    @Mock
+    JobTriggerMapper mJobTriggerMapper;
+
     @Before
     public void setUp() throws Exception {
-        mJobFormMapper = new JobFormMapper();
+        initMocks(this);
+
+        mJobFormMapper = new JobFormMapper(mJobTriggerMapper);
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
@@ -113,104 +120,7 @@ public class JobFormMapperTest {
         assertThat(mEntity.getOutputFormats(), hasItems("HTML", "CSV"));
     }
 
-    @Test
-    public void should_map_no_trigger_type_on_entity() throws Exception {
-        JobForm form = mJobBuilder
-                .withStartDate(null) // immediate start type
-                .build();
 
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobSimpleTriggerEntity simpleTrigger = mEntity.getSimpleTrigger();
-        assertThat(simpleTrigger.getOccurrenceCount(), is(1));
-        assertThat(simpleTrigger.getRecurrenceInterval(), is(1));
-        assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
-        assertThat(simpleTrigger.getTimezone(), is(TIME_ZONE.getID()));
-        assertThat(simpleTrigger.getStartType(), is(1));
-    }
-
-    @Test
-    public void should_map_no_trigger_start_date_on_entity() throws Exception {
-        mJobFormMapper.mapFormTriggerOnEntity(mForm, mEntity);
-
-        JobSimpleTriggerEntity simpleTrigger = mEntity.getSimpleTrigger();
-        assertThat(simpleTrigger.getStartType(), is(2));
-        assertThat(simpleTrigger.getStartDate(), is(START_DATE_SRC));
-    }
-
-    @Test
-    public void should_map_simple_trigger_with_infinite_value_on_entity() throws Exception {
-        IntervalRecurrence recurrence = new IntervalRecurrence.Builder()
-                .withInterval(10)
-                .withUnit(RecurrenceIntervalUnit.DAY)
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withCalendarName("Gregorian")
-                .withRecurrence(recurrence)
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobSimpleTriggerEntity simpleTrigger = mEntity.getSimpleTrigger();
-        assertThat(simpleTrigger.getCalendarName(), is("Gregorian"));
-        assertThat(simpleTrigger.getOccurrenceCount(), is(-1));
-        assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
-        assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
-    }
-
-    @Test
-    public void should_map_simple_trigger_with_repeated_value_on_entity() throws Exception {
-        IntervalRecurrence recurrence = new IntervalRecurrence.Builder()
-                .withInterval(10)
-                .withUnit(RecurrenceIntervalUnit.DAY)
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withRecurrence(recurrence)
-                .withEndDate(new RepeatedEndDate(100))
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobSimpleTriggerEntity simpleTrigger = mEntity.getSimpleTrigger();
-        assertThat(simpleTrigger.getOccurrenceCount(), is(100));
-        assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
-        assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
-    }
-
-    @Test
-    public void should_map_simple_trigger_with_until_date_value_on_entity() throws Exception {
-        IntervalRecurrence recurrence = new IntervalRecurrence.Builder()
-                .withInterval(10)
-                .withUnit(RecurrenceIntervalUnit.DAY)
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withRecurrence(recurrence)
-                .withEndDate(new UntilEndDate(END_DATE))
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobSimpleTriggerEntity simpleTrigger = mEntity.getSimpleTrigger();
-        assertThat(simpleTrigger.getEndDate(), is(END_DATE_SRC));
-        assertThat(simpleTrigger.getOccurrenceCount(), is(-1));
-        assertThat(simpleTrigger.getRecurrenceIntervalUnit(), is("DAY"));
-        assertThat(simpleTrigger.getRecurrenceInterval(), is(10));
-    }
 
     @Test
     public void should_map_source_param_values() throws Exception {
@@ -236,95 +146,6 @@ public class JobFormMapperTest {
 
         assertThat(params.keySet(), hasItem("key"));
         assertThat(values, hasItem("value"));
-    }
-
-    @Test
-    public void should_map_calendar_trigger() throws Exception {
-        CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
-                .withHours(HoursTimeFormat.parse("1"))
-                .withMinutes(MinutesTimeFormat.parse("2"))
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withCalendarName("Gregorian")
-                .withRecurrence(recurrence)
-                .withEndDate(new UntilEndDate(END_DATE))
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withStartDate(null)
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobCalendarTriggerEntity calendarTrigger = mEntity.getCalendarTrigger();
-        assertThat(calendarTrigger.getCalendarName(), is("Gregorian"));
-        assertThat(calendarTrigger.getEndDate(), is(END_DATE_SRC));
-        assertThat(calendarTrigger.getMonths(), hasItems(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1));
-        assertThat(calendarTrigger.getHours(), is("1"));
-        assertThat(calendarTrigger.getMinutes(), is("2"));
-        assertThat(calendarTrigger.getDaysType(), is("ALL"));
-        assertThat(calendarTrigger.getWeekDays(), is(empty()));
-        assertThat(calendarTrigger.getMonthDays(), is(""));
-        assertThat(calendarTrigger.getStartType(), is(1));
-    }
-
-    @Test
-    public void should_map_calendar_trigger_with_day_type_days_in_week() throws Exception {
-        CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
-                .withHours(HoursTimeFormat.parse("1"))
-                .withMinutes(MinutesTimeFormat.parse("2"))
-                .withDaysInWeek(Calendar.MONDAY, Calendar.THURSDAY)
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withRecurrence(recurrence)
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobCalendarTriggerEntity calendarTrigger = mEntity.getCalendarTrigger();
-        assertThat(calendarTrigger.getMonths(), hasItems(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1));
-        assertThat(calendarTrigger.getHours(), is("1"));
-        assertThat(calendarTrigger.getMinutes(), is("2"));
-        assertThat(calendarTrigger.getDaysType(), is("WEEK"));
-        assertThat(calendarTrigger.getWeekDays(), hasItems(Calendar.MONDAY, Calendar.THURSDAY));
-        assertThat(calendarTrigger.getMonthDays(), is(""));
-    }
-
-    @Test
-    public void should_map_calendar_trigger_with_day_type_days_in_month() throws Exception {
-        CalendarRecurrence recurrence = new CalendarRecurrence.Builder()
-                .withMonths(Calendar.JANUARY, Calendar.FEBRUARY)
-                .withHours(HoursTimeFormat.parse("1"))
-                .withMinutes(MinutesTimeFormat.parse("2"))
-                .withDaysInMonth(DaysInMonth.valueOf("1"))
-                .build();
-
-        Trigger trigger = new Trigger.Builder()
-                .withRecurrence(recurrence)
-                .build();
-
-        JobForm form = mForm.newBuilder()
-                .withTrigger(trigger)
-                .build();
-
-        mJobFormMapper.mapFormTriggerOnEntity(form, mEntity);
-
-        JobCalendarTriggerEntity calendarTrigger = mEntity.getCalendarTrigger();
-        assertThat(calendarTrigger.getMonths(), hasItems(Calendar.JANUARY + 1, Calendar.FEBRUARY + 1));
-        assertThat(calendarTrigger.getHours(), is("1"));
-        assertThat(calendarTrigger.getMinutes(), is("2"));
-        assertThat(calendarTrigger.getDaysType(), is("MONTH"));
-        assertThat(calendarTrigger.getWeekDays(), is(empty()));
-        assertThat(calendarTrigger.getMonthDays(), is("1"));
     }
 
     @Test
