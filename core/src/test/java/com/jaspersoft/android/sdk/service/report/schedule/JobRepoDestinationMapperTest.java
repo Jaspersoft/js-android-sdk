@@ -32,10 +32,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @author Tom Koptel
@@ -54,9 +57,13 @@ public class JobRepoDestinationMapperTest {
     @Rule
     public ExpectedException expected = none();
 
+    @Mock
+    JobOutputFtpInfoMapper ftpInfoMapper;
+
     @Before
     public void setUp() throws Exception {
-        mapperUnderTest = new JobRepoDestinationMapper();
+        initMocks(this);
+        mapperUnderTest = new JobRepoDestinationMapper(ftpInfoMapper);
     }
 
     @Test
@@ -65,6 +72,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithFolderUri("/temp");
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getFolderURI(), is("/temp"));
     }
@@ -75,6 +83,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithOutputLocalFolder("/temp");
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getOutputLocalFolder(), is("/temp"));
     }
@@ -85,6 +94,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithOutputDescription("Output description");
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getOutputDescription(), is("Output description"));
     }
@@ -95,6 +105,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithTimestampPattern("yyyy");
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getTimestampPattern(), is("yyyy"));
     }
@@ -105,6 +116,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithDefaultReportOutputFolderURI("/temp");
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getDefaultReportOutputFolderURI(), is("/temp"));
     }
@@ -115,6 +127,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithSequentialFilenames(true);
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getSequentialFilenames(), is(true));
     }
@@ -125,6 +138,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithOverwriteFiles(true);
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getOverwriteFiles(), is(true));
     }
@@ -135,6 +149,7 @@ public class JobRepoDestinationMapperTest {
         givenFormRepoDestinationWithSaveToRepository(true);
 
         whenMapsFormOnEntity();
+        thenShouldMapFtpInfoOnEntity();
 
         assertThat(expectedEntityRepoDestination.getSaveToRepository(), is(true));
     }
@@ -145,6 +160,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithFolderUri("/folder/uri");
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getFolderUri(), is("/folder/uri"));
     }
@@ -155,6 +171,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithOutputLocalFolder("/folder/uri");
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getOutputLocalFolder(), is("/folder/uri"));
     }
@@ -165,6 +182,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithOutputDescription("Output description!");
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getOutputDescription(), is("Output description!"));
     }
@@ -175,6 +193,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithTimestampPattern("yyyy");
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getTimestampPattern(), is("yyyy"));
     }
@@ -185,6 +204,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithDefaultReportOutputFolderURI("/folder/uri");
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getDefaultReportOutputFolderURI(), is("/folder/uri"));
     }
@@ -195,6 +215,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithSequentialFilenames(true);
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getSequentialFileNames(), is(true));
     }
@@ -205,6 +226,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithOverwriteFiles(true);
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getOverwriteFiles(), is(true));
     }
@@ -215,6 +237,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithSaveToRepository(true);
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getSaveToRepository(), is(true));
     }
@@ -225,6 +248,7 @@ public class JobRepoDestinationMapperTest {
         givenRepositoryDestinationWithUseDefaultReportOutputFolderURI(true);
 
         whenMapsEntityOnForm();
+        thenShouldMapFtpInfoOnForm();
 
         assertThat(expectedRepoDestination.getUseDefaultReportOutputFolderURI(), is(true));
     }
@@ -353,5 +377,13 @@ public class JobRepoDestinationMapperTest {
     private void givenRepositoryDestinationWithUseDefaultReportOutputFolderURI(boolean flag) {
         givenNetworkForm();
         networkForm.getRepoDestination().setUsingDefaultReportOutputFolderURI(true);
+    }
+
+    private void thenShouldMapFtpInfoOnForm() {
+        verify(ftpInfoMapper).mapEntityOnForm(serviceFormBuilder, networkForm);
+    }
+
+    private void thenShouldMapFtpInfoOnEntity() {
+        verify(ftpInfoMapper).mapFormOnEntity(serviceForm, networkForm);
     }
 }

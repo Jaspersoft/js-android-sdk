@@ -34,12 +34,19 @@ import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
  * @since 2.3
  */
 class JobRepoDestinationMapper extends JobMapper {
-    static final JobRepoDestinationMapper INSTANCE = new JobRepoDestinationMapper();
+    static final JobRepoDestinationMapper INSTANCE = new JobRepoDestinationMapper(JobOutputFtpInfoMapper.INSTANCE);
+
+    private final JobOutputFtpInfoMapper ftpInfoMapper;
+
+    JobRepoDestinationMapper(JobOutputFtpInfoMapper ftpInfoMapper) {
+        this.ftpInfoMapper = ftpInfoMapper;
+    }
 
     @Override
     public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         RepositoryDestination serviceFormDestination = form.getRepositoryDestination();
         RepositoryDestinationEntity destination = entity.getRepoDestination();
+
         destination.setFolderURI(serviceFormDestination.getFolderUri());
         destination.setOutputLocalFolder(serviceFormDestination.getOutputLocalFolder());
         destination.setOutputDescription(serviceFormDestination.getOutputDescription());
@@ -49,6 +56,8 @@ class JobRepoDestinationMapper extends JobMapper {
         destination.setSaveToRepository(serviceFormDestination.getSaveToRepository());
         destination.setSequentialFilenames(serviceFormDestination.getSequentialFileNames());
         destination.setOverwriteFiles(serviceFormDestination.getOverwriteFiles());
+
+        ftpInfoMapper.mapFormOnEntity(form, entity);
     }
 
     @Override
@@ -78,5 +87,7 @@ class JobRepoDestinationMapper extends JobMapper {
 
         RepositoryDestination repositoryDestination = builder.build();
         form.withRepositoryDestination(repositoryDestination);
+
+        ftpInfoMapper.mapEntityOnForm(form, entity);
     }
 }
