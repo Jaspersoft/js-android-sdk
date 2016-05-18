@@ -196,7 +196,7 @@ public class JobRepoDestinationMapperTest {
 
         whenMapsEntityOnForm();
 
-        assertThat(expectedRepoDestination.getSequentialFilenames(), is(true));
+        assertThat(expectedRepoDestination.getSequentialFileNames(), is(true));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class JobRepoDestinationMapperTest {
 
     private void givenFormRepoDestinationWithSequentialFilenames(boolean flag) {
         RepositoryDestination destination = new RepositoryDestination.Builder()
-                .withSequentialFilenames(flag)
+                .withSequentialFileNames(flag)
                 .build();
         createForm(destination);
     }

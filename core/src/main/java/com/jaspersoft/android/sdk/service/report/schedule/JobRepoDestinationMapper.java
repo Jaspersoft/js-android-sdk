@@ -47,7 +47,7 @@ class JobRepoDestinationMapper extends JobMapper {
         destination.setDefaultReportOutputFolderURI(serviceFormDestination.getDefaultReportOutputFolderURI());
         destination.setUsingDefaultReportOutputFolderURI(serviceFormDestination.getUseDefaultReportOutputFolderURI());
         destination.setSaveToRepository(serviceFormDestination.getSaveToRepository());
-        destination.setSequentialFilenames(serviceFormDestination.getSequentialFilenames());
+        destination.setSequentialFilenames(serviceFormDestination.getSequentialFileNames());
         destination.setOverwriteFiles(serviceFormDestination.getOverwriteFiles());
     }
 
@@ -56,14 +56,24 @@ class JobRepoDestinationMapper extends JobMapper {
         RepositoryDestination.Builder builder = new RepositoryDestination.Builder();
 
         RepositoryDestinationEntity destination = entity.getRepoDestination();
-        builder.withFolderUri(destination.getFolderURI());
-        builder.withOutputLocalFolder(destination.getOutputLocalFolder());
+        String folderURI = destination.getFolderURI();
+        if (folderURI != null) {
+            builder.withFolderUri(folderURI);
+        }
+        String localFolder = destination.getOutputLocalFolder();
+        if (localFolder != null) {
+            builder.withOutputLocalFolder(localFolder);
+        }
+        String outputFolderURI = destination.getDefaultReportOutputFolderURI();
+        if (outputFolderURI != null) {
+            builder.withDefaultReportOutputFolderURI(outputFolderURI);
+        }
+
         builder.withOutputDescription(destination.getOutputDescription());
         builder.withTimestampPattern(destination.getTimestampPattern());
-        builder.withDefaultReportOutputFolderURI(destination.getDefaultReportOutputFolderURI());
         builder.withUseDefaultReportOutputFolderURI(destination.getUsingDefaultReportOutputFolderURI());
         builder.withSaveToRepository(destination.getSaveToRepository());
-        builder.withSequentialFilenames(destination.getSequentialFilenames());
+        builder.withSequentialFileNames(destination.getSequentialFilenames());
         builder.withOverwriteFiles(destination.getOverwriteFiles());
 
         RepositoryDestination repositoryDestination = builder.build();

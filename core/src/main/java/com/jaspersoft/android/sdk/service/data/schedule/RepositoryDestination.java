@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.service.data.schedule;
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 public class RepositoryDestination {
     private String mFolderUri;
-    private Boolean mSequentialFilenames;
+    private Boolean mSequentialFileNames;
     private Boolean mOverwriteFiles;
     private Boolean mSaveToRepository;
     private Boolean mUseDefaultReportOutputFolderURI;
@@ -24,7 +25,7 @@ public class RepositoryDestination {
 
     RepositoryDestination(Builder builder) {
         mFolderUri = builder.folderUri;
-        mSequentialFilenames = builder.sequentialFilenames;
+        mSequentialFileNames = builder.sequentialFileNames;
         mOverwriteFiles = builder.overwriteFiles;
         mSaveToRepository = builder.saveToRepository;
         mUseDefaultReportOutputFolderURI = builder.useDefaultReportOutputFolderURI;
@@ -35,8 +36,8 @@ public class RepositoryDestination {
     }
 
     @Nullable
-    public Boolean getSequentialFilenames() {
-        return mSequentialFilenames;
+    public Boolean getSequentialFileNames() {
+        return mSequentialFileNames;
     }
 
     @Nullable
@@ -91,7 +92,7 @@ public class RepositoryDestination {
         RepositoryDestination that = (RepositoryDestination) o;
 
         if (mFolderUri != null ? !mFolderUri.equals(that.mFolderUri) : that.mFolderUri != null) return false;
-        if (mSequentialFilenames != null ? !mSequentialFilenames.equals(that.mSequentialFilenames) : that.mSequentialFilenames != null)
+        if (mSequentialFileNames != null ? !mSequentialFileNames.equals(that.mSequentialFileNames) : that.mSequentialFileNames != null)
             return false;
         if (mOverwriteFiles != null ? !mOverwriteFiles.equals(that.mOverwriteFiles) : that.mOverwriteFiles != null)
             return false;
@@ -109,7 +110,7 @@ public class RepositoryDestination {
     @Override
     public int hashCode() {
         int result = mFolderUri != null ? mFolderUri.hashCode() : 0;
-        result = 31 * result + (mSequentialFilenames != null ? mSequentialFilenames.hashCode() : 0);
+        result = 31 * result + (mSequentialFileNames != null ? mSequentialFileNames.hashCode() : 0);
         result = 31 * result + (mOverwriteFiles != null ? mOverwriteFiles.hashCode() : 0);
         result = 31 * result + (mSaveToRepository != null ? mSaveToRepository.hashCode() : 0);
         result = 31 * result + (mUseDefaultReportOutputFolderURI != null ? mUseDefaultReportOutputFolderURI.hashCode() : 0);
@@ -120,10 +121,8 @@ public class RepositoryDestination {
     }
 
     public static class Builder {
-        private static final String DEFAULT_TIMESTAMP = "yyyyMMddHHmm";
-
         private String folderUri;
-        private Boolean sequentialFilenames;
+        private Boolean sequentialFileNames;
         private Boolean overwriteFiles;
         private Boolean saveToRepository;
         private Boolean useDefaultReportOutputFolderURI;
@@ -137,7 +136,7 @@ public class RepositoryDestination {
 
         Builder(RepositoryDestination destination) {
             folderUri = destination.mFolderUri;
-            sequentialFilenames = destination.mSequentialFilenames;
+            sequentialFileNames = destination.mSequentialFileNames;
             overwriteFiles = destination.mOverwriteFiles;
             saveToRepository = destination.mSaveToRepository;
             useDefaultReportOutputFolderURI = destination.mUseDefaultReportOutputFolderURI;
@@ -153,9 +152,8 @@ public class RepositoryDestination {
          * @param folderUri unique identifier of folder on JRS side
          * @return builder for convenient configuration
          */
-        public Builder withFolderUri(@Nullable String folderUri) {
-            // TODO: verify  nullability under test conditions
-            this.folderUri = folderUri;
+        public Builder withFolderUri(@NotNull String folderUri) {
+            this.folderUri = Preconditions.checkNotNull(folderUri, "Repository folder uri should not be null");
             return this;
         }
 
@@ -164,11 +162,11 @@ public class RepositoryDestination {
          * The timestamp added to the output resource names are created from the job execution time using the specified pattern.
          * See also definition of the field "timestampPattern" below.
          *
-         * @param sequentialFilenames Supported values: true, false. Default: false
+         * @param flag Supported values: true, false, null. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withSequentialFilenames(@Nullable Boolean sequentialFilenames) {
-            this.sequentialFilenames = sequentialFilenames;
+        public Builder withSequentialFileNames(@Nullable Boolean flag) {
+            this.sequentialFileNames = flag;
             return this;
         }
 
@@ -188,11 +186,11 @@ public class RepositoryDestination {
          * If the flag is not set, the job would fail if the repository already contains a resource with the same name as one of the job output resources.
          * If the flag is set and the job owner does not have the permission to overwrite an existing resource, the job execution will also fail.
          *
-         * @param overwriteFiles overwrite flag
+         * @param flag Supported values: true, false, null. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withOverwriteFiles(@Nullable Boolean overwriteFiles) {
-            this.overwriteFiles = overwriteFiles;
+        public Builder withOverwriteFiles(@Nullable Boolean flag) {
+            this.overwriteFiles = flag;
             return this;
         }
 
@@ -210,33 +208,33 @@ public class RepositoryDestination {
         /**
          * Specifies whether the scheduler should write files to the repository.
          *
-         * @param saveToRepository flag to allow write in repository
+         * @param flag Supported values: true, false, null. Default: true
          * @return builder for convenient configuration
          */
-        public Builder withSaveToRepository(@Nullable Boolean saveToRepository) {
-            this.saveToRepository = saveToRepository;
+        public Builder withSaveToRepository(@Nullable Boolean flag) {
+            this.saveToRepository = flag;
             return this;
         }
 
         /**
          * Specifies whether export the output files to default report output folder URI of the job owner.
          *
-         * @param useDefaultReportOutputFolderURI flag to mark the uage of default report output folder
+         * @param flag Supported values: true, false, null. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withUseDefaultReportOutputFolderURI(@Nullable Boolean useDefaultReportOutputFolderURI) {
-            this.useDefaultReportOutputFolderURI = useDefaultReportOutputFolderURI;
+        public Builder withUseDefaultReportOutputFolderURI(@Nullable Boolean flag) {
+            this.useDefaultReportOutputFolderURI = flag;
             return this;
         }
 
         /**
          * The default scheduled report output folder URI of the job owner
          *
-         * @param defaultReportOutputFolderURI uri of folder
+         * @param folderUri uri that represents logical location of folder on JRS instance
          * @return builder for convenient configuration
          */
-        public Builder withDefaultReportOutputFolderURI(@Nullable String defaultReportOutputFolderURI) {
-            this.defaultReportOutputFolderURI = defaultReportOutputFolderURI;
+        public Builder withDefaultReportOutputFolderURI(@NotNull String folderUri) {
+            this.defaultReportOutputFolderURI = Preconditions.checkNotNull(folderUri, "Repository folder uri should not be null");
             return this;
         }
 
@@ -249,7 +247,7 @@ public class RepositoryDestination {
          * @return builder for convenient configuration
          */
         public Builder withOutputLocalFolder(@Nullable String outputLocalFolder) {
-            this.outputLocalFolder = outputLocalFolder;
+            this.outputLocalFolder = Preconditions.checkNotNull(outputLocalFolder, "Output local path should not be null");
             return this;
         }
 
@@ -260,8 +258,8 @@ public class RepositoryDestination {
         }
 
         private void ensureDefaults() {
-            if (timestampPattern == null) {
-                timestampPattern = DEFAULT_TIMESTAMP;
+            if (folderUri == null) {
+                useDefaultReportOutputFolderURI = true;
             }
         }
 
