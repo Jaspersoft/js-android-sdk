@@ -94,7 +94,11 @@ public class ReportScheduleService {
         if (criteria == null) {
             criteria = JobSearchCriteria.empty();
         }
-        return new BaseJobSearchTask(mUseCase, criteria);
+        // TODO: modify condition for pre 62 JRS
+        if (criteria.getLabel() == null) {
+            return new BaseJobSearchTask(mUseCase, criteria);
+        }
+        return new SearchablePre62JobSearchTask(mUseCase, criteria);
     }
 
     /**
