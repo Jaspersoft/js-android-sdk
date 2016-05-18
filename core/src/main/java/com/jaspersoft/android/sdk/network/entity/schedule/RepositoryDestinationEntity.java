@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
  * @author Tom Koptel
  * @since 2.3
  */
-class RepositoryDestinationEntity {
+public class RepositoryDestinationEntity {
 
     @Expose
     private String folderURI;
@@ -23,7 +23,7 @@ class RepositoryDestinationEntity {
     @Expose
     private String defaultReportOutputFolderURI;
     @Expose
-    private String usingDefaultReportOutputFolderURI;
+    private Boolean usingDefaultReportOutputFolderURI;
     @Expose
     private String outputLocalFolder;
 
@@ -84,11 +84,11 @@ class RepositoryDestinationEntity {
         this.defaultReportOutputFolderURI = defaultReportOutputFolderURI;
     }
 
-    public String getUsingDefaultReportOutputFolderURI() {
+    public Boolean getUsingDefaultReportOutputFolderURI() {
         return usingDefaultReportOutputFolderURI;
     }
 
-    public void setUsingDefaultReportOutputFolderURI(String usingDefaultReportOutputFolderURI) {
+    public void setUsingDefaultReportOutputFolderURI(Boolean usingDefaultReportOutputFolderURI) {
         this.usingDefaultReportOutputFolderURI = usingDefaultReportOutputFolderURI;
     }
 

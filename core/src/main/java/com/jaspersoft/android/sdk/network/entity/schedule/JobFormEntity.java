@@ -62,8 +62,24 @@ public class JobFormEntity {
         source.setParameters(params);
     }
 
+    /**
+     * Refrain from use. Consider to set folder uri on repository destination.
+     * See {@link JobFormEntity#getRepoDestination()}
+     *
+     * @param folderUri that represents particular target repository
+     */
+    @Deprecated
     public void setRepositoryDestination(String folderUri) {
         repositoryDestination.setFolderURI(folderUri);
+    }
+
+    /**
+     * Exposes repository destination DTO entity
+     *
+     * @return repository destination
+     */
+    public RepositoryDestinationEntity getRepoDestination() {
+        return repositoryDestination;
     }
 
     public void addOutputFormats(Collection<String> formats) {
@@ -98,6 +114,13 @@ public class JobFormEntity {
         return source.getParameters();
     }
 
+    /**
+     * Refrain from use. Consider to set folder uri on repository destination.
+     * See {@link JobFormEntity#getRepoDestination()}
+     *
+     * @return folder Uri that represents particular target repository
+     */
+    @Deprecated
     public String getRepositoryDestination() {
         return repositoryDestination.getFolderURI();
     }

@@ -1,8 +1,11 @@
 package com.jaspersoft.android.sdk.service.data.schedule;
 
-import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Tom Koptel
@@ -129,7 +132,8 @@ public class RepositoryDestination {
         private String outputLocalFolder;
         private String defaultReportOutputFolderURI;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         Builder(RepositoryDestination destination) {
             folderUri = destination.mFolderUri;
@@ -149,8 +153,9 @@ public class RepositoryDestination {
          * @param folderUri unique identifier of folder on JRS side
          * @return builder for convenient configuration
          */
-        public Builder withFolderUri(@NotNull String folderUri) {
-            this.folderUri = Preconditions.checkNotNull(folderUri, "Repository folder uri should not be null");
+        public Builder withFolderUri(@Nullable String folderUri) {
+            // TODO: verify  nullability under test conditions
+            this.folderUri = folderUri;
             return this;
         }
 
@@ -249,18 +254,27 @@ public class RepositoryDestination {
         }
 
         public RepositoryDestination build() {
-            assertState();
             ensureDefaults();
+            validateTimesTamp();
             return new RepositoryDestination(this);
-        }
-
-        private void assertState() {
-            Preconditions.checkNotNull(folderUri, "Repository destination can not be built without folder uri");
         }
 
         private void ensureDefaults() {
             if (timestampPattern == null) {
                 timestampPattern = DEFAULT_TIMESTAMP;
+            }
+        }
+
+        private void validateTimesTamp() {
+            if (timestampPattern != null) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat();
+                    dateFormat.applyPattern(timestampPattern);
+                    String date = dateFormat.format(new Date());
+                    dateFormat.parse(date);
+                } catch (IllegalArgumentException | ParseException e) {
+                    throw new IllegalArgumentException("Unparseable timestamp '" + timestampPattern + "'");
+                }
             }
         }
     }

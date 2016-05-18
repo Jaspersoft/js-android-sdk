@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 
@@ -44,8 +45,19 @@ class JobRepoDestinationMapper extends JobMapper {
     @Override
     public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
         RepositoryDestination.Builder builder = new RepositoryDestination.Builder();
-        builder.withFolderUri(entity.getRepositoryDestination());
-        RepositoryDestination destination = builder.build();
-        form.withRepositoryDestination(destination);
+
+        RepositoryDestinationEntity destination = entity.getRepoDestination();
+        builder.withFolderUri(destination.getFolderURI());
+        builder.withOutputLocalFolder(destination.getOutputLocalFolder());
+        builder.withOutputDescription(destination.getOutputDescription());
+        builder.withTimestampPattern(destination.getTimestampPattern());
+        builder.withDefaultReportOutputFolderURI(destination.getDefaultReportOutputFolderURI());
+        builder.withUseDefaultReportOutputFolderURI(destination.getUsingDefaultReportOutputFolderURI());
+        builder.withSaveToRepository(destination.getSaveToRepository());
+        builder.withSequentialFilenames(destination.getSequentialFilenames());
+        builder.withOverwriteFiles(destination.getOverwriteFiles());
+
+        RepositoryDestination repositoryDestination = builder.build();
+        form.withRepositoryDestination(repositoryDestination);
     }
 }

@@ -80,7 +80,6 @@ class JobFormFactory {
         mJobFormEntity.setSourceUri("/my/uri");
         mJobFormEntity.setSourceParameters(Collections.singletonMap("key", Collections.singleton("value")));
         mJobFormEntity.addOutputFormats(Arrays.asList("PDF"));
-        mJobFormEntity.setRepositoryDestination("/folder/uri");
         mJobFormEntity.setBaseOutputFilename("file.txt");
 
         return mJobFormEntity;
