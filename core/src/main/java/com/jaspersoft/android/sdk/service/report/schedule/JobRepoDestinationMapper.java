@@ -38,8 +38,17 @@ class JobRepoDestinationMapper extends JobMapper {
 
     @Override
     public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
-        RepositoryDestination repositoryDestination = form.getRepositoryDestination();
-        entity.setRepositoryDestination(repositoryDestination.getFolderUri());
+        RepositoryDestination serviceFormDestination = form.getRepositoryDestination();
+        RepositoryDestinationEntity destination = entity.getRepoDestination();
+        destination.setFolderURI(serviceFormDestination.getFolderUri());
+        destination.setOutputLocalFolder(serviceFormDestination.getOutputLocalFolder());
+        destination.setOutputDescription(serviceFormDestination.getOutputDescription());
+        destination.setTimestampPattern(serviceFormDestination.getTimestampPattern());
+        destination.setDefaultReportOutputFolderURI(serviceFormDestination.getDefaultReportOutputFolderURI());
+        destination.setUsingDefaultReportOutputFolderURI(serviceFormDestination.getUseDefaultReportOutputFolderURI());
+        destination.setSaveToRepository(serviceFormDestination.getSaveToRepository());
+        destination.setSequentialFilenames(serviceFormDestination.getSequentialFilenames());
+        destination.setOverwriteFiles(serviceFormDestination.getOverwriteFiles());
     }
 
     @Override

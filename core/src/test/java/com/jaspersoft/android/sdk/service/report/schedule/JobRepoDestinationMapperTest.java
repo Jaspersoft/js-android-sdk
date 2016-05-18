@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 import org.junit.Before;
@@ -38,15 +39,17 @@ import static org.junit.rules.ExpectedException.none;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.5
  */
 public class JobRepoDestinationMapperTest {
     private final JobFormFactory formFactory = new JobFormFactory();
     private JobRepoDestinationMapper mapperUnderTest;
 
     private JobForm.Builder serviceFormBuilder;
+    private JobForm serviceForm;
     private JobFormEntity networkForm;
     private RepositoryDestination expectedRepoDestination;
+    private RepositoryDestinationEntity expectedEntityRepoDestination;
 
     @Rule
     public ExpectedException expected = none();
@@ -57,13 +60,83 @@ public class JobRepoDestinationMapperTest {
     }
 
     @Test
-    public void should_map_form_destination_on_entity() throws Exception {
-        JobFormEntity mappedEntity = formFactory.givenJobFormEntityWithValues();
-        JobForm form = formFactory.givenJobFormWithValues();
+    public void should_map_form_folderUri_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithFolderUri("/temp");
 
-        mapperUnderTest.mapFormOnEntity(form, mappedEntity);
+        whenMapsFormOnEntity();
 
-        assertThat(mappedEntity.getRepositoryDestination(), is("/temp"));
+        assertThat(expectedEntityRepoDestination.getFolderURI(), is("/temp"));
+    }
+
+    @Test
+    public void should_map_form_outputLocalFolder_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithOutputLocalFolder("/temp");
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getOutputLocalFolder(), is("/temp"));
+    }
+
+    @Test
+    public void should_map_form_OutputDescription_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithOutputDescription("Output description");
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getOutputDescription(), is("Output description"));
+    }
+
+    @Test
+    public void should_map_form_TimestampPattern_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithTimestampPattern("yyyy");
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getTimestampPattern(), is("yyyy"));
+    }
+
+    @Test
+    public void should_map_form_DefaultReportOutputFolderURI_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithDefaultReportOutputFolderURI("/temp");
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getDefaultReportOutputFolderURI(), is("/temp"));
+    }
+
+    @Test
+    public void should_map_form_SequentialFilenames_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithSequentialFilenames(true);
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getSequentialFilenames(), is(true));
+    }
+
+    @Test
+    public void should_map_form_OverwriteFiles_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithOverwriteFiles(true);
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getOverwriteFiles(), is(true));
+    }
+
+    @Test
+    public void should_map_form_SaveToRepository_on_entity() throws Exception {
+        givenNetworkForm();
+        givenFormRepoDestinationWithSaveToRepository(true);
+
+        whenMapsFormOnEntity();
+
+        assertThat(expectedEntityRepoDestination.getSaveToRepository(), is(true));
     }
 
     @Test
@@ -162,12 +235,79 @@ public class JobRepoDestinationMapperTest {
         expectedRepoDestination = mappedServiceForm.getRepositoryDestination();
     }
 
+    private void whenMapsFormOnEntity() {
+        mapperUnderTest.mapFormOnEntity(serviceForm, networkForm);
+        expectedEntityRepoDestination = networkForm.getRepoDestination();
+    }
+
+    private void givenFormRepoDestinationWithFolderUri(String uri) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withFolderUri(uri)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithSaveToRepository(boolean flag) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withSaveToRepository(flag)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithOverwriteFiles(boolean flag) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withOverwriteFiles(flag)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithSequentialFilenames(boolean flag) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withSequentialFilenames(flag)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithDefaultReportOutputFolderURI(String uri) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withDefaultReportOutputFolderURI(uri)
+                .build();
+        createForm(destination);
+    }
+
+    private void createForm(RepositoryDestination destination) {
+        serviceForm = formFactory.givenJobFormBuilderWithValues()
+                .withRepositoryDestination(destination)
+                .build();
+    }
+
+    private void givenFormRepoDestinationWithTimestampPattern(String pattern) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withTimestampPattern(pattern)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithOutputDescription(String desc) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withOutputDescription(desc)
+                .build();
+        createForm(destination);
+    }
+
+    private void givenFormRepoDestinationWithOutputLocalFolder(String uri) {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .withOutputLocalFolder(uri)
+                .build();
+        createForm(destination);
+    }
+
     private void givenServiceFormBuilder() {
         serviceFormBuilder = formFactory.givenJobFormBuilderWithValues();
     }
 
     private void givenNetworkForm() {
-        networkForm = formFactory.givenJobFormEntityWithValues();
+        networkForm = formFactory.givenNewJobFormEntity();
     }
 
     private void givenRepositoryDestinationWithOutputLocalFolder(String uri) {
