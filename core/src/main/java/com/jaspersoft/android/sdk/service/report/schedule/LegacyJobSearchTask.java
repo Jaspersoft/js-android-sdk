@@ -2,20 +2,18 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.service.data.schedule.JobUnit;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Tom Koptel
- * @since 2.3
+ * @author Andrew Tivodar
+ * @since 2.5
  */
-final class SearchablePre62JobSearchTask extends JobSearchTask {
+final class LegacyJobSearchTask extends JobSearchTask {
     @NotNull
     private final ReportScheduleUseCase mUseCase;
 
@@ -25,7 +23,7 @@ final class SearchablePre62JobSearchTask extends JobSearchTask {
     private boolean mEndReached;
 
     @TestOnly
-    SearchablePre62JobSearchTask(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
+    LegacyJobSearchTask(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
         mUseCase = useCase;
         mCriteria = criteria;
         mEndReached = false;

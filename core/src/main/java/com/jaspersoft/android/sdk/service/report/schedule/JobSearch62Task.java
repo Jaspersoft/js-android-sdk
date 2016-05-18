@@ -12,7 +12,7 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.3
  */
-final class BaseJobSearchTask extends JobSearchTask {
+final class JobSearch62Task extends JobSearchTask {
     @NotNull
     private final ReportScheduleUseCase mUseCase;
 
@@ -21,7 +21,7 @@ final class BaseJobSearchTask extends JobSearchTask {
     private boolean mEndReached;
 
     @TestOnly
-    BaseJobSearchTask(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
+    JobSearch62Task(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
         mUseCase = useCase;
         mCriteria = criteria;
         mEndReached = false;
