@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import static com.jaspersoft.android.sdk.service.report.schedule.SearchTaskSpec.responseConfiguration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -32,7 +33,7 @@ public class JobSearch62TaskTest {
 
     @Test
     public void should_increment_offset_each_time_if_search_not_exhausted() throws Exception {
-        spec.givenSearchResponse(ROW_NUMBER);
+        spec.givenSearchResponse(responseConfiguration(ROW_NUMBER));
         spec.givenSearchTaskByCriteria(
                 JobSearchCriteria.builder()
                         .withOffset(ROW_NUMBER)
@@ -49,7 +50,7 @@ public class JobSearch62TaskTest {
 
     @Test
     public void should_return_last_cached_values_if_search_exhausted() throws Exception {
-        spec.givenSearchResponse(ROW_NUMBER - 1);
+        spec.givenSearchResponse(responseConfiguration(ROW_NUMBER - 1));
         spec.givenSearchTaskByCriteria(
                 JobSearchCriteria.builder()
                         .withOffset(0)
