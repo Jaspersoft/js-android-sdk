@@ -36,7 +36,7 @@ public class JobSearchTaskFactoryTest {
 
         whenCreatesSearchTask(version);
 
-        thenShouldCreateTaskOfType(LegacyJobSearchTask.class);
+        thenShouldCreateTaskOfType(MemoryFilterSearchTask.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class JobSearchTaskFactoryTest {
 
         whenCreatesSearchTask(version);
 
-        thenShouldCreateTaskOfType(JobSearch62Task.class);
+        thenShouldCreateTaskOfType(RestFilterSearchTask.class);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class JobSearchTaskFactoryTest {
 
         whenCreatesSearchTask(version);
 
-        thenShouldCreateTaskOfType(JobSearch62Task.class);
+        thenShouldCreateTaskOfType(RestFilterSearchTask.class);
     }
 
 

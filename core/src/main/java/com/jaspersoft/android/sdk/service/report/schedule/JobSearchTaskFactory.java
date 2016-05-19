@@ -20,11 +20,11 @@ class JobSearchTaskFactory {
         boolean noQuery = (query == null || query.length() == 0);
 
         if (noQuery) {
-            return new JobSearch62Task(mUseCase, mCriteria);
+            return new RestFilterSearchTask(mUseCase, mCriteria);
         }
         if (serverVersion.greaterThanOrEquals(ServerVersion.v6_2)) {
-            return new JobSearch62Task(mUseCase, mCriteria);
+            return new RestFilterSearchTask(mUseCase, mCriteria);
         }
-        return new LegacyJobSearchTask(mUseCase, mCriteria);
+        return new MemoryFilterSearchTask(mUseCase, mCriteria);
     }
 }

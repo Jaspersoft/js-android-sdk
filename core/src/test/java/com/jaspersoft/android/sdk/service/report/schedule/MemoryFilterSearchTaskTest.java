@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class LegacyJobSearchTaskTest {
+public class MemoryFilterSearchTaskTest {
     public static final int ROW_NUMBER = 5;
     private static final String LABEL = "query";
 
@@ -27,7 +27,7 @@ public class LegacyJobSearchTaskTest {
                 .taskProvider(new SearchTaskSpec.TaskProvider() {
                     @Override
                     public JobSearchTask provideTask(ReportScheduleUseCase useCase, JobSearchCriteria criteria) {
-                        return new LegacyJobSearchTask(useCase, criteria);
+                        return new MemoryFilterSearchTask(useCase, criteria);
                     }
                 }).build();
     }
@@ -97,7 +97,7 @@ public class LegacyJobSearchTaskTest {
 
     @Test
     public void should_have_next_by_default_true() throws Exception {
-        JobSearch62Task searchTask = new JobSearch62Task(mUseCase, JobSearchCriteria.empty());
+        RestFilterSearchTask searchTask = new RestFilterSearchTask(mUseCase, JobSearchCriteria.empty());
         assertThat("Should have next values by default", searchTask.hasNext(), is(true));
     }
 }

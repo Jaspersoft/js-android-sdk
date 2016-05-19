@@ -13,7 +13,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.5
  */
-final class LegacyJobSearchTask extends JobSearchTask {
+final class MemoryFilterSearchTask extends JobSearchTask {
     @NotNull
     private final ReportScheduleUseCase mUseCase;
 
@@ -23,7 +23,7 @@ final class LegacyJobSearchTask extends JobSearchTask {
     private boolean mEndReached;
 
     @TestOnly
-    LegacyJobSearchTask(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
+    MemoryFilterSearchTask(@NotNull ReportScheduleUseCase useCase, @NotNull JobSearchCriteria criteria) {
         mUseCase = useCase;
         mCriteria = criteria;
         mEndReached = false;
