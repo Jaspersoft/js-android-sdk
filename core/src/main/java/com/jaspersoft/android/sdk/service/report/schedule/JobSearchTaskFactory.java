@@ -16,6 +16,12 @@ class JobSearchTaskFactory {
     }
 
     public JobSearchTask create(ServerVersion serverVersion) {
+        String query = mCriteria.getLabel();
+        boolean noQuery = (query == null || query.length() == 0);
+
+        if (noQuery) {
+            return new JobSearch62Task(mUseCase, mCriteria);
+        }
         if (serverVersion.greaterThanOrEquals(ServerVersion.v6_2)) {
             return new JobSearch62Task(mUseCase, mCriteria);
         }

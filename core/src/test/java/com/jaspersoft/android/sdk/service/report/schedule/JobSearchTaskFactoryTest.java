@@ -18,21 +18,38 @@ public class JobSearchTaskFactoryTest {
     @Mock
     ReportScheduleUseCase mUseCase;
     private JobSearchTaskFactory factoryUnderTest;
+    private JobSearchCriteria searchCriteria;
+    private JobSearchTask searchTask;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        JobSearchCriteria searchCriteria = JobSearchCriteria.empty();
-        factoryUnderTest = new JobSearchTaskFactory(mUseCase, searchCriteria);
     }
 
     @Test
     @Parameters({
-            "5.5", "5.6", "5.6.1", "6.0", "6.0.1", "6.1", "6.1.1"
+            "5.5", "6.1.1"
     })
     public void should_use_legacy_setup_for_jrs_lower_than(String version) throws Exception {
-        JobSearchTask task = factoryUnderTest.create(ServerVersion.valueOf(version));
-        assertThat(task, is(instanceOf(LegacyJobSearchTask.class)));
+        givenCriteriaWithLabel();
+        givenTaskFactory();
+
+        whenCreatesSearchTask(version);
+
+        thenShouldCreateTaskOfType(LegacyJobSearchTask.class);
+    }
+
+    @Test
+    @Parameters({
+            "5.5", "6.1.1"
+    })
+    public void should_not_use_legacy_setup_for_criteria_without_query(String version) throws Exception {
+        givenCriteriaWithoutLabel();
+        givenTaskFactory();
+
+        whenCreatesSearchTask(version);
+
+        thenShouldCreateTaskOfType(JobSearch62Task.class);
     }
 
     @Test
@@ -40,7 +57,34 @@ public class JobSearchTaskFactoryTest {
             "6.2", "6.3"
     })
     public void should_use_query_capable_setup_for_jrs_greater_than(String version) throws Exception {
-        JobSearchTask task = factoryUnderTest.create(ServerVersion.valueOf(version));
-        assertThat(task, is(instanceOf(JobSearch62Task.class)));
+        givenCriteriaWithLabel();
+        givenTaskFactory();
+
+        whenCreatesSearchTask(version);
+
+        thenShouldCreateTaskOfType(JobSearch62Task.class);
+    }
+
+
+    private void thenShouldCreateTaskOfType(Class<? extends JobSearchTask> type) {
+        assertThat(searchTask, is(instanceOf(type)));
+    }
+
+    private void whenCreatesSearchTask(String version) {
+        searchTask = factoryUnderTest.create(ServerVersion.valueOf(version));
+    }
+
+    private void givenCriteriaWithLabel() {
+        searchCriteria = JobSearchCriteria.builder()
+                .withLabel("label")
+                .build();
+    }
+
+    private void givenCriteriaWithoutLabel() {
+        searchCriteria = JobSearchCriteria.builder().build();
+    }
+
+    private void givenTaskFactory() {
+        factoryUnderTest = new JobSearchTaskFactory(mUseCase, searchCriteria);
     }
 }
