@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.internal.info.InfoCacheManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +24,8 @@ public class ReportScheduleServiceTest {
     @Mock
     ReportScheduleUseCase mUseCase;
     @Mock
+    InfoCacheManager cacheManager;
+    @Mock
     JobForm jobForm;
 
     @Rule
@@ -31,7 +34,7 @@ public class ReportScheduleServiceTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        scheduleService = new ReportScheduleService(mUseCase);
+        scheduleService = new ReportScheduleService(mUseCase, cacheManager);
     }
 
     @Test
