@@ -17,7 +17,7 @@ class JobSearchTaskFactory {
 
     public JobSearchTask create(ServerVersion serverVersion) {
         String query = mCriteria.getLabel();
-        boolean noQuery = (query == null || query.length() == 0);
+        boolean noQuery = (query == null);
 
         if (noQuery) {
             return new RestFilterSearchTask(mUseCase, mCriteria);

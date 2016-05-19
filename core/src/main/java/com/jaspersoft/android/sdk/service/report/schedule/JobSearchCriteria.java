@@ -27,20 +27,14 @@ public final class JobSearchCriteria {
     private final Boolean mAscending;
 
     @TestOnly
-    JobSearchCriteria(@Nullable String reportUri,
-                      @Nullable JobOwner owner,
-                      @Nullable String label,
-                      int offset,
-                      int limit,
-                      @Nullable JobSortType jobSortType,
-                      @Nullable Boolean ascending) {
-        mReportUri = reportUri;
-        mOwner = owner;
-        mLabel = label;
-        mOffset = offset;
-        mLimit = limit;
-        mJobSortType = jobSortType;
-        mAscending = ascending;
+    JobSearchCriteria(Builder builder) {
+        mReportUri = builder.mReportUri;
+        mOwner = builder.mOwner;
+        mLabel = builder.mLabel;
+        mOffset = builder.mOffset;
+        mLimit = builder.mLimit;
+        mJobSortType = builder.mJobSortType;
+        mAscending = builder.mAscending;
     }
 
     @Nullable
@@ -77,14 +71,7 @@ public final class JobSearchCriteria {
     }
 
     public Builder newBuilder() {
-        return new Builder()
-                .withReportUri(mReportUri)
-                .withOwner(mOwner)
-                .withLabel(mLabel)
-                .withOffset(mOffset)
-                .withLimit(mLimit)
-                .withSortType(mJobSortType)
-                .withAscending(mAscending);
+        return new Builder(this);
     }
 
     @NotNull
@@ -152,12 +139,22 @@ public final class JobSearchCriteria {
         private Builder() {
         }
 
+        private Builder(JobSearchCriteria criteria) {
+            mReportUri = criteria.mReportUri;
+            mOwner = criteria.mOwner;
+            mLabel = criteria.mLabel;
+            mOffset = criteria.mOffset;
+            mLimit = criteria.mLimit;
+            mJobSortType = criteria.mJobSortType;
+            mAscending = criteria.mAscending;
+        }
+
         public JobSearchCriteria build() {
-            return new JobSearchCriteria(mReportUri, mOwner, mLabel, mOffset, mLimit, mJobSortType, mAscending);
+            return new JobSearchCriteria(this);
         }
 
         public Builder withReportUri(@Nullable String reportUri) {
-            mReportUri = reportUri;
+            mReportUri = ifEmptySubstituteStringWithNull(reportUri);
             return this;
         }
 
@@ -167,7 +164,7 @@ public final class JobSearchCriteria {
         }
 
         public Builder withLabel(@Nullable String label) {
-            mLabel = label;
+            mLabel = ifEmptySubstituteStringWithNull(label);
             return this;
         }
 
@@ -191,6 +188,11 @@ public final class JobSearchCriteria {
         public Builder withAscending(@Nullable Boolean ascending) {
             mAscending = ascending;
             return this;
+        }
+
+        private String ifEmptySubstituteStringWithNull(String value) {
+            boolean isEmpty = (value == null || value.length() == 0);
+            return isEmpty ? null : value;
         }
     }
 }
