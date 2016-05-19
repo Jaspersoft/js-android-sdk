@@ -77,10 +77,12 @@ import java.util.Set;
 public class ReportScheduleService {
 
     private final ReportScheduleUseCase mUseCase;
+    private final InfoCacheManager mCacheManager;
 
     @TestOnly
-    ReportScheduleService(ReportScheduleUseCase useCase) {
+    ReportScheduleService(ReportScheduleUseCase useCase, InfoCacheManager cacheManager) {
         mUseCase = useCase;
+        mCacheManager = cacheManager;
     }
 
     /**
@@ -94,7 +96,8 @@ public class ReportScheduleService {
         if (criteria == null) {
             criteria = JobSearchCriteria.empty();
         }
-        return new BaseJobSearchTask(mUseCase, criteria);
+        JobSearchTaskFactory taskFactory = new JobSearchTaskFactory(mUseCase, criteria);
+        return new ProxyJobSearchTask(mCacheManager, taskFactory);
     }
 
     /**
@@ -180,6 +183,6 @@ public class ReportScheduleService {
                 jobFormMapper,
                 jobUnitMapper
         );
-        return new ReportScheduleService(reportScheduleUseCase);
+        return new ReportScheduleService(reportScheduleUseCase, cacheManager);
     }
 }

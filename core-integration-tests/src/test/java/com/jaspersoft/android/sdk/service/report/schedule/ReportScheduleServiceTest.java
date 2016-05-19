@@ -13,8 +13,7 @@ import org.junit.runner.RunWith;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Tom Koptel
@@ -88,7 +87,7 @@ public class ReportScheduleServiceTest {
                 .build();
         JobSearchTask search = service.search(criteria);
         List<JobUnit> units = search.nextLookup();
-        assertThat(units, is(notNullValue()));
+        assertThat(units, is(not(empty())));
 
         return units;
     }
