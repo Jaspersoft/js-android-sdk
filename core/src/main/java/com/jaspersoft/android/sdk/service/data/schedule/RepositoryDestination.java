@@ -13,71 +13,78 @@ import java.util.Date;
  * @since 2.3
  */
 public class RepositoryDestination {
-    private String mFolderUri;
-    private Boolean mSequentialFileNames;
-    private Boolean mOverwriteFiles;
-    private Boolean mSaveToRepository;
-    private Boolean mUseDefaultReportOutputFolderURI;
-    private String mTimestampPattern;
-    private String mDefaultReportOutputFolderURI;
-    private String mOutputDescription;
-    private String mOutputLocalFolder;
+    private String folderUri;
+    private Boolean sequentialFileNames;
+    private Boolean overwriteFiles;
+    private Boolean saveToRepository;
+    private Boolean useDefaultReportOutputFolderURI;
+    private String timestampPattern;
+    private String defaultReportOutputFolderURI;
+    private String outputDescription;
+    private String outputLocalFolder;
+    private OutputFtpInfo outputFtpInfo;
 
     RepositoryDestination(Builder builder) {
-        mFolderUri = builder.folderUri;
-        mSequentialFileNames = builder.sequentialFileNames;
-        mOverwriteFiles = builder.overwriteFiles;
-        mSaveToRepository = builder.saveToRepository;
-        mUseDefaultReportOutputFolderURI = builder.useDefaultReportOutputFolderURI;
-        mTimestampPattern = builder.timestampPattern;
-        mOutputDescription = builder.outputDescription;
-        mOutputLocalFolder = builder.outputLocalFolder;
-        mDefaultReportOutputFolderURI = builder.defaultReportOutputFolderURI;
+        folderUri = builder.folderUri;
+        sequentialFileNames = builder.sequentialFileNames;
+        overwriteFiles = builder.overwriteFiles;
+        saveToRepository = builder.saveToRepository;
+        useDefaultReportOutputFolderURI = builder.useDefaultReportOutputFolderURI;
+        timestampPattern = builder.timestampPattern;
+        outputDescription = builder.outputDescription;
+        outputLocalFolder = builder.outputLocalFolder;
+        defaultReportOutputFolderURI = builder.defaultReportOutputFolderURI;
+        outputFtpInfo = builder.outputFtpInfo;
     }
 
     @Nullable
     public Boolean getSequentialFileNames() {
-        return mSequentialFileNames;
+        return sequentialFileNames;
     }
 
     @Nullable
     public Boolean getOverwriteFiles() {
-        return mOverwriteFiles;
+        return overwriteFiles;
     }
 
     @Nullable
     public Boolean getSaveToRepository() {
-        return mSaveToRepository;
+        return saveToRepository;
     }
 
     @Nullable
     public Boolean getUseDefaultReportOutputFolderURI() {
-        return mUseDefaultReportOutputFolderURI;
+        return useDefaultReportOutputFolderURI;
     }
 
     @Nullable
     public String getTimestampPattern() {
-        return mTimestampPattern;
+        return timestampPattern;
     }
 
     @Nullable
     public String getOutputDescription() {
-        return mOutputDescription;
+        return outputDescription;
     }
 
     @Nullable
     public String getOutputLocalFolder() {
-        return mOutputLocalFolder;
+        return outputLocalFolder;
     }
 
     @NotNull
     public String getFolderUri() {
-        return mFolderUri;
+        return folderUri;
     }
 
     @Nullable
     public String getDefaultReportOutputFolderURI() {
-        return mDefaultReportOutputFolderURI;
+        return defaultReportOutputFolderURI;
+    }
+
+    @Nullable
+    public OutputFtpInfo getOutputFtpInfo() {
+        return outputFtpInfo;
     }
 
     public Builder newBuilder() {
@@ -91,32 +98,32 @@ public class RepositoryDestination {
 
         RepositoryDestination that = (RepositoryDestination) o;
 
-        if (mFolderUri != null ? !mFolderUri.equals(that.mFolderUri) : that.mFolderUri != null) return false;
-        if (mSequentialFileNames != null ? !mSequentialFileNames.equals(that.mSequentialFileNames) : that.mSequentialFileNames != null)
+        if (folderUri != null ? !folderUri.equals(that.folderUri) : that.folderUri != null) return false;
+        if (sequentialFileNames != null ? !sequentialFileNames.equals(that.sequentialFileNames) : that.sequentialFileNames != null)
             return false;
-        if (mOverwriteFiles != null ? !mOverwriteFiles.equals(that.mOverwriteFiles) : that.mOverwriteFiles != null)
+        if (overwriteFiles != null ? !overwriteFiles.equals(that.overwriteFiles) : that.overwriteFiles != null)
             return false;
-        if (mSaveToRepository != null ? !mSaveToRepository.equals(that.mSaveToRepository) : that.mSaveToRepository != null)
+        if (saveToRepository != null ? !saveToRepository.equals(that.saveToRepository) : that.saveToRepository != null)
             return false;
-        if (mUseDefaultReportOutputFolderURI != null ? !mUseDefaultReportOutputFolderURI.equals(that.mUseDefaultReportOutputFolderURI) : that.mUseDefaultReportOutputFolderURI != null)
+        if (useDefaultReportOutputFolderURI != null ? !useDefaultReportOutputFolderURI.equals(that.useDefaultReportOutputFolderURI) : that.useDefaultReportOutputFolderURI != null)
             return false;
-        if (mTimestampPattern != null ? !mTimestampPattern.equals(that.mTimestampPattern) : that.mTimestampPattern != null)
+        if (timestampPattern != null ? !timestampPattern.equals(that.timestampPattern) : that.timestampPattern != null)
             return false;
-        if (mOutputDescription != null ? !mOutputDescription.equals(that.mOutputDescription) : that.mOutputDescription != null)
+        if (outputDescription != null ? !outputDescription.equals(that.outputDescription) : that.outputDescription != null)
             return false;
-        return !(mOutputLocalFolder != null ? !mOutputLocalFolder.equals(that.mOutputLocalFolder) : that.mOutputLocalFolder != null);
+        return !(outputLocalFolder != null ? !outputLocalFolder.equals(that.outputLocalFolder) : that.outputLocalFolder != null);
     }
 
     @Override
     public int hashCode() {
-        int result = mFolderUri != null ? mFolderUri.hashCode() : 0;
-        result = 31 * result + (mSequentialFileNames != null ? mSequentialFileNames.hashCode() : 0);
-        result = 31 * result + (mOverwriteFiles != null ? mOverwriteFiles.hashCode() : 0);
-        result = 31 * result + (mSaveToRepository != null ? mSaveToRepository.hashCode() : 0);
-        result = 31 * result + (mUseDefaultReportOutputFolderURI != null ? mUseDefaultReportOutputFolderURI.hashCode() : 0);
-        result = 31 * result + (mTimestampPattern != null ? mTimestampPattern.hashCode() : 0);
-        result = 31 * result + (mOutputDescription != null ? mOutputDescription.hashCode() : 0);
-        result = 31 * result + (mOutputLocalFolder != null ? mOutputLocalFolder.hashCode() : 0);
+        int result = folderUri != null ? folderUri.hashCode() : 0;
+        result = 31 * result + (sequentialFileNames != null ? sequentialFileNames.hashCode() : 0);
+        result = 31 * result + (overwriteFiles != null ? overwriteFiles.hashCode() : 0);
+        result = 31 * result + (saveToRepository != null ? saveToRepository.hashCode() : 0);
+        result = 31 * result + (useDefaultReportOutputFolderURI != null ? useDefaultReportOutputFolderURI.hashCode() : 0);
+        result = 31 * result + (timestampPattern != null ? timestampPattern.hashCode() : 0);
+        result = 31 * result + (outputDescription != null ? outputDescription.hashCode() : 0);
+        result = 31 * result + (outputLocalFolder != null ? outputLocalFolder.hashCode() : 0);
         return result;
     }
 
@@ -130,20 +137,22 @@ public class RepositoryDestination {
         private String outputDescription;
         private String outputLocalFolder;
         private String defaultReportOutputFolderURI;
+        private OutputFtpInfo outputFtpInfo;
 
         public Builder() {
         }
 
         Builder(RepositoryDestination destination) {
-            folderUri = destination.mFolderUri;
-            sequentialFileNames = destination.mSequentialFileNames;
-            overwriteFiles = destination.mOverwriteFiles;
-            saveToRepository = destination.mSaveToRepository;
-            useDefaultReportOutputFolderURI = destination.mUseDefaultReportOutputFolderURI;
-            timestampPattern = destination.mTimestampPattern;
-            outputDescription = destination.mOutputDescription;
-            outputLocalFolder = destination.mOutputLocalFolder;
-            defaultReportOutputFolderURI = destination.mDefaultReportOutputFolderURI;
+            folderUri = destination.folderUri;
+            sequentialFileNames = destination.sequentialFileNames;
+            overwriteFiles = destination.overwriteFiles;
+            saveToRepository = destination.saveToRepository;
+            useDefaultReportOutputFolderURI = destination.useDefaultReportOutputFolderURI;
+            timestampPattern = destination.timestampPattern;
+            outputDescription = destination.outputDescription;
+            outputLocalFolder = destination.outputLocalFolder;
+            defaultReportOutputFolderURI = destination.defaultReportOutputFolderURI;
+            outputFtpInfo = destination.outputFtpInfo;
         }
 
         /**
@@ -248,6 +257,17 @@ public class RepositoryDestination {
          */
         public Builder withOutputLocalFolder(@Nullable String outputLocalFolder) {
             this.outputLocalFolder = Preconditions.checkNotNull(outputLocalFolder, "Output local path should not be null");
+            return this;
+        }
+
+        /**
+         * The output FTP location information which job output resources would be created.
+         *
+         * @param outputFtpInfo details regarding FTP server
+         * @return builder for convenient configuration
+         */
+        public Builder withFtp(OutputFtpInfo outputFtpInfo) {
+            this.outputFtpInfo = outputFtpInfo;
             return this;
         }
 

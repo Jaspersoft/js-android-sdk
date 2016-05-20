@@ -85,9 +85,10 @@ class JobRepoDestinationMapper extends JobMapper {
         builder.withSequentialFileNames(destination.getSequentialFilenames());
         builder.withOverwriteFiles(destination.getOverwriteFiles());
 
-        RepositoryDestination repositoryDestination = builder.build();
-        form.withRepositoryDestination(repositoryDestination);
 
-        ftpInfoMapper.mapEntityOnForm(form, entity);
+        ftpInfoMapper.mapEntityOnForm(builder, entity);
+        RepositoryDestination repositoryDestination = builder.build();
+
+        form.withRepositoryDestination(repositoryDestination);
     }
 }

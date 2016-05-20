@@ -7,80 +7,101 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.5
  */
 public class OutputFtpInfo {
-    private final Type mType;
-    private final Protocol mProtocol;
-    private final Integer mProtectionBufferSize;
-    private final Integer mPort;
-    private final Boolean mImplicit;
-    private final String mPassword;
-    private final String mUserName;
-    private final String mFolderPath;
-    private final String mServerName;
+    private final Type type;
+    private final Prot prot;
+    private final Protocol protocol;
+    private final Integer protectionBufferSize;
+    private final Integer port;
+    private final Boolean implicit;
+    private final String password;
+    private final String userName;
+    private final String folderPath;
+    private final String serverName;
 
     OutputFtpInfo(Builder builder) {
-        mType = builder.type;
-        mProtocol = builder.protocol;
-        mProtectionBufferSize = builder.protectionBufferSize;
-        mPort = builder.port;
-        mImplicit = builder.implicit;
-        mPassword = builder.password;
-        mUserName = builder.userName;
-        mFolderPath = builder.folderPath;
-        mServerName = builder.serverName;
+        type = builder.type;
+        prot = builder.prot;
+        protocol = builder.protocol;
+        protectionBufferSize = builder.protectionBufferSize;
+        port = builder.port;
+        implicit = builder.implicit;
+        password = builder.password;
+        userName = builder.userName;
+        folderPath = builder.folderPath;
+        serverName = builder.serverName;
     }
 
-    enum Type {
+    public enum Type {
         FTP, FTPS
     }
 
-    enum Protocol {
+    public enum Protocol {
+        SSL, TlS;
+    }
+
+    public enum Prot {
         CLEAR("C"), SAFE("S"), CONFIDENTIAL("E"), PRIVATE("P");
 
         private final String value;
 
-        Protocol(String value) {
+        Prot(String value) {
             this.value = value;
         }
 
         public String getValue() {
             return value;
         }
+
+        public static Prot valueOfEntity(String stringProt) {
+            for (Prot prot : values()) {
+                boolean equals = prot.getValue().equals(stringProt);
+                if (equals) {
+                    return prot;
+                }
+
+            }
+            throw new IllegalArgumentException("There is no PROT association with value: " + stringProt);
+        }
+    }
+
+    public Prot getProt() {
+        return prot;
     }
 
     public Type getType() {
-        return mType;
+        return type;
     }
 
     public Protocol getProtocol() {
-        return mProtocol;
+        return protocol;
     }
 
     public Integer getProtectionBufferSize() {
-        return mProtectionBufferSize;
+        return protectionBufferSize;
     }
 
     public Integer getPort() {
-        return mPort;
+        return port;
     }
 
     public Boolean getImplicit() {
-        return mImplicit;
+        return implicit;
     }
 
     public String getPassword() {
-        return mPassword;
+        return password;
     }
 
     public String getUserName() {
-        return mUserName;
+        return userName;
     }
 
     public String getFolderPath() {
-        return mFolderPath;
+        return folderPath;
     }
 
     public String getServerName() {
-        return mServerName;
+        return serverName;
     }
 
     @Override
@@ -90,36 +111,39 @@ public class OutputFtpInfo {
 
         OutputFtpInfo that = (OutputFtpInfo) o;
 
-        if (mFolderPath != null ? !mFolderPath.equals(that.mFolderPath) : that.mFolderPath != null) return false;
-        if (mImplicit != null ? !mImplicit.equals(that.mImplicit) : that.mImplicit != null) return false;
-        if (mPassword != null ? !mPassword.equals(that.mPassword) : that.mPassword != null) return false;
-        if (mPort != null ? !mPort.equals(that.mPort) : that.mPort != null) return false;
-        if (mProtectionBufferSize != null ? !mProtectionBufferSize.equals(that.mProtectionBufferSize) : that.mProtectionBufferSize != null)
+        if (folderPath != null ? !folderPath.equals(that.folderPath) : that.folderPath != null) return false;
+        if (implicit != null ? !implicit.equals(that.implicit) : that.implicit != null) return false;
+        if (password != null ? !password.equals(that.password) : that.password != null) return false;
+        if (port != null ? !port.equals(that.port) : that.port != null) return false;
+        if (prot != that.prot) return false;
+        if (protectionBufferSize != null ? !protectionBufferSize.equals(that.protectionBufferSize) : that.protectionBufferSize != null)
             return false;
-        if (mProtocol != that.mProtocol) return false;
-        if (mServerName != null ? !mServerName.equals(that.mServerName) : that.mServerName != null) return false;
-        if (mType != that.mType) return false;
-        if (mUserName != null ? !mUserName.equals(that.mUserName) : that.mUserName != null) return false;
+        if (protocol != that.protocol) return false;
+        if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
+        if (type != that.type) return false;
+        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = mType != null ? mType.hashCode() : 0;
-        result = 31 * result + (mProtocol != null ? mProtocol.hashCode() : 0);
-        result = 31 * result + (mProtectionBufferSize != null ? mProtectionBufferSize.hashCode() : 0);
-        result = 31 * result + (mPort != null ? mPort.hashCode() : 0);
-        result = 31 * result + (mImplicit != null ? mImplicit.hashCode() : 0);
-        result = 31 * result + (mPassword != null ? mPassword.hashCode() : 0);
-        result = 31 * result + (mUserName != null ? mUserName.hashCode() : 0);
-        result = 31 * result + (mFolderPath != null ? mFolderPath.hashCode() : 0);
-        result = 31 * result + (mServerName != null ? mServerName.hashCode() : 0);
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (prot != null ? prot.hashCode() : 0);
+        result = 31 * result + (protocol != null ? protocol.hashCode() : 0);
+        result = 31 * result + (protectionBufferSize != null ? protectionBufferSize.hashCode() : 0);
+        result = 31 * result + (port != null ? port.hashCode() : 0);
+        result = 31 * result + (implicit != null ? implicit.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        result = 31 * result + (folderPath != null ? folderPath.hashCode() : 0);
+        result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
         return result;
     }
 
     public static class Builder {
         private Type type;
+        private Prot prot;
         private Protocol protocol;
         private Integer protectionBufferSize;
         private Integer port;
@@ -133,15 +157,16 @@ public class OutputFtpInfo {
         }
 
         Builder(OutputFtpInfo info) {
-            type = info.mType;
-            protocol = info.mProtocol;
-            protectionBufferSize = info.mProtectionBufferSize;
-            port = info.mPort;
-            implicit = info.mImplicit;
-            password = info.mPassword;
-            userName = info.mUserName;
-            folderPath = info.mFolderPath;
-            serverName = info.mServerName;
+            type = info.type;
+            prot = info.prot;
+            protocol = info.protocol;
+            protectionBufferSize = info.protectionBufferSize;
+            port = info.port;
+            implicit = info.implicit;
+            password = info.password;
+            userName = info.userName;
+            folderPath = info.folderPath;
+            serverName = info.serverName;
         }
 
         /**
@@ -152,6 +177,17 @@ public class OutputFtpInfo {
          */
         public Builder withType(@Nullable Type type) {
             this.type = type;
+            return this;
+        }
+
+        /**
+         * Return PROT command.
+         *
+         * @param prot Supported values: C,S,E,P
+         * @return builder for convenient configuration
+         */
+        public Builder withProt(@Nullable Prot prot) {
+            this.prot = prot;
             return this;
         }
 

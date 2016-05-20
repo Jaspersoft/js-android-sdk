@@ -37,6 +37,8 @@ import org.mockito.Mock;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -380,7 +382,7 @@ public class JobRepoDestinationMapperTest {
     }
 
     private void thenShouldMapFtpInfoOnForm() {
-        verify(ftpInfoMapper).mapEntityOnForm(serviceFormBuilder, networkForm);
+        verify(ftpInfoMapper).mapEntityOnForm(any(RepositoryDestination.Builder.class), eq(networkForm));
     }
 
     private void thenShouldMapFtpInfoOnEntity() {

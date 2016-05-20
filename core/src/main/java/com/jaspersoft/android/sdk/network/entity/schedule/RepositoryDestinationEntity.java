@@ -26,7 +26,8 @@ public class RepositoryDestinationEntity {
     private Boolean usingDefaultReportOutputFolderURI;
     @Expose
     private String outputLocalFolder;
-
+    @Expose
+    private OutputFtpInfoEntity outputFTPInfo;
 
     public String getFolderURI() {
         return folderURI;
@@ -98,5 +99,13 @@ public class RepositoryDestinationEntity {
 
     public void setOutputLocalFolder(String outputLocalFolder) {
         this.outputLocalFolder = outputLocalFolder;
+    }
+
+    public OutputFtpInfoEntity getOutputFTPInfo() {
+        return outputFTPInfo;
+    }
+
+    public void setOutputFTPInfo(OutputFtpInfoEntity outputFTPInfo) {
+        this.outputFTPInfo = outputFTPInfo;
     }
 }
