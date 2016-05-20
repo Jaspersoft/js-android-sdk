@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.OutputFtpInfoEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
-import com.jaspersoft.android.sdk.service.data.schedule.OutputFtpInfo;
+import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class JobOutputFtpInfoMapperTest {
+public class JobJobOutputFtpInfoMapperTest {
 
     private final JobFormFactory factory = new JobFormFactory();
 
@@ -22,7 +22,7 @@ public class JobOutputFtpInfoMapperTest {
     private JobForm targetFrom;
     private OutputFtpInfoEntity mappedOutputInfoEntity;
     private JobFormEntity targetEntity;
-    private OutputFtpInfo mappedOutputInfo;
+    private JobOutputFtpInfo mappedOutputInfo;
 
     @Before
     public void setUp() throws Exception {
@@ -33,7 +33,7 @@ public class JobOutputFtpInfoMapperTest {
 
     @Test
     public void should_map_type_from_form_to_entity() throws Exception {
-        givenFormWithFtpType(OutputFtpInfo.Type.FTP);
+        givenFormWithFtpType(JobOutputFtpInfo.Type.FTP);
 
         whenMapsFormToEntity();
 
@@ -42,7 +42,7 @@ public class JobOutputFtpInfoMapperTest {
 
     @Test
     public void should_map_prot_from_form_to_entity() throws Exception {
-        givenFormWithProt(OutputFtpInfo.Prot.CLEAR);
+        givenFormWithProt(JobOutputFtpInfo.Prot.CLEAR);
 
         whenMapsFormToEntity();
 
@@ -51,7 +51,7 @@ public class JobOutputFtpInfoMapperTest {
 
     @Test
     public void should_map_protocol_from_form_to_entity() throws Exception {
-        givenFormWithProtocol(OutputFtpInfo.Protocol.SSL);
+        givenFormWithProtocol(JobOutputFtpInfo.Protocol.SSL);
 
         whenMapsFormToEntity();
 
@@ -127,7 +127,7 @@ public class JobOutputFtpInfoMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedOutputInfo.getType(), is(OutputFtpInfo.Type.FTPS));
+        assertThat(mappedOutputInfo.getType(), is(JobOutputFtpInfo.Type.FTPS));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class JobOutputFtpInfoMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedOutputInfo.getProt(), is(OutputFtpInfo.Prot.CLEAR));
+        assertThat(mappedOutputInfo.getProt(), is(JobOutputFtpInfo.Prot.CLEAR));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class JobOutputFtpInfoMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedOutputInfo.getProtocol(), is(OutputFtpInfo.Protocol.SSL));
+        assertThat(mappedOutputInfo.getProtocol(), is(JobOutputFtpInfo.Protocol.SSL));
     }
 
     @Test
@@ -211,77 +211,77 @@ public class JobOutputFtpInfoMapperTest {
         assertThat(mappedOutputInfo.getServerName(), is("jrs"));
     }
 
-    private void givenFormWithFtpType(OutputFtpInfo.Type type) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+    private void givenFormWithFtpType(JobOutputFtpInfo.Type type) {
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withType(type)
                 .build();
         createForm(ftpInfo);
     }
 
-    private void givenFormWithProt(OutputFtpInfo.Prot prot) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+    private void givenFormWithProt(JobOutputFtpInfo.Prot prot) {
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withProt(prot)
                 .build();
         createForm(ftpInfo);
     }
 
-    private void givenFormWithProtocol(OutputFtpInfo.Protocol protocol) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+    private void givenFormWithProtocol(JobOutputFtpInfo.Protocol protocol) {
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withProtocol(protocol)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithProtectionBufferSize(int protectionBufferSize) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withProtectionBufferSize(protectionBufferSize)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithPort(int port) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withPort(port)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithImplicitFlag(boolean implicit) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withImplicit(implicit)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithPassword(String password) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withPassword(password)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithUserName(String userName) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withUserName(userName)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithFolderPath(String folderPath) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withFolderPath(folderPath)
                 .build();
         createForm(ftpInfo);
     }
 
     private void givenFormWithServerName(String serverName) {
-        OutputFtpInfo ftpInfo = new OutputFtpInfo.Builder()
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withServerName(serverName)
                 .build();
         createForm(ftpInfo);
     }
 
-    private void createForm(OutputFtpInfo ftpInfo) {
+    private void createForm(JobOutputFtpInfo ftpInfo) {
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFtp(ftpInfo)
                 .build();

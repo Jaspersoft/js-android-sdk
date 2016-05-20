@@ -1,12 +1,13 @@
 package com.jaspersoft.android.sdk.service.data.schedule;
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Tom Koptel
  * @since 2.5
  */
-public class OutputFtpInfo {
+public class JobOutputFtpInfo {
     private final Type type;
     private final Prot prot;
     private final Protocol protocol;
@@ -18,7 +19,7 @@ public class OutputFtpInfo {
     private final String folderPath;
     private final String serverName;
 
-    OutputFtpInfo(Builder builder) {
+    JobOutputFtpInfo(Builder builder) {
         type = builder.type;
         prot = builder.prot;
         protocol = builder.protocol;
@@ -109,7 +110,7 @@ public class OutputFtpInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OutputFtpInfo that = (OutputFtpInfo) o;
+        JobOutputFtpInfo that = (JobOutputFtpInfo) o;
 
         if (folderPath != null ? !folderPath.equals(that.folderPath) : that.folderPath != null) return false;
         if (implicit != null ? !implicit.equals(that.implicit) : that.implicit != null) return false;
@@ -156,7 +157,7 @@ public class OutputFtpInfo {
         public Builder() {
         }
 
-        Builder(OutputFtpInfo info) {
+        Builder(JobOutputFtpInfo info) {
             type = info.type;
             prot = info.prot;
             protocol = info.protocol;
@@ -278,8 +279,11 @@ public class OutputFtpInfo {
             return this;
         }
 
-        public OutputFtpInfo build() {
-            return new OutputFtpInfo(this);
+        public JobOutputFtpInfo build() {
+            if (port != null) {
+                Preconditions.checkArgument(port >= 0, "Port should be in range of 0 and 2^32 - 1");
+            }
+            return new JobOutputFtpInfo(this);
         }
     }
 }

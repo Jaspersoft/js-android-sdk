@@ -22,7 +22,7 @@ public class RepositoryDestination {
     private String defaultReportOutputFolderURI;
     private String outputDescription;
     private String outputLocalFolder;
-    private OutputFtpInfo outputFtpInfo;
+    private JobOutputFtpInfo jobOutputFtpInfo;
 
     RepositoryDestination(Builder builder) {
         folderUri = builder.folderUri;
@@ -34,7 +34,7 @@ public class RepositoryDestination {
         outputDescription = builder.outputDescription;
         outputLocalFolder = builder.outputLocalFolder;
         defaultReportOutputFolderURI = builder.defaultReportOutputFolderURI;
-        outputFtpInfo = builder.outputFtpInfo;
+        jobOutputFtpInfo = builder.jobOutputFtpInfo;
     }
 
     @Nullable
@@ -83,8 +83,8 @@ public class RepositoryDestination {
     }
 
     @Nullable
-    public OutputFtpInfo getOutputFtpInfo() {
-        return outputFtpInfo;
+    public JobOutputFtpInfo getOutputFtpInfo() {
+        return jobOutputFtpInfo;
     }
 
     public Builder newBuilder() {
@@ -137,7 +137,7 @@ public class RepositoryDestination {
         private String outputDescription;
         private String outputLocalFolder;
         private String defaultReportOutputFolderURI;
-        private OutputFtpInfo outputFtpInfo;
+        private JobOutputFtpInfo jobOutputFtpInfo;
 
         public Builder() {
         }
@@ -152,7 +152,7 @@ public class RepositoryDestination {
             outputDescription = destination.outputDescription;
             outputLocalFolder = destination.outputLocalFolder;
             defaultReportOutputFolderURI = destination.defaultReportOutputFolderURI;
-            outputFtpInfo = destination.outputFtpInfo;
+            jobOutputFtpInfo = destination.jobOutputFtpInfo;
         }
 
         /**
@@ -263,11 +263,11 @@ public class RepositoryDestination {
         /**
          * The output FTP location information which job output resources would be created.
          *
-         * @param outputFtpInfo details regarding FTP server
+         * @param jobOutputFtpInfo details regarding FTP server
          * @return builder for convenient configuration
          */
-        public Builder withFtp(OutputFtpInfo outputFtpInfo) {
-            this.outputFtpInfo = outputFtpInfo;
+        public Builder withFtp(JobOutputFtpInfo jobOutputFtpInfo) {
+            this.jobOutputFtpInfo = jobOutputFtpInfo;
             return this;
         }
 

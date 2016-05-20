@@ -4,7 +4,7 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.OutputFtpInfoEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
-import com.jaspersoft.android.sdk.service.data.schedule.OutputFtpInfo;
+import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
 
 /**
@@ -16,14 +16,14 @@ class JobOutputFtpInfoMapper {
 
     public void mapFormOnEntity(JobForm form, JobFormEntity formEntity) {
         OutputFtpInfoEntity ftpEntity = createFtpEntity(formEntity);
-        OutputFtpInfo ftpInfo = extractFtpInfo(form);
+        JobOutputFtpInfo ftpInfo = extractFtpInfo(form);
 
         if (ftpInfo != null) {
-            OutputFtpInfo.Type type = ftpInfo.getType();
+            JobOutputFtpInfo.Type type = ftpInfo.getType();
             if (type != null) {
                 ftpEntity.setType(type.name().toLowerCase());
             }
-            OutputFtpInfo.Prot prot = ftpInfo.getProt();
+            JobOutputFtpInfo.Prot prot = ftpInfo.getProt();
             if (prot != null) {
                 ftpEntity.setProt(prot.getValue());
             }
@@ -32,7 +32,7 @@ class JobOutputFtpInfoMapper {
             ftpEntity.setProtectionBufferSize(ftpInfo.getProtectionBufferSize());
             ftpEntity.setPort(ftpInfo.getPort());
 
-            OutputFtpInfo.Protocol protocol = ftpInfo.getProtocol();
+            JobOutputFtpInfo.Protocol protocol = ftpInfo.getProtocol();
             if (protocol != null) {
                 ftpEntity.setProtocol(protocol.name());
             }
@@ -45,7 +45,7 @@ class JobOutputFtpInfoMapper {
         }
     }
 
-    private OutputFtpInfo extractFtpInfo(JobForm form) {
+    private JobOutputFtpInfo extractFtpInfo(JobForm form) {
         RepositoryDestination destination = form.getRepositoryDestination();
         return destination.getOutputFtpInfo();
     }
@@ -60,19 +60,19 @@ class JobOutputFtpInfoMapper {
     public void mapEntityOnForm(RepositoryDestination.Builder destinationBuilder, JobFormEntity formEntity) {
         OutputFtpInfoEntity entity = extractFtpEntity(formEntity);
         if (entity != null) {
-            OutputFtpInfo.Builder builder = new OutputFtpInfo.Builder();
+            JobOutputFtpInfo.Builder builder = new JobOutputFtpInfo.Builder();
 
             String stringType = entity.getType();
             if (stringType != null) {
                 stringType = stringType.toUpperCase();
-                OutputFtpInfo.Type type = OutputFtpInfo.Type.valueOf(stringType);
+                JobOutputFtpInfo.Type type = JobOutputFtpInfo.Type.valueOf(stringType);
                 builder.withType(type);
             }
 
             String stringProt = entity.getProt();
             if (stringProt != null) {
                 stringProt = stringProt.toUpperCase();
-                OutputFtpInfo.Prot prot = OutputFtpInfo.Prot.valueOfEntity(stringProt);
+                JobOutputFtpInfo.Prot prot = JobOutputFtpInfo.Prot.valueOfEntity(stringProt);
                 builder.withProt(prot);
             }
 
@@ -83,7 +83,7 @@ class JobOutputFtpInfoMapper {
             String stringProtocol = entity.getProtocol();
             if (stringProtocol != null) {
                 stringProtocol = stringProtocol.toUpperCase();
-                OutputFtpInfo.Protocol protocol = OutputFtpInfo.Protocol.valueOf(stringProtocol);
+                JobOutputFtpInfo.Protocol protocol = JobOutputFtpInfo.Protocol.valueOf(stringProtocol);
                 builder.withProtocol(protocol);
             }
 
