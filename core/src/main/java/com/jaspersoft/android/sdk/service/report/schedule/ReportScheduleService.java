@@ -169,7 +169,7 @@ public class ReportScheduleService {
         InfoCacheManager cacheManager = InfoCacheManager.create(client);
 
         JobDataMapper jobDataMapper = new JobDataMapper();
-        JobFormMapper jobFormMapper = new JobFormMapper();
+        JobFormMapper jobFormMapper = JobFormMapper.getInstance();
 
         JobUnitDateParser parser = JobUnitDateParser.Factory.createParser();
         JobUnitMapper jobUnitMapper = new JobUnitMapper(parser);
