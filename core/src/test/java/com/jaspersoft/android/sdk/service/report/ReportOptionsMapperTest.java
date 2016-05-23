@@ -102,7 +102,7 @@ public class ReportOptionsMapperTest {
                 .withAttachmentPrefix("./")
                 .build();
         ExecutionRequestOptions options = map(criteria);
-        assertThat("Failed to map 'attachmentPrefix' option", options.getAttachmentsPrefix(), is(".%2F"));
+        assertThat("Failed to map 'attachmentPrefix' option", options.getAttachmentsPrefix(), is("./"));
     }
 
     @Test
