@@ -39,9 +39,9 @@ import java.util.concurrent.TimeUnit;
  * With corresponding API you can configure two types of clients.
  *
  * @author Tom Koptel
- * @since 2.3
  * @see AuthorizedClient
  * @see AnonymousClient
+ * @since 2.3
  */
 public final class Server {
     private final String mBaseUrl;
@@ -92,7 +92,7 @@ public final class Server {
 
         /**
          * Sets the address of server to be used while performing REST calls.
-         *
+         * <p/>
          * WARNING: your address of JRS should end by trailing slash.
          * For instance, <a href="http://my.jasper/server-pro/">http://my.jasper/server-pro/</a>
          *
@@ -109,9 +109,9 @@ public final class Server {
          * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
          *
          * @param timeout specifies the duration of timeout
-         * @param unit specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
-         * @see java.net.URLConnection#setConnectTimeout(int)
+         * @param unit    specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
          * @return builder for convenient configuration
+         * @see java.net.URLConnection#setConnectTimeout(int)
          */
         public Builder withConnectionTimeOut(long timeout, TimeUnit unit) {
             mOkHttpClient.setConnectTimeout(timeout, unit);
@@ -123,9 +123,9 @@ public final class Server {
          * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
          *
          * @param timeout specifies the duration of timeout
-         * @param unit specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
-         * @see java.net.URLConnection#setReadTimeout(int)
+         * @param unit    specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
          * @return builder for convenient configuration
+         * @see java.net.URLConnection#setReadTimeout(int)
          */
         public Builder withReadTimeout(long timeout, TimeUnit unit) {
             mOkHttpClient.setReadTimeout(timeout, unit);
@@ -166,7 +166,7 @@ public final class Server {
         /**
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
-         *
+         * <p/>
          * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
          * cookie handler will be used.
          *
@@ -195,6 +195,7 @@ public final class Server {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
+        private AuthenticationHandler authenticationHandler = AuthenticationHandler.NULL;
         private CookieHandler mCookieHandler = CookieHandler.getDefault();
 
         AuthorizedClientBuilder(Server server, Credentials credentials) {
@@ -219,7 +220,7 @@ public final class Server {
         /**
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
-         *
+         * <p/>
          * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
          * cookie handler will be used.
          *
@@ -228,6 +229,20 @@ public final class Server {
          */
         public AuthorizedClientBuilder withCookieHandler(CookieHandler cookieHandler) {
             mCookieHandler = cookieHandler;
+            return this;
+        }
+
+        /**
+         * Sets listener that will be invoked each time client stumbles upon on authentication error
+         *
+         * @param authenticationHandler callback that is called during atuh error
+         * @return builder for convenient configuration
+         */
+        public AuthorizedClientBuilder withAuthenticationHandler(@Nullable AuthenticationHandler authenticationHandler) {
+            if (authenticationHandler == null) {
+                authenticationHandler = AuthenticationHandler.NULL;
+            }
+            this.authenticationHandler = authenticationHandler;
             return this;
         }
 
@@ -263,11 +278,11 @@ public final class Server {
 
         private void configureAuthenticator(OkHttpClient client, AuthStrategy authStrategy) {
             Authenticator recoverableAuthenticator =
-                    new RecoverableAuthenticator(authStrategy, mCredentials);
+                    new RecoverableAuthenticator(authStrategy, mCredentials, authenticationHandler);
 
             Authenticator authenticator = recoverableAuthenticator;
             if (mAuthenticationPolicy == AuthPolicy.FAIL_FAST) {
-                authenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
+                authenticator = new SingleTimeAuthenticator(recoverableAuthenticator, authenticationHandler);
             }
             client.setAuthenticator(authenticator);
         }

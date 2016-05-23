@@ -36,18 +36,21 @@ import java.net.Proxy;
  * @since 2.3
  */
 final class RecoverableAuthenticator implements Authenticator {
-    private final AuthStrategy mAuthStrategy;
-    private final Credentials mCredentials;
+    private final AuthStrategy authStrategy;
+    private final AuthenticationHandler authenticationHandler;
+    private final Credentials credentials;
 
-    RecoverableAuthenticator(AuthStrategy authStrategy, Credentials credentials) {
-        mAuthStrategy = authStrategy;
-        mCredentials = credentials;
+    RecoverableAuthenticator(AuthStrategy authStrategy, Credentials credentials, AuthenticationHandler authenticationHandler) {
+        this.authStrategy = authStrategy;
+        this.authenticationHandler = authenticationHandler;
+        this.credentials = credentials;
     }
 
     @Override
     public Request authenticate(Proxy proxy, Response response) throws IOException {
         try {
-            mCredentials.apply(mAuthStrategy);
+            authenticationHandler.onAuthError();
+            credentials.apply(authStrategy);
             return response.request();
         } catch (HttpException code) {
             return null;

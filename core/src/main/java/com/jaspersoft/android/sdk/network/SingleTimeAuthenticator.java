@@ -36,17 +36,20 @@ import java.net.Proxy;
  * @since 2.3
  */
 final class SingleTimeAuthenticator implements Authenticator {
-    private Authenticator mDelegate;
+    private final AuthenticationHandler authenticationHandler;
+    private Authenticator authenticator;
 
-    public SingleTimeAuthenticator(Authenticator delegate) {
-        mDelegate = delegate;
+    public SingleTimeAuthenticator(Authenticator authenticator, AuthenticationHandler authenticationHandler) {
+        this.authenticator = authenticator;
+        this.authenticationHandler = authenticationHandler;
     }
 
     @Override
     public Request authenticate(Proxy proxy, Response response) throws IOException {
-        if (mDelegate != null) {
-            Request request = mDelegate.authenticate(proxy, response);
-            mDelegate = null;
+        authenticationHandler.onAuthError();
+        if (authenticator != null) {
+            Request request = authenticator.authenticate(proxy, response);
+            authenticator = null;
             return request;
         }
         return null;
