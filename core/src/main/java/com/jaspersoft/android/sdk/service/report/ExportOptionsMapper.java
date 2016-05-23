@@ -28,9 +28,6 @@ import com.jaspersoft.android.sdk.network.entity.execution.ExecutionRequestOptio
 import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 /**
  * @author Tom Koptel
  * @since 2.3
@@ -70,7 +67,7 @@ abstract class ExportOptionsMapper {
 
         String prefix = options.getAttachmentPrefix();
         if (prefix != null) {
-            resultOptions.withAttachmentsPrefix(escapeAttachmentPrefix(prefix));
+            resultOptions.withAttachmentsPrefix(prefix);
         }
 
         ReportMarkup markup = options.getMarkupType();
@@ -83,13 +80,5 @@ abstract class ExportOptionsMapper {
         resultOptions.withAllowInlineScripts(options.getAllowInlineScripts());
         resultOptions.withBaseUrl(mBaseUrl);
         return resultOptions;
-    }
-
-    private String escapeAttachmentPrefix(String prefix) {
-        try {
-            return URLEncoder.encode(prefix, "UTF-8");
-        } catch (UnsupportedEncodingException exception) {
-            return prefix;
-        }
     }
 }
