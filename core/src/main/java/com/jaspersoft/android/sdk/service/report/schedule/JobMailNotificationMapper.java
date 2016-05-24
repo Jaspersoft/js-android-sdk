@@ -43,6 +43,7 @@ class JobMailNotificationMapper extends JobMapper {
         if (formMailNotification != null) {
             JobMailNotificationEntity notification = new JobMailNotificationEntity();
 
+            notification.setVersion(formMailNotification.getVersion());
             notification.setToAddresses(formMailNotification.getRecipients());
             notification.setCcAddresses(formMailNotification.getCcRecipients());
             notification.setBccAddresses(formMailNotification.getBccRecipients());
@@ -70,6 +71,7 @@ class JobMailNotificationMapper extends JobMapper {
         if (notification != null) {
             JobMailNotification.Builder notificationBuilder = new JobMailNotification.Builder();
 
+            notificationBuilder.withVersion(notification.getVersion());
             notificationBuilder.withRecipients(notification.getToAddresses());
             notificationBuilder.withCcRecipients(notification.getCcAddresses());
             notificationBuilder.withBccRecipients(notification.getBccAddresses());

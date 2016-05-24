@@ -34,11 +34,13 @@ import java.util.Set;
  */
 public class JobMailNotificationEntity {
     @Expose
-    private Set<String> toAddresses;
+    private Integer version;
     @Expose
-    private Set<String> ccAddresses;
+    private Address toAddresses;
     @Expose
-    private Set<String> bccAddresses;
+    private Address ccAddresses;
+    @Expose
+    private Address bccAddresses;
     @Expose
     private String subject;
     @Expose
@@ -54,28 +56,42 @@ public class JobMailNotificationEntity {
     @Expose
     private Boolean skipNotificationWhenJobFails;
 
+    public JobMailNotificationEntity() {
+        this.toAddresses = new Address();
+        this.ccAddresses = new Address();
+        this.bccAddresses = new Address();
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     public Set<String> getToAddresses() {
-        return toAddresses;
+        return toAddresses.getAddress();
     }
 
     public void setToAddresses(Set<String> toAddresses) {
-        this.toAddresses = toAddresses;
+        this.toAddresses.setAddress(toAddresses);
     }
 
     public Set<String> getCcAddresses() {
-        return ccAddresses;
+        return ccAddresses.getAddress();
     }
 
     public void setCcAddresses(Set<String> ccAddresses) {
-        this.ccAddresses = ccAddresses;
+        this.ccAddresses.setAddress(ccAddresses);
     }
 
     public Set<String> getBccAddresses() {
-        return bccAddresses;
+        return bccAddresses.getAddress();
     }
 
     public void setBccAddresses(Set<String> bccAddresses) {
-        this.bccAddresses = bccAddresses;
+        this.bccAddresses.setAddress(bccAddresses);
     }
 
     public String getSubject() {

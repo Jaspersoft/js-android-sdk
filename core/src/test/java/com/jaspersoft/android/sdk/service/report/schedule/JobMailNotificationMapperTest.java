@@ -58,11 +58,29 @@ public class JobMailNotificationMapperTest {
     }
 
     @Test
+    public void should_map_version_from_form_to_entity() throws Exception {
+        givenFormWithVersion(200);
+
+        whenMapsFormToEntity();
+
+        assertThat(mappedNotificationEntity.getVersion(), is(200));
+    }
+
+    @Test
+    public void should_map_version_from_entity_to_form() throws Exception {
+        givenEntityWithVersion(200);
+
+        whenMapsEntityToForm();
+
+        assertThat(mappedNotification.getVersion(), is(200));
+    }
+
+    @Test
     public void should_map_recipients_from_form_to_entity() throws Exception {
         givenFormWithRecipients(Collections.singleton("a@a.com"));
 
         whenMapsFormToEntity();
-        
+
         assertThat(mappedNotificationEntity.getToAddresses(), hasItem("a@a.com"));
     }
 
@@ -71,7 +89,7 @@ public class JobMailNotificationMapperTest {
         givenEntityWithRecipients(Collections.singleton("a@a.com"));
 
         whenMapsEntityToForm();
-        
+
         assertThat(mappedNotification.getRecipients(), hasItem("a@a.com"));
     }
 
@@ -235,6 +253,17 @@ public class JobMailNotificationMapperTest {
         whenMapsEntityToForm();
 
         assertThat(mappedNotification.getMessageTextWhenJobFails(), is("failed"));
+    }
+
+    private void givenFormWithVersion(int version) {
+        JobMailNotification mailNotification = new JobMailNotification.Builder()
+                .withVersion(version)
+                .build();
+        createForm(mailNotification);
+    }
+
+    private void givenEntityWithVersion(int version) {
+        networkForm.getMailNotification().setVersion(version);
     }
 
     private void givenFormWithRecipients(Set<String> recipients) {

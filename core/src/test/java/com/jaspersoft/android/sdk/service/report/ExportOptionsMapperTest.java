@@ -83,13 +83,13 @@ public class ExportOptionsMapperTest {
     }
 
     @Test
-    public void should_map_decoded_attachmentPrefix() {
+    public void should_map_attachmentPrefix() {
         ReportExportOptions criteria = ReportExportOptions.builder()
                 .withFormat(ReportFormat.PDF)
                 .withAttachmentPrefix("./")
                 .build();
         ExecutionRequestOptions options = mapper.transform(criteria);
-        assertThat("Failed to map 'attachmentPrefix' option", options.getAttachmentsPrefix(), is(".%2F"));
+        assertThat("Failed to map 'attachmentPrefix' option", options.getAttachmentsPrefix(), is("./"));
     }
 
     @Test

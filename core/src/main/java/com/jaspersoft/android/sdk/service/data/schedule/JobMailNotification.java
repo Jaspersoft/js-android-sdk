@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.data.schedule;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Set;
 
 /**
@@ -31,6 +33,7 @@ import java.util.Set;
  * @since 2.5
  */
 public class JobMailNotification {
+    private final Integer version;
     private final Set<String> recipients;
     private final Set<String> ccRecipients;
     private final Set<String> bccRecipients;
@@ -43,6 +46,7 @@ public class JobMailNotification {
     private final Boolean skipNotificationWhenJobFails;
 
     private JobMailNotification(Builder builder) {
+        this.version = builder.version;
         this.recipients = builder.recipients;
         this.ccRecipients = builder.ccAddresses;
         this.bccRecipients = builder.bccAddresses;
@@ -84,6 +88,11 @@ public class JobMailNotification {
          * The email notification should embed the HTML job output in the email body and put the other output type attachments
          */
         SEND_EMBED_ZIP_ALL_OTHERS,
+    }
+
+
+    public Integer getVersion() {
+        return version;
     }
 
     public Set<String> getRecipients() {
@@ -128,6 +137,7 @@ public class JobMailNotification {
 
     public static class Builder {
 
+        private Integer version;
         private Set<String> recipients;
         private Set<String> ccAddresses;
         private Set<String> bccAddresses;
@@ -142,6 +152,7 @@ public class JobMailNotification {
         public Builder() {}
 
         private Builder(JobMailNotification builder) {
+            this.version = builder.version;
             this.recipients = builder.recipients;
             this.ccAddresses = builder.ccRecipients;
             this.bccAddresses = builder.bccRecipients;
@@ -155,12 +166,23 @@ public class JobMailNotification {
         }
 
         /**
+         * Allows to specify version of form. One is required for update operations.
+         *
+         * @param version can be any whole number that represents current update
+         * @return builder for convenient configuration
+         */
+        public Builder withVersion(Integer version) {
+            this.version = version;
+            return this;
+        }
+
+        /**
          * The list of direct recipients of the email notification
          *
          * @param emails list of mails of the notification recipients
          * @return builder for convenient configuration
          */
-        public Builder withRecipients(Set<String> emails) {
+        public Builder withRecipients(@Nullable Set<String> emails) {
             this.recipients = emails;
             return this;
         }
@@ -171,7 +193,7 @@ public class JobMailNotification {
          * @param emails list of mails of the notification CC recipients
          * @return builder for convenient configuration
          */
-        public Builder withCcRecipients(Set<String> emails) {
+        public Builder withCcRecipients(@Nullable Set<String> emails) {
             this.ccAddresses = emails;
             return this;
         }
@@ -182,7 +204,7 @@ public class JobMailNotification {
          * @param emails list of mails of the notification Bcc recipients
          * @return builder for convenient configuration
          */
-        public Builder withBccRecipients(Set<String> emails) {
+        public Builder withBccRecipients(@Nullable Set<String> emails) {
             this.bccAddresses = emails;
             return this;
         }
@@ -193,7 +215,7 @@ public class JobMailNotification {
          * @param subject theme of notification
          * @return builder for convenient configuration
          */
-        public Builder withSubject(String subject) {
+        public Builder withSubject(@Nullable String subject) {
             this.subject = subject;
             return this;
         }
@@ -204,7 +226,7 @@ public class JobMailNotification {
          * @param messageText can be any text that is supported by mail protocol
          * @return builder for convenient configuration
          */
-        public Builder withMessageText(String messageText) {
+        public Builder withMessageText(@Nullable String messageText) {
             this.messageText = messageText;
             return this;
         }
@@ -215,7 +237,7 @@ public class JobMailNotification {
          * @param resultSendType tune up configuration of the job output process. Default: SEND
          * @return builder for convenient configuration
          */
-        public Builder withResultSendType(Type resultSendType) {
+        public Builder withResultSendType(@Nullable Type resultSendType) {
             this.resultSendType = resultSendType;
             return this;
         }
@@ -227,7 +249,7 @@ public class JobMailNotification {
          * @param skipEmptyReports Supported values: true, false. Defalut: false
          * @return builder for convenient configuration
          */
-        public Builder withSkipEmptyReports(Boolean skipEmptyReports) {
+        public Builder withSkipEmptyReports(@Nullable Boolean skipEmptyReports) {
             this.skipEmptyReports = skipEmptyReports;
             return this;
         }
@@ -239,7 +261,7 @@ public class JobMailNotification {
          * @param messageTextWhenJobFails can be any text that is supported by mail protocol
          * @return builder for convenient configuration
          */
-        public Builder withMessageTextWhenJobFails(String messageTextWhenJobFails) {
+        public Builder withMessageTextWhenJobFails(@Nullable String messageTextWhenJobFails) {
             this.messageTextWhenJobFails = messageTextWhenJobFails;
             return this;
         }
@@ -250,7 +272,7 @@ public class JobMailNotification {
          * @param includingStackTraceWhenJobFails Supported values: true, false. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withIncludeStackTraceWhenJobFails(Boolean includingStackTraceWhenJobFails) {
+        public Builder withIncludeStackTraceWhenJobFails(@Nullable Boolean includingStackTraceWhenJobFails) {
             this.includeStackTraceWhenJobFails = includingStackTraceWhenJobFails;
             return this;
         }
@@ -261,7 +283,7 @@ public class JobMailNotification {
          * @param skipNotificationWhenJobFails Supported values: true, false. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withSkipNotificationWhenJobFails(Boolean skipNotificationWhenJobFails) {
+        public Builder withSkipNotificationWhenJobFails(@Nullable Boolean skipNotificationWhenJobFails) {
             this.skipNotificationWhenJobFails = skipNotificationWhenJobFails;
             return this;
         }
