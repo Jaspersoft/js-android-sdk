@@ -59,6 +59,9 @@ public class JobFormEntity {
     @Expose
     private final JobTriggerWrapper trigger;
 
+    @Expose
+    private JobMailNotificationEntity mailNotification;
+
     public JobFormEntity() {
         this.source = new JobSourceEntity();
         this.repositoryDestination = new RepositoryDestinationEntity();
@@ -159,6 +162,14 @@ public class JobFormEntity {
 
     public JobCalendarTriggerEntity getCalendarTrigger() {
         return trigger.getCalendarTrigger();
+    }
+
+    public void setMailNotification(JobMailNotificationEntity mailNotification) {
+        this.mailNotification = mailNotification;
+    }
+
+    public JobMailNotificationEntity getMailNotification() {
+        return mailNotification;
     }
 
     public JobTriggerEntity getTrigger() {

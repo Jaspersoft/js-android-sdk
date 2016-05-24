@@ -40,25 +40,28 @@ import java.util.Set;
  * @since 2.3
  */
 class JobFormMapper {
-    private final JobTriggerMapper mTriggerMapper;
-    private final JobSourceMapper mJobSourceMapper;
-    private final JobRepoDestinationMapper mJobRepoDestinationMapper;
+    private final JobTriggerMapper triggerMapper;
+    private final JobSourceMapper sourceMapper;
+    private final JobRepoDestinationMapper repoDestinationMapper;
+    private final JobMailNotificationMapper mailNotificationMapper;
 
     JobFormMapper(
             JobTriggerMapper triggerMapper,
             JobSourceMapper jobSourceMapper,
-            JobRepoDestinationMapper jobRepoDestinationMapper
-    ) {
-        mTriggerMapper = triggerMapper;
-        mJobSourceMapper = jobSourceMapper;
-        mJobRepoDestinationMapper = jobRepoDestinationMapper;
+            JobRepoDestinationMapper jobRepoDestinationMapper,
+            JobMailNotificationMapper mailNotificationMapper) {
+        this.triggerMapper = triggerMapper;
+        this.sourceMapper = jobSourceMapper;
+        this.repoDestinationMapper = jobRepoDestinationMapper;
+        this.mailNotificationMapper = mailNotificationMapper;
     }
 
     private static class InstanceHolder {
         private final static JobFormMapper INSTANCE = new JobFormMapper(
                 JobTriggerMapper.INSTANCE,
                 JobSourceMapper.INSTANCE,
-                JobRepoDestinationMapper.INSTANCE
+                JobRepoDestinationMapper.INSTANCE,
+                JobMailNotificationMapper.INSTANCE
         );
     }
 
@@ -72,9 +75,10 @@ class JobFormMapper {
         mapFormToCommonEntityFields(form, entity);
         mapFormFormatsOnEntity(form, entity);
 
-        mJobRepoDestinationMapper.mapFormOnEntity(form, entity);
-        mJobSourceMapper.mapFormOnEntity(form, entity);
-        mTriggerMapper.mapFormOnEntity(form, entity);
+        repoDestinationMapper.mapFormOnEntity(form, entity);
+        sourceMapper.mapFormOnEntity(form, entity);
+        triggerMapper.mapFormOnEntity(form, entity);
+        mailNotificationMapper.mapFormOnEntity(form, entity);
         return entity;
     }
 
@@ -106,9 +110,10 @@ class JobFormMapper {
         mapEntityCommonFieldsToForm(form, entity);
         mapEntityFormatsToForm(form, entity);
 
-        mJobRepoDestinationMapper.mapEntityOnForm(form, entity);
-        mJobSourceMapper.mapEntityOnForm(form, entity);
-        mTriggerMapper.mapEntityOnForm(form, entity);
+        repoDestinationMapper.mapEntityOnForm(form, entity);
+        sourceMapper.mapEntityOnForm(form, entity);
+        triggerMapper.mapEntityOnForm(form, entity);
+        mailNotificationMapper.mapEntityOnForm(form, entity);
         return form.build();
     }
 

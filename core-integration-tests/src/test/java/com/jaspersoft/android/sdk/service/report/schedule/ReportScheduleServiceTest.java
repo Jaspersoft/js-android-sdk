@@ -92,15 +92,18 @@ public class ReportScheduleServiceTest {
         JobSource.Builder source = new JobSource.Builder()
                 .withUri(bundle.getUri());
 
+        JobMailNotification notification = new JobMailNotification.Builder()
+                .withSubject("sy")
+                .build();
+
         JobForm.Builder formBuilder = new JobForm.Builder()
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
                 .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
-                .withBaseOutputFilename("output");
-        if (bundle.hasParams()) {
-            source.withParameters(bundle.getParams());
-        }
+                .withBaseOutputFilename("output")
+                .withMailNotification(notification);
+
         formBuilder.withJobSource(source.build());
         return formBuilder;
     }
