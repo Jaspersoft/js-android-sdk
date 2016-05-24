@@ -29,29 +29,49 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * Incapsulates data related to SSH keys that are used for FTP authentication purpose
+ *
  * @author Tom Koptel
  * @since 2.5
  */
-public class FtpAuthenticationKey {
+public class JobFtpAuthKey {
     private final String keyPath;
     private final String passPhrase;
 
-    private FtpAuthenticationKey(@NotNull String keyPath, @Nullable String passPhrase) {
+    private JobFtpAuthKey(@NotNull String keyPath, @Nullable String passPhrase) {
         this.keyPath = keyPath;
         this.passPhrase = passPhrase;
     }
 
-    public static FtpAuthenticationKey newPair(@NotNull String path, @NotNull String passPhrase) {
+    /**
+     * Creates new pair
+     *
+     * @param path to the keys stored on JRS
+     * @param passPhrase required to unlock secure connection to FTP server
+     * @return newly created pair
+     * @throws NullPointerException if path is null
+     */
+    public static JobFtpAuthKey newPair(@NotNull String path, @Nullable String passPhrase) {
         Preconditions.checkNotNull(path, "keyPath == null");
         Preconditions.checkNotNull(path, "passPhrase == null");
-        return new FtpAuthenticationKey(path, passPhrase);
+        return new JobFtpAuthKey(path, passPhrase);
     }
 
+    /**
+     * Path to the SSH keys stored on behalf of JRS instance
+     *
+     * @return path to the keys stored on JRS
+     */
     @NotNull
     public String getKeyPath() {
         return keyPath;
     }
 
+    /**
+     * Pass phrase required to unlock secure connection to FTP server
+     *
+     * @return pass phrase can be anything
+     */
     @Nullable
     public String getPassPhrase() {
         return passPhrase;
@@ -62,7 +82,7 @@ public class FtpAuthenticationKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        FtpAuthenticationKey that = (FtpAuthenticationKey) o;
+        JobFtpAuthKey that = (JobFtpAuthKey) o;
 
         if (passPhrase != null ? !passPhrase.equals(that.passPhrase) : that.passPhrase != null) return false;
         if (keyPath != null ? !keyPath.equals(that.keyPath) : that.keyPath != null) return false;

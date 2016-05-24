@@ -42,7 +42,7 @@ public class JobOutputFtpInfo {
     private final String userName;
     private final String folderPath;
     private final String serverName;
-    private final FtpAuthenticationKey authenticationKey;
+    private final JobFtpAuthKey authenticationKey;
 
     JobOutputFtpInfo(Builder builder) {
         type = builder.type;
@@ -147,7 +147,7 @@ public class JobOutputFtpInfo {
     }
 
     @Nullable
-    public FtpAuthenticationKey getAuthenticationKey() {
+    public JobFtpAuthKey getAuthenticationKey() {
         return authenticationKey;
     }
 
@@ -202,7 +202,7 @@ public class JobOutputFtpInfo {
         private String userName;
         private String folderPath;
         private String serverName;
-        private FtpAuthenticationKey authenticationKey;
+        private JobFtpAuthKey authenticationKey;
 
         public Builder() {
         }
@@ -337,7 +337,7 @@ public class JobOutputFtpInfo {
          * @return builder for convenient configuration
          * @since JRS 6.3
          */
-        public Builder withAuthenticationKey(@Nullable FtpAuthenticationKey authenticationKey) {
+        public Builder withAuthenticationKey(@Nullable JobFtpAuthKey authenticationKey) {
             this.authenticationKey = authenticationKey;
             return this;
         }

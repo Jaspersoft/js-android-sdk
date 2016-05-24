@@ -27,7 +27,7 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.OutputFtpInfoEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
-import com.jaspersoft.android.sdk.service.data.schedule.FtpAuthenticationKey;
+import com.jaspersoft.android.sdk.service.data.schedule.JobFtpAuthKey;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
@@ -172,7 +172,7 @@ public class JobJobOutputFtpInfoMapperTest {
 
         whenMapsEntityToForm();
 
-        FtpAuthenticationKey key = mappedOutputInfo.getAuthenticationKey();
+        JobFtpAuthKey key = mappedOutputInfo.getAuthenticationKey();
         assertThat(key.getKeyPath(), is("/public/id_rsa.pub"));
         assertThat(key.getPassPhrase(), is("1234"));
     }
@@ -266,7 +266,7 @@ public class JobJobOutputFtpInfoMapperTest {
     }
 
     private void givenFormWithAuthenticationKey(String path, String phrase) {
-        FtpAuthenticationKey authenticationKey = FtpAuthenticationKey.newPair(path, phrase);
+        JobFtpAuthKey authenticationKey = JobFtpAuthKey.newPair(path, phrase);
         JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withAuthenticationKey(authenticationKey)
                 .build();
