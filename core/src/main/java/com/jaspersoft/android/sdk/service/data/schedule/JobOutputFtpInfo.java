@@ -57,7 +57,7 @@ public class JobOutputFtpInfo {
     }
 
     public enum Type {
-        FTP, FTPS
+        FTP, FTPS, SFTP
     }
 
     public enum Protocol {
