@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.OutputFtpInfoEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
+import com.jaspersoft.android.sdk.service.data.schedule.JobFtpAuthKey;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
@@ -62,6 +63,16 @@ public class JobJobOutputFtpInfoMapperTest {
         whenMapsFormToEntity();
 
         assertThat(mappedOutputInfoEntity.getType(), is("ftp"));
+    }
+
+    @Test
+    public void should_map_auth_key_from_form_to_entity() throws Exception {
+        givenFormWithAuthenticationKey("/public/id_rsa.pub", "1234");
+
+        whenMapsFormToEntity();
+
+        assertThat(mappedOutputInfoEntity.getSshKeyPath(), is("/public/id_rsa.pub"));
+        assertThat(mappedOutputInfoEntity.getSshPassPhrase(), is("1234"));
     }
 
     @Test
@@ -154,6 +165,18 @@ public class JobJobOutputFtpInfoMapperTest {
         assertThat(mappedOutputInfo.getType(), is(JobOutputFtpInfo.Type.FTPS));
     }
 
+
+    @Test
+    public void should_map_auth_key_from_entity_to_form() throws Exception {
+        givenEntityWithAuthKey("/public/id_rsa.pub", "1234");
+
+        whenMapsEntityToForm();
+
+        JobFtpAuthKey key = mappedOutputInfo.getAuthenticationKey();
+        assertThat(key.getKeyPath(), is("/public/id_rsa.pub"));
+        assertThat(key.getPassPhrase(), is("1234"));
+    }
+
     @Test
     public void should_map_prot_from_entity_to_form() throws Exception {
         givenEntityWithProt("C");
@@ -242,6 +265,14 @@ public class JobJobOutputFtpInfoMapperTest {
         createForm(ftpInfo);
     }
 
+    private void givenFormWithAuthenticationKey(String path, String phrase) {
+        JobFtpAuthKey authenticationKey = JobFtpAuthKey.newPair(path, phrase);
+        JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
+                .withAuthenticationKey(authenticationKey)
+                .build();
+        createForm(ftpInfo);
+    }
+
     private void givenFormWithProt(JobOutputFtpInfo.Prot prot) {
         JobOutputFtpInfo ftpInfo = new JobOutputFtpInfo.Builder()
                 .withProt(prot)
@@ -317,6 +348,12 @@ public class JobJobOutputFtpInfoMapperTest {
     private void givenEntityWithFtpType(String type) {
         OutputFtpInfoEntity infoEntity = givenTargetInfoEntity();
         infoEntity.setType(type);
+    }
+
+    private void givenEntityWithAuthKey(String path, String phrase) {
+        OutputFtpInfoEntity infoEntity = givenTargetInfoEntity();
+        infoEntity.setSshKeyPath(path);
+        infoEntity.setSshPassPhrase(phrase);
     }
 
     private void givenEntityWithProt(String prot) {
