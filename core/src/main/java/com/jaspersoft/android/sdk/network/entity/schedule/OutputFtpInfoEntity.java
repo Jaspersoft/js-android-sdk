@@ -25,6 +25,7 @@
 package com.jaspersoft.android.sdk.network.entity.schedule;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Tom Koptel
@@ -36,7 +37,8 @@ public class OutputFtpInfoEntity {
     @Expose
     private String prot;
     @Expose
-    private Integer pbsz;
+    @SerializedName("pbsz")
+    private Integer protectionBufferSize;
     @Expose
     private Integer port;
     @Expose
@@ -51,6 +53,12 @@ public class OutputFtpInfoEntity {
     private String folderPath;
     @Expose
     private String serverName;
+    @Expose
+    @SerializedName("sshKey")
+    private String sshKeyPath;
+    @Expose
+    @SerializedName("sshPassphrase")
+    private String sshPassPhrase;
 
     public OutputFtpInfoEntity() {}
 
@@ -71,11 +79,11 @@ public class OutputFtpInfoEntity {
     }
 
     public Integer getProtectionBufferSize() {
-        return pbsz;
+        return protectionBufferSize;
     }
 
     public void setProtectionBufferSize(Integer pbsz) {
-        this.pbsz = pbsz;
+        this.protectionBufferSize = pbsz;
     }
 
     public Integer getPort() {
@@ -132,5 +140,21 @@ public class OutputFtpInfoEntity {
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
+    }
+
+    public String getSshKeyPath() {
+        return sshKeyPath;
+    }
+
+    public void setSshKeyPath(String sshKeyPath) {
+        this.sshKeyPath = sshKeyPath;
+    }
+
+    public String getSshPassPhrase() {
+        return sshPassPhrase;
+    }
+
+    public void setSshPassPhrase(String sshPassPhrase) {
+        this.sshPassPhrase = sshPassPhrase;
     }
 }

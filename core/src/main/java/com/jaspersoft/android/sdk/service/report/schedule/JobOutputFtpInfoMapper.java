@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.report.schedule;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.OutputFtpInfoEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.RepositoryDestinationEntity;
+import com.jaspersoft.android.sdk.service.data.schedule.FtpAuthenticationKey;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
@@ -66,6 +67,12 @@ class JobOutputFtpInfoMapper {
             ftpEntity.setUserName(ftpInfo.getUserName());
             ftpEntity.setFolderPath(ftpInfo.getFolderPath());
             ftpEntity.setServerName(ftpInfo.getServerName());
+
+            FtpAuthenticationKey authKey = ftpInfo.getAuthenticationKey();
+            if (authKey != null) {
+                ftpEntity.setSshKeyPath(authKey.getKeyPath());
+                ftpEntity.setSshPassPhrase(authKey.getPassPhrase());
+            }
         }
     }
 
@@ -116,6 +123,13 @@ class JobOutputFtpInfoMapper {
             builder.withUserName(entity.getUserName());
             builder.withFolderPath(entity.getFolderPath());
             builder.withServerName(entity.getServerName());
+
+            String sshPassPhrase = entity.getSshPassPhrase();
+            String sshKeyPath = entity.getSshKeyPath();
+            if (sshKeyPath != null) {
+                FtpAuthenticationKey key = FtpAuthenticationKey.newPair(sshKeyPath, sshPassPhrase);
+                builder.withAuthenticationKey(key);
+            }
 
             destinationBuilder.withFtp(builder.build());
         }

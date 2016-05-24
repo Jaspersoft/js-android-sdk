@@ -42,6 +42,7 @@ public class JobOutputFtpInfo {
     private final String userName;
     private final String folderPath;
     private final String serverName;
+    private final FtpAuthenticationKey authenticationKey;
 
     JobOutputFtpInfo(Builder builder) {
         type = builder.type;
@@ -54,10 +55,16 @@ public class JobOutputFtpInfo {
         userName = builder.userName;
         folderPath = builder.folderPath;
         serverName = builder.serverName;
+        authenticationKey = builder.authenticationKey;
     }
 
     public enum Type {
-        FTP, FTPS, SFTP
+        FTP,
+        FTPS,
+        /**
+         * Since JRS 6.3
+         */
+        SFTP
     }
 
     public enum Protocol {
@@ -89,44 +96,59 @@ public class JobOutputFtpInfo {
         }
     }
 
+    @Nullable
     public Prot getProt() {
         return prot;
     }
 
+    @Nullable
     public Type getType() {
         return type;
     }
 
+    @Nullable
     public Protocol getProtocol() {
         return protocol;
     }
 
+    @Nullable
     public Integer getProtectionBufferSize() {
         return protectionBufferSize;
     }
 
+    @Nullable
     public Integer getPort() {
         return port;
     }
 
+    @Nullable
     public Boolean getImplicit() {
         return implicit;
     }
 
+    @Nullable
     public String getPassword() {
         return password;
     }
 
+    @Nullable
     public String getUserName() {
         return userName;
     }
 
+    @Nullable
     public String getFolderPath() {
         return folderPath;
     }
 
+    @Nullable
     public String getServerName() {
         return serverName;
+    }
+
+    @Nullable
+    public FtpAuthenticationKey getAuthenticationKey() {
+        return authenticationKey;
     }
 
     @Override
@@ -136,6 +158,8 @@ public class JobOutputFtpInfo {
 
         JobOutputFtpInfo that = (JobOutputFtpInfo) o;
 
+        if (authenticationKey != null ? !authenticationKey.equals(that.authenticationKey) : that.authenticationKey != null)
+            return false;
         if (folderPath != null ? !folderPath.equals(that.folderPath) : that.folderPath != null) return false;
         if (implicit != null ? !implicit.equals(that.implicit) : that.implicit != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
@@ -163,6 +187,7 @@ public class JobOutputFtpInfo {
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
         result = 31 * result + (folderPath != null ? folderPath.hashCode() : 0);
         result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
+        result = 31 * result + (authenticationKey != null ? authenticationKey.hashCode() : 0);
         return result;
     }
 
@@ -177,6 +202,7 @@ public class JobOutputFtpInfo {
         private String userName;
         private String folderPath;
         private String serverName;
+        private FtpAuthenticationKey authenticationKey;
 
         public Builder() {
         }
@@ -192,6 +218,7 @@ public class JobOutputFtpInfo {
             userName = info.userName;
             folderPath = info.folderPath;
             serverName = info.serverName;
+            authenticationKey = info.authenticationKey;
         }
 
         /**
@@ -300,6 +327,18 @@ public class JobOutputFtpInfo {
          */
         public Builder withServerName(@Nullable String serverName) {
             this.serverName = serverName;
+            return this;
+        }
+
+        /**
+         * Optional authentication key that allows to establish ftp connection with JRS instance
+         *
+         * @param authenticationKey SSH configuration
+         * @return builder for convenient configuration
+         * @since JRS 6.3
+         */
+        public Builder withAuthenticationKey(@Nullable FtpAuthenticationKey authenticationKey) {
+            this.authenticationKey = authenticationKey;
             return this;
         }
 
