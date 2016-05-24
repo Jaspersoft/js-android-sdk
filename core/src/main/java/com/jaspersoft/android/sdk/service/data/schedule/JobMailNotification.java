@@ -24,6 +24,8 @@
 
 package com.jaspersoft.android.sdk.service.data.schedule;
 
+import com.jaspersoft.android.sdk.service.internal.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -91,46 +93,57 @@ public class JobMailNotification {
     }
 
 
+    @Nullable
     public Integer getVersion() {
         return version;
     }
 
+    @Nullable
     public Set<String> getRecipients() {
         return recipients;
     }
 
+    @Nullable
     public Set<String> getCcRecipients() {
         return ccRecipients;
     }
 
+    @Nullable
     public Set<String> getBccRecipients() {
         return bccRecipients;
     }
 
+    @NotNull
     public String getSubject() {
         return subject;
     }
 
+    @Nullable
     public String getMessageText() {
         return messageText;
     }
 
+    @Nullable
     public Type getResultSendType() {
         return resultSendType;
     }
 
+    @Nullable
     public Boolean getSkipEmptyReports() {
         return skipEmptyReports;
     }
 
+    @Nullable
     public String getMessageTextWhenJobFails() {
         return messageTextWhenJobFails;
     }
 
+    @Nullable
     public Boolean getIncludeStackTraceWhenJobFails() {
         return includeStackTraceWhenJobFails;
     }
 
+    @Nullable
     public Boolean getSkipNotificationWhenJobFails() {
         return skipNotificationWhenJobFails;
     }
@@ -215,7 +228,7 @@ public class JobMailNotification {
          * @param subject theme of notification
          * @return builder for convenient configuration
          */
-        public Builder withSubject(@Nullable String subject) {
+        public Builder withSubject(@NotNull String subject) {
             this.subject = subject;
             return this;
         }
@@ -289,6 +302,7 @@ public class JobMailNotification {
         }
 
         public JobMailNotification build() {
+            Preconditions.checkNotNull(subject, "subject should not be null");
             return new JobMailNotification(this);
         }
     }

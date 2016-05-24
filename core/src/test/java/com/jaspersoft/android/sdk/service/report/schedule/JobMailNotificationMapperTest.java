@@ -52,8 +52,12 @@ public class JobMailNotificationMapperTest {
     @Before
     public void setUp() throws Exception {
         mapperUnderTest = new JobMailNotificationMapper();
+
         networkForm = formFactory.givenNewJobFormEntity();
-        networkForm.setMailNotification(new JobMailNotificationEntity());
+        JobMailNotificationEntity mailNotification = new JobMailNotificationEntity();
+        mailNotification.setSubject("foo-bar");
+        networkForm.setMailNotification(mailNotification);
+
         serviceFormBuilder = formFactory.givenJobFormBuilderWithValues();
     }
 
@@ -256,7 +260,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithVersion(int version) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withVersion(version)
                 .build();
         createForm(mailNotification);
@@ -267,7 +271,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithRecipients(Set<String> recipients) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withRecipients(recipients)
                 .build();
         createForm(mailNotification);
@@ -278,7 +282,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithCcRecipients(Set<String> recipients) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withCcRecipients(recipients)
                 .build();
         createForm(mailNotification);
@@ -289,7 +293,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithBccRecipients(Set<String> recipients) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withBccRecipients(recipients)
                 .build();
         createForm(mailNotification);
@@ -300,7 +304,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithSubject(String subject) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withSubject(subject)
                 .build();
         createForm(mailNotification);
@@ -311,7 +315,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithMessage(String message) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withMessageText(message)
                 .build();
         createForm(mailNotification);
@@ -322,7 +326,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithResultSendType(JobMailNotification.Type type) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withResultSendType(type)
                 .build();
         createForm(mailNotification);
@@ -333,7 +337,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithSkipEmptyReports(boolean flag) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withSkipEmptyReports(flag)
                 .build();
         createForm(mailNotification);
@@ -344,7 +348,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithStackTraceWhenJobFails(boolean flag) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withIncludeStackTraceWhenJobFails(flag)
                 .build();
         createForm(mailNotification);
@@ -355,10 +359,15 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithSkipNotificationWhenJobFails(boolean flag) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withSkipNotificationWhenJobFails(flag)
                 .build();
         createForm(mailNotification);
+    }
+
+    private JobMailNotification.Builder createMailNotificationBuilder() {
+        return new JobMailNotification.Builder()
+                .withSubject("foo-bar");
     }
 
     private void givenEntityWithSkipNotificationWhenJobFails(boolean flag) {
@@ -366,7 +375,7 @@ public class JobMailNotificationMapperTest {
     }
 
     private void givenFormWithMessageTextWhenJobFails(String message) {
-        JobMailNotification mailNotification = new JobMailNotification.Builder()
+        JobMailNotification mailNotification = createMailNotificationBuilder()
                 .withMessageTextWhenJobFails(message)
                 .build();
         createForm(mailNotification);
