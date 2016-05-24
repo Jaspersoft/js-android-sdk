@@ -25,7 +25,9 @@
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.network.entity.schedule.JobMailNotificationEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobMailNotification;
 
 /**
  * @author Tom Koptel
@@ -36,11 +38,56 @@ class JobMailNotificationMapper extends JobMapper {
 
     @Override
     public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
+        JobMailNotification formMailNotification = form.getMailNotification();
 
+        if (formMailNotification != null) {
+            JobMailNotificationEntity notification = new JobMailNotificationEntity();
+
+            notification.setToAddresses(formMailNotification.getRecipients());
+            notification.setCcAddresses(formMailNotification.getCcRecipients());
+            notification.setBccAddresses(formMailNotification.getBccRecipients());
+            notification.setSubject(formMailNotification.getSubject());
+            notification.setMessageText(formMailNotification.getMessageText());
+
+            JobMailNotification.Type sendType = formMailNotification.getResultSendType();
+            if (sendType != null) {
+                notification.setResultSendType(sendType.name());
+            }
+
+            notification.setSkipNotificationWhenJobFails(formMailNotification.getSkipNotificationWhenJobFails());
+            notification.setIncludingStackTraceWhenJobFails(formMailNotification.getIncludeStackTraceWhenJobFails());
+            notification.setSkipEmptyReports(formMailNotification.getSkipEmptyReports());
+            notification.setMessageTextWhenJobFails(formMailNotification.getMessageTextWhenJobFails());
+
+            entity.setMailNotification(notification);
+        }
     }
 
     @Override
     public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
+        JobMailNotificationEntity notification = entity.getMailNotification();
 
+        if (notification != null) {
+            JobMailNotification.Builder notificationBuilder = new JobMailNotification.Builder();
+
+            notificationBuilder.withRecipients(notification.getToAddresses());
+            notificationBuilder.withCcRecipients(notification.getCcAddresses());
+            notificationBuilder.withBccRecipients(notification.getBccAddresses());
+            notificationBuilder.withSubject(notification.getSubject());
+            notificationBuilder.withMessageText(notification.getMessageText());
+
+            String type = notification.getResultSendType();
+            if (type != null) {
+                JobMailNotification.Type sendType = JobMailNotification.Type.valueOf(type);
+                notificationBuilder.withResultSendType(sendType);
+            }
+
+            notificationBuilder.withSkipNotificationWhenJobFails(notification.getSkipNotificationWhenJobFails());
+            notificationBuilder.withIncludeStackTraceWhenJobFails(notification.getIncludingStackTraceWhenJobFails());
+            notificationBuilder.withSkipEmptyReports(notification.getSkipEmptyReports());
+            notificationBuilder.withMessageTextWhenJobFails(notification.getMessageTextWhenJobFails());
+
+            form.withMailNotification(notificationBuilder.build());
+        }
     }
 }

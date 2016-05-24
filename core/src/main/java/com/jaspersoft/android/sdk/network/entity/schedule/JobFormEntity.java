@@ -60,14 +60,13 @@ public class JobFormEntity {
     private final JobTriggerWrapper trigger;
 
     @Expose
-    private final JobMailNotificationEntity mailNotification;
+    private JobMailNotificationEntity mailNotification;
 
     public JobFormEntity() {
         this.source = new JobSourceEntity();
         this.repositoryDestination = new RepositoryDestinationEntity();
         this.outputFormats = new JobOutputFormatsEntity();
         this.trigger = new JobTriggerWrapper();
-        this.mailNotification = new JobMailNotificationEntity();
     }
 
     public void setLabel(String label) {
@@ -163,6 +162,10 @@ public class JobFormEntity {
 
     public JobCalendarTriggerEntity getCalendarTrigger() {
         return trigger.getCalendarTrigger();
+    }
+
+    public void setMailNotification(JobMailNotificationEntity mailNotification) {
+        this.mailNotification = mailNotification;
     }
 
     public JobMailNotificationEntity getMailNotification() {

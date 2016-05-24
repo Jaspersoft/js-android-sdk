@@ -53,6 +53,7 @@ public class JobMailNotificationMapperTest {
     public void setUp() throws Exception {
         mapperUnderTest = new JobMailNotificationMapper();
         networkForm = formFactory.givenNewJobFormEntity();
+        networkForm.setMailNotification(new JobMailNotificationEntity());
         serviceFormBuilder = formFactory.givenJobFormBuilderWithValues();
     }
 
@@ -76,29 +77,29 @@ public class JobMailNotificationMapperTest {
 
     @Test
     public void should_map_cc_recipients_from_form_to_entity() throws Exception {
-        givenFormWithCcRecipients(Collections.singleton("a@a.com"));
+        givenFormWithCcRecipients(Collections.singleton("cca@a.com"));
 
         whenMapsFormToEntity();
 
-        assertThat(mappedNotificationEntity.getCcAddresses(), hasItem("a@a.com"));
+        assertThat(mappedNotificationEntity.getCcAddresses(), hasItem("cca@a.com"));
     }
 
     @Test
     public void should_map_cc_recipients_from_entity_to_form() throws Exception {
-        givenEntityWithCcRecipients(Collections.singleton("a@a.com"));
+        givenEntityWithCcRecipients(Collections.singleton("cca@a.com"));
 
         whenMapsEntityToForm();
 
-        assertThat(mappedNotification.getCcRecipients(), hasItem("a@a.com"));
+        assertThat(mappedNotification.getCcRecipients(), hasItem("cca@a.com"));
     }
 
     @Test
     public void should_map_bcc_recipients_from_form_to_entity() throws Exception {
-        givenFormWithBccRecipients(Collections.singleton("a@a.com"));
+        givenFormWithBccRecipients(Collections.singleton("bcca@a.com"));
 
         whenMapsFormToEntity();
 
-        assertThat(mappedNotificationEntity.getBccAddresses(), hasItem("a@a.com"));
+        assertThat(mappedNotificationEntity.getBccAddresses(), hasItem("bcca@a.com"));
     }
 
     @Test
@@ -337,7 +338,7 @@ public class JobMailNotificationMapperTest {
 
     private void givenFormWithMessageTextWhenJobFails(String message) {
         JobMailNotification mailNotification = new JobMailNotification.Builder()
-                .withMessageText(message)
+                .withMessageTextWhenJobFails(message)
                 .build();
         createForm(mailNotification);
     }
@@ -353,13 +354,13 @@ public class JobMailNotificationMapperTest {
     }
 
     private void whenMapsFormToEntity() {
-        mapperUnderTest.mapEntityOnForm(serviceFormBuilder, networkForm);
-        JobForm mappedServiceForm = serviceFormBuilder.build();
-        mappedNotification = mappedServiceForm.getMailNotification();
+        mapperUnderTest.mapFormOnEntity(serviceForm, networkForm);
+        mappedNotificationEntity = networkForm.getMailNotification();
     }
 
     private void whenMapsEntityToForm() {
-        mapperUnderTest.mapFormOnEntity(serviceForm, networkForm);
-        mappedNotificationEntity = networkForm.getMailNotification();
+        mapperUnderTest.mapEntityOnForm(serviceFormBuilder, networkForm);
+        JobForm mappedServiceForm = serviceFormBuilder.build();
+        mappedNotification = mappedServiceForm.getMailNotification();
     }
 }
