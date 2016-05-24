@@ -36,118 +36,131 @@ import java.util.*;
  */
 public class JobForm {
     @Nullable
-    private final Integer mVersion;
+    private final Integer version;
     @NotNull
-    private final String mLabel;
+    private final String label;
     @Nullable
-    private final String mDescription;
+    private final String description;
     @NotNull
-    private final String mBaseOutputFilename;
+    private final String baseOutputFilename;
     @NotNull
-    private final JobSource mSource;
+    private final JobSource source;
     @NotNull
-    private final RepositoryDestination mRepositoryDestination;
+    private final RepositoryDestination repositoryDestination;
     @NotNull
-    private final Set<JobOutputFormat> mOutputFormats;
+    private final Set<JobOutputFormat> outputFormats;
     @Nullable
-    private final Date mStartDate;
+    private final Date startDate;
     @Nullable
-    private final TimeZone mTimeZone;
+    private final TimeZone timeZone;
     @Nullable
-    private final Trigger mTrigger;
-
+    private final Trigger trigger;
+    @Nullable
+    private final JobMailNotification mailNotification;
 
     JobForm(Builder builder) {
-        mVersion = builder.mVersion;
-        mLabel = builder.mLabel;
-        mDescription = builder.mDescription;
-        mBaseOutputFilename = builder.mBaseOutputFilename;
-        mSource = builder.mJobSource;
-        mRepositoryDestination = builder.mRepositoryDestination;
-        mOutputFormats = builder.mOutputFormats;
-        mStartDate = builder.mStartDate;
-        mTimeZone = builder.mTimeZone;
-        mTrigger = builder.mTrigger;
+        version = builder.version;
+        label = builder.label;
+        description = builder.description;
+        baseOutputFilename = builder.baseOutputFilename;
+        source = builder.source;
+        repositoryDestination = builder.repositoryDestination;
+        outputFormats = builder.outputFormats;
+        startDate = builder.startDate;
+        timeZone = builder.timeZone;
+        trigger = builder.trigger;
+        mailNotification = builder.mailNotification;
     }
 
     @Nullable
     public Integer getVersion() {
-        return mVersion;
+        return version;
     }
 
     @NotNull
     public String getLabel() {
-        return mLabel;
+        return label;
     }
 
     @Nullable
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     @NotNull
     public String getBaseOutputFilename() {
-        return mBaseOutputFilename;
+        return baseOutputFilename;
     }
 
     @NotNull
     public JobSource getSource() {
-        return mSource;
+        return source;
     }
 
     @NotNull
     public RepositoryDestination getRepositoryDestination() {
-        return mRepositoryDestination;
+        return repositoryDestination;
     }
 
     @NotNull
     public Set<JobOutputFormat> getOutputFormats() {
-        return mOutputFormats;
+        return outputFormats;
     }
 
     @Nullable
     public Date getStartDate() {
-        return mStartDate;
+        return startDate;
     }
 
     @Nullable
     public TimeZone getTimeZone() {
-        return mTimeZone;
+        return timeZone;
     }
 
     @Nullable
     public Trigger getTrigger() {
-        return mTrigger;
+        return trigger;
+    }
+
+    @Nullable
+    public JobMailNotification getMailNotification() {
+        return mailNotification;
     }
 
     @NotNull
     public Builder newBuilder() {
-        return new Builder()
-                .withVersion(mVersion)
-                .withLabel(mLabel)
-                .withDescription(mDescription)
-                .withBaseOutputFilename(mBaseOutputFilename)
-                .withJobSource(mSource)
-                .withRepositoryDestination(mRepositoryDestination)
-                .withStartDate(mStartDate)
-                .withTimeZone(mTimeZone)
-                .withDescription(mDescription)
-                .withOutputFormats(mOutputFormats)
-                .withTrigger(mTrigger);
+        return new Builder(this);
     }
 
     public static class Builder {
-        private Integer mVersion;
-        private String mLabel;
-        private String mDescription;
-        private String mBaseOutputFilename;
-        private RepositoryDestination mRepositoryDestination;
-        private JobSource mJobSource;
-        private Date mStartDate;
-        private TimeZone mTimeZone;
+        private Integer version;
+        private String label;
+        private String description;
+        private String baseOutputFilename;
+        private RepositoryDestination repositoryDestination;
+        private JobSource source;
+        private Date startDate;
+        private TimeZone timeZone;
+        private JobMailNotification mailNotification;
 
-        private Set<JobOutputFormat> mOutputFormats;
-        private Trigger mTrigger;
+        private Set<JobOutputFormat> outputFormats;
+        private Trigger trigger;
+
+        public Builder() {}
+
+        private Builder(JobForm form) {
+            version = form.version;
+            label = form.label;
+            description = form.description;
+            baseOutputFilename = form.baseOutputFilename;
+            source = form.source;
+            repositoryDestination = form.repositoryDestination;
+            outputFormats = form.outputFormats;
+            startDate = form.startDate;
+            timeZone = form.timeZone;
+            trigger = form.trigger;
+            mailNotification = form.mailNotification;
+        }
 
         /**
          * Allows to specify version of form. One is required for update operations.
@@ -156,7 +169,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withVersion(@Nullable Integer version) {
-            mVersion = version;
+            this.version = version;
             return this;
         }
 
@@ -167,7 +180,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withJobSource(@NotNull JobSource jobSource) {
-            mJobSource = jobSource;
+            this.source = jobSource;
             return this;
         }
 
@@ -178,7 +191,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withRepositoryDestination(@NotNull RepositoryDestination repositoryDestination) {
-            mRepositoryDestination = repositoryDestination;
+            this.repositoryDestination = repositoryDestination;
             return this;
         }
 
@@ -190,7 +203,7 @@ public class JobForm {
          */
         public Builder withLabel(@NotNull String label) {
             Preconditions.checkNotNull(label, "Label should not be null");
-            mLabel = label;
+            this.label = label;
             return this;
         }
 
@@ -201,7 +214,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withDescription(@Nullable String description) {
-            mDescription = description;
+            this.description = description;
             return this;
         }
 
@@ -213,7 +226,7 @@ public class JobForm {
          */
         public Builder withBaseOutputFilename(@NotNull String baseOutputFilename) {
             Preconditions.checkNotNull(baseOutputFilename, "Output file name should not be null");
-            mBaseOutputFilename = baseOutputFilename;
+            this.baseOutputFilename = baseOutputFilename;
             return this;
         }
 
@@ -225,7 +238,7 @@ public class JobForm {
          */
         public Builder withOutputFormats(@NotNull Collection<JobOutputFormat> outputFormats) {
             Preconditions.checkNotNull(outputFormats, "Formats should not be null");
-            mOutputFormats = new HashSet<>(outputFormats);
+            this.outputFormats = new HashSet<>(outputFormats);
             return this;
         }
 
@@ -236,7 +249,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withStartDate(@Nullable Date startDate) {
-            mStartDate = startDate;
+            this.startDate = startDate;
             return this;
         }
 
@@ -247,7 +260,7 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withTimeZone(@Nullable TimeZone timeZone) {
-            mTimeZone = timeZone;
+            this.timeZone = timeZone;
             return this;
         }
 
@@ -258,7 +271,18 @@ public class JobForm {
          * @return builder for convenient configuration
          */
         public Builder withTrigger(@Nullable Trigger trigger) {
-            mTrigger = trigger;
+            this.trigger = trigger;
+            return this;
+        }
+
+        /**
+         * The mail notification settings
+         *
+         * @param mailNotification specifies the configuration of mail notifications
+         * @return builder for convenient configuration
+         */
+        public Builder withMailNotification(@Nullable JobMailNotification mailNotification) {
+            this.mailNotification = mailNotification;
             return this;
         }
 
@@ -268,13 +292,13 @@ public class JobForm {
         }
 
         private void assertState() {
-            if (mOutputFormats.isEmpty()) {
+            if (outputFormats.isEmpty()) {
                 throw new IllegalStateException("Job can not be scheduled without output format");
             }
-            Preconditions.checkNotNull(mLabel, "Job can not be scheduled without label");
-            Preconditions.checkNotNull(mJobSource, "Job can not be scheduled without source");
-            Preconditions.checkNotNull(mRepositoryDestination, "Job can not be scheduled without repository destination");
-            Preconditions.checkNotNull(mBaseOutputFilename, "Job can not be scheduled without output file name");
+            Preconditions.checkNotNull(label, "Job can not be scheduled without label");
+            Preconditions.checkNotNull(source, "Job can not be scheduled without source");
+            Preconditions.checkNotNull(repositoryDestination, "Job can not be scheduled without repository destination");
+            Preconditions.checkNotNull(baseOutputFilename, "Job can not be scheduled without output file name");
         }
     }
 }
