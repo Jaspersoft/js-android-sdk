@@ -44,16 +44,20 @@ class JobFormMapper {
     private final JobSourceMapper sourceMapper;
     private final JobRepoDestinationMapper repoDestinationMapper;
     private final JobMailNotificationMapper mailNotificationMapper;
+    private final JobAlertMapper alertMapper;
 
     JobFormMapper(
             JobTriggerMapper triggerMapper,
             JobSourceMapper jobSourceMapper,
             JobRepoDestinationMapper jobRepoDestinationMapper,
-            JobMailNotificationMapper mailNotificationMapper) {
+            JobMailNotificationMapper mailNotificationMapper,
+            JobAlertMapper alertMapper
+    ) {
         this.triggerMapper = triggerMapper;
         this.sourceMapper = jobSourceMapper;
         this.repoDestinationMapper = jobRepoDestinationMapper;
         this.mailNotificationMapper = mailNotificationMapper;
+        this.alertMapper = alertMapper;
     }
 
     private static class InstanceHolder {
@@ -61,8 +65,8 @@ class JobFormMapper {
                 JobTriggerMapper.INSTANCE,
                 JobSourceMapper.INSTANCE,
                 JobRepoDestinationMapper.INSTANCE,
-                JobMailNotificationMapper.INSTANCE
-        );
+                JobMailNotificationMapper.INSTANCE,
+                JobAlertMapper.INSTANCE);
     }
 
     public static JobFormMapper getInstance() {
@@ -79,6 +83,7 @@ class JobFormMapper {
         sourceMapper.mapFormOnEntity(form, entity);
         triggerMapper.mapFormOnEntity(form, entity);
         mailNotificationMapper.mapFormOnEntity(form, entity);
+        alertMapper.mapFormOnEntity(form, entity);
         return entity;
     }
 
@@ -114,6 +119,7 @@ class JobFormMapper {
         sourceMapper.mapEntityOnForm(form, entity);
         triggerMapper.mapEntityOnForm(form, entity);
         mailNotificationMapper.mapEntityOnForm(form, entity);
+        alertMapper.mapEntityOnForm(form, entity);
         return form.build();
     }
 

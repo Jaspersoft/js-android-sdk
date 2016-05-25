@@ -78,7 +78,7 @@ public class JobFormMapperTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper, mJobRepoDestinationMapper, JobMailNotificationMapper.INSTANCE);
+        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper, mJobRepoDestinationMapper, JobMailNotificationMapper.INSTANCE, alertMapper);
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
