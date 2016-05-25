@@ -65,6 +65,10 @@ public class JobAlert {
         NONE, OWNER, OWNER_AND_ADMIN
     }
 
+    public enum JobState {
+        NONE, ALL, FAIL_ONLY, SUCCESS_ONLY
+    }
+
     @Nullable
     public RecipientType getRecipientType() {
         return recipientType;

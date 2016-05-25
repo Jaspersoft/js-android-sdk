@@ -28,7 +28,6 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobAlertEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobAlert;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
-import com.jaspersoft.android.sdk.service.data.schedule.JobState;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,7 +85,7 @@ public class JobAlertMapperTest {
 
     @Test
     public void should_map_job_state_from_form_to_entity() throws Exception {
-        givenFormWithJobState(JobState.EXECUTING);
+        givenFormWithJobState(JobAlert.JobState.ALL);
 
         whenMapsFormToEntity();
 
@@ -99,7 +98,7 @@ public class JobAlertMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedAlert.getJobState(), is(JobState.EXECUTING));
+        assertThat(mappedAlert.getJobState(), is(JobAlert.JobState.ALL));
     }
 
     @Test
@@ -239,7 +238,7 @@ public class JobAlertMapperTest {
         networkForm.getAlert().setRecipientType(type);
     }
 
-    private void givenFormWithJobState(JobState jobState) {
+    private void givenFormWithJobState(JobAlert.JobState jobState) {
         JobAlert.Builder alert = defaultAlertForm()
                 .withJobState(jobState);
         createForm(alert);

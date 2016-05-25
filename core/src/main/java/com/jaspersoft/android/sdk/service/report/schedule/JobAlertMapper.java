@@ -28,7 +28,6 @@ import com.jaspersoft.android.sdk.network.entity.schedule.JobAlertEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobAlert;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
-import com.jaspersoft.android.sdk.service.data.schedule.JobState;
 
 /**
  * @author Tom Koptel
@@ -52,7 +51,7 @@ class JobAlertMapper extends JobMapper {
                 alertEntity.setRecipientType(type.name());
             }
 
-            JobState jobState = jobAlert.getJobState();
+            JobAlert.JobState jobState = jobAlert.getJobState();
             if (jobState != null) {
                 alertEntity.setJobState(jobState.name());
             }
@@ -84,7 +83,7 @@ class JobAlertMapper extends JobMapper {
 
             String jobState = alert.getJobState();
             if (jobState != null) {
-                alertBuilder.withJobState(JobState.valueOf(jobState));
+                alertBuilder.withJobState(JobAlert.JobState.valueOf(jobState));
             }
 
             alertBuilder.withVersion(alert.getVersion());
