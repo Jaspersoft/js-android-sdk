@@ -36,20 +36,30 @@ import java.io.IOException;
  */
 class AuthStrategy {
     @NotNull
-    private final SpringAuthServiceFactory mSpringAuthServiceFactory;
+    private final SpringAuthServiceFactory springAuthServiceFactory;
 
     @Nullable
     private SpringAuthService springAuthService;
+    @NotNull
+    private final AuthenticationLifecycle authenticationLifecycle;
 
     @TestOnly
-    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory) {
-        mSpringAuthServiceFactory = springAuthServiceFactory;
+    AuthStrategy(@NotNull SpringAuthServiceFactory springAuthServiceFactory,
+                 @NotNull AuthenticationLifecycle authenticationLifecycle) {
+        this.springAuthServiceFactory = springAuthServiceFactory;
+        this.authenticationLifecycle = authenticationLifecycle;
     }
 
     void apply(SpringCredentials credentials) throws IOException, HttpException {
+        authenticationLifecycle.beforeSessionReload();
+        authService().authenticate(credentials);
+        authenticationLifecycle.afterSessionReload();
+    }
+
+    private SpringAuthService authService() {
         if (springAuthService == null) {
-            springAuthService = mSpringAuthServiceFactory.create();
+            springAuthService = springAuthServiceFactory.create();
         }
-        springAuthService.authenticate(credentials);
+        return springAuthService;
     }
 }
