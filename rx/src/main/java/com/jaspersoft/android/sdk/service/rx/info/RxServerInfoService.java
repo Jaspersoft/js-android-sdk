@@ -116,7 +116,9 @@ public class RxServerInfoService {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link ServerInfoService}
      */
     public ServerInfoService toBlocking() {
         return mSyncDelegate;

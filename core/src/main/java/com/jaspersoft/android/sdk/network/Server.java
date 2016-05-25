@@ -92,7 +92,7 @@ public final class Server {
 
         /**
          * Sets the address of server to be used while performing REST calls.
-         * <p/>
+         *
          * WARNING: your address of JRS should end by trailing slash.
          * For instance, <a href="http://my.jasper/server-pro/">http://my.jasper/server-pro/</a>
          *
@@ -166,8 +166,8 @@ public final class Server {
         /**
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
-         * <p/>
-         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         *
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}</p>
          * cookie handler will be used.
          *
          * @param cookieHandler custom cookie handler
@@ -220,8 +220,8 @@ public final class Server {
         /**
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
-         * <p/>
-         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         *
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}</p>
          * cookie handler will be used.
          *
          * @param cookieHandler custom cookie handler

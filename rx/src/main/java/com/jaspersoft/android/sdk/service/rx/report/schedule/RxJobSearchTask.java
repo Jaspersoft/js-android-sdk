@@ -79,7 +79,9 @@ public class RxJobSearchTask {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link JobSearchTask}
      */
     public JobSearchTask toBlocking() {
         return mSyncDelegate;

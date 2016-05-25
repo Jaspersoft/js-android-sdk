@@ -35,7 +35,8 @@ public interface OutputResource {
     String getMimeType();
 
     /**
-     * TODO ??? do we need this
+     * Provides number of bytes consumed through stream
+     *
      * @return -1 whether content length undefined
      */
     long getLength();

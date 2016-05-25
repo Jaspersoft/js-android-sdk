@@ -79,7 +79,9 @@ public class RxReportAttachment {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link ReportAttachment}
      */
     public ReportAttachment toBlocking() {
         return mSyncDelegate;

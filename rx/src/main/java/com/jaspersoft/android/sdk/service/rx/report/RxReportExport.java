@@ -95,14 +95,18 @@ public class RxReportExport {
     }
 
     /**
-     * TODO javadoc
+     * Exposes internal id of report export execution session
+     *
+     * @return export execution id
      */
     public String getExportId() {
         return mSyncDelegate.getExportId();
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link ReportExport}
      */
     public ReportExport toBlocking() {
         return mSyncDelegate;

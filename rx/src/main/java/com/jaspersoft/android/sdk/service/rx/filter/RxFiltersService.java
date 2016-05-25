@@ -436,7 +436,9 @@ public class RxFiltersService {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link FiltersService}
      */
     public FiltersService toBlocking() {
         return mSyncDelegate;

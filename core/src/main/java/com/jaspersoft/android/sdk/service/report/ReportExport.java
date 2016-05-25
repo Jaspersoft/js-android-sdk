@@ -77,7 +77,9 @@ public class ReportExport {
     }
 
     /**
-     * TODO javadoc
+     * Exposes internal id of report export excecution session
+     *
+     * @return export execution id
      */
     public String getExportId() {
         return mExportId;

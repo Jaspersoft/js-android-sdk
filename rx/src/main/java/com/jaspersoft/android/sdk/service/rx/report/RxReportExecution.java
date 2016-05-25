@@ -121,14 +121,18 @@ public class RxReportExecution {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link ReportExecution}
      */
     public ReportExecution toBlocking() {
         return mSyncDelegate;
     }
 
     /**
-     * TODO javadoc
+     * Exposes internal id of report execution session
+     *
+     * @return execution id
      */
     @NotNull
     public String getExecutionId() {

@@ -79,7 +79,9 @@ public class RxRepositorySearchTask {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link RepositorySearchTask}
      */
     public RepositorySearchTask toBlocking() {
         return mSyncDelegate;

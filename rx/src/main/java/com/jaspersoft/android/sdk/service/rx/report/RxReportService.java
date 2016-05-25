@@ -156,7 +156,9 @@ public class RxReportService {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link ReportService}
      */
     public ReportService toBlocking() {
         return mSyncDelegate;
