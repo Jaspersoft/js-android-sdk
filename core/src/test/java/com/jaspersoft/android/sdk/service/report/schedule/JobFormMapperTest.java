@@ -68,17 +68,27 @@ public class JobFormMapperTest {
     private JobFormEntity mPreparedEntity;
 
     @Mock
-    JobTriggerMapper mJobTriggerMapper;
+    JobTriggerMapper jobTriggerMapper;
     @Mock
-    JobSourceMapper mJobSourceMapper;
+    JobSourceMapper jobSourceMapper;
     @Mock
-    JobRepoDestinationMapper mJobRepoDestinationMapper;
+    JobRepoDestinationMapper jobRepoDestinationMapper;
+    @Mock
+    JobMailNotificationMapper mailNotificationMapper;
+    @Mock
+    JobAlertMapper jobAlertMapper;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        mJobFormMapper = new JobFormMapper(mJobTriggerMapper, mJobSourceMapper, mJobRepoDestinationMapper, JobMailNotificationMapper.INSTANCE, alertMapper);
+        mJobFormMapper = new JobFormMapper(
+                jobTriggerMapper,
+                jobSourceMapper,
+                jobRepoDestinationMapper,
+                mailNotificationMapper,
+                jobAlertMapper
+        );
 
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")

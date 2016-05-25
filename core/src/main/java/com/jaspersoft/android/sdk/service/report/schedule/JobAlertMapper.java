@@ -24,8 +24,11 @@
 
 package com.jaspersoft.android.sdk.service.report.schedule;
 
+import com.jaspersoft.android.sdk.network.entity.schedule.JobAlertEntity;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
+import com.jaspersoft.android.sdk.service.data.schedule.JobAlert;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
+import com.jaspersoft.android.sdk.service.data.schedule.JobState;
 
 /**
  * @author Tom Koptel
@@ -35,16 +38,64 @@ class JobAlertMapper extends JobMapper {
     static JobAlertMapper INSTANCE = new JobAlertMapper();
 
 
-    private JobAlertMapper() {
+    JobAlertMapper() {
     }
 
     @Override
     public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
+        JobAlert jobAlert = form.getJobAlert();
+        if (jobAlert != null) {
+            JobAlertEntity alertEntity = new JobAlertEntity();
 
+            JobAlert.RecipientType type = jobAlert.getRecipientType();
+            if (type != null) {
+                alertEntity.setRecipientType(type.name());
+            }
+
+            JobState jobState = jobAlert.getJobState();
+            if (jobState != null) {
+                alertEntity.setJobState(jobState.name());
+            }
+
+            alertEntity.setVersion(jobAlert.getVersion());
+            alertEntity.setMessageText(jobAlert.getMessageText());
+            alertEntity.setRecipients(jobAlert.getRecipients());
+            alertEntity.setSubject(jobAlert.getSubject());
+            alertEntity.setMessageText(jobAlert.getMessageText());
+            alertEntity.setMessageTextWhenJobFails(jobAlert.getMessageTextWhenJobFails());
+            alertEntity.setIncludeReportJobInfo(jobAlert.getIncludeReportJobInfo());
+            alertEntity.setIncludeStackTrace(jobAlert.getIncludeStackTrace());
+
+            entity.setAlert(alertEntity);
+        }
     }
 
     @Override
     public void mapEntityOnForm(JobForm.Builder form, JobFormEntity entity) {
+        JobAlertEntity alert = entity.getAlert();
 
+        if (alert != null) {
+            JobAlert.Builder alertBuilder = new JobAlert.Builder();
+
+            String recipientType = alert.getRecipientType();
+            if (recipientType != null) {
+                alertBuilder.withRecipientType(JobAlert.RecipientType.valueOf(recipientType));
+            }
+
+            String jobState = alert.getJobState();
+            if (jobState != null) {
+                alertBuilder.withJobState(JobState.valueOf(jobState));
+            }
+
+            alertBuilder.withVersion(alert.getVersion());
+            alertBuilder.withSubject(alert.getSubject());
+            alertBuilder.withMessageText(alert.getMessageText());
+            alertBuilder.withMessageTextWhenJobFails(alert.getMessageTextWhenJobFails());
+            alertBuilder.withRecipients(alert.getRecipients());
+            alertBuilder.withIncludeReportJobInfo(alert.getIncludeReportJobInfo());
+            alertBuilder.withIncludeStackTrace(alert.getIncludeStackTrace());
+
+            form.withJobAlert(alertBuilder.build());
+        }
     }
 }

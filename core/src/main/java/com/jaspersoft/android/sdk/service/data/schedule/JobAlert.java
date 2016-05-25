@@ -35,6 +35,7 @@ import java.util.Set;
  * @since 2.3
  */
 public class JobAlert {
+    private final Integer version;
     private final RecipientType recipientType;
     private final Set<String> recipients;
     private final JobState jobState;
@@ -45,6 +46,7 @@ public class JobAlert {
     private final Boolean includeReportJobInfo;
 
     JobAlert(Builder builder) {
+        this.version = builder.version;
         this.recipientType = builder.recipientType;
         this.recipients = builder.recipients;
         this.jobState = builder.jobState;
@@ -53,6 +55,10 @@ public class JobAlert {
         this.messageTextWhenJobFails = builder.messageTextWhenJobFails;
         this.includeStackTrace = builder.includingStackTrace;
         this.includeReportJobInfo = builder.includingReportJobInfo;
+    }
+
+    public Integer getVersion() {
+        return version;
     }
 
     public enum RecipientType {
@@ -120,8 +126,9 @@ public class JobAlert {
             return false;
         if (includeStackTrace != null ? !includeStackTrace.equals(jobAlert.includeStackTrace) : jobAlert.includeStackTrace != null)
             return false;
-        return !(includeReportJobInfo != null ? !includeReportJobInfo.equals(jobAlert.includeReportJobInfo) : jobAlert.includeReportJobInfo != null);
-
+        if (includeReportJobInfo != null ? !includeReportJobInfo.equals(jobAlert.includeReportJobInfo) : jobAlert.includeReportJobInfo != null)
+            return false;
+        return !(version != null ? !version.equals(jobAlert.version) : jobAlert.version != null);
     }
 
     @Override
@@ -134,11 +141,13 @@ public class JobAlert {
         result = 31 * result + (messageTextWhenJobFails != null ? messageTextWhenJobFails.hashCode() : 0);
         result = 31 * result + (includeStackTrace != null ? includeStackTrace.hashCode() : 0);
         result = 31 * result + (includeReportJobInfo != null ? includeReportJobInfo.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 
     public static class Builder {
 
+        private Integer version;
         private RecipientType recipientType;
         private Set<String> recipients;
         private JobState jobState;
@@ -152,6 +161,7 @@ public class JobAlert {
         }
 
         private Builder(JobAlert builder) {
+            this.version = builder.version;
             this.recipientType = builder.recipientType;
             this.recipients = builder.recipients;
             this.jobState = builder.jobState;
@@ -160,6 +170,17 @@ public class JobAlert {
             this.messageTextWhenJobFails = builder.messageTextWhenJobFails;
             this.includingStackTrace = builder.includeStackTrace;
             this.includingReportJobInfo = builder.includeReportJobInfo;
+        }
+
+        /**
+         * Allows to specify version of form. One is required for update operations.
+         *
+         * @param version can be any whole number that represents current update
+         * @return builder for convenient configuration
+         */
+        public Builder withVersion(Integer version) {
+            this.version = version;
+            return this;
         }
 
         /**

@@ -27,6 +27,8 @@ package com.jaspersoft.android.sdk.network.entity.schedule;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Set;
+
 /**
  * @author Tom Koptel
  * @since 2.3
@@ -35,6 +37,7 @@ public class JobAlertEntity {
     @Expose
     private String recipientType;
     @Expose
+    @SerializedName("toAddresses")
     private Address recipients;
     @Expose
     private String jobState;
@@ -50,6 +53,12 @@ public class JobAlertEntity {
     @Expose
     @SerializedName("includingReportJobInfo")
     private Boolean includeReportJobInfo;
+    @Expose
+    private Integer version;
+
+    public JobAlertEntity() {
+        this.recipients = new Address();
+    }
 
     public String getRecipientType() {
         return recipientType;
@@ -59,12 +68,12 @@ public class JobAlertEntity {
         this.recipientType = recipientType;
     }
 
-    public Address getRecipients() {
-        return recipients;
+    public Set<String> getRecipients() {
+        return recipients.getAddress();
     }
 
-    public void setRecipients(Address recipients) {
-        this.recipients = recipients;
+    public void setRecipients(Set<String> recipients) {
+        this.recipients.setAddress(recipients);
     }
 
     public String getJobState() {
@@ -113,5 +122,13 @@ public class JobAlertEntity {
 
     public void setIncludeReportJobInfo(Boolean includeReportJobInfo) {
         this.includeReportJobInfo = includeReportJobInfo;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public Integer getVersion() {
+        return version;
     }
 }

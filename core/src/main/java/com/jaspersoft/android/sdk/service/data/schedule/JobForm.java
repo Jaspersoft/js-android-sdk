@@ -57,6 +57,8 @@ public class JobForm {
     private final Trigger trigger;
     @Nullable
     private final JobMailNotification mailNotification;
+    @Nullable
+    private final JobAlert jobAlert;
 
     JobForm(Builder builder) {
         version = builder.version;
@@ -70,6 +72,7 @@ public class JobForm {
         timeZone = builder.timeZone;
         trigger = builder.trigger;
         mailNotification = builder.mailNotification;
+        jobAlert = builder.jobAlert;
     }
 
     @Nullable
@@ -127,6 +130,11 @@ public class JobForm {
         return mailNotification;
     }
 
+    @Nullable
+    public JobAlert getJobAlert() {
+        return jobAlert;
+    }
+
     @NotNull
     public Builder newBuilder() {
         return new Builder(this);
@@ -142,6 +150,7 @@ public class JobForm {
         private Date startDate;
         private TimeZone timeZone;
         private JobMailNotification mailNotification;
+        private JobAlert jobAlert;
 
         private Set<JobOutputFormat> outputFormats;
         private Trigger trigger;
@@ -160,6 +169,7 @@ public class JobForm {
             timeZone = form.timeZone;
             trigger = form.trigger;
             mailNotification = form.mailNotification;
+            jobAlert = form.jobAlert;
         }
 
         /**
@@ -283,6 +293,17 @@ public class JobForm {
          */
         public Builder withMailNotification(@Nullable JobMailNotification mailNotification) {
             this.mailNotification = mailNotification;
+            return this;
+        }
+
+        /**
+         * Job execution alert that can be defined for a report job
+         *
+         * @param alert configures receivers of alert
+         * @return builder for convenient configuration
+         */
+        public Builder withJobAlert(@Nullable JobAlert alert) {
+            this.jobAlert = alert;
             return this;
         }
 

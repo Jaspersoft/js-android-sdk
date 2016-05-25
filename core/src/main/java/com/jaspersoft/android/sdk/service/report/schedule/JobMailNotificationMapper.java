@@ -55,8 +55,8 @@ class JobMailNotificationMapper extends JobMapper {
                 notification.setResultSendType(sendType.name());
             }
 
-            notification.setSkipNotificationWhenJobFails(formMailNotification.getSkipNotificationWhenJobFails());
-            notification.setIncludingStackTraceWhenJobFails(formMailNotification.getIncludeStackTraceWhenJobFails());
+            notification.setSkipNotificationWhenJobFails(formMailNotification.getSkipNotification());
+            notification.setIncludingStackTraceWhenJobFails(formMailNotification.getIncludeStackTrace());
             notification.setSkipEmptyReports(formMailNotification.getSkipEmptyReports());
             notification.setMessageTextWhenJobFails(formMailNotification.getMessageTextWhenJobFails());
 
@@ -84,8 +84,8 @@ class JobMailNotificationMapper extends JobMapper {
                 notificationBuilder.withResultSendType(sendType);
             }
 
-            notificationBuilder.withSkipNotificationWhenJobFails(notification.getSkipNotificationWhenJobFails());
-            notificationBuilder.withIncludeStackTraceWhenJobFails(notification.getIncludingStackTraceWhenJobFails());
+            notificationBuilder.withSkipNotification(notification.getSkipNotificationWhenJobFails());
+            notificationBuilder.withIncludeStackTrace(notification.getIncludingStackTraceWhenJobFails());
             notificationBuilder.withSkipEmptyReports(notification.getSkipEmptyReports());
             notificationBuilder.withMessageTextWhenJobFails(notification.getMessageTextWhenJobFails());
 
