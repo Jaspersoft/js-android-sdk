@@ -86,6 +86,15 @@ public class ReportScheduleServiceTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, 5);
 
+        JobAlert alert = new JobAlert.Builder()
+                .withSubject("True")
+                .withRecipients(Collections.singleton("a@a.com"))
+                .withRecipientType(JobAlert.RecipientType.OWNER)
+                .withJobState(JobAlert.JobState.ALL)
+                .withIncludeReportJobInfo(true)
+                .withMessageTextWhenJobFails("failed")
+                .withIncludeStackTrace(true)
+                .build();
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
                 .build();
@@ -97,6 +106,7 @@ public class ReportScheduleServiceTest {
                 .build();
 
         JobForm.Builder formBuilder = new JobForm.Builder()
+                .withJobAlert(alert)
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
