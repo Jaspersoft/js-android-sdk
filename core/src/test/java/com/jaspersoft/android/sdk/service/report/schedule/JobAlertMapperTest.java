@@ -89,12 +89,12 @@ public class JobAlertMapperTest {
 
         whenMapsFormToEntity();
 
-        assertThat(mappedAlertEntity.getJobState(), is("EXECUTING"));
+        assertThat(mappedAlertEntity.getJobState(), is("ALL"));
     }
 
     @Test
     public void should_map_job_state_from_entity_to_form() throws Exception {
-        givenEntityWithJobState("EXECUTING");
+        givenEntityWithJobState("ALL");
 
         whenMapsEntityToForm();
 

@@ -38,30 +38,39 @@ import java.util.List;
  * @since 2.3
  */
 public class JobSource {
-    private final String mUri;
-    private final List<ReportParameter> mParameters;
+    private final String uri;
+    private final List<ReportParameter> parameters;
 
-    JobSource(String uri, List<ReportParameter> parameters) {
-        mUri = uri;
-        mParameters = parameters;
+    JobSource(Builder builder) {
+        uri = builder.uri;
+        parameters = builder.parameters;
     }
 
     @NotNull
     public String getUri() {
-        return mUri;
+        return uri;
     }
 
     @NotNull
     public List<ReportParameter> getParameters() {
-        return mParameters;
+        return parameters;
+    }
+
+    public Builder newBuilder() {
+        return new JobSource.Builder(this);
     }
 
     public static class Builder {
-        private String mUri;
-        private List<ReportParameter> mParameters = Collections.emptyList();
+        private String uri;
+        private List<ReportParameter> parameters;
 
         public Builder() {
-            mParameters = new ArrayList<>();
+            parameters = new ArrayList<>();
+        }
+
+        private Builder(JobSource jobSource) {
+            uri = jobSource.uri;
+            parameters = jobSource.parameters;
         }
 
         /**
@@ -71,7 +80,7 @@ public class JobSource {
          * @return builder for convenient configuration
          */
         public Builder withUri(@NotNull String uri) {
-            mUri = Preconditions.checkNotNull(uri, "Source uri should not be null");
+            this.uri = Preconditions.checkNotNull(uri, "Source uri should not be null");
             return this;
         }
 
@@ -83,18 +92,18 @@ public class JobSource {
          */
         public Builder withParameters(@Nullable List<ReportParameter> parameters) {
             if (parameters != null) {
-                mParameters = Collections.unmodifiableList(parameters);
+                this.parameters = Collections.unmodifiableList(parameters);
             }
             return this;
         }
 
         public JobSource build() {
             assertState();
-            return new JobSource(mUri, mParameters);
+            return new JobSource(this);
         }
 
         private void assertState() {
-            Preconditions.checkNotNull(mUri, "Source can not be created without uri");
+            Preconditions.checkNotNull(uri, "Source can not be created without uri");
         }
     }
 }

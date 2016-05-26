@@ -28,25 +28,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AuthStrategyTest {
 
     @Mock
-    SpringAuthServiceFactory mSpringAuthServiceFactory;
+    SpringAuthServiceFactory springAuthServiceFactory;
     @Mock
-    SpringAuthService mSpringAuthService;
+    SpringAuthService springAuthService;
+    @Mock
+    AuthenticationLifecycle authenticationLifecycle;
 
     private AuthStrategy authStrategy;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        when(mSpringAuthServiceFactory.create()).thenReturn(mSpringAuthService);
-        authStrategy = new AuthStrategy(mSpringAuthServiceFactory);
+        when(springAuthServiceFactory.create()).thenReturn(springAuthService);
+        authStrategy = new AuthStrategy(springAuthServiceFactory, authenticationLifecycle);
     }
 
     @Test
@@ -55,10 +55,14 @@ public class AuthStrategyTest {
                 .withUsername("user")
                 .withPassword("1234")
                 .build();
-        authStrategy.apply(springCredentials);
-        verify(mSpringAuthServiceFactory).create();
 
         authStrategy.apply(springCredentials);
-        verifyNoMoreInteractions(mSpringAuthServiceFactory);
+        verify(springAuthServiceFactory).create();
+
+        authStrategy.apply(springCredentials);
+        verifyNoMoreInteractions(springAuthServiceFactory);
+
+        verify(authenticationLifecycle, times(2)).beforeSessionReload();
+        verify(authenticationLifecycle, times(2)).afterSessionReload();
     }
 }

@@ -58,7 +58,7 @@ public class AnonymousClient extends Client {
     public AuthenticationRestApi authenticationApi() {
         if (mAuthApi == null) {
             SpringAuthServiceFactory authServiceFactory = new SpringAuthServiceFactory(mNetworkClient);
-            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory);
+            AuthStrategy authStrategy = new AuthStrategy(authServiceFactory, AuthenticationLifecycle.NULL);
             mAuthApi = new AuthenticationRestApi(authStrategy);
         }
         return mAuthApi;

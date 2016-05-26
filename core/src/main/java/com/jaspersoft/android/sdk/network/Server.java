@@ -195,7 +195,7 @@ public final class Server {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
-        private AuthenticationHandler authenticationHandler = AuthenticationHandler.NULL;
+        private AuthenticationLifecycle authenticationLifecycle = AuthenticationLifecycle.NULL;
         private CookieHandler mCookieHandler = CookieHandler.getDefault();
 
         AuthorizedClientBuilder(Server server, Credentials credentials) {
@@ -235,14 +235,14 @@ public final class Server {
         /**
          * Sets listener that will be invoked each time client stumbles upon on authentication error
          *
-         * @param authenticationHandler callback that is called during atuh error
+         * @param authenticationLifecycle callback that is called during atuh error
          * @return builder for convenient configuration
          */
-        public AuthorizedClientBuilder withAuthenticationHandler(@Nullable AuthenticationHandler authenticationHandler) {
-            if (authenticationHandler == null) {
-                authenticationHandler = AuthenticationHandler.NULL;
+        public AuthorizedClientBuilder withAuthenticationLifecycle(@Nullable AuthenticationLifecycle authenticationLifecycle) {
+            if (authenticationLifecycle == null) {
+                authenticationLifecycle = AuthenticationLifecycle.NULL;
             }
-            this.authenticationHandler = authenticationHandler;
+            this.authenticationLifecycle = authenticationLifecycle;
             return this;
         }
 
@@ -273,16 +273,16 @@ public final class Server {
                     .build();
 
             SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(networkClient);
-            return new AuthStrategy(springAuthServiceFactory);
+            return new AuthStrategy(springAuthServiceFactory, authenticationLifecycle);
         }
 
         private void configureAuthenticator(OkHttpClient client, AuthStrategy authStrategy) {
             Authenticator recoverableAuthenticator =
-                    new RecoverableAuthenticator(authStrategy, mCredentials, authenticationHandler);
+                    new RecoverableAuthenticator(authStrategy, mCredentials);
 
             Authenticator authenticator = recoverableAuthenticator;
             if (mAuthenticationPolicy == AuthPolicy.FAIL_FAST) {
-                authenticator = new SingleTimeAuthenticator(recoverableAuthenticator, authenticationHandler);
+                authenticator = new SingleTimeAuthenticator(recoverableAuthenticator);
             }
             client.setAuthenticator(authenticator);
         }

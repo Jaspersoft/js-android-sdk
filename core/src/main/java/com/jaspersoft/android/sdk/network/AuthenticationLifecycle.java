@@ -27,22 +27,28 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.Server.AuthorizedClientBuilder;
 
 /**
- * Allows to handle auth related error.
+ * Allows to handle auth related life cycle events.
  * This event occurs when cookies used for network request expired.
- * Should be used for manual clean up of session related resources.
+ * Can be used for manual clean up of session related resources.
  *
  * <p>
- * See {@link AuthorizedClientBuilder#withAuthenticationHandler(AuthenticationHandler)}
+ * See {@link AuthorizedClientBuilder#withAuthenticationLifecycle(AuthenticationLifecycle)}
  * </p>
  *
  * @author Tom Koptel
  * @since 2.5
  */
-public interface AuthenticationHandler {
-    AuthenticationHandler NULL = new AuthenticationHandler() {
+public interface AuthenticationLifecycle {
+    AuthenticationLifecycle NULL = new AuthenticationLifecycle() {
         @Override
-        public void onAuthError() {
+        public void beforeSessionReload() {
+        }
+
+        @Override
+        public void afterSessionReload() {
         }
     };
-    void onAuthError();
+    void beforeSessionReload();
+
+    void afterSessionReload();
 }
