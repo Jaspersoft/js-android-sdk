@@ -216,7 +216,9 @@ public class RxRepositoryService {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link RepositoryService}
      */
     public RepositoryService toBlocking() {
         return mSyncDelegate;

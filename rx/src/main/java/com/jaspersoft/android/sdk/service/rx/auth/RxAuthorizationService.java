@@ -118,7 +118,9 @@ public class RxAuthorizationService {
     }
 
     /**
-     * TODO javadoc
+     * Provides synchronous counterpart of service
+     *
+     * @return wrapped version of service {@link AuthorizationService}
      */
     public AuthorizationService toBlocking() {
         return mSyncDelegate;

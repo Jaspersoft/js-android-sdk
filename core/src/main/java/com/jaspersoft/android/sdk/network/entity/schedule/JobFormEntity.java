@@ -62,6 +62,9 @@ public class JobFormEntity {
     @Expose
     private JobMailNotificationEntity mailNotification;
 
+    @Expose
+    private JobAlertEntity alert;
+
     public JobFormEntity() {
         this.source = new JobSourceEntity();
         this.repositoryDestination = new RepositoryDestinationEntity();
@@ -188,38 +191,11 @@ public class JobFormEntity {
         return version;
     }
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof JobFormEntity)) return false;
-
-        JobFormEntity entity = (JobFormEntity) o;
-
-        if (version != entity.version) return false;
-        if (baseOutputFilename != null ? !baseOutputFilename.equals(entity.baseOutputFilename) : entity.baseOutputFilename != null)
-            return false;
-        if (description != null ? !description.equals(entity.description) : entity.description != null) return false;
-        if (label != null ? !label.equals(entity.label) : entity.label != null) return false;
-        if (outputFormats != null ? !outputFormats.equals(entity.outputFormats) : entity.outputFormats != null)
-            return false;
-        if (repositoryDestination != null ? !repositoryDestination.equals(entity.repositoryDestination) : entity.repositoryDestination != null)
-            return false;
-        if (source != null ? !source.equals(entity.source) : entity.source != null) return false;
-        if (trigger != null ? !trigger.equals(entity.trigger) : entity.trigger != null) return false;
-
-        return true;
+    public JobAlertEntity getAlert() {
+        return alert;
     }
 
-    @Override
-    public final int hashCode() {
-        int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + version;
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (baseOutputFilename != null ? baseOutputFilename.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + (repositoryDestination != null ? repositoryDestination.hashCode() : 0);
-        result = 31 * result + (outputFormats != null ? outputFormats.hashCode() : 0);
-        result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
-        return result;
+    public void setAlert(JobAlertEntity alert) {
+        this.alert = alert;
     }
 }

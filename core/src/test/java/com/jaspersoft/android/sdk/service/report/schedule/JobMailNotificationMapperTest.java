@@ -220,7 +220,7 @@ public class JobMailNotificationMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedNotification.getIncludeStackTraceWhenJobFails(), is(true));
+        assertThat(mappedNotification.getIncludeStackTrace(), is(true));
     }
 
     @Test
@@ -238,7 +238,7 @@ public class JobMailNotificationMapperTest {
 
         whenMapsEntityToForm();
 
-        assertThat(mappedNotification.getSkipNotificationWhenJobFails(), is(true));
+        assertThat(mappedNotification.getSkipNotification(), is(true));
     }
 
     @Test
@@ -349,7 +349,7 @@ public class JobMailNotificationMapperTest {
 
     private void givenFormWithStackTraceWhenJobFails(boolean flag) {
         JobMailNotification mailNotification = createMailNotificationBuilder()
-                .withIncludeStackTraceWhenJobFails(flag)
+                .withIncludeStackTrace(flag)
                 .build();
         createForm(mailNotification);
     }
@@ -360,7 +360,7 @@ public class JobMailNotificationMapperTest {
 
     private void givenFormWithSkipNotificationWhenJobFails(boolean flag) {
         JobMailNotification mailNotification = createMailNotificationBuilder()
-                .withSkipNotificationWhenJobFails(flag)
+                .withSkipNotification(flag)
                 .build();
         createForm(mailNotification);
     }

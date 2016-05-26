@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO refactor following module in easy testable units
+ *
  *
  * @author Tom Koptel
  * @since 2.3

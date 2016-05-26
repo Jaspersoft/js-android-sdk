@@ -44,8 +44,8 @@ public class JobMailNotification {
     private final Type resultSendType;
     private final Boolean skipEmptyReports;
     private final String messageTextWhenJobFails;
-    private final Boolean includeStackTraceWhenJobFails;
-    private final Boolean skipNotificationWhenJobFails;
+    private final Boolean includeStackTrace;
+    private final Boolean skipNotification;
 
     private JobMailNotification(Builder builder) {
         this.version = builder.version;
@@ -57,8 +57,8 @@ public class JobMailNotification {
         this.resultSendType = builder.resultSendType;
         this.skipEmptyReports = builder.skipEmptyReports;
         this.messageTextWhenJobFails = builder.messageTextWhenJobFails;
-        this.includeStackTraceWhenJobFails = builder.includeStackTraceWhenJobFails;
-        this.skipNotificationWhenJobFails = builder.skipNotificationWhenJobFails;
+        this.includeStackTrace = builder.includeStackTrace;
+        this.skipNotification = builder.skipNotification;
     }
 
     public JobMailNotification.Builder newBuilder() {
@@ -139,13 +139,13 @@ public class JobMailNotification {
     }
 
     @Nullable
-    public Boolean getIncludeStackTraceWhenJobFails() {
-        return includeStackTraceWhenJobFails;
+    public Boolean getIncludeStackTrace() {
+        return includeStackTrace;
     }
 
     @Nullable
-    public Boolean getSkipNotificationWhenJobFails() {
-        return skipNotificationWhenJobFails;
+    public Boolean getSkipNotification() {
+        return skipNotification;
     }
 
     public static class Builder {
@@ -159,8 +159,8 @@ public class JobMailNotification {
         private Type resultSendType;
         private Boolean skipEmptyReports;
         private String messageTextWhenJobFails;
-        private Boolean includeStackTraceWhenJobFails;
-        private Boolean skipNotificationWhenJobFails;
+        private Boolean includeStackTrace;
+        private Boolean skipNotification;
 
         public Builder() {}
 
@@ -174,8 +174,8 @@ public class JobMailNotification {
             this.resultSendType = builder.resultSendType;
             this.skipEmptyReports = builder.skipEmptyReports;
             this.messageTextWhenJobFails = builder.messageTextWhenJobFails;
-            this.includeStackTraceWhenJobFails = builder.includeStackTraceWhenJobFails;
-            this.skipNotificationWhenJobFails = builder.skipNotificationWhenJobFails;
+            this.includeStackTrace = builder.includeStackTrace;
+            this.skipNotification = builder.skipNotification;
         }
 
         /**
@@ -256,18 +256,6 @@ public class JobMailNotification {
         }
 
         /**
-         * Specifies whether the email notification should be skipped for job executions the produce empty reports.
-         * An executed report is considered empty if it doesn't have any generated content.
-         *
-         * @param skipEmptyReports Supported values: true, false. Defalut: false
-         * @return builder for convenient configuration
-         */
-        public Builder withSkipEmptyReports(@Nullable Boolean skipEmptyReports) {
-            this.skipEmptyReports = skipEmptyReports;
-            return this;
-        }
-
-        /**
          * The text of the email notification when the job fails.
          * At job execution time, links to the output and errors might get appended to the notification message text.
          *
@@ -280,24 +268,36 @@ public class JobMailNotification {
         }
 
         /**
-         * Specifies whether the mail notification would include detail stack trace of exception.
+         * Specifies whether the email notification should be skipped for job executions the produce empty reports.
+         * An executed report is considered empty if it doesn't have any generated content.
          *
-         * @param includingStackTraceWhenJobFails Supported values: true, false. Default: false
+         * @param skipEmptyReports Supported values: true, false. Defalut: false
          * @return builder for convenient configuration
          */
-        public Builder withIncludeStackTraceWhenJobFails(@Nullable Boolean includingStackTraceWhenJobFails) {
-            this.includeStackTraceWhenJobFails = includingStackTraceWhenJobFails;
+        public Builder withSkipEmptyReports(@Nullable Boolean skipEmptyReports) {
+            this.skipEmptyReports = skipEmptyReports;
+            return this;
+        }
+
+        /**
+         * Specifies whether the mail notification would include detail stack trace of exception.
+         *
+         * @param includingStackTrace Supported values: true, false. Default: false
+         * @return builder for convenient configuration
+         */
+        public Builder withIncludeStackTrace(@Nullable Boolean includingStackTrace) {
+            this.includeStackTrace = includingStackTrace;
             return this;
         }
 
         /**
          * Specifies whether the mail notification should send if job fails.
          *
-         * @param skipNotificationWhenJobFails Supported values: true, false. Default: false
+         * @param skipNotification Supported values: true, false. Default: false
          * @return builder for convenient configuration
          */
-        public Builder withSkipNotificationWhenJobFails(@Nullable Boolean skipNotificationWhenJobFails) {
-            this.skipNotificationWhenJobFails = skipNotificationWhenJobFails;
+        public Builder withSkipNotification(@Nullable Boolean skipNotification) {
+            this.skipNotification = skipNotification;
             return this;
         }
 
