@@ -255,7 +255,7 @@ public final class Server {
             AnonymousClient anonymousClient = mServer.newClient()
                     .withCookieHandler(mCookieHandler)
                     .create();
-            return new AuthorizedClient(networkClient, anonymousClient);
+            return new AuthorizedClient(networkClient, anonymousClient, mCredentials);
         }
 
         private OkHttpClient configureAuthClient(OkHttpClient client) {
