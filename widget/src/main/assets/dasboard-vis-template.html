@@ -7,17 +7,16 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
     <script type="text/javascript">
-        var Report = function (configuration) {
-            var self = this;
-            this.config = configuration;
+        var MobileClient = function () {
+
+            function Dashboard() {}
+
+            var instance = new Dashboard();
+            instance.constructor = null;
 
             return {
-                run: function () {
-                    var container = document.getElementById("container");
-                    container.innerHTML = "";
-                    container.innerHTML += self.config.content;
-                }
-            }
+                INSTANCE: instance
+            };
         };
     </script>
 </head>
