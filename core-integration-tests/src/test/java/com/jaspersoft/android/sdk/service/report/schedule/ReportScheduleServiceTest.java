@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.env.JrsEnvironmentRule;
@@ -13,8 +37,7 @@ import org.junit.runner.RunWith;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Tom Koptel
@@ -63,21 +86,34 @@ public class ReportScheduleServiceTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, 5);
 
+        JobAlert alert = new JobAlert.Builder()
+                .withSubject("True")
+                .withRecipients(Collections.singleton("a@a.com"))
+                .withRecipientType(JobAlert.RecipientType.OWNER)
+                .withJobState(JobAlert.JobState.ALL)
+                .withIncludeReportJobInfo(true)
+                .withMessageTextWhenJobFails("failed")
+                .withIncludeStackTrace(true)
+                .build();
         RepositoryDestination destination = new RepositoryDestination.Builder()
                 .withFolderUri("/temp")
                 .build();
         JobSource.Builder source = new JobSource.Builder()
                 .withUri(bundle.getUri());
 
+        JobMailNotification notification = new JobMailNotification.Builder()
+                .withSubject("sy")
+                .build();
+
         JobForm.Builder formBuilder = new JobForm.Builder()
+                .withJobAlert(alert)
                 .withLabel("my label")
                 .withDescription("Description")
                 .withRepositoryDestination(destination)
                 .withOutputFormats(Collections.singletonList(JobOutputFormat.HTML))
-                .withBaseOutputFilename("output");
-        if (bundle.hasParams()) {
-            source.withParameters(bundle.getParams());
-        }
+                .withBaseOutputFilename("output")
+                .withMailNotification(notification);
+
         formBuilder.withJobSource(source.build());
         return formBuilder;
     }
@@ -88,7 +124,7 @@ public class ReportScheduleServiceTest {
                 .build();
         JobSearchTask search = service.search(criteria);
         List<JobUnit> units = search.nextLookup();
-        assertThat(units, is(notNullValue()));
+        assertThat(units, is(not(empty())));
 
         return units;
     }

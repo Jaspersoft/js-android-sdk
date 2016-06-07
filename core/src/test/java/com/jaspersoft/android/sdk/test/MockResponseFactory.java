@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -52,5 +52,10 @@ public final class MockResponseFactory {
     public static MockResponse create302() {
         return new MockResponse()
                 .setStatus("HTTP/1.1 302 Found");
+    }
+
+    public static MockResponse create401() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 401 Unauthorized");
     }
 }

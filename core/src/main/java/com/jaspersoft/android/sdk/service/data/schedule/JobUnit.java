@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
 package com.jaspersoft.android.sdk.service.data.schedule;
 
 import com.jaspersoft.android.sdk.service.internal.Preconditions;
@@ -18,6 +42,8 @@ public class JobUnit {
     @NotNull
     private final String mLabel;
     @NotNull
+    private final String mReportLabel;
+    @NotNull
     private final String mDescription;
     @NotNull
     private final JobOwner mOwner;
@@ -28,10 +54,12 @@ public class JobUnit {
     @Nullable
     private final Date mNextFireTime;
 
+
     private JobUnit(Builder builder) {
         mId = builder.mId;
         mVersion = builder.mVersion;
         mReportUri = builder.mReportUri;
+        mReportLabel = builder.mReportLabel;
         mLabel = builder.mLabel;
         mDescription = builder.mDescription;
         mOwner = builder.mOwner;
@@ -59,6 +87,11 @@ public class JobUnit {
     }
 
     @NotNull
+    public String getReportLabel() {
+        return mReportLabel;
+    }
+
+    @NotNull
     public String getDescription() {
         return mDescription;
     }
@@ -83,39 +116,39 @@ public class JobUnit {
         return mNextFireTime;
     }
 
-
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JobUnit)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         JobUnit jobUnit = (JobUnit) o;
 
         if (mId != jobUnit.mId) return false;
         if (mVersion != jobUnit.mVersion) return false;
-        if (!mDescription.equals(jobUnit.mDescription)) return false;
+        if (!mReportUri.equals(jobUnit.mReportUri)) return false;
         if (!mLabel.equals(jobUnit.mLabel)) return false;
-        if (!mNextFireTime.equals(jobUnit.mNextFireTime)) return false;
+        if (!mReportLabel.equals(jobUnit.mReportLabel)) return false;
+        if (!mDescription.equals(jobUnit.mDescription)) return false;
         if (!mOwner.equals(jobUnit.mOwner)) return false;
+        if (mState != jobUnit.mState) return false;
         if (mPreviousFireTime != null ? !mPreviousFireTime.equals(jobUnit.mPreviousFireTime) : jobUnit.mPreviousFireTime != null)
             return false;
-        if (!mReportUri.equals(jobUnit.mReportUri)) return false;
-        if (mState != jobUnit.mState) return false;
+        return !(mNextFireTime != null ? !mNextFireTime.equals(jobUnit.mNextFireTime) : jobUnit.mNextFireTime != null);
 
-        return true;
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         int result = mId;
         result = 31 * result + mVersion;
         result = 31 * result + mReportUri.hashCode();
         result = 31 * result + mLabel.hashCode();
+        result = 31 * result + mReportLabel.hashCode();
         result = 31 * result + mDescription.hashCode();
         result = 31 * result + mOwner.hashCode();
         result = 31 * result + mState.hashCode();
         result = 31 * result + (mPreviousFireTime != null ? mPreviousFireTime.hashCode() : 0);
-        result = 31 * result + mNextFireTime.hashCode();
+        result = 31 * result + (mNextFireTime != null ? mNextFireTime.hashCode() : 0);
         return result;
     }
 
@@ -123,6 +156,7 @@ public class JobUnit {
         private int mId;
         private int mVersion;
         private String mReportUri;
+        private String mReportLabel;
         private String mLabel;
         private String mDescription;
         private JobOwner mOwner;
@@ -142,6 +176,11 @@ public class JobUnit {
 
         public Builder withReportUri(@NotNull String reportUri) {
             mReportUri = Preconditions.checkNotNull(reportUri, "Report uri should not be null");
+            return this;
+        }
+
+        public Builder withReportLabel(@Nullable String reportLabel) {
+            mReportLabel = reportLabel;
             return this;
         }
 

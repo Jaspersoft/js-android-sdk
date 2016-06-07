@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
 package com.jaspersoft.android.sdk.service.data.schedule;
 
 import org.jetbrains.annotations.NotNull;
@@ -53,18 +77,18 @@ public class CalendarRecurrence extends Recurrence {
 
     public static class Builder {
         private static final HashSet<Integer> ALL_MONTHS = new HashSet<>(Arrays.asList(
-                Calendar.JANUARY + 1,
-                Calendar.FEBRUARY + 1,
-                Calendar.MARCH + 1,
-                Calendar.APRIL + 1,
-                Calendar.MAY + 1,
-                Calendar.JUNE + 1,
-                Calendar.JULY + 1,
-                Calendar.AUGUST + 1,
-                Calendar.SEPTEMBER + 1,
-                Calendar.OCTOBER + 1,
-                Calendar.NOVEMBER + 1,
-                Calendar.DECEMBER + 1
+                Calendar.JANUARY,
+                Calendar.FEBRUARY,
+                Calendar.MARCH,
+                Calendar.APRIL,
+                Calendar.MAY,
+                Calendar.JUNE,
+                Calendar.JULY,
+                Calendar.AUGUST,
+                Calendar.SEPTEMBER,
+                Calendar.OCTOBER,
+                Calendar.NOVEMBER,
+                Calendar.DECEMBER
         ));
 
         private Set<Integer> mMonths = Collections.emptySet();
@@ -166,9 +190,6 @@ public class CalendarRecurrence extends Recurrence {
         }
 
         public CalendarRecurrence build() {
-            if (mMonths.isEmpty()) {
-                throw new IllegalArgumentException("At lease one month should be specified");
-            }
             validateMonths();
             return new CalendarRecurrence(mMonths, mDaysType, mMinutes, mHours);
         }

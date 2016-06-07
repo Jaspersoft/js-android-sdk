@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
+ *
+ * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
+ *
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
+ * <http://www.gnu.org/licenses/lgpl>.
+ */
+
 package com.jaspersoft.android.sdk.service.report.schedule;
 
 import com.jaspersoft.android.sdk.network.entity.schedule.JobStateEntity;
@@ -7,10 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -18,16 +40,13 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JobUnitMapperTest {
-    public static final String FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat(FORMAT_PATTERN, Locale.getDefault());
-    public static final String PREVIOUS_FIRE_TIME = "2013-10-03T16:32:05";
-    public static final String NEXT_FIRE_TIME = "2013-11-03T16:32:05";
-
     @Mock
     JobUnitEntity mJobUnitEntity;
     @Mock
     JobStateEntity mStateEntity;
+    @Mock
+    JobUnitDateParser jobUnitDateParser;
+
     private JobUnitMapper mJobUnitMapper;
 
     @Before
@@ -39,14 +58,13 @@ public class JobUnitMapperTest {
         when(mJobUnitEntity.getLabel()).thenReturn("label");
         when(mJobUnitEntity.getDescription()).thenReturn("description");
         when(mJobUnitEntity.getReportUnitURI()).thenReturn("/my/uri");
+        when(mJobUnitEntity.getReportLabel()).thenReturn("report label");
         when(mJobUnitEntity.getOwner()).thenReturn("jasperadmin|organization_1");
 
         when(mJobUnitEntity.getState()).thenReturn(mStateEntity);
-        when(mStateEntity.getPreviousFireTime()).thenReturn(PREVIOUS_FIRE_TIME);
-        when(mStateEntity.getNextFireTime()).thenReturn(NEXT_FIRE_TIME);
         when(mStateEntity.getValue()).thenReturn("NORMAL");
 
-        mJobUnitMapper = new JobUnitMapper();
+        mJobUnitMapper = new JobUnitMapper(jobUnitDateParser);
     }
 
     @Test
@@ -58,9 +76,6 @@ public class JobUnitMapperTest {
 
     @Test
     public void should_map_entity_to_service_counterpart() throws Exception {
-        long previousFireTime = DATE_FORMAT.parse(PREVIOUS_FIRE_TIME).getTime();
-        long nextFireTime = DATE_FORMAT.parse(NEXT_FIRE_TIME).getTime();
-
         JobUnit expected = mJobUnitMapper.transform(mJobUnitEntity);
 
         assertThat(expected.getId(), is(1));
@@ -68,9 +83,8 @@ public class JobUnitMapperTest {
         assertThat(expected.getLabel(), is("label"));
         assertThat(expected.getDescription(), is("description"));
         assertThat(expected.getReportUri(), is("/my/uri"));
+        assertThat(expected.getReportLabel(), is("report label"));
         assertThat(expected.getOwner().toString(), is("jasperadmin|organization_1"));
         assertThat(expected.getState().toString(), is("NORMAL"));
-        assertThat(expected.getPreviousFireTime().getTime(), is(previousFireTime));
-        assertThat(expected.getNextFireTime().getTime(), is(nextFireTime));
     }
 }

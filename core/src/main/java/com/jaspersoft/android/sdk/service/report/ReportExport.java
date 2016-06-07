@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -74,5 +74,14 @@ public class ReportExport {
     @NotNull
     public ReportExportOutput download() throws ServiceException {
         return mExportExecutionApi.downloadExport(mExecutionId, mExportId);
+    }
+
+    /**
+     * Exposes internal id of report export excecution session
+     *
+     * @return export execution id
+     */
+    public String getExportId() {
+        return mExportId;
     }
 }

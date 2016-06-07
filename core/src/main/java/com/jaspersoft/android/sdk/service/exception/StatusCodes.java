@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -116,6 +116,30 @@ public final class StatusCodes {
      * Job was created/updated with output filename that exceed 100 characters
      */
     public static final int JOB_OUTPUT_FILENAME_TOO_LONG = 506;
+    /**
+     * Job was created/updated with calendar trigger and empty months
+     */
+    public static final int JOB_TRIGGER_MONTHS_EMPTY = 507;
+    /**
+     * Job was created/updated with calendar trigger and empty week days
+     */
+    public static final int JOB_TRIGGER_WEEK_DAYS_EMPTY = 508;
+    /**
+     * Job trigger configuration incorrect we can not create schedule
+     */
+    public static final int JOB_CREATION_INTERNAL_ERROR = 509;
+    /**
+     * Job calendar trigger incorrect pattern for days in the month field
+     */
+    public static final int JOB_CALENDAR_PATTERN_ERROR_DAYS_IN_MONTH = 510;
+    /**
+     * Job calendar trigger incorrect pattern for hours
+     */
+    public static final int JOB_CALENDAR_PATTERN_ERROR_HOURS = 511;
+    /**
+     * Job calendar trigger incorrect pattern for hours
+     */
+    public static final int JOB_CALENDAR_PATTERN_ERROR_MINUTES = 512;
 
     // FILTERS
     /**
@@ -127,5 +151,6 @@ public final class StatusCodes {
      */
     public static final int SAVED_VALUES_LABEL_TOO_LONG = 601;
 
-    private StatusCodes() {}
+    private StatusCodes() {
+    }
 }

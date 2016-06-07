@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO refactor following module in easy testable units
+ *
  *
  * @author Tom Koptel
  * @since 2.3
@@ -66,10 +66,17 @@ class AuthRestApi {
             }
         }
 
-        HttpUrl url = mNetworkClient.getBaseUrl().resolve("j_spring_security_check");
+        HttpUrl baseUrl = mNetworkClient.getBaseUrl();
+        HttpUrl url = baseUrl.resolve("j_spring_security_check");
+
+        String scheme = baseUrl.scheme();
+        String host = baseUrl.host();
+        int port = baseUrl.port();
+        String xdm = scheme + "://" + host + ":" + port;
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("x-jasper-xdm", xdm)
                 .post(formBody.build())
                 .build();
 
@@ -78,9 +85,8 @@ class AuthRestApi {
         int statusCode = response.code();
         if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
             String location = response.headers().get("Location");
-            HttpUrl locationUrl = HttpUrl.parse(location);
-            String errorQueryParameter = locationUrl.queryParameter("error");
-            if (errorQueryParameter != null) {
+            boolean error = location.contains("error");
+            if (error) {
                 com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
                         .protocol(response.protocol())
                         .request(response.request())
@@ -97,15 +103,6 @@ class AuthRestApi {
 
     @NotNull
     public EncryptionKey requestEncryptionMetadata() throws IOException, HttpException {
-        HttpUrl url1 = mNetworkClient.getBaseUrl().resolve("rest_v2/serverInfo/edition");
-        Request request1 = new Request.Builder()
-                .addHeader("Accept", "text/plain; charset=UTF-8")
-                .url(url1)
-                .get()
-                .build();
-        mNetworkClient.makeCall(request1);
-
-
         HttpUrl url2 = mNetworkClient.getBaseUrl().resolve("GetEncryptionKey");
 
         Request request2 = new Request.Builder()
@@ -114,8 +111,13 @@ class AuthRestApi {
                 .get()
                 .build();
         try {
-            Response response = mNetworkClient.makeCall(request2);
-            return mNetworkClient.deserializeJson(response, EncryptionKey.class);
+            Response response = mNetworkClient.makeRawCall(request2);
+            int code = response.code();
+            if (code >= 200 && code < 300) {
+                return mNetworkClient.deserializeJson(response, EncryptionKey.class);
+            } else {
+                return EncryptionKey.empty();
+            }
         } catch (JsonSyntaxException ex) {
             /**
              * This possible when security option is disabled on JRS side.

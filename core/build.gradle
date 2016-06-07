@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -23,6 +23,7 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 
 description = 'js-android-sdk-core'
 version = clientModuleVersion
@@ -57,6 +58,10 @@ dependencies {
     testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
     // In order to test on JVM side we need stock BouncyCastle provider
     testCompile 'org.bouncycastle:bcprov-jdk16:1.46'
+}
+
+jacoco {
+    toolVersion = jacocoVersion
 }
 
 apply from: '../scripts/release-artifact.gradle'

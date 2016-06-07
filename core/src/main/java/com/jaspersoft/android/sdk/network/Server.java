@@ -1,24 +1,24 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
- * http://community.jaspersoft.com/project/jaspermobile-android
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
+ * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
  * the following license terms apply:
  *
- * This program is part of TIBCO Jaspersoft Mobile for Android.
+ * This program is part of TIBCO Jaspersoft Mobile SDK for Android.
  *
- * TIBCO Jaspersoft Mobile is free software: you can redistribute it and/or modify
+ * TIBCO Jaspersoft Mobile SDK is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TIBCO Jaspersoft Mobile is distributed in the hope that it will be useful,
+ * TIBCO Jaspersoft Mobile SDK is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with TIBCO Jaspersoft Mobile for Android. If not, see
+ * along with TIBCO Jaspersoft Mobile SDK for Android. If not, see
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
@@ -39,9 +39,9 @@ import java.util.concurrent.TimeUnit;
  * With corresponding API you can configure two types of clients.
  *
  * @author Tom Koptel
- * @since 2.3
  * @see AuthorizedClient
  * @see AnonymousClient
+ * @since 2.3
  */
 public final class Server {
     private final String mBaseUrl;
@@ -109,9 +109,9 @@ public final class Server {
          * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
          *
          * @param timeout specifies the duration of timeout
-         * @param unit specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
-         * @see java.net.URLConnection#setConnectTimeout(int)
+         * @param unit    specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
          * @return builder for convenient configuration
+         * @see java.net.URLConnection#setConnectTimeout(int)
          */
         public Builder withConnectionTimeOut(long timeout, TimeUnit unit) {
             mOkHttpClient.setConnectTimeout(timeout, unit);
@@ -123,9 +123,9 @@ public final class Server {
          * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
          *
          * @param timeout specifies the duration of timeout
-         * @param unit specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
-         * @see java.net.URLConnection#setReadTimeout(int)
+         * @param unit    specifies the type of time out. For instances, could be TimeUnit.MILLISECONDS
          * @return builder for convenient configuration
+         * @see java.net.URLConnection#setReadTimeout(int)
          */
         public Builder withReadTimeout(long timeout, TimeUnit unit) {
             mOkHttpClient.setReadTimeout(timeout, unit);
@@ -167,7 +167,7 @@ public final class Server {
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
          *
-         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}</p>
          * cookie handler will be used.
          *
          * @param cookieHandler custom cookie handler
@@ -195,6 +195,7 @@ public final class Server {
         private final Credentials mCredentials;
 
         private AuthPolicy mAuthenticationPolicy;
+        private AuthenticationLifecycle authenticationLifecycle = AuthenticationLifecycle.NULL;
         private CookieHandler mCookieHandler = CookieHandler.getDefault();
 
         AuthorizedClientBuilder(Server server, Credentials credentials) {
@@ -220,7 +221,7 @@ public final class Server {
          * Sets the cookie handler to be used to read outgoing cookies and write
          * incoming cookies.
          *
-         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}
+         * <p>If unset, the {@link CookieHandler#getDefault() system-wide default}</p>
          * cookie handler will be used.
          *
          * @param cookieHandler custom cookie handler
@@ -228,6 +229,20 @@ public final class Server {
          */
         public AuthorizedClientBuilder withCookieHandler(CookieHandler cookieHandler) {
             mCookieHandler = cookieHandler;
+            return this;
+        }
+
+        /**
+         * Sets listener that will be invoked each time client stumbles upon on authentication error
+         *
+         * @param authenticationLifecycle callback that is called during atuh error
+         * @return builder for convenient configuration
+         */
+        public AuthorizedClientBuilder withAuthenticationLifecycle(@Nullable AuthenticationLifecycle authenticationLifecycle) {
+            if (authenticationLifecycle == null) {
+                authenticationLifecycle = AuthenticationLifecycle.NULL;
+            }
+            this.authenticationLifecycle = authenticationLifecycle;
             return this;
         }
 
@@ -258,7 +273,7 @@ public final class Server {
                     .build();
 
             SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(networkClient);
-            return new AuthStrategy(springAuthServiceFactory);
+            return new AuthStrategy(springAuthServiceFactory, authenticationLifecycle);
         }
 
         private void configureAuthenticator(OkHttpClient client, AuthStrategy authStrategy) {

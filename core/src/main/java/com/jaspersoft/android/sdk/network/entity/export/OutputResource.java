@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 TIBCO Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2016 TIBCO Jaspersoft Corporation. All rights reserved.
  * http://community.jaspersoft.com/project/mobile-sdk-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -35,7 +35,8 @@ public interface OutputResource {
     String getMimeType();
 
     /**
-     * TODO ??? do we need this
+     * Provides number of bytes consumed through stream
+     *
      * @return -1 whether content length undefined
      */
     long getLength();
