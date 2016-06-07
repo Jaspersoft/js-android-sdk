@@ -6,30 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ResourcesActivity">
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_above="@+id/runControl"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
-    <Button
-        android:id="@+id/runControl"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="Run" />
-
     <TextView
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/runControl"
-        android:layout_alignBottom="@+id/runControl"
-        android:layout_toRightOf="@+id/runControl"
-        android:layout_toEndOf="@+id/runControl" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/progress" />
 
 </RelativeLayout>

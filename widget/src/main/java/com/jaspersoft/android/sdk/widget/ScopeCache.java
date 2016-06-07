@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 enum ScopeCache {
     INSTANCE;

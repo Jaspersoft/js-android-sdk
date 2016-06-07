@@ -2,12 +2,14 @@ package com.jaspersoft.android.sdk.widget;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
-interface CommandHandler {
-    void handle();
+interface CommandHandler<C extends Command> {
+    void handle(C command);
 
     interface Factory {
-        CommandHandler create(Command command);
+        CommandHandler<LoadTemplateCommand> loadTemplateCommandHandler();
+
+        CommandHandler<RunCommand> runCommandHandler();
     }
 }

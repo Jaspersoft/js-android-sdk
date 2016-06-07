@@ -2,7 +2,7 @@ package com.jaspersoft.android.sdk.sample;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 public class ResourceFactory {
 

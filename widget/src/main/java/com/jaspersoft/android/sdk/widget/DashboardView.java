@@ -2,36 +2,45 @@ package com.jaspersoft.android.sdk.widget;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.webkit.WebView;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import java.util.UUID;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 public class DashboardView implements Parcelable {
 
-    private WebView webView;
+    private final String key;
+    private final Command.Factory commandFactory;
+    private final Scope scope;
 
-    public static DashboardView newInstance(AuthorizedClient client) {
-        return new DashboardView();
+    private final ScopeCache scopeCache = ScopeCache.INSTANCE;
+    Lifecycle lifecycle = NullLifeCycle.INSTANCE;
+
+    public DashboardView() {
+        this(new CommandFactory());
     }
 
-    public DashboardView registerView(WebView webView) {
-        this.webView = webView;
+    DashboardView(Command.Factory factory) {
+        this.key = UUID.randomUUID().toString();
+        this.commandFactory = factory;
+        this.scope = Scope.newInstance(this);
+        scopeCache.put(key, scope);
+    }
+
+    public DashboardView registerLifecycle(Lifecycle lifecycle) {
+        if (lifecycle == null) {
+            lifecycle = NullLifeCycle.INSTANCE;
+        }
+        this.lifecycle = lifecycle;
         return this;
     }
 
-    public DashboardView registerCallbacks(DashboardCallbacks callbacks) {
-        return this;
-    }
-
-    public DashboardView done() {
-        return this;
-    }
-
-    public void run(String uri) {
+    public void run(RunOptions runOptions) {
+        Command runCommand = commandFactory.createInitCommand(runOptions);
+        Dispatcher dispatcher = scope.getDispatcher();
+        dispatcher.dispatch(runCommand);
     }
 
     public void resume() {
@@ -40,7 +49,10 @@ public class DashboardView implements Parcelable {
     public void pause() {
     }
 
-    public interface DashboardCallbacks {}
+    public interface Lifecycle {
+        void onInflateFinish();
+        void onScriptLoaded();
+    }
 
     @Override
     public int describeContents() {
@@ -49,12 +61,13 @@ public class DashboardView implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-    }
-
-    public DashboardView() {
+        dest.writeString(this.key);
     }
 
     protected DashboardView(Parcel in) {
+        this.key = in.readString();
+        this.commandFactory = new CommandFactory();
+        this.scope = scopeCache.get(key);
     }
 
     public static final Creator<DashboardView> CREATOR = new Creator<DashboardView>() {
@@ -68,4 +81,16 @@ public class DashboardView implements Parcelable {
             return new DashboardView[size];
         }
     };
+
+    private static class NullLifeCycle implements Lifecycle {
+        private static final Lifecycle INSTANCE = new NullLifeCycle();
+
+        @Override
+        public void onInflateFinish() {
+        }
+
+        @Override
+        public void onScriptLoaded() {
+        }
+    }
 }

@@ -2,11 +2,16 @@ package com.jaspersoft.android.sdk.widget;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 class CommandFactory implements Command.Factory {
     @Override
-    public Command create() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Command createInitCommand(RunOptions options) {
+        return new LoadTemplateCommand(options);
+    }
+
+    @Override
+    public Command createRunCommand(RunOptions options) {
+        return new RunCommand(options);
     }
 }

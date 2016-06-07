@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 public class Profile implements Parcelable {
     private final String url;

@@ -7,17 +7,90 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
     <script type="text/javascript">
-        var MobileClient = function () {
+        window.Android = window.Android || new Proxy({}, {
+            get: function (target, name) {
+                return function (args) {
+                    var resultArgs = args || [];
+                    console.log("Function '" + name + "' has been called with args '" + resultArgs + "' on Android object");
+                }
+            }
+        });
 
-            function Dashboard() {}
+        var MobileClient = (function () {
+            var self = this;
 
-            var instance = new Dashboard();
-            instance.constructor = null;
-
-            return {
-                INSTANCE: instance
+            var setupVisualizeScript = function (callback) {
+                var visScript = document.createElement('script');
+                visScript.onload = callback;
+                visScript.setAttribute('src', self.config.server.url + "client/visualize.js?_opt=false");
+                document.head.appendChild(visScript);
             };
-        };
+
+            var loadVisualize = function (callback) {
+                var onComplete = function (v) {
+                    var dashboard = new Dashboard(v);
+                    self.dashboard = dashboard;
+
+                    if (callback !== undefined) {
+                        callback.call(self, dashboard);
+                    }
+
+                    Android.onVisualizeReady();
+                };
+
+                var auth = self.config.auth;
+                if (auth === undefined) {
+                    visualize(onComplete);
+                } else {
+                    visualize({auth: auth}, onComplete);
+                }
+            };
+
+            function Client() {
+                return {
+                    setup: function (config, callback) {
+                        self.config = config;
+                        var loadFunc = loadVisualize.bind(this, callback);
+                        setupVisualizeScript(loadFunc);
+                    },
+                    dashboard: function () {
+                        return self.dashboard;
+                    }
+                }
+            }
+
+            function Dashboard(visualize) {
+                var _dashboardContext = this;
+                this.visualize = visualize;
+
+                return {
+                    run: function (uri) {
+                        var v = _dashboardContext.visualize;
+                        v.dashboard({
+                            resource: uri,
+                            container: "#container",
+                            success: function () {
+                                console.log("dashboard rendered");
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        });
+                    }
+                }
+            }
+
+            var instance;
+            return {
+                instance: function () {
+                    if (instance == null) {
+                        instance = new Client();
+                        instance.constructor = null;
+                    }
+                    return instance;
+                }
+            };
+        })();
     </script>
 </head>
 <body>

@@ -4,10 +4,11 @@ package com.jaspersoft.android.sdk.widget;
  * @author Tom Koptel
  * @since 2.6
  */
-class RunCommand implements Command {
+class LoadTemplateCommand implements Command {
+
     private final RunOptions options;
 
-    public RunCommand(RunOptions options) {
+    LoadTemplateCommand(RunOptions options) {
         this.options = options;
     }
 

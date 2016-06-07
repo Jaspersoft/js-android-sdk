@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,7 @@ import android.webkit.WebView;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
 public class RetainedWebViewFragment extends Fragment {
     public static RetainedWebViewFragment newInstance() {
@@ -29,6 +30,16 @@ public class RetainedWebViewFragment extends Fragment {
         return webView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        boolean hasCallback = getActivity() instanceof Callback;
+        if (hasCallback) {
+            Callback callback = (Callback) getActivity();
+            callback.onWebViewReady(webView);
+        }
+    }
+
     public WebView getWebView() {
         return webView;
     }
@@ -40,5 +51,9 @@ public class RetainedWebViewFragment extends Fragment {
         if (getRetainInstance() && webView.getParent() instanceof ViewGroup) {
             ((ViewGroup) webView.getParent()).removeView(webView);
         }
+    }
+
+    public interface Callback {
+        void onWebViewReady(WebView webView);
     }
 }

@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 /**
  * @author Tom Koptel
- * @since 2.3
+ * @since 2.6
  */
 class AssetFile {
     public static final AssetFile EMPTY = new AssetFile("empty-asset");

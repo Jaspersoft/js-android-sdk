@@ -2,7 +2,11 @@ package com.jaspersoft.android.sdk.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.TextView;
 
 import com.jaspersoft.android.sdk.cookie.CookieAuthenticationHandler;
 import com.jaspersoft.android.sdk.cookie.CookieProvision;
@@ -13,35 +17,95 @@ import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
 import com.jaspersoft.android.sdk.widget.DashboardView;
 import com.jaspersoft.android.sdk.widget.RetainedWebViewFragment;
+import com.jaspersoft.android.sdk.widget.RunOptions;
 
 import java.net.CookieManager;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
-public class DashboardViewActivity extends AppCompatActivity implements DashboardView.DashboardCallbacks {
+public class DashboardViewActivity extends AppCompatActivity implements RetainedWebViewFragment.Callback{
 
     public static final String RESOURCE_VIEW_KEY = "resource-view";
 
     private DashboardView resourceView;
     private Resource resource;
     private Profile profile;
+    private TextView progress;
+    private Bundle savedState;
+    private WebView webView;
+
+    private boolean runControlFlag;
 
     public void onCreate(Bundle in) {
         super.onCreate(in);
         setContentView(R.layout.activity_preview);
+        savedState = in;
 
         resource = extractResource();
         profile = resource.getProfile();
 
-        WebView webView = provideWebview(in);
-        resourceView = provideDashboardView(profile, in)
-                .registerView(webView)
-                .registerCallbacks(this)
-                .done();
+        progress = (TextView) findViewById(R.id.progress);
+        progress.setText("Loading...");
 
-        resourceView.run(resource.getUri()); // if process already
+        initWebView(in);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.run);
+        item.setVisible(runControlFlag);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.controls, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.run:
+                runDashboard();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onWebViewReady(WebView webView) {
+        setRunControlVisible();
+        resourceView = provideDashboardView(savedState)
+                .registerLifecycle(new DashboardView.Lifecycle() {
+                    @Override
+                    public void onInflateFinish() {
+                        progress.setText("Awaiting script...");
+                    }
+
+                    @Override
+                    public void onScriptLoaded() {
+                        progress.setText("Awaiting dashboard...");
+                    }
+                });
+        this.webView = webView;
+    }
+
+    private void setRunControlVisible() {
+        runControlFlag = true;
+        supportInvalidateOptionsMenu();
+    }
+
+    private void runDashboard() {
+        RunOptions options = new RunOptions.Builder()
+                .client(provideClient(profile))
+                .webView(webView)
+                .uri(resource.getUri())
+                .build();
+        resourceView.run(options);
     }
 
     @Override
@@ -56,15 +120,16 @@ public class DashboardViewActivity extends AppCompatActivity implements Dashboar
         resourceView.pause();
     }
 
-    public void onSavedInstanceState(Bundle out) {
-        out.putParcelable(RESOURCE_VIEW_KEY, resourceView);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RESOURCE_VIEW_KEY, resourceView);
     }
 
-    private DashboardView provideDashboardView(Profile profile, Bundle in) {
+    private DashboardView provideDashboardView(Bundle in) {
         DashboardView reportView;
         if (in == null) {
-            AuthorizedClient client = provideClient(profile);
-            reportView = DashboardView.newInstance(client);
+            reportView = new DashboardView();
         } else {
             reportView = in.getParcelable(RESOURCE_VIEW_KEY);
         }
@@ -94,19 +159,12 @@ public class DashboardViewActivity extends AppCompatActivity implements Dashboar
         return extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
     }
 
-    private WebView provideWebview(Bundle in) {
-        RetainedWebViewFragment webViewFragment;
+    private void initWebView(Bundle in) {
         if (in == null) {
-            webViewFragment = new RetainedWebViewFragment();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, webViewFragment, "web-view")
-                    .commitNow();
-        } else {
-            webViewFragment = (RetainedWebViewFragment) getSupportFragmentManager()
-                    .findFragmentByTag("web-view");
+                    .add(R.id.container, RetainedWebViewFragment.newInstance(), "web-view")
+                    .commit();
         }
-        return webViewFragment.getWebView();
     }
-
 }
