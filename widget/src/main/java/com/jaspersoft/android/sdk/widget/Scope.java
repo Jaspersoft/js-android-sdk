@@ -52,6 +52,14 @@ class Scope {
             case SCRIPT_LOADED:
                 view.lifecycle.onScriptLoaded();
                 break;
+            case DASHBOARD_LOADED:
+                view.lifecycle.onDashboardRendered();
+                break;
+            case WINDOW_ERROR:
+                Object[] data = event.getData();
+                WindowError error = (WindowError) data[0];
+                view.errorCallback.onWindowError(error);
+                break;
         }
     }
 }

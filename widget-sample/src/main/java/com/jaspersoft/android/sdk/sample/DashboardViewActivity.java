@@ -18,6 +18,7 @@ import com.jaspersoft.android.sdk.network.SpringCredentials;
 import com.jaspersoft.android.sdk.widget.DashboardView;
 import com.jaspersoft.android.sdk.widget.RetainedWebViewFragment;
 import com.jaspersoft.android.sdk.widget.RunOptions;
+import com.jaspersoft.android.sdk.widget.WindowError;
 
 import java.net.CookieManager;
 
@@ -80,6 +81,12 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
     public void onWebViewReady(WebView webView) {
         setRunControlVisible();
         resourceView = provideDashboardView(savedState)
+                .registerErrorCallback(new DashboardView.ErrorCallback() {
+                    @Override
+                    public void onWindowError(WindowError error) {
+                        progress.setText(error.toString());
+                    }
+                })
                 .registerLifecycle(new DashboardView.Lifecycle() {
                     @Override
                     public void onInflateFinish() {
@@ -89,6 +96,11 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                     @Override
                     public void onScriptLoaded() {
                         progress.setText("Awaiting dashboard...");
+                    }
+
+                    @Override
+                    public void onDashboardRendered() {
+                        progress.setText("Dashboard rendered");
                     }
                 });
         this.webView = webView;

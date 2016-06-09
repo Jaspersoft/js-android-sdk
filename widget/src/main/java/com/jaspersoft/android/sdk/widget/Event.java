@@ -7,9 +7,15 @@ package com.jaspersoft.android.sdk.widget;
 class Event {
 
     private final Type type;
+    private final Object[] data;
 
-    Event(Type type) {
+    Event(Type type, Object... data) {
         this.type = type;
+        this.data = data;
+    }
+
+    public Object[] getData() {
+        return data;
     }
 
     public Type getType() {
@@ -18,11 +24,18 @@ class Event {
 
     enum Type {
         INFLATE_COMPLETE,
-        SCRIPT_LOADED;
+        SCRIPT_LOADED,
+        DASHBOARD_LOADED,
+        WINDOW_ERROR;
     }
 
     interface Factory {
         Event createInflateCompleteEvent();
+
         Event createScriptLoadedEvent();
+
+        Event createDashboardLoadedEvent();
+
+        Event createWindowErrorEvent(WindowError error);
     }
 }

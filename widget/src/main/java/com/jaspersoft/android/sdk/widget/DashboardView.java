@@ -16,7 +16,9 @@ public class DashboardView implements Parcelable {
     private final Scope scope;
 
     private final ScopeCache scopeCache = ScopeCache.INSTANCE;
+
     Lifecycle lifecycle = NullLifeCycle.INSTANCE;
+    ErrorCallback errorCallback = NullErrorCallback.INSTANCE;
 
     public DashboardView() {
         this(new CommandFactory());
@@ -37,6 +39,14 @@ public class DashboardView implements Parcelable {
         return this;
     }
 
+    public DashboardView registerErrorCallback(ErrorCallback errorCallback) {
+        if (errorCallback == null) {
+            errorCallback = NullErrorCallback.INSTANCE;
+        }
+        this.errorCallback = errorCallback;
+        return this;
+    }
+
     public void run(RunOptions runOptions) {
         Command runCommand = commandFactory.createInitCommand(runOptions);
         Dispatcher dispatcher = scope.getDispatcher();
@@ -51,7 +61,14 @@ public class DashboardView implements Parcelable {
 
     public interface Lifecycle {
         void onInflateFinish();
+
         void onScriptLoaded();
+
+        void onDashboardRendered();
+    }
+
+    public interface ErrorCallback {
+        void onWindowError(WindowError error);
     }
 
     @Override
@@ -91,6 +108,18 @@ public class DashboardView implements Parcelable {
 
         @Override
         public void onScriptLoaded() {
+        }
+
+        @Override
+        public void onDashboardRendered() {
+        }
+    }
+
+    private static class NullErrorCallback implements ErrorCallback {
+        private static final NullErrorCallback INSTANCE = new NullErrorCallback();
+
+        @Override
+        public void onWindowError(WindowError error) {
         }
     }
 }

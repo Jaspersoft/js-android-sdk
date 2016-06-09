@@ -7,6 +7,18 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
     <script type="text/javascript">
+        var NativeCallbacks = {
+            onVisualizeReady: function() {
+                return Android.onVisualizeReady();
+            },
+            onDashboardRenedered: function() {
+                return Android.onDashboardRenedered();
+            },
+            onWindowError: function(error) {
+                return Android.onWindowError(error);
+            }
+        };
+
         window.Android = window.Android || new Proxy({}, {
             get: function (target, name) {
                 return function (args) {
@@ -15,6 +27,18 @@
                 }
             }
         });
+
+        window.onerror = function (message, source, line, column) {
+            var e = {
+                message: message,
+                source: source,
+                line: line,
+                column: column
+            };
+            var erroLog = JSON.stringify(e);
+            NativeCallbacks.onWindowError(erroLog);
+            return false;
+        };
 
         var MobileClient = (function () {
             var self = this;
@@ -35,7 +59,7 @@
                         callback.call(self, dashboard);
                     }
 
-                    Android.onVisualizeReady();
+                    NativeCallbacks.onVisualizeReady();
                 };
 
                 var auth = self.config.auth;
@@ -70,6 +94,7 @@
                             resource: uri,
                             container: "#container",
                             success: function () {
+                                NativeCallbacks.onDashboardRenedered();
                                 console.log("dashboard rendered");
                             },
                             error: function (e) {

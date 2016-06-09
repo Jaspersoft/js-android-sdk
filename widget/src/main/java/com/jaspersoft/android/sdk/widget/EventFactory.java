@@ -14,4 +14,14 @@ class EventFactory implements Event.Factory {
     public Event createScriptLoadedEvent() {
         return new Event(Event.Type.SCRIPT_LOADED);
     }
+
+    @Override
+    public Event createDashboardLoadedEvent() {
+        return new Event(Event.Type.DASHBOARD_LOADED);
+    }
+
+    @Override
+    public Event createWindowErrorEvent(WindowError error) {
+        return new Event(Event.Type.WINDOW_ERROR, error);
+    }
 }

@@ -6,6 +6,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 
 /**
@@ -86,6 +87,17 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
     private class VisualizeEvents {
         @JavascriptInterface
         public void onVisualizeReady() {
+            dispatcher.dispatch(eventFactory.createScriptLoadedEvent());
+        }
+
+        @JavascriptInterface
+        public void onDashboardRenedered() {
+            dispatcher.dispatch(eventFactory.createDashboardLoadedEvent());
+        }
+
+        @JavascriptInterface
+        public void onWindowError(String errorLog) {
+            WindowError error = new Gson().fromJson(errorLog, WindowError.class);
             dispatcher.dispatch(eventFactory.createScriptLoadedEvent());
         }
     }
