@@ -24,4 +24,24 @@ class EventFactory implements Event.Factory {
     public Event createWindowErrorEvent(WindowError error) {
         return new Event(Event.Type.WINDOW_ERROR, error);
     }
+
+    @Override
+    public Event createMaximizeStartEvent(String name) {
+        return new Event(Event.Type.MAXIMIZE_START, name);
+    }
+
+    @Override
+    public Event createMaximizeEndEvent(String name) {
+        return new Event(Event.Type.MAXIMIZE_END, name);
+    }
+
+    @Override
+    public Event createMinimizeStartEvent(String name) {
+        return new Event(Event.Type.MINIMIZE_START, name);
+    }
+
+    @Override
+    public Event createMinimizeEndEvent(String name) {
+        return new Event(Event.Type.MINIMIZE_END, name);
+    }
 }

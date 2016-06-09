@@ -81,13 +81,34 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
     public void onWebViewReady(WebView webView) {
         setRunControlVisible();
         resourceView = provideDashboardView(savedState)
-                .registerErrorCallback(new DashboardView.ErrorCallback() {
+                .registerErrorCallbacks(new DashboardView.ErrorCallbacks() {
                     @Override
                     public void onWindowError(WindowError error) {
                         progress.setText(error.toString());
                     }
                 })
-                .registerLifecycle(new DashboardView.Lifecycle() {
+                .registerDashletCallbacks(new DashboardView.DashletCallbacks() {
+                    @Override
+                    public void onMaximizeStart(String componentName) {
+                        progress.setText("Start maximizing component: " + componentName);
+                    }
+
+                    @Override
+                    public void onMaximizeEnd(String componentName) {
+                        progress.setText("End maximizing component: " + componentName);
+                    }
+
+                    @Override
+                    public void onMinimizeStart(String componentName) {
+                        progress.setText("Start minimizing component: " + componentName);
+                    }
+
+                    @Override
+                    public void onMinimizeEnd(String componentName) {
+                        progress.setText("End minimizing component: " + componentName);
+                    }
+                })
+                .registerLifecycleCallbacks(new DashboardView.LifecycleCallbacks() {
                     @Override
                     public void onInflateFinish() {
                         progress.setText("Awaiting script...");

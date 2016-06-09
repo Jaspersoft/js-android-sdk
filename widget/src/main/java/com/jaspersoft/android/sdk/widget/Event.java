@@ -18,6 +18,10 @@ class Event {
         return data;
     }
 
+    public <T> T firstArg(Class<T> type) {
+        return type.cast(data[0]);
+    }
+
     public Type getType() {
         return type;
     }
@@ -26,6 +30,10 @@ class Event {
         INFLATE_COMPLETE,
         SCRIPT_LOADED,
         DASHBOARD_LOADED,
+        MAXIMIZE_START,
+        MAXIMIZE_END,
+        MINIMIZE_START,
+        MINIMIZE_END,
         WINDOW_ERROR;
     }
 
@@ -37,5 +45,13 @@ class Event {
         Event createDashboardLoadedEvent();
 
         Event createWindowErrorEvent(WindowError error);
+
+        Event createMaximizeStartEvent(String name);
+
+        Event createMaximizeEndEvent(String name);
+
+        Event createMinimizeStartEvent(String name);
+
+        Event createMinimizeEndEvent(String name);
     }
 }

@@ -17,8 +17,9 @@ public class DashboardView implements Parcelable {
 
     private final ScopeCache scopeCache = ScopeCache.INSTANCE;
 
-    Lifecycle lifecycle = NullLifeCycle.INSTANCE;
-    ErrorCallback errorCallback = NullErrorCallback.INSTANCE;
+    LifecycleCallbacks lifecycleCallbacks = NullLifeCycle.INSTANCE;
+    ErrorCallbacks errorCallbacks = NullErrorCallbacks.INSTANCE;
+    DashletCallbacks dashletCallbacks = NullDashletCallbacks.INSTANCE;
 
     public DashboardView() {
         this(new CommandFactory());
@@ -31,19 +32,27 @@ public class DashboardView implements Parcelable {
         scopeCache.put(key, scope);
     }
 
-    public DashboardView registerLifecycle(Lifecycle lifecycle) {
-        if (lifecycle == null) {
-            lifecycle = NullLifeCycle.INSTANCE;
+    public DashboardView registerLifecycleCallbacks(LifecycleCallbacks lifecycleCallbacks) {
+        if (lifecycleCallbacks == null) {
+            lifecycleCallbacks = NullLifeCycle.INSTANCE;
         }
-        this.lifecycle = lifecycle;
+        this.lifecycleCallbacks = lifecycleCallbacks;
         return this;
     }
 
-    public DashboardView registerErrorCallback(ErrorCallback errorCallback) {
-        if (errorCallback == null) {
-            errorCallback = NullErrorCallback.INSTANCE;
+    public DashboardView registerErrorCallbacks(ErrorCallbacks errorCallbacks) {
+        if (errorCallbacks == null) {
+            errorCallbacks = NullErrorCallbacks.INSTANCE;
         }
-        this.errorCallback = errorCallback;
+        this.errorCallbacks = errorCallbacks;
+        return this;
+    }
+
+    public DashboardView registerDashletCallbacks(DashletCallbacks dashletCallbacks) {
+        if (dashletCallbacks == null) {
+            dashletCallbacks = NullDashletCallbacks.INSTANCE;
+        }
+        this.dashletCallbacks = dashletCallbacks;
         return this;
     }
 
@@ -59,7 +68,7 @@ public class DashboardView implements Parcelable {
     public void pause() {
     }
 
-    public interface Lifecycle {
+    public interface LifecycleCallbacks {
         void onInflateFinish();
 
         void onScriptLoaded();
@@ -67,8 +76,18 @@ public class DashboardView implements Parcelable {
         void onDashboardRendered();
     }
 
-    public interface ErrorCallback {
+    public interface ErrorCallbacks {
         void onWindowError(WindowError error);
+    }
+
+    public interface DashletCallbacks {
+        void onMaximizeStart(String componentName);
+
+        void onMaximizeEnd(String componentName);
+
+        void onMinimizeStart(String componentName);
+
+        void onMinimizeEnd(String componentName);
     }
 
     @Override
@@ -99,8 +118,8 @@ public class DashboardView implements Parcelable {
         }
     };
 
-    private static class NullLifeCycle implements Lifecycle {
-        private static final Lifecycle INSTANCE = new NullLifeCycle();
+    private static class NullLifeCycle implements LifecycleCallbacks {
+        private static final LifecycleCallbacks INSTANCE = new NullLifeCycle();
 
         @Override
         public void onInflateFinish() {
@@ -115,11 +134,31 @@ public class DashboardView implements Parcelable {
         }
     }
 
-    private static class NullErrorCallback implements ErrorCallback {
-        private static final NullErrorCallback INSTANCE = new NullErrorCallback();
+    private static class NullErrorCallbacks implements ErrorCallbacks {
+        private static final NullErrorCallbacks INSTANCE = new NullErrorCallbacks();
 
         @Override
         public void onWindowError(WindowError error) {
+        }
+    }
+
+    private static class NullDashletCallbacks implements DashletCallbacks {
+        private static final DashletCallbacks INSTANCE = new NullDashletCallbacks();
+
+        @Override
+        public void onMaximizeStart(String componentName) {
+        }
+
+        @Override
+        public void onMaximizeEnd(String componentName) {
+        }
+
+        @Override
+        public void onMinimizeStart(String componentName) {
+        }
+
+        @Override
+        public void onMinimizeEnd(String componentName) {
         }
     }
 }

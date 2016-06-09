@@ -6,16 +6,32 @@
     <title>TIBCO Jaspersoft</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
+    <script type="text/javascript" charset="utf-8" src="http://zeptojs.com/zepto.min.js"></script>
     <script type="text/javascript">
         var NativeCallbacks = {
-            onVisualizeReady: function() {
+            onVisualizeReady: function () {
                 return Android.onVisualizeReady();
             },
-            onDashboardRenedered: function() {
+            onDashboardRenedered: function () {
                 return Android.onDashboardRenedered();
             },
-            onWindowError: function(error) {
+            onWindowError: function (error) {
                 return Android.onWindowError(error);
+            },
+            onMaximizeStart: function (componentName) {
+                return Android.onMaximizeStart(componentName);
+            },
+            onMaximizeEnd: function (componentName) {
+                return Android.onMaximizeEnd(componentName);
+            },
+            onMinimizeStart: function () {
+                return Android.onMinimizeStart(componentName);
+            },
+            onMinimizeEnd: function (componentName) {
+                return Android.onMinimizeEnd(componentName);
+            },
+            onDashletError: function (error) {
+                return Android.onDashletError(error);
             }
         };
 
@@ -35,8 +51,8 @@
                 line: line,
                 column: column
             };
-            var erroLog = JSON.stringify(e);
-            NativeCallbacks.onWindowError(erroLog);
+            var errorLog = JSON.stringify(e);
+            NativeCallbacks.onWindowError(errorLog);
             return false;
         };
 
@@ -86,22 +102,98 @@
             function Dashboard(visualize) {
                 var _dashboardContext = this;
                 this.visualize = visualize;
+                this.dashboardId = visualize.dashboard.componentIdDomAttribute;
+
+                var listDashlets = function () {
+                    var d = _dashboardContext.instance;
+                    var dashboardId = _dashboardContext.dashboardId;
+                    var container = d.container();
+
+                    return $(container).find("[" + dashboardId + "] > .dashlet").parent();
+                };
+
+                var getComponentById = function (id) {
+                    var dashboard = _dashboardContext.instance;
+                    var components = dashboard.data().components;
+                    var byId = function (c) {
+                        return c.id == id;
+                    };
+                    var filtered = components.filter(byId);
+                    return filtered[0];
+                };
+
+                var maximizeDashlet = function () {
+                    var dashboard = _dashboardContext.instance;
+                    var dashboardId = _dashboardContext.dashboardId;
+
+                    var dashlet = $(this);
+                    var dashletId = dashlet.attr(dashboardId);
+                    var component = getComponentById(dashletId);
+
+                    NativeCallbacks.onMaximizeStart(component.name);
+                    dashboard.updateComponent(dashletId, {
+                                maximized: true,
+                                interactive: true
+                            },
+                            function () {
+                                _dashboardContext.maximized = component;
+                                NativeCallbacks.onMaximizeEnd(component.name);
+                            },
+                            function (error) {
+                                NativeCallbacks.onDashletError(error);
+                            }
+                    );
+                };
+
+                var minimizeDashletFn = function () {
+                    var component = _dashboardContext.maximized;
+                    if (component) {
+                        var dashboard = _dashboardContext.instance;
+                        NativeCallbacks.onMinimizeStart(component.name);
+                        dashboard.updateComponent(component.id, {
+                                    maximized: false,
+                                    interactive: false
+                                },
+                                function () {
+                                    _dashboardContext.maximized = undefined;
+                                    NativeCallbacks.onMinimizeEnd(component.name);
+                                },
+                                function (error) {
+                                    NativeCallbacks.onDashletError(error);
+                                }
+                        );
+                    }
+                };
+
+                var configureMaximization = function () {
+                    var dashlets = _dashboardContext.dashlets;
+                    dashlets.on("click", maximizeDashlet);
+                };
+
+                var dashboardRenderedFn = function () {
+                    _dashboardContext.dashlets = listDashlets();
+                    configureMaximization();
+                    NativeCallbacks.onDashboardRenedered();
+                };
+
+                var dashboardErrorFn = function (error) {
+                    var errorLog = JSON.stringify(error);
+                    console.log(errorLog);
+                };
+
+                var runFn = function (uri) {
+                    var v = _dashboardContext.visualize;
+                    _dashboardContext.instance = v.dashboard({
+                        resource: uri,
+                        container: "#container",
+                        success: dashboardRenderedFn,
+                        error: dashboardErrorFn
+                    });
+                };
 
                 return {
-                    run: function (uri) {
-                        var v = _dashboardContext.visualize;
-                        v.dashboard({
-                            resource: uri,
-                            container: "#container",
-                            success: function () {
-                                NativeCallbacks.onDashboardRenedered();
-                                console.log("dashboard rendered");
-                            },
-                            error: function (e) {
-                                console.log(e);
-                            }
-                        });
-                    }
+                    minimizeDashlet: minimizeDashletFn,
+                    run: runFn
                 }
             }
 

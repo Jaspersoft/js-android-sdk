@@ -98,7 +98,27 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         @JavascriptInterface
         public void onWindowError(String errorLog) {
             WindowError error = new Gson().fromJson(errorLog, WindowError.class);
-            dispatcher.dispatch(eventFactory.createScriptLoadedEvent());
+            dispatcher.dispatch(eventFactory.createWindowErrorEvent(error));
+        }
+
+        @JavascriptInterface
+        public void onMaximizeStart(String componentName) {
+            dispatcher.dispatch(eventFactory.createMaximizeStartEvent(componentName));
+        }
+
+        @JavascriptInterface
+        public void onMaximizeEnd(String componentName) {
+            dispatcher.dispatch(eventFactory.createMaximizeEndEvent(componentName));
+        }
+
+        @JavascriptInterface
+        public void onMinimizeStart(String componentName) {
+            dispatcher.dispatch(eventFactory.createMinimizeStartEvent(componentName));
+        }
+
+        @JavascriptInterface
+        public void onMinimizeEnd(String componentName) {
+            dispatcher.dispatch(eventFactory.createMinimizeEndEvent(componentName));
         }
     }
 }

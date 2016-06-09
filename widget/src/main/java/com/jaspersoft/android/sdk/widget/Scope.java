@@ -19,11 +19,9 @@ class Scope {
 
     Scope(DashboardView view, Dispatcher dispatcher, CommandHandler.Factory factory) {
         this.view = view;
-
-        dispatcher.register(this);
+        this.handlerFactory = factory;
         this.dispatcher = dispatcher;
-
-        handlerFactory = factory;
+        dispatcher.register(this);
     }
 
     public Dispatcher getDispatcher() {
@@ -47,18 +45,28 @@ class Scope {
         Event.Type type = event.getType();
         switch (type) {
             case INFLATE_COMPLETE:
-                view.lifecycle.onInflateFinish();
+                view.lifecycleCallbacks.onInflateFinish();
                 break;
             case SCRIPT_LOADED:
-                view.lifecycle.onScriptLoaded();
+                view.lifecycleCallbacks.onScriptLoaded();
                 break;
             case DASHBOARD_LOADED:
-                view.lifecycle.onDashboardRendered();
+                view.lifecycleCallbacks.onDashboardRendered();
                 break;
             case WINDOW_ERROR:
-                Object[] data = event.getData();
-                WindowError error = (WindowError) data[0];
-                view.errorCallback.onWindowError(error);
+                view.errorCallbacks.onWindowError(event.firstArg(WindowError.class));
+                break;
+            case MAXIMIZE_START:
+                view.dashletCallbacks.onMaximizeStart(event.firstArg(String.class));
+                break;
+            case MAXIMIZE_END:
+                view.dashletCallbacks.onMaximizeEnd(event.firstArg(String.class));
+                break;
+            case MINIMIZE_START:
+                view.dashletCallbacks.onMinimizeStart(event.firstArg(String.class));
+                break;
+            case MINIMIZE_END:
+                view.dashletCallbacks.onMinimizeEnd(event.firstArg(String.class));
                 break;
         }
     }
