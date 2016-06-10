@@ -6,7 +6,6 @@
     <title>TIBCO Jaspersoft</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <script type="text/javascript" charset="utf-8" src="http://zeptojs.com/zepto.min.js"></script>
     <script type="text/javascript">
         var NativeCallbacks = {
             onVisualizeReady: function () {
@@ -56,6 +55,38 @@
             return false;
         };
 
+        var DOMObserver = (function () {
+            function DOMObserver() {
+            }
+
+            DOMObserver._instance = null;
+
+            DOMObserver.observeSubtree = function (callback) {
+                this._instance = new DOMObserver;
+                this._instance.callback = callback;
+                return this._instance;
+            };
+
+            DOMObserver.prototype.await = function () {
+                var timeout = null;
+                var body = $("body");
+
+                body.unbind();
+                body.bind("DOMSubtreeModified", (function (_this) {
+                    if (timeout != null) {
+                        window.clearInterval(timeout);
+                    }
+                    timeout = window.setTimeout(function () {
+                        window.clearInterval(timeout);
+                        body.unbind();
+                        _this.callback.call(_this);
+                    }, 2000);
+                })(this));
+            };
+
+            return DOMObserver;
+        })();
+
         var MobileClient = (function () {
             var clientContext = this;
 
@@ -100,12 +131,65 @@
             }
 
             function Dashlet6_0(dashboard) {
+                var dashletContext = this;
+                dashletContext.dashboard = dashboard;
+                dashletContext.dashlets = queryDashlets();
+
+                configureMaximization();
+
+                function configureMaximization() {
+                    $.each(dashletContext.dashlets, function(index, el) {
+                        var dashlet = $(el);
+
+                        dashlet.on("click", function () {
+                            var maximizeButton = dashlet.find(".maximizeDashletButton");
+                            if (maximizeButton.length > 0) {
+                                var componentName = dashlet.find(".innerLabel > p").text();
+
+                                maximizeButton.click();
+                                enableClicks(false);
+
+                                var maximizeEnd = NativeCallbacks.onMaximizeEnd.bind(this, componentName);
+                                NativeCallbacks.onMaximizeStart(componentName);
+                                DOMObserver.observeSubtree(maximizeEnd).await();
+                            }
+                        });
+                    });
+                }
+
+                var minimize = function () {
+                    var componentName = $(".canvasOverlay .innerLabel > p").text();
+                    var minimizeControl = $(".minimizeDashlet");
+                    minimizeControl.click();
+                    enableClicks(true);
+
+                    var maximizeEnd = NativeCallbacks.onMinimizeEnd.bind(this, componentName);
+                    NativeCallbacks.onMaximizeStart(componentName);
+                    DOMObserver.observeSubtree(maximizeEnd).await();
+                };
+
+                function enableClicks(enableFlag) {
+                    var overlays = $(".dashletOverlay");
+                    overlays.css({pointerEvents: enableFlag ? "auto" : "none"});
+                }
+
+                function queryDashlets() {
+                    var dashboard = dashletContext.dashboard.instance;
+                    var container = dashboard.container();
+
+                    var dashlets = $(container).find("[data-componentid] > .dashlet").parent();
+                    return dashlets;
+                }
+
+                return {
+                    minimize: minimize
+                }
             }
 
             function Dashlet6_1Plus(dashboard) {
                 var dashletContext = this;
                 dashletContext.dashboard = dashboard;
-                dashletContext.dashlets = listDashlets();
+                dashletContext.dashlets = queryDashlets();
 
                 configureMaximization();
 
@@ -119,7 +203,7 @@
                     return filtered[0];
                 }
 
-                function configureMaximization () {
+                function configureMaximization() {
                     dashletContext.dashlets.on("click", function () {
                         var dashboard = dashletContext.dashboard.instance;
                         var dashboardId = dashletContext.dashboard.dashboardId;
@@ -144,12 +228,13 @@
                     });
                 }
 
-                function listDashlets () {
+                function queryDashlets() {
                     var dashboard = dashletContext.dashboard.instance;
                     var dashboardId = dashletContext.dashboard.dashboardId;
                     var container = dashboard.container();
 
-                    return $(container).find("[" + dashboardId + "] > .dashlet").parent();
+                    var dashlets = $(container).find("[" + dashboardId + "] > .dashlet").parent();
+                    return dashlets;
                 }
 
                 var minimize = function () {
@@ -183,13 +268,17 @@
                 this.visualize = visualize;
                 this.dashboardId = visualize.dashboard.componentIdDomAttribute;
 
+                var createDashlet = function (version) {
+                    if (version >= 6.1) {
+                        return new Dashlet6_1Plus(dashboardContext);
+                    } else {
+                        return new Dashlet6_0(dashboardContext);
+                    }
+                };
+
                 var dashboardRenderedFn = function () {
                     var version = clientContext.config.server.version;
-                    if (version >= 6.1) {
-                        dashboardContext.dashlet = new Dashlet6_1Plus(dashboardContext);
-                    } else {
-                        dashboardContext.dashlet = new Dashlet6_0(dashboardContext);
-                    }
+                    dashboardContext.dashlet = createDashlet(version);
                     NativeCallbacks.onDashboardRenedered();
                 };
 
@@ -209,8 +298,8 @@
                 };
 
                 return {
-                    minimizeDashlet: function() {
-                        return dashboardContext.dashlet.minimize;
+                    minimizeDashlet: function () {
+                        dashboardContext.dashlet.minimize();
                     },
                     run: runFn
                 }
