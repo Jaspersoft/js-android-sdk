@@ -2,8 +2,7 @@ package com.jaspersoft.android.sdk.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -37,7 +36,8 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
     private Bundle savedState;
     private WebView webView;
 
-    private boolean runControlFlag;
+    private boolean maximized;
+    private Toolbar toolbar;
 
     public void onCreate(Bundle in) {
         super.onCreate(in);
@@ -50,36 +50,33 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
         progress = (TextView) findViewById(R.id.progress);
         progress.setText("Loading...");
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         initWebView(in);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.run);
-        item.setVisible(runControlFlag);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.controls, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.run:
-                runDashboard();
+            case android.R.id.home:
+                if (maximized) {
+                    minimizeDashlet();
+                } else {
+                    onBackPressed();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void minimizeDashlet() {
+        resourceView.minimizeDashlet(webView);
+    }
+
     @Override
     public void onWebViewReady(WebView webView) {
-        setRunControlVisible();
         resourceView = provideDashboardView(savedState)
                 .registerErrorCallbacks(new DashboardView.ErrorCallbacks() {
                     @Override
@@ -91,6 +88,7 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                     @Override
                     public void onMaximizeStart(String componentName) {
                         progress.setText("Start maximizing component: " + componentName);
+                        showMinimizeControl();
                     }
 
                     @Override
@@ -101,6 +99,7 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                     @Override
                     public void onMinimizeStart(String componentName) {
                         progress.setText("Start minimizing component: " + componentName);
+                        hideMinimizeControl();
                     }
 
                     @Override
@@ -125,11 +124,17 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                     }
                 });
         this.webView = webView;
+        runDashboard();
     }
 
-    private void setRunControlVisible() {
-        runControlFlag = true;
-        supportInvalidateOptionsMenu();
+    private void showMinimizeControl() {
+        maximized = true;
+        toolbar.setNavigationIcon(R.drawable.ic_close);
+    }
+
+    private void hideMinimizeControl() {
+        maximized = false;
+        toolbar.setNavigationIcon(R.drawable.ic_home);
     }
 
     private void runDashboard() {

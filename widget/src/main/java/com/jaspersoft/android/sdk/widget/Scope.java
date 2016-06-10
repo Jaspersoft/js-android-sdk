@@ -41,6 +41,12 @@ class Scope {
     }
 
     @Subscribe
+    public void onMinimizeCommand(MinimizeCommand minimizeCommand) {
+        CommandHandler<MinimizeCommand> runHandler = handlerFactory.minimizeCommandHandler();
+        runHandler.handle(minimizeCommand);
+    }
+
+    @Subscribe
     public void onEvent(Event event) {
         Event.Type type = event.getType();
         switch (type) {

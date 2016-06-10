@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.webkit.WebView;
 
 import java.util.UUID;
 
@@ -57,15 +58,22 @@ public class DashboardView implements Parcelable {
     }
 
     public void run(RunOptions runOptions) {
-        Command runCommand = commandFactory.createInitCommand(runOptions);
-        Dispatcher dispatcher = scope.getDispatcher();
-        dispatcher.dispatch(runCommand);
+        dispatchCommand(commandFactory.createInitCommand(runOptions));
     }
 
     public void resume() {
     }
 
     public void pause() {
+    }
+
+    public void minimizeDashlet(WebView webView) {
+        dispatchCommand(commandFactory.createMinimizeCommand(webView));
+    }
+
+    private void dispatchCommand(Command runCommand) {
+        Dispatcher dispatcher = scope.getDispatcher();
+        dispatcher.dispatch(runCommand);
     }
 
     public interface LifecycleCallbacks {

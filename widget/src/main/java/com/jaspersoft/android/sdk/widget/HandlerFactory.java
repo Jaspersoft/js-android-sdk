@@ -28,4 +28,9 @@ class HandlerFactory implements CommandHandler.Factory {
     public CommandHandler<RunCommand> runCommandHandler() {
         return new RunCommandHandler();
     }
+
+    @Override
+    public CommandHandler<MinimizeCommand> minimizeCommandHandler() {
+        return new MinimizeCommandHandler();
+    }
 }

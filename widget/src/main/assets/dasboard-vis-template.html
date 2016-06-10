@@ -23,7 +23,7 @@
             onMaximizeEnd: function (componentName) {
                 return Android.onMaximizeEnd(componentName);
             },
-            onMinimizeStart: function () {
+            onMinimizeStart: function (componentName) {
                 return Android.onMinimizeStart(componentName);
             },
             onMinimizeEnd: function (componentName) {
@@ -164,7 +164,7 @@
                     enableClicks(true);
 
                     var maximizeEnd = NativeCallbacks.onMinimizeEnd.bind(this, componentName);
-                    NativeCallbacks.onMaximizeStart(componentName);
+                    NativeCallbacks.onMinimizeStart(componentName);
                     DOMObserver.observeSubtree(maximizeEnd).await();
                 };
 
