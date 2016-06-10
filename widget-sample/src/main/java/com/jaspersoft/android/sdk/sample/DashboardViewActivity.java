@@ -9,7 +9,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.jaspersoft.android.sdk.cookie.CookieAuthenticationHandler;
-import com.jaspersoft.android.sdk.cookie.CookieProvision;
+import com.jaspersoft.android.sdk.cookie.RestCookieManager;
 import com.jaspersoft.android.sdk.network.AuthenticationLifecycle;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Credentials;
@@ -26,7 +26,7 @@ import java.net.CookieManager;
  * @author Tom Koptel
  * @since 2.6
  */
-public class DashboardViewActivity extends AppCompatActivity implements RetainedWebViewFragment.Callback{
+public class DashboardViewActivity extends AppCompatActivity implements RetainedWebViewFragment.Callback {
 
     public static final String RESOURCE_VIEW_KEY = "resource-view";
 
@@ -178,7 +178,9 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                 .withUsername("superuser")
                 .build();
 
-        CookieManager cookieManager = CookieProvision.provideHandler(this);
+        CookieManager cookieManager = new RestCookieManager.Builder(this)
+                .handleWebViewCookies(false)
+                .build();
         AuthenticationLifecycle lifecycle = new CookieAuthenticationHandler(cookieManager);
 
         return server.newClient(credentials)

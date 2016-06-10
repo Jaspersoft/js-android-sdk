@@ -10,8 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.jaspersoft.android.sdk.cookie.CookieProvision;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,7 +63,7 @@ public class ResourcesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CookieProvision.clearAll(ResourcesActivity.this);
+                WebViewCookieCompat.removeAllCookies(ResourcesActivity.this);
                 navigate(RESOURCES.get(position));
             }
         });

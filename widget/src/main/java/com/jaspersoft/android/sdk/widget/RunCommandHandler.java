@@ -6,6 +6,9 @@ import android.webkit.WebView;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.info.ServerInfoService;
 
 /**
  * @author Tom Koptel
@@ -40,12 +43,25 @@ class RunCommandHandler implements CommandHandler<RunCommand> {
         private String buildScript(RunOptions runOptions) {
             Gson gson = new Gson();
             AuthorizedClient client = runOptions.getClient();
-            SetupOptions setupOptions = SetupOptions.from(client);
+
+            double version = provideVersion(client);
+            SetupOptions setupOptions = SetupOptions.create(client, version);
 
             String settings = gson.toJson(setupOptions);
             String uri = runOptions.getUri();
 
             return String.format(RUN_COMMAND_SCRIPT, settings, uri);
+        }
+
+        private double provideVersion(AuthorizedClient client) {
+            try {
+                ServerInfoService infoService = ServerInfoService.newService(client);
+                ServerInfo serverInfo = infoService.requestServerInfo();
+                return serverInfo.getVersion().code();
+            } catch (ServiceException e) {
+                // TODO handle REST exception
+                throw new RuntimeException(e);
+            }
         }
 
         @Override

@@ -69,7 +69,7 @@
 
             DOMObserver.prototype.await = function () {
                 var timeout = null;
-                var body = $("body");
+                var body = jQuery("body");
 
                 body.unbind();
                 body.bind("DOMSubtreeModified", (function (_this) {
@@ -138,8 +138,8 @@
                 configureMaximization();
 
                 function configureMaximization() {
-                    $.each(dashletContext.dashlets, function(index, el) {
-                        var dashlet = $(el);
+                    jQuery.each(dashletContext.dashlets, function(index, el) {
+                        var dashlet = jQuery(el);
 
                         dashlet.on("click", function () {
                             var maximizeButton = dashlet.find(".maximizeDashletButton");
@@ -158,8 +158,8 @@
                 }
 
                 var minimize = function () {
-                    var componentName = $(".canvasOverlay .innerLabel > p").text();
-                    var minimizeControl = $(".minimizeDashlet");
+                    var componentName = jQuery(".canvasOverlay .innerLabel > p").text();
+                    var minimizeControl = jQuery(".minimizeDashlet");
                     minimizeControl.click();
                     enableClicks(true);
 
@@ -169,7 +169,7 @@
                 };
 
                 function enableClicks(enableFlag) {
-                    var overlays = $(".dashletOverlay");
+                    var overlays = jQuery(".dashletOverlay");
                     overlays.css({pointerEvents: enableFlag ? "auto" : "none"});
                 }
 
@@ -177,7 +177,7 @@
                     var dashboard = dashletContext.dashboard.instance;
                     var container = dashboard.container();
 
-                    var dashlets = $(container).find("[data-componentid] > .dashlet").parent();
+                    var dashlets = jQuery(container).find("[data-componentid] > .dashlet").parent();
                     return dashlets;
                 }
 
@@ -208,7 +208,7 @@
                         var dashboard = dashletContext.dashboard.instance;
                         var dashboardId = dashletContext.dashboard.dashboardId;
 
-                        var dashlet = $(this);
+                        var dashlet = jQuery(this);
                         var dashletId = dashlet.attr(dashboardId);
                         var component = getComponentById(dashletId);
 
@@ -233,7 +233,7 @@
                     var dashboardId = dashletContext.dashboard.dashboardId;
                     var container = dashboard.container();
 
-                    var dashlets = $(container).find("[" + dashboardId + "] > .dashlet").parent();
+                    var dashlets = jQuery(container).find("[" + dashboardId + "] > .dashlet").parent();
                     return dashlets;
                 }
 

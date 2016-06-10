@@ -16,7 +16,7 @@ class SetupOptions {
         this.auth = auth;
     }
 
-    public static SetupOptions from(AuthorizedClient client) {
+    public static SetupOptions create(AuthorizedClient client, double version) {
         String baseUrl = client.getBaseUrl();
         // TODO generify credentials adaptation
         SpringCredentials credentials = (SpringCredentials) client.getCredentials();
@@ -26,16 +26,18 @@ class SetupOptions {
                 credentials.getPassword(),
                 credentials.getOrganization()
         );
-        Server server = new Server(baseUrl);
+        Server server = new Server(baseUrl, version);
 
         return new SetupOptions(server, auth);
     }
 
     private static class Server {
         private final String url;
+        private final double version;
 
-        private Server(String url) {
+        private Server(String url, double version) {
             this.url = url;
+            this.version = version;
         }
     }
 
