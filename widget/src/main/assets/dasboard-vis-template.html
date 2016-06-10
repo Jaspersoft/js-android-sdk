@@ -57,28 +57,28 @@
         };
 
         var MobileClient = (function () {
-            var self = this;
+            var clientContext = this;
 
             var setupVisualizeScript = function (callback) {
                 var visScript = document.createElement('script');
                 visScript.onload = callback;
-                visScript.setAttribute('src', self.config.server.url + "client/visualize.js?_opt=false");
+                visScript.setAttribute('src', clientContext.config.server.url + "client/visualize.js?_opt=false");
                 document.head.appendChild(visScript);
             };
 
             var loadVisualize = function (callback) {
                 var onComplete = function (v) {
                     var dashboard = new Dashboard(v);
-                    self.dashboard = dashboard;
+                    clientContext.dashboard = dashboard;
 
                     if (callback !== undefined) {
-                        callback.call(self, dashboard);
+                        callback.call(clientContext, dashboard);
                     }
 
                     NativeCallbacks.onVisualizeReady();
                 };
 
-                var auth = self.config.auth;
+                var auth = clientContext.config.auth;
                 if (auth === undefined) {
                     visualize(onComplete);
                 } else {
@@ -89,73 +89,81 @@
             function Client() {
                 return {
                     setup: function (config, callback) {
-                        self.config = config;
+                        clientContext.config = config;
                         var loadFunc = loadVisualize.bind(this, callback);
                         setupVisualizeScript(loadFunc);
                     },
                     dashboard: function () {
-                        return self.dashboard;
+                        return clientContext.dashboard;
                     }
                 }
             }
 
-            function Dashboard(visualize) {
-                var _dashboardContext = this;
-                this.visualize = visualize;
-                this.dashboardId = visualize.dashboard.componentIdDomAttribute;
+            function Dashlet6_0(dashboard) {
+            }
 
-                var listDashlets = function () {
-                    var d = _dashboardContext.instance;
-                    var dashboardId = _dashboardContext.dashboardId;
-                    var container = d.container();
+            function Dashlet6_1Plus(dashboard) {
+                var dashletContext = this;
+                dashletContext.dashboard = dashboard;
+                dashletContext.dashlets = listDashlets();
 
-                    return $(container).find("[" + dashboardId + "] > .dashlet").parent();
-                };
+                configureMaximization();
 
-                var getComponentById = function (id) {
-                    var dashboard = _dashboardContext.instance;
+                function getComponentById(id) {
+                    var dashboard = dashletContext.dashboard.instance;
                     var components = dashboard.data().components;
                     var byId = function (c) {
                         return c.id == id;
                     };
                     var filtered = components.filter(byId);
                     return filtered[0];
-                };
+                }
 
-                var maximizeDashlet = function () {
-                    var dashboard = _dashboardContext.instance;
-                    var dashboardId = _dashboardContext.dashboardId;
+                function configureMaximization () {
+                    dashletContext.dashlets.on("click", function () {
+                        var dashboard = dashletContext.dashboard.instance;
+                        var dashboardId = dashletContext.dashboard.dashboardId;
 
-                    var dashlet = $(this);
-                    var dashletId = dashlet.attr(dashboardId);
-                    var component = getComponentById(dashletId);
+                        var dashlet = $(this);
+                        var dashletId = dashlet.attr(dashboardId);
+                        var component = getComponentById(dashletId);
 
-                    NativeCallbacks.onMaximizeStart(component.name);
-                    dashboard.updateComponent(dashletId, {
-                                maximized: true,
-                                interactive: true
-                            },
-                            function () {
-                                _dashboardContext.maximized = component;
-                                NativeCallbacks.onMaximizeEnd(component.name);
-                            },
-                            function (error) {
-                                NativeCallbacks.onDashletError(error);
-                            }
-                    );
-                };
+                        NativeCallbacks.onMaximizeStart(component.name);
+                        dashboard.updateComponent(dashletId, {
+                                    maximized: true,
+                                    interactive: true
+                                },
+                                function () {
+                                    dashletContext.maximized = component;
+                                    NativeCallbacks.onMaximizeEnd(component.name);
+                                },
+                                function (error) {
+                                    NativeCallbacks.onDashletError(error);
+                                }
+                        );
+                    });
+                }
 
-                var minimizeDashletFn = function () {
-                    var component = _dashboardContext.maximized;
+                function listDashlets () {
+                    var dashboard = dashletContext.dashboard.instance;
+                    var dashboardId = dashletContext.dashboard.dashboardId;
+                    var container = dashboard.container();
+
+                    return $(container).find("[" + dashboardId + "] > .dashlet").parent();
+                }
+
+                var minimize = function () {
+                    var component = dashletContext.maximized;
                     if (component) {
-                        var dashboard = _dashboardContext.instance;
+                        var dashboard = dashletContext.dashboard.instance;
+
                         NativeCallbacks.onMinimizeStart(component.name);
                         dashboard.updateComponent(component.id, {
                                     maximized: false,
                                     interactive: false
                                 },
                                 function () {
-                                    _dashboardContext.maximized = undefined;
+                                    dashletContext.maximized = undefined;
                                     NativeCallbacks.onMinimizeEnd(component.name);
                                 },
                                 function (error) {
@@ -165,14 +173,23 @@
                     }
                 };
 
-                var configureMaximization = function () {
-                    var dashlets = _dashboardContext.dashlets;
-                    dashlets.on("click", maximizeDashlet);
-                };
+                return {
+                    minimize: minimize
+                }
+            }
+
+            function Dashboard(visualize) {
+                var dashboardContext = this;
+                this.visualize = visualize;
+                this.dashboardId = visualize.dashboard.componentIdDomAttribute;
 
                 var dashboardRenderedFn = function () {
-                    _dashboardContext.dashlets = listDashlets();
-                    configureMaximization();
+                    var version = clientContext.config.server.version;
+                    if (version >= 6.1) {
+                        dashboardContext.dashlet = new Dashlet6_1Plus(dashboardContext);
+                    } else {
+                        dashboardContext.dashlet = new Dashlet6_0(dashboardContext);
+                    }
                     NativeCallbacks.onDashboardRenedered();
                 };
 
@@ -182,8 +199,8 @@
                 };
 
                 var runFn = function (uri) {
-                    var v = _dashboardContext.visualize;
-                    _dashboardContext.instance = v.dashboard({
+                    var v = dashboardContext.visualize;
+                    dashboardContext.instance = v.dashboard({
                         resource: uri,
                         container: "#container",
                         success: dashboardRenderedFn,
@@ -192,7 +209,9 @@
                 };
 
                 return {
-                    minimizeDashlet: minimizeDashletFn,
+                    minimizeDashlet: function() {
+                        return dashboardContext.dashlet.minimize;
+                    },
                     run: runFn
                 }
             }
