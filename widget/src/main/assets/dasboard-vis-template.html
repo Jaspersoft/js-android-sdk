@@ -31,6 +31,10 @@
             },
             onDashletError: function (error) {
                 return Android.onDashletError(error);
+            },
+            onHyperLinkClick: function (hyperlink) {
+                var linkAsString = JSON.stringify(hyperlink);
+                return Android.onHyperLinkClick(linkAsString);
             }
         };
 
@@ -138,7 +142,7 @@
                 configureMaximization();
 
                 function configureMaximization() {
-                    jQuery.each(dashletContext.dashlets, function(index, el) {
+                    jQuery.each(dashletContext.dashlets, function (index, el) {
                         var dashlet = jQuery(el);
 
                         dashlet.on("click", function () {
@@ -263,6 +267,85 @@
                 }
             }
 
+            function HyperLinkHandler() {
+                var AdHocExecutionHandler6_0 = function (link) {
+                };
+
+                var AdHocExecutionHandler6_1 = function (link) {
+                };
+
+                var filterReportParams = function (params) {
+                    var buffer = {};
+                    var whiteList = ["_report", "_page", "_anchor", "_output"];
+
+                    for (var key in params) {
+                        var value = params[key];
+                        var isParameter = (whiteList.indexOf(key) < 0);
+                        if (isParameter) {
+                            buffer[key] = Array.isArray(value) ? value : [value];
+                        }
+                    }
+
+                    return buffer;
+                };
+
+                var createAdHocExecutionHandler = function (version) {
+                    if (version >= 6.1) {
+                        return AdHocExecutionHandler6_0;
+                    } else {
+                        return AdHocExecutionHandler6_1;
+                    }
+                };
+
+                var handleReportExecutionType = function (link) {
+                    var params = link.parameters;
+                    var reportParams = filterReportParams(params);
+                    var metadata = {
+                        uri: params._report,
+                        page: params._page,
+                        anchor: params._anchor,
+                        output: params._output,
+                        params: reportParams
+                    };
+
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: metadata
+                    };
+
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                var handleReferenceType = function(link) {
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: {
+                            href: link.href
+                        }
+                    };
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                return {
+                    handle: function (event, link, defaultHandler) {
+                        var type = link.type;
+                        if (type === "ReportExecution") {
+                            handleReportExecutionType(link);
+                        } else if (type === "Reference") {
+                            handleReferenceType(link);
+                        } else if (type === "AdHocExecution") {
+                            var version = clientContext.config.server.version;
+                            createAdHocExecutionHandler(version).call(this, link);
+                        } else {
+                            if (defaultHandler) {
+                                defaultHandler.call(this);
+                            }
+                        }
+                        console.log(event, link, defaultHandler);
+                    }
+                }
+            }
+
             function Dashboard(visualize) {
                 var dashboardContext = this;
                 this.visualize = visualize;
@@ -288,12 +371,19 @@
                 };
 
                 var runFn = function (uri) {
+                    var hyperLinkHandler = new HyperLinkHandler();
                     var v = dashboardContext.visualize;
+
                     dashboardContext.instance = v.dashboard({
                         resource: uri,
                         container: "#container",
                         success: dashboardRenderedFn,
-                        error: dashboardErrorFn
+                        error: dashboardErrorFn,
+                        linkOptions: {
+                            events: {
+                                click: hyperLinkHandler.handle
+                            }
+                        }
                     });
                 };
 

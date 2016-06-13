@@ -19,6 +19,9 @@ class Event {
     }
 
     public <T> T firstArg(Class<T> type) {
+        if (data[0] == null) {
+            return null;
+        }
         return type.cast(data[0]);
     }
 
@@ -34,7 +37,8 @@ class Event {
         MAXIMIZE_END,
         MINIMIZE_START,
         MINIMIZE_END,
-        WINDOW_ERROR;
+        WINDOW_ERROR,
+        HYPERLINK_CLICK;
     }
 
     interface Factory {
@@ -44,7 +48,7 @@ class Event {
 
         Event createDashboardLoadedEvent();
 
-        Event createWindowErrorEvent(WindowError error);
+        Event createWindowErrorEvent(String data);
 
         Event createMaximizeStartEvent(String name);
 
@@ -53,5 +57,7 @@ class Event {
         Event createMinimizeStartEvent(String name);
 
         Event createMinimizeEndEvent(String name);
+
+        Event createHyperlinkEvent(String data);
     }
 }

@@ -96,6 +96,8 @@ public class DashboardView implements Parcelable {
         void onMinimizeStart(String componentName);
 
         void onMinimizeEnd(String componentName);
+
+        void onHypeLinkClick(Hyperlink hyperlink);
     }
 
     @Override
@@ -167,6 +169,10 @@ public class DashboardView implements Parcelable {
 
         @Override
         public void onMinimizeEnd(String componentName) {
+        }
+
+        @Override
+        public void onHypeLinkClick(Hyperlink hyperlink) {
         }
     }
 }

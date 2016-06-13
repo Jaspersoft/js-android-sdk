@@ -6,7 +6,6 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 
 /**
@@ -97,8 +96,7 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
 
         @JavascriptInterface
         public void onWindowError(String errorLog) {
-            WindowError error = new Gson().fromJson(errorLog, WindowError.class);
-            dispatcher.dispatch(eventFactory.createWindowErrorEvent(error));
+            dispatcher.dispatch(eventFactory.createWindowErrorEvent(errorLog));
         }
 
         @JavascriptInterface
@@ -119,6 +117,11 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         @JavascriptInterface
         public void onMinimizeEnd(String componentName) {
             dispatcher.dispatch(eventFactory.createMinimizeEndEvent(componentName));
+        }
+
+        @JavascriptInterface
+        public void onHyperLinkClick(String data) {
+            dispatcher.dispatch(eventFactory.createHyperlinkEvent(data));
         }
     }
 }

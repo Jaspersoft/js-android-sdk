@@ -74,6 +74,9 @@ class Scope {
             case MINIMIZE_END:
                 view.dashletCallbacks.onMinimizeEnd(event.firstArg(String.class));
                 break;
+            case HYPERLINK_CLICK:
+                view.dashletCallbacks.onHypeLinkClick(event.firstArg(Hyperlink.class));
+                break;
         }
     }
 }

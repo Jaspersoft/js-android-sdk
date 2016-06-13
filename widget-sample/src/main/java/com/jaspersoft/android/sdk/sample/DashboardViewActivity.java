@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.cookie.CookieAuthenticationHandler;
 import com.jaspersoft.android.sdk.cookie.RestCookieManager;
@@ -15,6 +16,7 @@ import com.jaspersoft.android.sdk.network.Credentials;
 import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
 import com.jaspersoft.android.sdk.widget.DashboardView;
+import com.jaspersoft.android.sdk.widget.Hyperlink;
 import com.jaspersoft.android.sdk.widget.RetainedWebViewFragment;
 import com.jaspersoft.android.sdk.widget.RunOptions;
 import com.jaspersoft.android.sdk.widget.WindowError;
@@ -105,6 +107,11 @@ public class DashboardViewActivity extends AppCompatActivity implements Retained
                     @Override
                     public void onMinimizeEnd(String componentName) {
                         progress.setText("End minimizing component: " + componentName);
+                    }
+
+                    @Override
+                    public void onHypeLinkClick(Hyperlink hyperlink) {
+                        Toast.makeText(DashboardViewActivity.this, hyperlink.getType().toString(), Toast.LENGTH_LONG).show();
                     }
                 })
                 .registerLifecycleCallbacks(new DashboardView.LifecycleCallbacks() {

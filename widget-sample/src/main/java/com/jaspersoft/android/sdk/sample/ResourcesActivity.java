@@ -44,7 +44,9 @@ public class ResourcesActivity extends AppCompatActivity {
             SERVER_6_1.newDashboard("6.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_11.newDashboard("6.11 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_2.newDashboard("6.2 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
-            SERVER_6_2_1.newDashboard("6.2.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard")
+            SERVER_6_2_1.newDashboard("6.2.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
+            SERVER_6_2_1.newDashboard("6.2.1 Performance Summary Dashboard", "/public/Samples/Dashboards/2._Performance_Summary_Dashboard"),
+            SERVER_6_2_1.newDashboard("6.2.1 Remote AdHocViewExecution", "/public/Samples/Dashboards/Remote_AdHocViewExecution")
     );
 
     public static final String RESOURCE_EXTRA = "resource";
