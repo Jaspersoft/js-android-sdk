@@ -24,7 +24,6 @@ public abstract class WebViewCookieStore {
         Log.d("WebViewCookieStore", "#removeAllCookies");
     }
 
-
     public static WebViewCookieStore newInstance(Context context) {
         android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

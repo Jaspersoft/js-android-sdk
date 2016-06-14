@@ -8,7 +8,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.jaspersoft.android.sdk.sample.entity.Profile;
+import com.jaspersoft.android.sdk.sample.entity.Resource;
+import com.jaspersoft.android.sdk.sample.entity.ResourceFactory;
+import com.jaspersoft.android.sdk.sample.util.WebViewCookieCompat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -86,7 +90,9 @@ public class ResourcesActivity extends AppCompatActivity {
     }
 
     private void navigateToReport(Resource resource) {
-        Toast.makeText(this, "No report view", Toast.LENGTH_LONG);
+        Intent intent = new Intent(this, ReportViewActivity.class);
+        intent.putExtra(RESOURCE_EXTRA, resource);
+        startActivity(intent);
     }
 
     private void navigateToDashboard(Resource resource) {
