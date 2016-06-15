@@ -13,7 +13,7 @@ import com.jaspersoft.android.sdk.widget.internal.SetupOptions;
  * @author Tom Koptel
  * @since 2.6
  */
-class RunCommandHandler implements CommandHandler<RunCommand> {
+class RunVisualizeCommandHandler implements CommandHandler<RunCommand> {
     private static final String RUN_COMMAND_SCRIPT = "javascript:MobileClient.instance().setup(%s,\n" +
             "function (report) {\n" +
             "report.run(\"%s\");\n" +

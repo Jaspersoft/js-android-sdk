@@ -39,9 +39,10 @@ class CommandHandlerFactory implements CommandHandler.Factory {
             javascriptInterface = new VisualizeJavascriptEvents(dispatcher, eventFactory);
             templateName = VIS_TEMPLATE;
         } else {
-            javascriptInterface = new RestJavascriptEvents();
+            javascriptInterface = new RestJavascriptEvents(dispatcher, eventFactory);
             templateName = REST_TEMPLATE;
         }
+
         return new LoadTemplateCommandHandler(
                 dispatcher,
                 eventFactory,
@@ -53,7 +54,10 @@ class CommandHandlerFactory implements CommandHandler.Factory {
     }
 
     @Override
-    public CommandHandler<RunCommand> runCommandHandler() {
-        return new RunCommandHandler();
+    public CommandHandler<RunCommand> createRunCommandHandler(double version) {
+        if (version >= 6.0) {
+            return new RunVisualizeCommandHandler();
+        }
+        return new RunVisualizeCommandHandler();
     }
 }

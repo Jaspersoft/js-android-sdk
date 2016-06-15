@@ -18,7 +18,7 @@ class VisualizeJavascriptEvents {
     }
 
     @JavascriptInterface
-    public void onVisualizeReady() {
+    public void onScriptReady() {
         dispatcher.dispatch(eventFactory.createScriptLoadedEvent());
     }
 

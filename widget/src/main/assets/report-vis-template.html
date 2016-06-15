@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
+        "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
+
+<head xmlns="http://www.w3.org/1999/html">
+
+    <title>TIBCO Jaspersoft</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript">
+        var NativeCallbacks = {
+            onVisualizeReady: function () {
+                return Android.onVisualizeReady();
+            },
+            onReportRenedered: function () {
+                return Android.onReportRenedered();
+            },
+            onWindowError: function (error) {
+                return Android.onWindowError(error);
+            },
+            onHyperLinkClick: function (hyperlink) {
+                var linkAsString = JSON.stringify(hyperlink);
+                return Android.onHyperLinkClick(linkAsString);
+            }
+        };
+
+        window.Android = window.Android || new Proxy({}, {
+            get: function (target, name) {
+                return function (args) {
+                    var resultArgs = args || [];
+                    console.log("Function '" + name + "' has been called with args '" + resultArgs + "' on Android object");
+                }
+            }
+        });
+
+        window.onerror = function (message, source, line, column) {
+            var e = {
+                message: message,
+                source: source,
+                line: line,
+                column: column
+            };
+            var errorLog = JSON.stringify(e);
+            NativeCallbacks.onWindowError(errorLog);
+            return false;
+        };
+
+        var DOMObserver = (function () {
+            function DOMObserver() {
+            }
+
+            DOMObserver._instance = null;
+
+            DOMObserver.observeSubtree = function (callback) {
+                this._instance = new DOMObserver;
+                this._instance.callback = callback;
+                return this._instance;
+            };
+
+            DOMObserver.prototype.await = function () {
+                var timeout = null;
+                var body = jQuery("body");
+
+                body.unbind();
+                body.bind("DOMSubtreeModified", (function (_this) {
+                    if (timeout != null) {
+                        window.clearInterval(timeout);
+                    }
+                    timeout = window.setTimeout(function () {
+                        window.clearInterval(timeout);
+                        body.unbind();
+                        _this.callback.call(_this);
+                    }, 2000);
+                })(this));
+            };
+
+            return DOMObserver;
+        })();
+
+        var MobileClient = (function () {
+            var clientContext = this;
+
+            var setupVisualizeScript = function (callback) {
+                var visScript = document.createElement('script');
+                visScript.onload = callback;
+                visScript.setAttribute('src', clientContext.config.server.url + "client/visualize.js?_opt=false");
+                document.head.appendChild(visScript);
+            };
+
+            var loadVisualize = function (callback) {
+                var onComplete = function (v) {
+                    var report = new Report(v);
+                    clientContext.report = report;
+
+                    if (callback !== undefined) {
+                        callback.call(clientContext, report);
+                    }
+
+                    NativeCallbacks.onVisualizeReady();
+                };
+
+                var auth = clientContext.config.auth;
+                if (auth === undefined) {
+                    visualize(onComplete);
+                } else {
+                    visualize({auth: auth}, onComplete);
+                }
+            };
+
+            function Client() {
+                return {
+                    setup: function (config, callback) {
+                        clientContext.config = config;
+                        var loadFunc = loadVisualize.bind(this, callback);
+                        setupVisualizeScript(loadFunc);
+                    },
+                    dashboard: function () {
+                        return clientContext.report;
+                    }
+                }
+            }
+
+            function HyperLinkHandler() {
+
+                var filterReportParams = function (params) {
+                    var buffer = {};
+                    var whiteList = ["_report", "_page", "_anchor", "_output"];
+
+                    for (var key in params) {
+                        var value = params[key];
+                        var isParameter = (whiteList.indexOf(key) < 0);
+                        if (isParameter) {
+                            buffer[key] = Array.isArray(value) ? value : [value];
+                        }
+                    }
+
+                    return buffer;
+                };
+
+                var handleReportExecutionType = function (link) {
+                    var params = link.parameters;
+                    var reportParams = filterReportParams(params);
+                    var metadata = {
+                        uri: params._report,
+                        page: params._page,
+                        anchor: params._anchor,
+                        output: params._output,
+                        params: reportParams
+                    };
+
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: metadata
+                    };
+
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                var handleReferenceType = function(link) {
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: {
+                            href: link.href
+                        }
+                    };
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                return {
+                    handle: function (event, link, defaultHandler) {
+                        var type = link.type;
+                        if (type === "ReportExecution") {
+                            handleReportExecutionType(link);
+                        } else if (type === "Reference") {
+                            handleReferenceType(link);
+                        } else {
+                            if (defaultHandler) {
+                                defaultHandler.call(this);
+                            }
+                        }
+                        console.log(event, link, defaultHandler);
+                    }
+                }
+            }
+
+            function Report(visualize) {
+                var reportContext = this;
+                this.visualize = visualize;
+
+                var dashboardRenderedFn = function () {
+                    NativeCallbacks.onDashboardRenedered();
+                };
+
+                var dashboardErrorFn = function (error) {
+                    var errorLog = JSON.stringify(error);
+                    console.log(errorLog);
+                };
+
+                var runFn = function (uri) {
+                    var hyperLinkHandler = new HyperLinkHandler();
+                    var v = reportContext.visualize;
+
+                    reportContext.instance = v.report({
+                        resource: uri,
+                        container: "#container",
+                        success: dashboardRenderedFn,
+                        error: dashboardErrorFn,
+                        linkOptions: {
+                            events: {
+                                click: hyperLinkHandler.handle
+                            }
+                        }
+                    });
+                };
+
+                return {
+                    run: runFn
+                }
+            }
+
+            var instance;
+            return {
+                instance: function () {
+                    if (instance == null) {
+                        instance = new Client();
+                        instance.constructor = null;
+                    }
+                    return instance;
+                }
+            };
+        })();
+    </script>
+</head>
+<body>
+<div id="container"></div>
+</body>

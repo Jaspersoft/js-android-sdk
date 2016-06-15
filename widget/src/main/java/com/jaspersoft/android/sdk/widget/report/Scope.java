@@ -40,7 +40,7 @@ class Scope {
     @Subscribe
     public void onRunCommand(RunCommand runCommand) {
         CommandHandler<RunCommand> runHandler =
-                registerHandler(handlerFactory.runCommandHandler());
+                registerHandler(handlerFactory.createRunCommandHandler(runCommand.getVersion()));
         runHandler.handle(runCommand);
     }
 

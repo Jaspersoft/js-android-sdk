@@ -14,6 +14,6 @@ interface CommandHandler<C extends Command> {
 
         CommandHandler<LoadTemplateCommand> createLoadTemplateCommandHandler(double version);
 
-        CommandHandler<RunCommand> runCommandHandler();
+        CommandHandler<RunCommand> createRunCommandHandler(double version);
     }
 }
