@@ -17,4 +17,9 @@ class LoadTemplateCommand implements Command {
     public RunOptions getOptions() {
         return options;
     }
+
+    @Override
+    public String toString() {
+        return "LoadTemplateCommand{}";
+    }
 }

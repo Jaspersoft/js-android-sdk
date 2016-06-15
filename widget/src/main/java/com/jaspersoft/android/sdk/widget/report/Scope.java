@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report;
 
+import android.util.Log;
+
 import com.jaspersoft.android.sdk.widget.WindowError;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.squareup.otto.Subscribe;
@@ -36,6 +38,7 @@ class Scope {
         CommandHandler<LoadTemplateCommand> initHandler =
                 registerHandler(handlerFactory.createProxyLoadTemplateCommandHandler());
         initHandler.handle(loadTemplateCommand);
+        Log.d(Dispatcher.LOG_TAG, "<=========== Handled - " + loadTemplateCommand);
     }
 
     @Subscribe
@@ -43,6 +46,7 @@ class Scope {
         CommandHandler<RunCommand> runHandler =
                 registerHandler(handlerFactory.createRunCommandHandler(runCommand.getVersion()));
         runHandler.handle(runCommand);
+        Log.d(Dispatcher.LOG_TAG, "<=========== Handled - " + runCommand);
     }
 
     @Subscribe
@@ -62,6 +66,7 @@ class Scope {
                 client.errorCallbacks.onWindowError(event.firstArg(WindowError.class));
                 break;
         }
+        Log.d(Dispatcher.LOG_TAG, "<=========== Handled - " + event);
     }
 
     void destroy() {

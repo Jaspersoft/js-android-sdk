@@ -22,4 +22,9 @@ class RunCommand implements Command {
     public double getVersion() {
         return version;
     }
+
+    @Override
+    public String toString() {
+        return "RunCommand{}";
+    }
 }

@@ -28,6 +28,13 @@ class Event {
         return type;
     }
 
+    @Override
+    public String toString() {
+        return "Event{" +
+                "type=" + type +
+                '}';
+    }
+
     enum Type {
         INFLATE_COMPLETE,
         SCRIPT_LOADED,

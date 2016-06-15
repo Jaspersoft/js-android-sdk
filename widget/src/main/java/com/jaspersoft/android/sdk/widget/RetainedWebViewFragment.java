@@ -24,7 +24,7 @@ public class RetainedWebViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (webView == null) {
-            webView = new WebView(getActivity());
+            webView = new WebView(getActivity().getApplicationContext());
             webView.getSettings().setJavaScriptEnabled(true);
         }
         return webView;
@@ -51,7 +51,6 @@ public class RetainedWebViewFragment extends Fragment {
         if (getRetainInstance() && webView.getParent() instanceof ViewGroup) {
             ((ViewGroup) webView.getParent()).removeView(webView);
         }
-        webView = null;
     }
 
     public interface Callback {
