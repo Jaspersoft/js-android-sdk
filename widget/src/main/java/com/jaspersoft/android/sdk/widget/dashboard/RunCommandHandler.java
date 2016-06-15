@@ -28,7 +28,7 @@ class RunCommandHandler implements CommandHandler<RunCommand> {
         AsyncTaskCompat.executeParallel(runTask);
     }
 
-    private class Task extends AsyncTask<Void, Void, String> {
+    private class Task extends AsyncTask<Object, Object, String> {
         private final RunOptions runOptions;
         private final WebView webView;
 
@@ -38,7 +38,7 @@ class RunCommandHandler implements CommandHandler<RunCommand> {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Object... params) {
             return buildScript(runOptions);
         }
 

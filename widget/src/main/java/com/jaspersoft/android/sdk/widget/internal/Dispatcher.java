@@ -29,4 +29,8 @@ public class Dispatcher {
     public void register(Object target) {
         bus.register(target);
     }
+
+    public void unregister(Object target) {
+        bus.unregister(target);
+    }
 }

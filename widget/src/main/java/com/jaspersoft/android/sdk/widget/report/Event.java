@@ -31,7 +31,7 @@ class Event {
     enum Type {
         INFLATE_COMPLETE,
         SCRIPT_LOADED,
-        DASHBOARD_LOADED,
+        REPORT_LOADED,
         WINDOW_ERROR,
         HYPERLINK_CLICK;
     }
@@ -42,5 +42,7 @@ class Event {
         Event createScriptLoadedEvent();
 
         Event createReportLoadedEvent();
+
+        Event createWindowErrorEvent(String errorLog);
     }
 }

@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.widget.report;
 
+import com.jaspersoft.android.sdk.widget.WindowError;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.squareup.otto.Subscribe;
 
@@ -42,6 +43,25 @@ class Scope {
         CommandHandler<RunCommand> runHandler =
                 registerHandler(handlerFactory.createRunCommandHandler(runCommand.getVersion()));
         runHandler.handle(runCommand);
+    }
+
+    @Subscribe
+    public void onEvent(Event event) {
+        Event.Type type = event.getType();
+        switch (type) {
+            case INFLATE_COMPLETE:
+                client.lifecycleCallbacks.onInflateFinish();
+                break;
+            case SCRIPT_LOADED:
+                client.lifecycleCallbacks.onScriptLoaded();
+                break;
+            case REPORT_LOADED:
+                client.lifecycleCallbacks.onReportRendered();
+                break;
+            case WINDOW_ERROR:
+                client.errorCallbacks.onWindowError(event.firstArg(WindowError.class));
+                break;
+        }
     }
 
     void destroy() {

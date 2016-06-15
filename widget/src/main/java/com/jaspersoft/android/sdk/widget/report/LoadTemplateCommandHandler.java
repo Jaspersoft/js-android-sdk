@@ -60,7 +60,7 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         return new Task(factory, webView, options, baseUrl);
     }
 
-    private class Task extends AsyncTask<Void, Void, String> {
+    private class Task extends AsyncTask<Object, Object, String> {
         private final AssetFile.Factory assetFactory;
         private final WebView webView;
         private final RunOptions options;
@@ -93,7 +93,7 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Object... params) {
             AssetFile assetFile = assetFactory.load(templateName);
             return assetFile.toString();
         }

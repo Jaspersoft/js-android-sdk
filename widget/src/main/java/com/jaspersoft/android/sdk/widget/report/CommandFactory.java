@@ -13,7 +13,7 @@ class CommandFactory implements Command.Factory {
     }
 
     @Override
-    public Command createRunCommand(RunOptions options) {
-        return null;
+    public Command createRunCommand(RunOptions options, double version) {
+        return new RunCommand(options, version);
     }
 }

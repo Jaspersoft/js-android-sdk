@@ -58,6 +58,6 @@ class CommandHandlerFactory implements CommandHandler.Factory {
         if (version >= 6.0) {
             return new RunVisualizeCommandHandler();
         }
-        return new RunVisualizeCommandHandler();
+        return new RunRestCommandHandler();
     }
 }

@@ -6,11 +6,11 @@ import android.os.AsyncTask;
  * @author Tom Koptel
  * @since 2.6
  */
-class DummyAsyncTask extends AsyncTask<Void, Void, Void> {
+class DummyAsyncTask extends AsyncTask<Object, Object, Object> {
     static final DummyAsyncTask INSTANCE = new DummyAsyncTask();
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Object doInBackground(Object... params) {
         return null;
     }
 }

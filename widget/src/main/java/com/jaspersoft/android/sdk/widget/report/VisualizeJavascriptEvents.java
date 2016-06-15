@@ -26,4 +26,13 @@ class VisualizeJavascriptEvents {
     public void onReportRenedered() {
         dispatcher.dispatch(eventFactory.createReportLoadedEvent());
     }
+
+    @JavascriptInterface
+    public void onWindowError(String errorLog) {
+        dispatcher.dispatch(eventFactory.createWindowErrorEvent(errorLog));
+    }
+
+    @JavascriptInterface
+    public void onHyperLinkClick(String linkData) {
+    }
 }

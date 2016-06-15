@@ -32,7 +32,7 @@ class ProxyLoadTemplateCommandHandler implements CommandHandler<LoadTemplateComm
         task.cancel(true);
     }
 
-    private class TemplateCreationTask extends AsyncTask<Void, Void, CommandHandler<LoadTemplateCommand>> {
+    private class TemplateCreationTask extends AsyncTask<Object, Object, CommandHandler<LoadTemplateCommand>> {
         private final LoadTemplateCommand command;
 
         private TemplateCreationTask(LoadTemplateCommand command) {
@@ -40,7 +40,7 @@ class ProxyLoadTemplateCommandHandler implements CommandHandler<LoadTemplateComm
         }
 
         @Override
-        protected CommandHandler<LoadTemplateCommand> doInBackground(Void... params) {
+        protected CommandHandler<LoadTemplateCommand> doInBackground(Object... params) {
             RunOptions options = command.getOptions();
             AuthorizedClient client = options.getClient();
             ServerInfoService infoService = ServerInfoService.newService(client);

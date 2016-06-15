@@ -43,7 +43,7 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         AsyncTaskCompat.executeParallel(task);
     }
 
-    private class Task extends AsyncTask<Void, Void, String> {
+    private class Task extends AsyncTask<Object, Object, String> {
         private final AssetFile.Factory assetFactory;
         private final RunOptions options;
         private final WebView webView;
@@ -75,7 +75,7 @@ class LoadTemplateCommandHandler implements CommandHandler<LoadTemplateCommand> 
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Object... params) {
             AssetFile assetFile = assetFactory.load("dasboard-vis-template.html");
             return assetFile.toString();
         }

@@ -37,7 +37,7 @@ class RunVisualizeCommandHandler implements CommandHandler<RunCommand> {
         return new Task(webView, options, version);
     }
 
-    private class Task extends AsyncTask<Void, Void, String> {
+    private class Task extends AsyncTask<Object, Object, String> {
         private final RunOptions runOptions;
         private final WebView webView;
         private final double version;
@@ -49,7 +49,7 @@ class RunVisualizeCommandHandler implements CommandHandler<RunCommand> {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Object... params) {
             return buildScript(runOptions);
         }
 

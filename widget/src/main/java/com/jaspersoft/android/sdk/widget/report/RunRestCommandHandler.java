@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.support.v4.os.AsyncTaskCompat;
 import android.webkit.WebView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import com.jaspersoft.android.sdk.service.data.report.ReportExportOutput;
@@ -16,15 +18,20 @@ import com.jaspersoft.android.sdk.service.report.ReportFormat;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.widget.RunOptions;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * @author Tom Koptel
  * @since 2.6
  */
 class RunRestCommandHandler implements CommandHandler<RunCommand> {
-    private static final String RUN_COMMAND_SCRIPT = "javascript:MobileClient.instance().loadPage(\"%s\");";
+    private static final String RUN_COMMAND = "javascript:MobileClient.instance().report().run(%s);";
 
     private AsyncTask task = DummyAsyncTask.INSTANCE;
 
@@ -44,7 +51,7 @@ class RunRestCommandHandler implements CommandHandler<RunCommand> {
         return new Task(webView, options, version);
     }
 
-    private class Task extends AsyncTask<Void, Void, String> {
+    private class Task extends AsyncTask<Object, Object, String> {
         private final RunOptions runOptions;
         private final WebView webView;
         private final double version;
@@ -56,7 +63,7 @@ class RunRestCommandHandler implements CommandHandler<RunCommand> {
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Object... params) {
             return buildScript(runOptions);
         }
 
@@ -82,7 +89,11 @@ class RunRestCommandHandler implements CommandHandler<RunCommand> {
                 ReportExportOutput output = export.download();
                 InputStream stream = output.getStream();
 
-                throw new UnsupportedOperationException("Not yet implemented");
+                Document document = Jsoup.parse(stream, Charset.defaultCharset().name(), "");
+                Element body = document.body();
+                Export exportContent = new Export(body.html());
+
+                return String.format(RUN_COMMAND, toJson(exportContent));
             } catch (ServiceException | IOException e) {
                 // Handle network exception
                 throw new RuntimeException(e);
@@ -92,6 +103,22 @@ class RunRestCommandHandler implements CommandHandler<RunCommand> {
         @Override
         protected void onPostExecute(String script) {
             webView.loadUrl(script);
+        }
+    }
+
+    private static String toJson(Object object) {
+        Gson gson = new GsonBuilder()
+                .disableHtmlEscaping()
+                .create();
+        return gson.toJson(object);
+    }
+
+
+    private static class Export {
+        private final String content;
+
+        private Export(String content) {
+            this.content = content;
         }
     }
 }
