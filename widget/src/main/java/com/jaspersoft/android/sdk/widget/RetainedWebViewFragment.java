@@ -51,6 +51,7 @@ public class RetainedWebViewFragment extends Fragment {
         if (getRetainInstance() && webView.getParent() instanceof ViewGroup) {
             ((ViewGroup) webView.getParent()).removeView(webView);
         }
+        webView = null;
     }
 
     public interface Callback {

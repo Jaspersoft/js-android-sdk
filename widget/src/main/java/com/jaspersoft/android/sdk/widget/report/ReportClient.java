@@ -74,7 +74,13 @@ public class ReportClient implements Parcelable {
         dispatcher.dispatch(runCommand);
     }
 
+    public void removeCallbacks() {
+        errorCallbacks = SimpleErrorCallbacks.NULL;
+        lifecycleCallbacks = SimpleLifeCycle.NULL;
+    }
+
     public void destroy() {
+        scopeCache.remove(key);
         scope.destroy();
     }
 

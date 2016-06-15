@@ -19,4 +19,8 @@ enum ScopeCache {
     public void put(String key, Scope scope) {
         cache.put(key, scope);
     }
+
+    public void remove(String key) {
+        cache.remove(key);
+    }
 }
