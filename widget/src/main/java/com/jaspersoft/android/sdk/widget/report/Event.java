@@ -29,9 +29,18 @@ class Event {
     }
 
     enum Type {
-
+        INFLATE_COMPLETE,
+        SCRIPT_LOADED,
+        DASHBOARD_LOADED,
+        WINDOW_ERROR,
+        HYPERLINK_CLICK;
     }
-    interface Factory {
 
+    interface Factory {
+        Event createInflateCompleteEvent();
+
+        Event createScriptLoadedEvent();
+
+        Event createReportLoadedEvent();
     }
 }

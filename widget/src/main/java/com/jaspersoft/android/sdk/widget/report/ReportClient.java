@@ -1,8 +1,10 @@
 package com.jaspersoft.android.sdk.widget.report;
 
-import android.webkit.WebView;
+import com.jaspersoft.android.sdk.widget.RunOptions;
+import com.jaspersoft.android.sdk.widget.WindowError;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import java.util.UUID;
 
 
 /**
@@ -10,63 +12,68 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
  * @since 2.5
  */
 public class ReportClient {
-    private final WebView webView;
-    private final TaskExecutor taskExecutor;
-    private final AuthorizedClient client;
-    private final TemplateInitiator.Factory templateFactory;
+    private final String key;
+    private final Command.Factory commandFactory;
+    private final Scope scope;
 
-    ReportClient(Builder builder) {
-        this.client = builder.client;
-        this.taskExecutor = builder.taskExecutor;
-        this.webView = builder.webView;
-        this.templateFactory = builder.templateFactory;
+    private final ScopeCache scopeCache = ScopeCache.INSTANCE;
+
+    LifecycleCallbacks lifecycleCallbacks = SimpleLifeCycle.NULL;
+    ErrorCallbacks errorCallbacks = SimpleErrorCallbacks.NULL;
+
+    public ReportClient() {
+        this(new CommandFactory());
     }
 
-    public void init(InflateCallback callback) {
-        if (callback == null) {
-            callback = InflateCallback.NULL;
-        }
-        final InflateCallback finalCallback = callback;
-        taskExecutor.perform(new Task() {
-            @Override
-            public void execute() {
-                TemplateInitiator reportTemplate = templateFactory.provideTemplate(client);
-                reportTemplate.initiateTemplate(webView, finalCallback);
-            }
-        });
+    ReportClient(Command.Factory factory) {
+        this.key = UUID.randomUUID().toString();
+        this.commandFactory = factory;
+        this.scope = Scope.newInstance(this);
+        scopeCache.put(key, scope);
     }
 
-    public static class Builder {
-        private final AuthorizedClient client;
-        private final WebView webView;
+    public void run(RunOptions runOptions) {
+        dispatchCommand(commandFactory.createLoadTemplateCommand(runOptions));
+    }
 
-        private TemplateInitiator.Factory templateFactory;
-        private TaskExecutor taskExecutor;
+    private void dispatchCommand(Command runCommand) {
+        Dispatcher dispatcher = scope.getDispatcher();
+        dispatcher.dispatch(runCommand);
+    }
 
-        public Builder(AuthorizedClient client, WebView webView) {
-            this.client = client;
-            this.webView = webView;
+    public interface LifecycleCallbacks {
+        void onInflateFinish();
+
+        void onScriptLoaded();
+
+        void onDashboardRendered();
+    }
+
+    public interface ErrorCallbacks {
+        void onWindowError(WindowError error);
+    }
+
+    public static abstract class SimpleLifeCycle implements LifecycleCallbacks {
+        private static final LifecycleCallbacks NULL = new SimpleLifeCycle() {};
+
+        @Override
+        public void onInflateFinish() {
         }
 
-        public ReportClient build() {
-            taskExecutor = AsyncTaskExecutor.INSTANCE;
-            templateFactory = new TemplateInitiator.Factory();
-            return new ReportClient(this);
+        @Override
+        public void onScriptLoaded() {
+        }
+
+        @Override
+        public void onDashboardRendered() {
         }
     }
 
-    public interface InflateCallback {
-        InflateCallback NULL = new InflateCallback() {
-            @Override
-            public void onStartInflate() {
-            }
+    public static abstract class SimpleErrorCallbacks implements ErrorCallbacks {
+        private static final SimpleErrorCallbacks NULL = new SimpleErrorCallbacks() {};
 
-            @Override
-            public void onFinishInflate() {
-            }
-        };
-
-        void onStartInflate();
-        void onFinishInflate();
+        @Override
+        public void onWindowError(WindowError error) {
+        }
     }
 }

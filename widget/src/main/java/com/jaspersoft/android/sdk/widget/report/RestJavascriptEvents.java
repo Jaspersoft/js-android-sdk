@@ -2,8 +2,7 @@ package com.jaspersoft.android.sdk.widget.report;
 
 /**
  * @author Tom Koptel
- * @since 2.5
+ * @since 2.6
  */
-interface Task {
-    void execute();
+class RestJavascriptEvents {
 }

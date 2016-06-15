@@ -8,6 +8,9 @@ import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
  * @since 2.6
  */
 class CommandHandlerFactory implements CommandHandler.Factory {
+    private static final String REST_TEMPLATE = "report-rest-template.html";
+    private static final String VIS_TEMPLATE = "report-vis-template.html";
+
     private final Dispatcher dispatcher;
     private final Event.Factory eventFactory;
     private final Command.Factory commandFactory;
@@ -20,5 +23,37 @@ class CommandHandlerFactory implements CommandHandler.Factory {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
+    }
+
+    @Override
+    public CommandHandler<LoadTemplateCommand> createProxyLoadTemplateCommandHandler() {
+        return new ProxyLoadTemplateCommandHandler(this);
+    }
+
+    @Override
+    public CommandHandler<LoadTemplateCommand> createLoadTemplateCommandHandler(double version) {
+        Object javascriptInterface;
+        String templateName;
+
+        if (version >= 6.0) {
+            javascriptInterface = new VisualizeJavascriptEvents(dispatcher, eventFactory);
+            templateName = VIS_TEMPLATE;
+        } else {
+            javascriptInterface = new RestJavascriptEvents();
+            templateName = REST_TEMPLATE;
+        }
+        return new LoadTemplateCommandHandler(
+                dispatcher,
+                eventFactory,
+                commandFactory,
+                javascriptInterface,
+                templateName,
+                version
+        );
+    }
+
+    @Override
+    public CommandHandler<RunCommand> runCommandHandler() {
+        return new RunCommandHandler();
     }
 }

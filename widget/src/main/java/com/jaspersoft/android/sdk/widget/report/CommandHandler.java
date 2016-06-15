@@ -7,6 +7,13 @@ package com.jaspersoft.android.sdk.widget.report;
 interface CommandHandler<C extends Command> {
     void handle(C command);
 
+    void cancel();
+
     interface Factory {
+        CommandHandler<LoadTemplateCommand> createProxyLoadTemplateCommandHandler();
+
+        CommandHandler<LoadTemplateCommand> createLoadTemplateCommandHandler(double version);
+
+        CommandHandler<RunCommand> runCommandHandler();
     }
 }
