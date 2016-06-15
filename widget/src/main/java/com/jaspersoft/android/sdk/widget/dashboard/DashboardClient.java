@@ -4,13 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.webkit.WebView;
 
+import com.jaspersoft.android.sdk.widget.WindowError;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
+import com.jaspersoft.android.sdk.widget.RunOptions;
+
 import java.util.UUID;
 
 /**
  * @author Tom Koptel
  * @since 2.6
  */
-public class DashboardView implements Parcelable {
+public class DashboardClient implements Parcelable {
 
     private final String key;
     private final Command.Factory commandFactory;
@@ -22,18 +26,18 @@ public class DashboardView implements Parcelable {
     ErrorCallbacks errorCallbacks = NullErrorCallbacks.INSTANCE;
     DashletCallbacks dashletCallbacks = NullDashletCallbacks.INSTANCE;
 
-    public DashboardView() {
+    public DashboardClient() {
         this(new CommandFactory());
     }
 
-    DashboardView(Command.Factory factory) {
+    DashboardClient(Command.Factory factory) {
         this.key = UUID.randomUUID().toString();
         this.commandFactory = factory;
         this.scope = Scope.newInstance(this);
         scopeCache.put(key, scope);
     }
 
-    public DashboardView registerLifecycleCallbacks(LifecycleCallbacks lifecycleCallbacks) {
+    public DashboardClient registerLifecycleCallbacks(LifecycleCallbacks lifecycleCallbacks) {
         if (lifecycleCallbacks == null) {
             lifecycleCallbacks = NullLifeCycle.INSTANCE;
         }
@@ -41,7 +45,7 @@ public class DashboardView implements Parcelable {
         return this;
     }
 
-    public DashboardView registerErrorCallbacks(ErrorCallbacks errorCallbacks) {
+    public DashboardClient registerErrorCallbacks(ErrorCallbacks errorCallbacks) {
         if (errorCallbacks == null) {
             errorCallbacks = NullErrorCallbacks.INSTANCE;
         }
@@ -49,7 +53,7 @@ public class DashboardView implements Parcelable {
         return this;
     }
 
-    public DashboardView registerDashletCallbacks(DashletCallbacks dashletCallbacks) {
+    public DashboardClient registerDashletCallbacks(DashletCallbacks dashletCallbacks) {
         if (dashletCallbacks == null) {
             dashletCallbacks = NullDashletCallbacks.INSTANCE;
         }
@@ -97,7 +101,7 @@ public class DashboardView implements Parcelable {
 
         void onMinimizeEnd(String componentName);
 
-        void onHypeLinkClick(Hyperlink hyperlink);
+        void onHypeLinkClick(DashboardHyperlink dashboardHyperlink);
     }
 
     @Override
@@ -110,21 +114,21 @@ public class DashboardView implements Parcelable {
         dest.writeString(this.key);
     }
 
-    protected DashboardView(Parcel in) {
+    protected DashboardClient(Parcel in) {
         this.key = in.readString();
         this.commandFactory = new CommandFactory();
         this.scope = scopeCache.get(key);
     }
 
-    public static final Creator<DashboardView> CREATOR = new Creator<DashboardView>() {
+    public static final Creator<DashboardClient> CREATOR = new Creator<DashboardClient>() {
         @Override
-        public DashboardView createFromParcel(Parcel source) {
-            return new DashboardView(source);
+        public DashboardClient createFromParcel(Parcel source) {
+            return new DashboardClient(source);
         }
 
         @Override
-        public DashboardView[] newArray(int size) {
-            return new DashboardView[size];
+        public DashboardClient[] newArray(int size) {
+            return new DashboardClient[size];
         }
     };
 
@@ -172,7 +176,7 @@ public class DashboardView implements Parcelable {
         }
 
         @Override
-        public void onHypeLinkClick(Hyperlink hyperlink) {
+        public void onHypeLinkClick(DashboardHyperlink dashboardHyperlink) {
         }
     }
 }

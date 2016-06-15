@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.widget.dashboard;
 
+import com.jaspersoft.android.sdk.widget.WindowError;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -9,15 +11,15 @@ import com.squareup.otto.Subscribe;
 class Scope {
     private final CommandHandler.Factory handlerFactory;
     private final Dispatcher dispatcher;
-    private final DashboardView view;
+    private final DashboardClient view;
 
-    static Scope newInstance(DashboardView view) {
+    static Scope newInstance(DashboardClient view) {
         Dispatcher dispatcher = new Dispatcher();
-        HandlerFactory handlerFactory = new HandlerFactory(dispatcher);
-        return new Scope(view, dispatcher, handlerFactory);
+        CommandHandlerFactory commandHandlerFactory = new CommandHandlerFactory(dispatcher);
+        return new Scope(view, dispatcher, commandHandlerFactory);
     }
 
-    Scope(DashboardView view, Dispatcher dispatcher, CommandHandler.Factory factory) {
+    Scope(DashboardClient view, Dispatcher dispatcher, CommandHandler.Factory factory) {
         this.view = view;
         this.handlerFactory = factory;
         this.dispatcher = dispatcher;
@@ -75,7 +77,7 @@ class Scope {
                 view.dashletCallbacks.onMinimizeEnd(event.firstArg(String.class));
                 break;
             case HYPERLINK_CLICK:
-                view.dashletCallbacks.onHypeLinkClick(event.firstArg(Hyperlink.class));
+                view.dashletCallbacks.onHypeLinkClick(event.firstArg(DashboardHyperlink.class));
                 break;
         }
     }

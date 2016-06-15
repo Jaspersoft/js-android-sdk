@@ -9,6 +9,8 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.info.ServerInfoService;
+import com.jaspersoft.android.sdk.widget.RunOptions;
+import com.jaspersoft.android.sdk.widget.internal.SetupOptions;
 
 /**
  * @author Tom Koptel

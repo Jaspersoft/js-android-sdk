@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.dashboard;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.jaspersoft.android.sdk.widget.WindowError;
 
 /**
  * @author Tom Koptel
@@ -10,14 +11,14 @@ import com.google.gson.JsonObject;
 class EventFactory implements Event.Factory {
 
     private final Gson gson = new Gson();
-    private final Hyperlink.Factory<ReportExecutionHyperlink> reportExecLinkFactory;
-    private final Hyperlink.Factory<ReferenceHyperlink> referenceHyperlinkFactory;
+    private final DashboardHyperlink.Factory<ReportExecutionDashboardHyperlink> reportExecLinkFactory;
+    private final DashboardHyperlink.Factory<ReferenceDashboardHyperlink> referenceHyperlinkFactory;
 
     EventFactory() {
         this(new ReportExecutionHyperlinkFactory(), new ReferenceHyperlinkFactory());
     }
 
-    EventFactory(Hyperlink.Factory<ReportExecutionHyperlink> reportExecLinkFactory, Hyperlink.Factory<ReferenceHyperlink> referenceHyperlinkFactory) {
+    EventFactory(DashboardHyperlink.Factory<ReportExecutionDashboardHyperlink> reportExecLinkFactory, DashboardHyperlink.Factory<ReferenceDashboardHyperlink> referenceHyperlinkFactory) {
         this.reportExecLinkFactory = reportExecLinkFactory;
         this.referenceHyperlinkFactory = referenceHyperlinkFactory;
     }
@@ -69,14 +70,14 @@ class EventFactory implements Event.Factory {
         String metadata = linkData.metadata.toString();
         String type = linkData.type;
 
-        Hyperlink hyperlink = null;
+        DashboardHyperlink dashboardHyperlink = null;
         if ("ReportExecution".equals(type)) {
-            hyperlink = reportExecLinkFactory.createLink(metadata);
+            dashboardHyperlink = reportExecLinkFactory.createLink(metadata);
         } else if ("Reference".equals(type)) {
-            hyperlink = referenceHyperlinkFactory.createLink(metadata);
+            dashboardHyperlink = referenceHyperlinkFactory.createLink(metadata);
         }
 
-        return new Event(Event.Type.HYPERLINK_CLICK, hyperlink);
+        return new Event(Event.Type.HYPERLINK_CLICK, dashboardHyperlink);
     }
 
     private static class HyperlinkData {

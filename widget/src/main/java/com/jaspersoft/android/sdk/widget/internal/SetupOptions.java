@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.dashboard;
+package com.jaspersoft.android.sdk.widget.internal;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
@@ -7,7 +7,7 @@ import com.jaspersoft.android.sdk.network.SpringCredentials;
  * @author Tom Koptel
  * @since 2.6
  */
-class SetupOptions {
+public class SetupOptions {
     private final Server server;
     private final Auth auth;
 

@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.dashboard;
+package com.jaspersoft.android.sdk.widget;
 
 import android.webkit.WebView;
 

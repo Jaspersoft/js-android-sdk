@@ -10,7 +10,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.sample.di.ClientProvider;
 import com.jaspersoft.android.sdk.sample.di.Provider;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
-import com.jaspersoft.android.sdk.widget.dashboard.RetainedWebViewFragment;
+import com.jaspersoft.android.sdk.widget.RetainedWebViewFragment;
 
 import static com.jaspersoft.android.sdk.sample.R.id.toolbar;
 

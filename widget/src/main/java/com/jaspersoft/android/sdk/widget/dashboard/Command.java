@@ -2,6 +2,8 @@ package com.jaspersoft.android.sdk.widget.dashboard;
 
 import android.webkit.WebView;
 
+import com.jaspersoft.android.sdk.widget.RunOptions;
+
 /**
  * @author Tom Koptel
  * @since 2.6

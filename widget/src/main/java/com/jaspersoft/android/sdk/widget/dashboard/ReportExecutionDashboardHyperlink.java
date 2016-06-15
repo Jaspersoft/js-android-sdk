@@ -8,13 +8,13 @@ import java.util.List;
  * @author Tom Koptel
  * @since 2.6
  */
-public class ReportExecutionHyperlink extends Hyperlink {
+public class ReportExecutionDashboardHyperlink extends DashboardHyperlink {
     private final String uri;
     private final Integer page;
     private final String anchor;
     private final List<ReportParameter> parameters;
 
-    ReportExecutionHyperlink(String uri, Integer page, String anchor, List<ReportParameter> parameters) {
+    ReportExecutionDashboardHyperlink(String uri, Integer page, String anchor, List<ReportParameter> parameters) {
         super(Type.REPORT_EXECUTION);
         this.uri = uri;
         this.page = page;

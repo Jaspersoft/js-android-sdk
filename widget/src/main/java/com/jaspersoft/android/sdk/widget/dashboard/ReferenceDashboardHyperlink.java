@@ -4,10 +4,10 @@ package com.jaspersoft.android.sdk.widget.dashboard;
  * @author Tom Koptel
  * @since 2.6
  */
-public class ReferenceHyperlink extends Hyperlink {
+public class ReferenceDashboardHyperlink extends DashboardHyperlink {
     private final String source;
 
-    ReferenceHyperlink(String source) {
+    ReferenceDashboardHyperlink(String source) {
         super(Type.REFERENCE);
         this.source = source;
     }

@@ -12,14 +12,14 @@ import java.util.Set;
  * @author Tom Koptel
  * @since 2.6
  */
-class ReportExecutionHyperlinkFactory extends Hyperlink.Factory<ReportExecutionHyperlink> {
+class ReportExecutionHyperlinkFactory extends DashboardHyperlink.Factory<ReportExecutionDashboardHyperlink> {
     private final Gson gson = new Gson();
 
     @Override
-    ReportExecutionHyperlink createLink(String data) {
+    ReportExecutionDashboardHyperlink createLink(String data) {
         ExecutionMetadata executionMetadata = gson.fromJson(data, ExecutionMetadata.class);
         List<ReportParameter> parameters = toParams(executionMetadata.params);
-        return new ReportExecutionHyperlink(
+        return new ReportExecutionDashboardHyperlink(
                 executionMetadata.uri,
                 executionMetadata.page,
                 executionMetadata.anchor,

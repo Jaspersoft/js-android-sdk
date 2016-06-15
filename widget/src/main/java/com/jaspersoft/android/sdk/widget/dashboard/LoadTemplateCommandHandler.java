@@ -6,7 +6,9 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.widget.RunOptions;
 import com.jaspersoft.android.sdk.widget.internal.AssetFile;
 
 /**

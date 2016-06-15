@@ -6,11 +6,11 @@ import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jaspersoft.android.sdk.widget.dashboard.DashboardView;
-import com.jaspersoft.android.sdk.widget.dashboard.Hyperlink;
-import com.jaspersoft.android.sdk.widget.dashboard.RetainedWebViewFragment;
-import com.jaspersoft.android.sdk.widget.dashboard.RunOptions;
-import com.jaspersoft.android.sdk.widget.dashboard.WindowError;
+import com.jaspersoft.android.sdk.widget.dashboard.DashboardClient;
+import com.jaspersoft.android.sdk.widget.dashboard.DashboardHyperlink;
+import com.jaspersoft.android.sdk.widget.RetainedWebViewFragment;
+import com.jaspersoft.android.sdk.widget.RunOptions;
+import com.jaspersoft.android.sdk.widget.WindowError;
 
 /**
  * @author Tom Koptel
@@ -20,7 +20,7 @@ public class DashboardViewActivity extends ResourceActivity implements RetainedW
 
     public static final String RESOURCE_VIEW_KEY = "resource-view";
 
-    private DashboardView resourceView;
+    private DashboardClient resourceView;
     private TextView progress;
     private Bundle savedState;
     private WebView webView;
@@ -55,13 +55,13 @@ public class DashboardViewActivity extends ResourceActivity implements RetainedW
     @Override
     public void onWebViewReady(WebView webView) {
         resourceView = provideDashboardView(savedState)
-                .registerErrorCallbacks(new DashboardView.ErrorCallbacks() {
+                .registerErrorCallbacks(new DashboardClient.ErrorCallbacks() {
                     @Override
                     public void onWindowError(WindowError error) {
                         progress.setText(error.toString());
                     }
                 })
-                .registerDashletCallbacks(new DashboardView.DashletCallbacks() {
+                .registerDashletCallbacks(new DashboardClient.DashletCallbacks() {
                     @Override
                     public void onMaximizeStart(String componentName) {
                         progress.setText("Start maximizing component: " + componentName);
@@ -85,11 +85,11 @@ public class DashboardViewActivity extends ResourceActivity implements RetainedW
                     }
 
                     @Override
-                    public void onHypeLinkClick(Hyperlink hyperlink) {
-                        Toast.makeText(DashboardViewActivity.this, hyperlink.getType().toString(), Toast.LENGTH_LONG).show();
+                    public void onHypeLinkClick(DashboardHyperlink dashboardHyperlink) {
+                        Toast.makeText(DashboardViewActivity.this, dashboardHyperlink.getType().toString(), Toast.LENGTH_LONG).show();
                     }
                 })
-                .registerLifecycleCallbacks(new DashboardView.LifecycleCallbacks() {
+                .registerLifecycleCallbacks(new DashboardClient.LifecycleCallbacks() {
                     @Override
                     public void onInflateFinish() {
                         progress.setText("Awaiting script...");
@@ -146,10 +146,10 @@ public class DashboardViewActivity extends ResourceActivity implements RetainedW
         outState.putParcelable(RESOURCE_VIEW_KEY, resourceView);
     }
 
-    private DashboardView provideDashboardView(Bundle in) {
-        DashboardView reportView;
+    private DashboardClient provideDashboardView(Bundle in) {
+        DashboardClient reportView;
         if (in == null) {
-            reportView = new DashboardView();
+            reportView = new DashboardClient();
         } else {
             reportView = in.getParcelable(RESOURCE_VIEW_KEY);
         }

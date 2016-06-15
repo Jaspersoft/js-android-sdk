@@ -6,14 +6,14 @@ import com.google.gson.Gson;
  * @author Tom Koptel
  * @since 2.6
  */
-class ReferenceHyperlinkFactory extends Hyperlink.Factory<ReferenceHyperlink> {
+class ReferenceHyperlinkFactory extends DashboardHyperlink.Factory<ReferenceDashboardHyperlink> {
 
     private final Gson gson = new Gson();
 
     @Override
-    ReferenceHyperlink createLink(String data) {
+    ReferenceDashboardHyperlink createLink(String data) {
         Metadata metadata = gson.fromJson(data, Metadata.class);
-        return new ReferenceHyperlink(metadata.href);
+        return new ReferenceDashboardHyperlink(metadata.href);
     }
 
     private static class Metadata {

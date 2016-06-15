@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.dashboard;
+package com.jaspersoft.android.sdk.widget.internal;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -9,11 +9,11 @@ import com.squareup.otto.Bus;
  * @author Tom Koptel
  * @since 2.6
  */
-class Dispatcher {
+public class Dispatcher {
     private final Bus bus;
     private final Handler mainThread = new Handler(Looper.getMainLooper());
 
-    Dispatcher() {
+    public Dispatcher() {
         bus = new Bus();
     }
 
