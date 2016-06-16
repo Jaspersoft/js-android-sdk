@@ -4,7 +4,12 @@
 
     <item
         android:id="@+id/run"
-        android:icon="@android:drawable/ic_menu_send"
-        android:title="Run Dashboard"
+        android:icon="@drawable/ic_run"
+        android:title="Run Resource"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/set_params"
+        android:icon="@drawable/ic_params"
+        android:title="Apply params"
         app:showAsAction="always" />
 </menu>

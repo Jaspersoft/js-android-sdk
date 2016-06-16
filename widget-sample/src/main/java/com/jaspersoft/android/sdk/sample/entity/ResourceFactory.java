@@ -12,8 +12,12 @@ public class ResourceFactory {
         this.profile = profile;
     }
 
+    public Resource newReport(String label, String uri, String params) {
+        return Resource.newReport(uri, label, params, profile);
+    }
+
     public Resource newReport(String label, String uri) {
-        return Resource.newReport(uri, label, profile);
+        return Resource.newReport(uri, label, null, profile);
     }
 
     public Resource newDashboard(String label, String uri) {

@@ -6,11 +6,14 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.sample.page.ReportMessageFactory;
 import com.jaspersoft.android.sdk.sample.page.ReportPage;
 import com.jaspersoft.android.sdk.widget.RunOptions;
 import com.jaspersoft.android.sdk.widget.WindowError;
 import com.jaspersoft.android.sdk.widget.report.ReportClient;
+
+import java.util.List;
 
 import static com.jaspersoft.android.sdk.sample.DashboardViewActivity.RESOURCE_VIEW_KEY;
 
@@ -18,17 +21,25 @@ import static com.jaspersoft.android.sdk.sample.DashboardViewActivity.RESOURCE_V
  * @author Tom Koptel
  * @since 2.5
  */
-public class ReportViewActivity extends ResourceActivity {
-    public static final String PAGE_STATE_KEY = "page-state";
+public class ReportViewActivity extends ResourceActivity implements ParamsDialog.OnResult {
+    static final String PAGE_STATE_KEY = "page-state";
+    static final String DIALOG_STATE_KEY = "params-dialog";
 
     private TextView progress;
     private ReportClient reportClient;
     private ReportPage pageState;
     private WebView webView;
+    private ParamsDialog paramsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        paramsDialog = new ParamsDialog.Builder(this, savedInstanceState)
+                .params(provideResource().getParams())
+                .build();
+        paramsDialog.setCallback(this);
+
         progress = (TextView) findViewById(R.id.progress);
         reportClient = provideReportClient(savedInstanceState);
         pageState = provideState(savedInstanceState);
@@ -39,6 +50,7 @@ public class ReportViewActivity extends ResourceActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(RESOURCE_VIEW_KEY, reportClient);
         outState.putParcelable(PAGE_STATE_KEY, pageState);
+        outState.putBundle(DIALOG_STATE_KEY, paramsDialog.saveInstanceState());
     }
 
     private ReportPage provideState(Bundle in) {
@@ -67,11 +79,18 @@ public class ReportViewActivity extends ResourceActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.set_params:
+                showParamsDialog();
+                break;
             case R.id.run:
                 runReport(webView);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showParamsDialog() {
+        paramsDialog.show();
     }
 
     @Override
@@ -122,6 +141,11 @@ public class ReportViewActivity extends ResourceActivity {
         reportClient.run(runOptions);
     }
 
+    @Override
+    public void onParamsResult(List<ReportParameter> params) {
+
+    }
+
     private void updateState() {
         pageState.moveToNextState();
     }
@@ -150,6 +174,7 @@ public class ReportViewActivity extends ResourceActivity {
     protected void onStop() {
         super.onStop();
         reportClient.removeCallbacks();
+        paramsDialog.removeCallbacks();
     }
 
     @Override

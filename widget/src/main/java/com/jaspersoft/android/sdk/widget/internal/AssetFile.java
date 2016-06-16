@@ -43,7 +43,7 @@ public class AssetFile {
         }
     }
 
-    static String toString(InputStream stream)  throws IOException {
+    static String toString(InputStream stream) throws IOException {
         java.util.Scanner s = new java.util.Scanner(stream).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }

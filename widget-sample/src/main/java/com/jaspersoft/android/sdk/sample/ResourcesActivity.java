@@ -41,6 +41,11 @@ public class ResourcesActivity extends AppCompatActivity {
     ));
 
     private static final List<Resource> RESOURCES = Arrays.asList(
+            SERVER_5_6_1.newReport(
+                    "5.6.1 - 01. Geographic Results by Segment Report",
+                    "/public/Samples/Reports/01._Geographic_Results_by_Segment_Report",
+                    "{\"sales__product__product_name_1\":[],\"sales__product__recyclable_package_1\":[\"false\",\"true\"],\"sales__product__low_fat_1\":[\"false\",\"true\"],\"sales_fact_ALL__store_sales_2013_1\":[\"20\"]}"
+            ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_2.newReport("6.2 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
