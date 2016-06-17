@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.v2;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 
 import java.util.List;
 
@@ -9,8 +10,8 @@ import java.util.List;
  * @since 2.6
  */
 class InitState extends PresenterState {
-    protected InitState(Context context) {
-        super(context);
+    protected InitState(StateContext stateContext, Dispatcher dispatcher) {
+        super(stateContext, dispatcher);
     }
 
     @Override
@@ -35,11 +36,6 @@ class InitState extends PresenterState {
 
     @Override
     public void refresh() {
-
-    }
-
-    @Override
-    public void destroy() {
 
     }
 }

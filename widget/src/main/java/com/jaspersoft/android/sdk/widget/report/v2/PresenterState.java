@@ -4,6 +4,7 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 
 import java.util.List;
 
@@ -12,10 +13,19 @@ import java.util.List;
  * @since 2.6
  */
 abstract class PresenterState {
-    private final Context context;
+    private final CommandRegistry commandRegistry;
+    private final Dispatcher dispatcher;
+    private final StateContext stateContext;
 
-    protected PresenterState(Context context) {
-        this.context = context;
+    protected PresenterState(StateContext stateContext, Dispatcher dispatcher) {
+        this(new CommandRegistry(), dispatcher, stateContext);
+    }
+
+    protected PresenterState(CommandRegistry commandRegistry, Dispatcher dispatcher, StateContext stateContext) {
+        this.commandRegistry = commandRegistry;
+        this.stateContext = stateContext;
+        this.dispatcher = dispatcher;
+        this.dispatcher.register(this);
     }
 
     public abstract void run(RunOptions options);
@@ -28,12 +38,38 @@ abstract class PresenterState {
 
     public abstract void refresh();
 
-    public abstract void destroy();
+    public final void resume() {
+        dispatcher.register(this);
+    }
 
-    protected interface Context {
-         WebView getWebView();
+    public final void pause() {
+        dispatcher.unregister(this);
+    }
+
+    public final void destroy() {
+        commandRegistry.cancelAll();
+    }
+
+    StateContext getStateContext() {
+        return stateContext;
+    }
+
+    final void executeCommand(Command command) {
+        commandRegistry.register(command);
+        command.execute();
+    }
+
+    protected interface StateContext {
+        WebView getWebView();
+
         String getUri();
+
         AuthorizedClient getClient();
+
+        CommandFactory getCommandFactory();
+
+        StateFactory getStateFactory();
+
         void swapState(PresenterState state);
     }
 }

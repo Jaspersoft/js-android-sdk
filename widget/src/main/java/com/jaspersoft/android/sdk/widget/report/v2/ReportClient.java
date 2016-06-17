@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.v2;
 import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 
 /**
  * @author Tom Koptel
@@ -22,10 +23,15 @@ public class ReportClient {
     }
 
     public ReportPresenter newPresenter(String uri, WebView webView) {
+        Dispatcher dispatcher = new Dispatcher();
+        CommandFactory commandFactory = new CommandFactory(dispatcher);
+        StateFactory stateFactory = new StateFactory(dispatcher);
+
         ReportListeners listeners = new ReportListeners();
         PresenterKey key = PresenterKey.newKey();
         ReportPresenter reportPresenter = new ReportPresenter(
-                this, listeners, key, uri, webView
+                this, listeners, commandFactory, stateFactory,
+                key, uri, webView
         );
         presenterCache.put(reportPresenter);
         return reportPresenter;
