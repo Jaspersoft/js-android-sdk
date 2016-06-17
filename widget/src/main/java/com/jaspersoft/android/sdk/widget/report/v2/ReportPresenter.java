@@ -1,9 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.v2;
 
-import android.webkit.WebView;
-
-import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 
 import java.util.List;
 
@@ -12,92 +10,77 @@ import java.util.List;
  * @since 2.6
  */
 public class ReportPresenter {
+
+
     private final ReportClient reportClient;
-    private final ReportListeners listeners;
-    private final CommandFactory commandFactory;
-    private final StateFactory stateFactory;
-    private final PresenterKey presenterKey;
-    private final String uri;
-    private final WebView webView;
-    private final StateContext context;
+    private final PresenterKey key;
+    private final PresenterState.Context context;
 
-    private PresenterState state;
-
-    ReportPresenter(
+    public ReportPresenter(
             ReportClient reportClient,
-            ReportListeners listeners,
-            CommandFactory commandFactory,
-            StateFactory stateFactory,
-            PresenterKey presenterKey,
-            String uri,
-            WebView webView
+            PresenterKey key,
+            PresenterState.Context context
     ) {
-        this.reportClient = reportClient;
-        this.listeners = listeners;
-        this.commandFactory = commandFactory;
-        this.stateFactory = stateFactory;
-        this.presenterKey = presenterKey;
-        this.uri = uri;
-        this.webView = webView;
 
-        this.context = new StateContext();
-        this.state = stateFactory.createInitState(context);
+        this.reportClient = reportClient;
+        this.key = key;
+        this.context = context;
     }
 
     public PresenterKey getKey() {
-        return presenterKey;
+        return key;
     }
 
     public ReportPresenter registerProgressListener(ProgressListener progressListener) {
-        listeners.setProgressListener(progressListener);
+        context.getListeners().setProgressListener(progressListener);
         return this;
     }
 
     public ReportPresenter registerHyperlinkClickListener(HyperlinkClickListener hyperlinkClickListener) {
-        listeners.setHyperlinkClickListener(hyperlinkClickListener);
+        context.getListeners().setHyperlinkClickListener(hyperlinkClickListener);
         return this;
     }
 
     public ReportPresenter registerErrorListener(ErrorListener errorListener) {
-        listeners.setErrorListener(errorListener);
+        context.getListeners().setErrorListener(errorListener);
         return this;
     }
 
     public void run(RunOptions options) {
-        state.run(options);
+        context.getCurrentState().run(options);
     }
 
     public void update(List<ReportParameter> parameters) {
-        state.update(parameters);
+        context.getCurrentState().update(parameters);
     }
 
     public boolean isRunning() {
-        return state.isRunning();
+        return context.getCurrentState().isRunning();
     }
 
     public void navigate(ReportQuery query) {
-        state.navigate(query);
+        context.getCurrentState().navigate(query);
     }
 
     public void refresh() {
-        state.refresh();
+        context.getCurrentState().refresh();
     }
 
     public void resume() {
-        state.resume();
+        context.getCurrentState().resume();
     }
 
     public void pause() {
-        state.pause();
+        context.getCurrentState().pause();
     }
 
     public void removeCallbacks() {
-        listeners.reset();
+        context.getListeners().reset();
     }
 
     public void destroy() {
         reportClient.removePresenter(this);
-        state.destroy();
+        context.getCurrentState().destroy();
     }
 
     public interface ProgressListener {
@@ -107,41 +90,10 @@ public class ReportPresenter {
     }
 
     public interface ErrorListener {
+        void onSdkError(ServiceException exception);
     }
 
     public interface PropertyCallback<P> {
         void onResult(P property);
-    }
-
-    private class StateContext implements PresenterState.StateContext {
-        @Override
-        public WebView getWebView() {
-            return webView;
-        }
-
-        @Override
-        public String getUri() {
-            return uri;
-        }
-
-        @Override
-        public AuthorizedClient getClient() {
-            return reportClient.getApiClient();
-        }
-
-        @Override
-        public CommandFactory getCommandFactory() {
-            return commandFactory;
-        }
-
-        @Override
-        public StateFactory getStateFactory() {
-            return stateFactory;
-        }
-
-        @Override
-        public void swapState(PresenterState newState) {
-            state = newState;
-        }
     }
 }

@@ -23,15 +23,14 @@ public class ReportClient {
     }
 
     public ReportPresenter newPresenter(String uri, WebView webView) {
+        PresenterListeners listeners = new PresenterListeners();
         Dispatcher dispatcher = new Dispatcher();
-        CommandFactory commandFactory = new CommandFactory(dispatcher);
-        StateFactory stateFactory = new StateFactory(dispatcher);
+        PresenterState.Context context = new PresenterContext(
+                uri, webView, client, listeners, dispatcher);
 
-        ReportListeners listeners = new ReportListeners();
         PresenterKey key = PresenterKey.newKey();
         ReportPresenter reportPresenter = new ReportPresenter(
-                this, listeners, commandFactory, stateFactory,
-                key, uri, webView
+                this, key, context
         );
         presenterCache.put(reportPresenter);
         return reportPresenter;
@@ -43,9 +42,5 @@ public class ReportClient {
 
     void removePresenter(ReportPresenter presenter) {
         presenterCache.remove(presenter.getKey());
-    }
-
-    AuthorizedClient getApiClient() {
-        return client;
     }
 }

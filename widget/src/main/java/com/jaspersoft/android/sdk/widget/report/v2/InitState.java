@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.v2;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
@@ -10,13 +11,16 @@ import java.util.List;
  * @since 2.6
  */
 class InitState extends PresenterState {
-    protected InitState(StateContext stateContext, Dispatcher dispatcher) {
-        super(stateContext, dispatcher);
+    protected InitState(Context context, Dispatcher dispatcher) {
+        super(context, dispatcher);
     }
 
     @Override
     public void run(RunOptions options) {
-
+        executeCommand(
+                getContext().provideCommandFactory()
+                        .createEngineInitCommand(options)
+        );
     }
 
     @Override
@@ -37,5 +41,16 @@ class InitState extends PresenterState {
     @Override
     public void refresh() {
 
+    }
+
+    @Subscribe
+    public void onEngineTransitEvent(TransitToEngineEvent engineEvent) {
+        double code = engineEvent.getCode();
+        RunOptions runOptions = engineEvent.getOptions();
+
+        PresenterState nextState = getContext().provideStateFactory()
+                .createEngineInitState(code);
+        swapState(nextState);
+        nextState.run(runOptions);
     }
 }

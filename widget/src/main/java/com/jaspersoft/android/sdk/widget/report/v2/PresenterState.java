@@ -4,7 +4,9 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
@@ -15,17 +17,22 @@ import java.util.List;
 abstract class PresenterState {
     private final CommandRegistry commandRegistry;
     private final Dispatcher dispatcher;
-    private final StateContext stateContext;
+    private final Context context;
 
-    protected PresenterState(StateContext stateContext, Dispatcher dispatcher) {
-        this(new CommandRegistry(), dispatcher, stateContext);
+    protected PresenterState(Context context, Dispatcher dispatcher) {
+        this(context, dispatcher, new CommandRegistry());
     }
 
-    protected PresenterState(CommandRegistry commandRegistry, Dispatcher dispatcher, StateContext stateContext) {
-        this.commandRegistry = commandRegistry;
-        this.stateContext = stateContext;
+    protected PresenterState(Context context, Dispatcher dispatcher, CommandRegistry commandRegistry) {
+        this.context = context;
         this.dispatcher = dispatcher;
+        this.commandRegistry = commandRegistry;
         this.dispatcher.register(this);
+    }
+
+    @Subscribe
+    public void onSdkError(ServiceException serviceException) {
+        context.getListeners().getErrorListener().onSdkError(serviceException);
     }
 
     public abstract void run(RunOptions options);
@@ -50,8 +57,8 @@ abstract class PresenterState {
         commandRegistry.cancelAll();
     }
 
-    StateContext getStateContext() {
-        return stateContext;
+    Context getContext() {
+        return context;
     }
 
     final void executeCommand(Command command) {
@@ -59,16 +66,24 @@ abstract class PresenterState {
         command.execute();
     }
 
-    protected interface StateContext {
+    final void swapState(PresenterState nextState) {
+        context.swapState(nextState);
+    }
+
+    protected interface Context {
+        String getUri();
+
         WebView getWebView();
 
-        String getUri();
+        PresenterListeners getListeners();
 
         AuthorizedClient getClient();
 
-        CommandFactory getCommandFactory();
+        PresenterState getCurrentState();
 
-        StateFactory getStateFactory();
+        CommandFactory provideCommandFactory();
+
+        StateFactory provideStateFactory();
 
         void swapState(PresenterState state);
     }

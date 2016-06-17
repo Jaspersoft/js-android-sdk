@@ -4,7 +4,7 @@ package com.jaspersoft.android.sdk.widget.report.v2;
  * @author Tom Koptel
  * @since 2.6
  */
-class ReportListeners {
+class PresenterListeners {
 
     private ReportPresenter.ProgressListener progressListener = SimpleProgressListener.NULL;
     private ReportPresenter.HyperlinkClickListener hyperlinkClickListener = SimpleHyperlinkClickListener.NULL;
