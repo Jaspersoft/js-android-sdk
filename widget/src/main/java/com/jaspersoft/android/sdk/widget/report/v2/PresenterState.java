@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.WindowError;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.squareup.otto.Subscribe;
 
@@ -68,6 +69,14 @@ abstract class PresenterState {
 
     final void swapState(PresenterState nextState) {
         context.swapState(nextState);
+    }
+
+    final void dispatchProgress(int newProgress) {
+        getContext().getListeners().getProgressListener().onProgressChanged(newProgress);
+    }
+
+    final void dispatchWindowError(WindowError error) {
+        getContext().getListeners().getErrorListener().onWebWindowError(error);
     }
 
     protected interface Context {

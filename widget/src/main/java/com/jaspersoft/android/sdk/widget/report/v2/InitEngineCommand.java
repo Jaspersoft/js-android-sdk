@@ -12,16 +12,19 @@ import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
  * @since 2.6
  */
 class InitEngineCommand extends Command {
+    private final SystemEventFactory systemEventFactory;
     private final Dispatcher dispatcher;
     private final RunOptions options;
     private final ServerInfoService infoService;
 
     InitEngineCommand(
             ServerInfoService infoService,
+            SystemEventFactory systemEventFactory,
             Dispatcher dispatcher,
             RunOptions options
     ) {
         this.infoService = infoService;
+        this.systemEventFactory = systemEventFactory;
         this.dispatcher = dispatcher;
         this.options = options;
     }
@@ -34,7 +37,9 @@ class InitEngineCommand extends Command {
                 try {
                     ServerInfo serverInfo = infoService.requestServerInfo();
                     double code = serverInfo.getVersion().code();
-                    dispatcher.dispatch(new TransitToEngineEvent(code, options));
+                    SystemEvent transitToEngineEvent = systemEventFactory.createTransitToEngineEvent(code, options);
+
+                    dispatcher.dispatch(transitToEngineEvent);
                 } catch (ServiceException e) {
                     dispatcher.dispatch(e);
                 }

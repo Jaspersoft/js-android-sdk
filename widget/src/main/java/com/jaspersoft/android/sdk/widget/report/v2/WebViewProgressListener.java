@@ -9,12 +9,14 @@ import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
  * @author Tom Koptel
  * @since 2.6
  */
-class RestWebViewProgressListener extends WebChromeClient {
+class WebViewProgressListener extends WebChromeClient {
     private final Dispatcher dispatcher;
-    private final RestJavascriptEventFactory eventFactory;
+    private final RunOptions options;
+    private final SystemEventFactory eventFactory;
 
-    public RestWebViewProgressListener(Dispatcher dispatcher, RestJavascriptEventFactory eventFactory) {
+    public WebViewProgressListener(Dispatcher dispatcher, SystemEventFactory eventFactory, RunOptions options) {
         this.dispatcher = dispatcher;
+        this.options = options;
         this.eventFactory = eventFactory;
     }
 
@@ -24,7 +26,7 @@ class RestWebViewProgressListener extends WebChromeClient {
 
         if (newProgress == 100) {
             view.setWebChromeClient(null);
-            dispatcher.dispatch(eventFactory.createInflateCompleteEvent());
+            dispatcher.dispatch(eventFactory.createInflateCompleteEvent(options));
         }
     }
 }

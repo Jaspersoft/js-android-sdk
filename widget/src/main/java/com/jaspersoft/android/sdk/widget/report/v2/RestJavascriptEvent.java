@@ -24,7 +24,6 @@ class RestJavascriptEvent extends JavascriptEvent {
     }
 
     enum Type {
-        INFLATE_COMPLETE,
         REPORT_LOADED,
         WINDOW_ERROR;
     }

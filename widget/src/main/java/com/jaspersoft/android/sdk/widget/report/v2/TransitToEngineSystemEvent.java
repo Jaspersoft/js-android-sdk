@@ -4,11 +4,11 @@ package com.jaspersoft.android.sdk.widget.report.v2;
  * @author Tom Koptel
  * @since 2.6
  */
-class TransitToEngineEvent {
+class TransitToEngineSystemEvent implements SystemEvent {
     private final double code;
     private final RunOptions options;
 
-    public TransitToEngineEvent(double code, RunOptions options) {
+    TransitToEngineSystemEvent(double code, RunOptions options) {
         this.code = code;
         this.options = options;
     }

@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.v2;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.WindowError;
 
 import java.util.List;
 
@@ -10,8 +11,6 @@ import java.util.List;
  * @since 2.6
  */
 public class ReportPresenter {
-
-
     private final ReportClient reportClient;
     private final PresenterKey key;
     private final PresenterState.Context context;
@@ -21,7 +20,6 @@ public class ReportPresenter {
             PresenterKey key,
             PresenterState.Context context
     ) {
-
         this.reportClient = reportClient;
         this.key = key;
         this.context = context;
@@ -84,6 +82,7 @@ public class ReportPresenter {
     }
 
     public interface ProgressListener {
+        void onProgressChanged(int newProgress);
     }
 
     public interface HyperlinkClickListener {
@@ -91,6 +90,8 @@ public class ReportPresenter {
 
     public interface ErrorListener {
         void onSdkError(ServiceException exception);
+
+        void onWebWindowError(WindowError windowError);
     }
 
     public interface PropertyCallback<P> {

@@ -21,11 +21,12 @@ class InitState extends PresenterState {
                 getContext().provideCommandFactory()
                         .createEngineInitCommand(options)
         );
+        dispatchProgress(0);
     }
 
     @Override
     public void update(List<ReportParameter> parameters) {
-
+        throw new IllegalStateException("Could not update presenter. Presenter still not initialized.");
     }
 
     @Override
@@ -35,16 +36,16 @@ class InitState extends PresenterState {
 
     @Override
     public void navigate(ReportQuery query) {
-
+        throw new IllegalStateException("Could not navigate in presenter. Presenter still not initialized.");
     }
 
     @Override
     public void refresh() {
-
+        throw new IllegalStateException("Could not refresh in presenter. Presenter still not initialized.");
     }
 
     @Subscribe
-    public void onEngineTransitEvent(TransitToEngineEvent engineEvent) {
+    public void onEngineTransitEvent(TransitToEngineSystemEvent engineEvent) {
         double code = engineEvent.getCode();
         RunOptions runOptions = engineEvent.getOptions();
 

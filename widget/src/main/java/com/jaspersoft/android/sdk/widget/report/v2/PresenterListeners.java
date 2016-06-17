@@ -1,5 +1,8 @@
 package com.jaspersoft.android.sdk.widget.report.v2;
 
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.WindowError;
+
 /**
  * @author Tom Koptel
  * @since 2.6
@@ -51,6 +54,10 @@ class PresenterListeners {
 
     private static class SimpleProgressListener implements ReportPresenter.ProgressListener {
         private static final ReportPresenter.ProgressListener NULL = new SimpleProgressListener();
+
+        @Override
+        public void onProgressChanged(int newProgress) {
+        }
     }
 
     private static class SimpleHyperlinkClickListener implements ReportPresenter.HyperlinkClickListener {
@@ -59,5 +66,13 @@ class PresenterListeners {
 
     private static class SimpleErrorListener implements ReportPresenter.ErrorListener {
         private static final ReportPresenter.ErrorListener NULL = new SimpleErrorListener();
+
+        @Override
+        public void onSdkError(ServiceException exception) {
+        }
+
+        @Override
+        public void onWebWindowError(WindowError windowError) {
+        }
     }
 }

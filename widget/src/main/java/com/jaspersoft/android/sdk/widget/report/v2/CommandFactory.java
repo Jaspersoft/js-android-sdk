@@ -25,15 +25,18 @@ class CommandFactory {
     public Command createEngineInitCommand(RunOptions options) {
         AuthorizedClient client = context.getClient();
         ServerInfoService infoService = ServerInfoService.newService(client);
-        return new InitEngineCommand(infoService, dispatcher, options);
+        SystemEventFactory eventFactory = new SystemEventFactory();
+        return new InitEngineCommand(infoService, eventFactory, dispatcher, options);
     }
 
-    public Command createLoadVisTemplateCommand() {
+    public Command createLoadVisTemplateCommand(RunOptions options) {
         VisJavascriptEventFactory eventFactory = new VisJavascriptEventFactory();
         VisJavascriptInterface javascriptEvents = new VisJavascriptInterface(dispatcher, eventFactory);
 
         AuthorizedClient client = context.getClient();
-        WebChromeClient progressListener = new VisWebViewProgressListener(dispatcher, eventFactory);
+        SystemEventFactory systemEventFactory = new SystemEventFactory();
+        WebChromeClient progressListener = new WebViewProgressListener(dispatcher, systemEventFactory, options);
+
         return new LoadTemplateCommand(
                 context.getWebView(),
                 client.getBaseUrl(),
@@ -43,12 +46,14 @@ class CommandFactory {
         );
     }
 
-    public Command createLoadRestTemplateCommand() {
+    public Command createLoadRestTemplateCommand(RunOptions options) {
         RestJavascriptEventFactory eventFactory = new RestJavascriptEventFactory();
         RestJavascriptInterface javascriptEvents = new RestJavascriptInterface(dispatcher, eventFactory);
 
         AuthorizedClient client = context.getClient();
-        WebChromeClient progressListener = new RestWebViewProgressListener(dispatcher, eventFactory);
+        SystemEventFactory systemEventFactory = new SystemEventFactory();
+        WebChromeClient progressListener = new WebViewProgressListener(dispatcher, systemEventFactory, options);
+
         return new LoadTemplateCommand(
                 context.getWebView(),
                 client.getBaseUrl(),

@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.v2;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.WindowError;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
 import com.squareup.otto.Subscribe;
 
@@ -17,12 +18,16 @@ class VisInitState extends PresenterState{
 
     @Override
     public void run(RunOptions options) {
-
+        executeCommand(
+                getContext().provideCommandFactory()
+                        .createLoadVisTemplateCommand(options)
+        );
+        dispatchProgress(10);
     }
 
     @Override
     public void update(List<ReportParameter> parameters) {
-
+        throw new IllegalStateException("Could not update presenter. Presenter is not running.");
     }
 
     @Override
@@ -32,27 +37,25 @@ class VisInitState extends PresenterState{
 
     @Override
     public void navigate(ReportQuery query) {
-
+        throw new IllegalStateException("Could not navigate presenter. Presenter is not running.");
     }
 
     @Override
     public void refresh() {
+        throw new IllegalStateException("Could not refresh presenter. Presenter is not running.");
+    }
 
+    @Subscribe
+    public void onInflateComplete(InflateCompleteSystemEvent event) {
+        dispatchProgress(33);
     }
 
     @Subscribe
     public void onJavascriptEvent(VisJavascriptEvent event) {
         VisJavascriptEvent.Type type = event.getType();
         switch (type) {
-            case INFLATE_COMPLETE:
-                break;
-            case SCRIPT_LOADED:
-                break;
-            case REPORT_LOADED:
-                break;
-            case HYPERLINK_CLICK:
-                break;
             case WINDOW_ERROR:
+                dispatchWindowError(event.firstArg(WindowError.class));
                 break;
         }
     }

@@ -8,10 +8,6 @@ import com.jaspersoft.android.sdk.widget.report.v2.RestJavascriptEvent.Type;
  * @since 2.6
  */
 class RestJavascriptEventFactory extends JavascriptEventFactory {
-    public JavascriptEvent createInflateCompleteEvent() {
-        return new RestJavascriptEvent(Type.INFLATE_COMPLETE);
-    }
-
     public JavascriptEvent createReportLoadedEvent() {
         return new RestJavascriptEvent(Type.REPORT_LOADED);
     }
