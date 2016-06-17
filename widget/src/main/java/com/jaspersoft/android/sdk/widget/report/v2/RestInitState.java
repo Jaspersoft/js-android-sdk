@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.v2;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.internal.Dispatcher;
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
@@ -37,5 +38,18 @@ class RestInitState extends PresenterState{
     @Override
     public void refresh() {
 
+    }
+
+    @Subscribe
+    public void onJavascriptEvent(RestJavascriptEvent event) {
+        RestJavascriptEvent.Type type = event.getType();
+        switch (type) {
+            case INFLATE_COMPLETE:
+                break;
+            case REPORT_LOADED:
+                break;
+            case WINDOW_ERROR:
+                break;
+        }
     }
 }
