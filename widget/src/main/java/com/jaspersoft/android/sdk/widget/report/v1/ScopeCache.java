@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.report;
+package com.jaspersoft.android.sdk.widget.report.v1;
 
 import java.util.HashMap;
 import java.util.Map;

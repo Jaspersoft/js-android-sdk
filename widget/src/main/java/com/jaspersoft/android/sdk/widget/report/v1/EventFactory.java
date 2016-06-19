@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.report;
+package com.jaspersoft.android.sdk.widget.report.v1;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.widget.WindowError;

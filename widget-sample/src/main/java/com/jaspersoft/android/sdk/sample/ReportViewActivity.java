@@ -11,7 +11,7 @@ import com.jaspersoft.android.sdk.sample.page.ReportMessageFactory;
 import com.jaspersoft.android.sdk.sample.page.ReportPage;
 import com.jaspersoft.android.sdk.widget.RunOptions;
 import com.jaspersoft.android.sdk.widget.WindowError;
-import com.jaspersoft.android.sdk.widget.report.ReportClient;
+import com.jaspersoft.android.sdk.widget.report.v1.ReportClient;
 
 import java.util.List;
 
