@@ -26,6 +26,7 @@ class VisJavascriptEvent extends JavascriptEvent {
 
     enum Type {
         SCRIPT_LOADED,
+        INFLATE_COMPLETE,
         REPORT_LOADED,
         WINDOW_ERROR,
         HYPERLINK_CLICK;
