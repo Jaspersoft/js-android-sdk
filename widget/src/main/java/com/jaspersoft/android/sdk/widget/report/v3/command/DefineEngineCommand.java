@@ -34,7 +34,7 @@ class DefineEngineCommand extends Command {
 
                     dispatcher.dispatch(engineDefinedEvent);
                 } catch (ServiceException e) {
-                    dispatcher.dispatch(e);
+                    dispatcher.dispatch(eventFactory.createErrorEvent(e));
                 }
                 return null;
             }

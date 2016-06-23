@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.jaspersoft.android.sdk.service.data.report.PageRange;
 import com.jaspersoft.android.sdk.service.data.report.ReportExportOutput;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.service.report.ReportExecutionOptions;
 import com.jaspersoft.android.sdk.service.report.ReportExport;
@@ -53,8 +54,11 @@ class RunReportRestCommand extends Command {
                 try {
                     InputStream reportIs = exportReport(execOptions);
                     return parseReportDocument(reportIs);
-                } catch (ServiceException|IOException e) {
+                } catch (ServiceException e) {
                     dispatcher.dispatch(eventFactory.createErrorEvent(e));
+                } catch (IOException e) {
+                    ServiceException exception = new ServiceException("Can not render report", e, StatusCodes.REPORT_RENDER_FAILED);
+                    dispatcher.dispatch(eventFactory.createErrorEvent(exception));
                 }
                 return null;
             }

@@ -2,6 +2,8 @@ package com.jaspersoft.android.sdk.widget.report.v3;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -10,6 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Tom Koptel
@@ -21,12 +24,17 @@ public class ReportRenderedStoreTest {
     private ReportRendered reportRendered;
     private ReportRendererKey reportRendererKey;
 
+    @Mock
+    public Dispatcher dispatcher;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         renderersStore = RenderersStore.INSTANCE;
         reportRendererKey = ReportRendererKey.newKey();
-        reportRendered = new ReportRendered.Builder().build();
+
+        Mockito.doNothing().when(dispatcher).register(null);
+        reportRendered = new ReportRendered(dispatcher, null, null);
     }
 
     @Test

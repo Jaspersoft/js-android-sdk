@@ -48,7 +48,7 @@
 
             function loadVisualize() {
                 var auth = {};
-                if (jrsServer.pre62) {
+                if (jrsServer.pre61) {
                     auth.auth = {
                         loginFn: function(properties, request) {
                             return (new jQuery.Deferred()).resolve();

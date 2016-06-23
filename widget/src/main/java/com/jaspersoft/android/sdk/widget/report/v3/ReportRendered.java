@@ -24,9 +24,7 @@ public class ReportRendered {
         this.dispatcher = dispatcher;
         this.stateFactory = stateFactory;
         this.currentState = state;
-
-        ErrorMapper errorMapper = new ErrorMapper();
-        eventPublisher = new EventPublisher(errorMapper);
+        eventPublisher = new EventPublisher();
 
         dispatcher.register(currentState);
         dispatcher.register(this);
@@ -127,7 +125,8 @@ public class ReportRendered {
 
         private ReportRendered createRenderer() {
             Dispatcher dispatcher = new Dispatcher();
-            EventFactory eventFactory = new EventFactory();
+            ErrorMapper errorMapper = new ErrorMapper();
+            EventFactory eventFactory = new EventFactory(errorMapper);
             CommandFactory commandFactory = new CommandFactory.Builder()
                     .setWebView(webView)
                     .setClient(client)

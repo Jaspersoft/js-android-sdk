@@ -17,13 +17,13 @@ class InitTemplateVisCommand extends Command {
 
     private final WebView webView;
     private final AuthorizedClient client;
-    private final boolean pre62;
+    private final boolean pre61;
 
-    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client, boolean pre62) {
+    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client, boolean pre61) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.client = client;
-        this.pre62 = pre62;
+        this.pre61 = pre61;
     }
 
     @Override
@@ -31,7 +31,7 @@ class InitTemplateVisCommand extends Command {
         return new AsyncTask<Object, Void, String>() {
             @Override
             protected String doInBackground(Object... params) {
-                Server server = new Server(client.getBaseUrl(), pre62);
+                Server server = new Server(client.getBaseUrl(), pre61);
                 String serverJson = toJson(server);
                 return String.format(RUN_COMMAND_SCRIPT, serverJson);
             }
@@ -49,11 +49,11 @@ class InitTemplateVisCommand extends Command {
 
     private static class Server {
         private final String url;
-        private final boolean pre62;
+        private final boolean pre61;
 
-        public Server(String url, boolean pre62) {
+        public Server(String url, boolean pre61) {
             this.url = url;
-            this.pre62 = pre62;
+            this.pre61 = pre61;
         }
     }
 }

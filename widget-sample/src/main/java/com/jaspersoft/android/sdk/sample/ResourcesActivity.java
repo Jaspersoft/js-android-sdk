@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ResourcesActivity extends AppCompatActivity {
+    private final static ResourceFactory SERVER_MOB_DEMO = new ResourceFactory(new Profile(
+            "http://mobiledemo.jaspersoft.com/jasperserver-pro/"
+    ));
     private final static ResourceFactory SERVER_5_6_1 = new ResourceFactory(new Profile(
             "http://192.168.88.55:8082/jasperserver-pro-561/"
     ));
@@ -48,6 +51,7 @@ public class ResourcesActivity extends AppCompatActivity {
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_2_1.newReport("6.2.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_MOB_DEMO.newReport("Mob demo - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_0_1.newDashboard("6.0.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_1.newDashboard("6.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
@@ -74,7 +78,6 @@ public class ResourcesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //WebViewCookieCompat.removeAllCookies(ResourcesActivity.this);
                 navigate(RESOURCES.get(position));
             }
         });

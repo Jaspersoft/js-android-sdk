@@ -81,6 +81,11 @@ public final class StatusCodes {
      */
     public static final int REPORT_EXECUTION_INVALID = 303;
 
+    /**
+     * Failed to render report
+     */
+    public static final int REPORT_RENDER_FAILED = 304;
+
     // RESOURCE
     /**
      * API responds with corresponding error in the case when resource not found.

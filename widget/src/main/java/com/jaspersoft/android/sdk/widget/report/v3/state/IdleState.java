@@ -6,8 +6,8 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 import com.jaspersoft.android.sdk.widget.report.v3.command.Command;
 import com.jaspersoft.android.sdk.widget.report.v3.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EngineDefinedEvent;
-import com.jaspersoft.android.sdk.widget.report.v3.event.ErrorEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
+import com.jaspersoft.android.sdk.widget.report.v3.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.JsInterfaceInjectedEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.TemplateInitedEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.TemplateLoadedEvent;
@@ -63,7 +63,7 @@ class IdleState extends State {
     }
 
     @Subscribe
-    public void onError(ErrorEvent errorEvent) {
+    public void onError(ExceptionEvent exceptionEvent) {
         setInProgress(false);
     }
 }

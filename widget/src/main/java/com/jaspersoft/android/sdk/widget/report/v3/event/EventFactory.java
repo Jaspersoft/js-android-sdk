@@ -1,6 +1,8 @@
 package com.jaspersoft.android.sdk.widget.report.v3.event;
 
 import com.google.gson.Gson;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.v3.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 
 /**
@@ -9,8 +11,10 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
  */
 public class EventFactory {
     private final Gson gson;
+    private final ErrorMapper errorMapper;
 
-    public EventFactory() {
+    public EventFactory(ErrorMapper errorMapper) {
+        this.errorMapper = errorMapper;
         gson = new Gson();
     }
 
@@ -36,10 +40,11 @@ public class EventFactory {
 
     public Event createErrorEvent(String error) {
         JsException exception = new Gson().fromJson(error, JsException.class);
-        return new ErrorEvent(exception);
+        ServiceException serviceException = errorMapper.map(exception);
+        return new ExceptionEvent(serviceException);
     }
 
-    public Event createErrorEvent(Exception exception) {
+    public Event createErrorEvent(ServiceException exception) {
         return new ExceptionEvent(exception);
     }
 

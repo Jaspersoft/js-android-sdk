@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,23 +38,19 @@ public class ReportRenderedTest {
     private WebView webView;
     private AuthorizedClient authorizedClient;
 
+    @Mock
+    public Dispatcher dispatcher;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         webView = new FakeWebView(null, WEB_VIEW_ID);
         authorizedClient = Server.builder().withBaseUrl("http://test.com").build().newClient(SpringCredentials.builder().withUsername("asf").withPassword("asf").build()).create();
-        reportRendered = new ReportRendered.Builder()
-                .withWebView(webView)
-                .withClient(authorizedClient)
-                .build();
+        Mockito.doNothing().when(dispatcher).register(null);
+        reportRendered = new ReportRendered(dispatcher, null, null);
         reportRendererKey = ReportRendererKey.newKey();
         renderersStore = RenderersStore.INSTANCE;
-    }
-
-    @Test
-    public void should_build() throws Exception {
-        assertThat(reportRendered, is(notNullValue()));
     }
 
     @Test
