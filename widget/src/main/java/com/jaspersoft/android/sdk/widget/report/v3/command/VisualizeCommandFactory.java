@@ -11,10 +11,12 @@ import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
  * @since 2.6
  */
 class VisualizeCommandFactory extends SimpleCommandFactory {
-    private static final String VIS_TEMPLATE = "report-vis-template.html";
+    private static final String VIS_TEMPLATE = "report-vis-template-v3.html";
+    private final double serverVersion;
 
-    VisualizeCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
+    VisualizeCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client, double serverVersion) {
         super(webView, dispatcher, eventFactory, client);
+        this.serverVersion = serverVersion;
     }
 
     @Override
@@ -35,6 +37,11 @@ class VisualizeCommandFactory extends SimpleCommandFactory {
 
     @Override
     public Command createInitTemplateCommand() {
-        return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client);
+        return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client, serverVersion < 6.1);
+    }
+
+    @Override
+    public Command createRunReportCommand(String reportUri) {
+        return new RunReportVisCommand(dispatcher, eventFactory, webView, reportUri);
     }
 }

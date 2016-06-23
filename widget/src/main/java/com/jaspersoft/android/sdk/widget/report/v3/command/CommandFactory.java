@@ -19,7 +19,7 @@ public class CommandFactory {
 
     public final void updateServerMetadata(double versionCode, boolean isPro) {
         if (isPro && versionCode >= 6.0) {
-            simpleCommandFactory = new VisualizeCommandFactory(simpleCommandFactory.webView, simpleCommandFactory.dispatcher, simpleCommandFactory.eventFactory, simpleCommandFactory.client);
+            simpleCommandFactory = new VisualizeCommandFactory(simpleCommandFactory.webView, simpleCommandFactory.dispatcher, simpleCommandFactory.eventFactory, simpleCommandFactory.client, versionCode);
         } else {
             simpleCommandFactory = new RestCommandFactory(simpleCommandFactory.webView, simpleCommandFactory.dispatcher, simpleCommandFactory.eventFactory, simpleCommandFactory.client);
         }
@@ -39,6 +39,10 @@ public class CommandFactory {
 
     public Command createInitTemplateCommand() {
         return simpleCommandFactory.createInitTemplateCommand();
+    }
+
+    public Command createRunReportCommand(String reportUri) {
+        return simpleCommandFactory.createRunReportCommand(reportUri);
     }
 
     public static class Builder {

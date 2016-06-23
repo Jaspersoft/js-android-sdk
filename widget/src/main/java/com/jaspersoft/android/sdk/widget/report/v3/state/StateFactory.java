@@ -28,4 +28,8 @@ public class StateFactory {
     public State createInitedState() {
         return new InitedState(dispatcher, eventFactory, commandFactory);
     }
+
+    public State createRenderedState() {
+        return new RendredState(dispatcher, eventFactory, commandFactory);
+    }
 }

@@ -12,7 +12,6 @@ import android.widget.ListView;
 import com.jaspersoft.android.sdk.sample.entity.Profile;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
 import com.jaspersoft.android.sdk.sample.entity.ResourceFactory;
-import com.jaspersoft.android.sdk.sample.util.WebViewCookieCompat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +46,7 @@ public class ResourcesActivity extends AppCompatActivity {
                     "{\"sales__product__product_name_1\":[],\"sales__product__recyclable_package_1\":[\"false\",\"true\"],\"sales__product__low_fat_1\":[\"false\",\"true\"],\"sales_fact_ALL__store_sales_2013_1\":[\"20\"]}"
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
+            SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_2_1.newReport("6.2.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_0_1.newDashboard("6.0.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
@@ -74,7 +74,7 @@ public class ResourcesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                WebViewCookieCompat.removeAllCookies(ResourcesActivity.this);
+                //WebViewCookieCompat.removeAllCookies(ResourcesActivity.this);
                 navigate(RESOURCES.get(position));
             }
         });

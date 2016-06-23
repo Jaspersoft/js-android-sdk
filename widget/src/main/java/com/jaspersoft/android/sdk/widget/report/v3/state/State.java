@@ -36,14 +36,14 @@ public abstract class State {
         internalInit();
     }
 
-    public final void run() {
+    public final void run(String reportUri) {
         checkProgressState();
-        internalRun();
+        internalRun(reportUri);
     }
 
     protected abstract void internalInit();
 
-    protected abstract void internalRun();
+    protected abstract void internalRun(String reportUri);
 
     private void checkProgressState() {
         if (inProgress) throw new IllegalStateException("Can not perform action while in progress");

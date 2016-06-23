@@ -89,7 +89,7 @@ public class ReportRenderedTest {
 
         ReportRendered restoredExecutor = new ReportRendered.Builder()
                 .withKey(reportRendererKey)
-                .build();
+                .restore();
         assertThat(restoredExecutor, equalTo(reportRendered));
     }
 
@@ -99,7 +99,7 @@ public class ReportRenderedTest {
 
         ReportRendered restoredReportRendered = new ReportRendered.Builder()
                 .withKey(ReportRendererKey.newKey())
-                .build();
+                .restore();
         assertThat(restoredReportRendered, is(nullValue()));
     }
 

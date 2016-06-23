@@ -1,5 +1,6 @@
 package com.jaspersoft.android.sdk.widget.report.v3.event;
 
+import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 
 /**
@@ -7,6 +8,12 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
  * @since 2.6
  */
 public class EventFactory {
+    private final Gson gson;
+
+    public EventFactory() {
+        gson = new Gson();
+    }
+
     public Event createSwapStateEvent(RenderState nextState) {
         return new SwapStateEvent(nextState);
     }
@@ -27,8 +34,13 @@ public class EventFactory {
         return new TemplateInitedEvent();
     }
 
-    public Event createWindowErrorEvent(String errorLog) {
-        return new WindowsErrorEvent(errorLog);
+    public Event createErrorEvent(String error) {
+        JsException exception = new Gson().fromJson(error, JsException.class);
+        return new ErrorEvent(exception);
+    }
+
+    public Event createErrorEvent(Exception exception) {
+        return new ExceptionEvent(exception);
     }
 
     public Event createReportRenderedEvent() {

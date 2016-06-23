@@ -38,6 +38,10 @@ class SimpleCommandFactory {
     }
 
     public Command createInitTemplateCommand() {
-        throw new UnsupportedOperationException("Can not init templpate if engine is not defied.");
+        throw new UnsupportedOperationException("Can not init template if engine is not defied.");
+    }
+
+    public Command createRunReportCommand(String reportUri) {
+        throw new UnsupportedOperationException("Can not run report if engine is not defied.");
     }
 }

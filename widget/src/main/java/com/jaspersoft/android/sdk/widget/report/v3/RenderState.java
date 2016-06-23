@@ -6,5 +6,6 @@ package com.jaspersoft.android.sdk.widget.report.v3;
  */
 public enum RenderState {
     IDLE,
-    INITED
+    INITED,
+    RENDERED
 }

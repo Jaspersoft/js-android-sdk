@@ -1,7 +1,11 @@
 package com.jaspersoft.android.sdk.widget.report.v3;
 
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.v3.event.ErrorEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.Event;
+import com.jaspersoft.android.sdk.widget.report.v3.event.JsException;
 import com.jaspersoft.android.sdk.widget.report.v3.event.SwapStateEvent;
+import com.jaspersoft.android.sdk.widget.report.v3.event.ExceptionEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -12,20 +16,23 @@ import java.util.List;
  * @since 2.6
  */
 class EventPublisher {
+    private final ErrorMapper errorMapper;
     private ReportRendererCallback reportRendererCallback;
     private List<Event> eventsQueue;
 
-    public EventPublisher() {
+    public EventPublisher(ErrorMapper errorMapper) {
+        this.errorMapper = errorMapper;
         eventsQueue = new ArrayList<>();
     }
 
     @Subscribe
     public void onSwapState(SwapStateEvent nextStateEvent) {
-        if (reportRendererCallback == null) {
-            eventsQueue.add(nextStateEvent);
-        } else {
-            sendEvent(nextStateEvent);
-        }
+        handleEvent(nextStateEvent);
+    }
+
+    @Subscribe
+    public void onError(ErrorEvent errorEvent) {
+        handleEvent(errorEvent);
     }
 
     public void setReportRendererCallback(ReportRendererCallback reportRendererCallback) {
@@ -37,9 +44,28 @@ class EventPublisher {
         }
     }
 
+    private void handleEvent(Event event) {
+        if (reportRendererCallback == null) {
+            eventsQueue.add(event);
+        } else {
+            sendEvent(event);
+        }
+    }
+
     private void sendEvent(Event event) {
         if (event instanceof SwapStateEvent) {
             reportRendererCallback.onRenderStateChanged(((SwapStateEvent) event).getNextRenderState());
+        } else if (event instanceof ErrorEvent) {
+            JsException jsException = ((ErrorEvent) event).getError();
+            ServiceException exception = errorMapper.map(jsException);
+            reportRendererCallback.onError(exception);
+        } else if (event instanceof ExceptionEvent) {
+            Exception exception = ((ExceptionEvent) event).getException();
+            if (exception instanceof ServiceException) {
+                reportRendererCallback.onError((ServiceException) exception);
+            } else {
+
+            }
         }
     }
 }

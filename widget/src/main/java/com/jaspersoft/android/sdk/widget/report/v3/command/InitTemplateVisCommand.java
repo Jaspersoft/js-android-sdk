@@ -5,7 +5,6 @@ import android.webkit.WebView;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.widget.internal.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
@@ -14,15 +13,17 @@ import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
  * @since 2.6
  */
 class InitTemplateVisCommand extends Command {
-    private static final String RUN_COMMAND_SCRIPT = "javascript:MobileClient.instance().setup(%s);";
+    private static final String RUN_COMMAND_SCRIPT = "javascript:MobileClient.getInstance().setup(%s);";
 
     private final WebView webView;
     private final AuthorizedClient client;
+    private final boolean pre62;
 
-    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client) {
+    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client, boolean pre62) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.client = client;
+        this.pre62 = pre62;
     }
 
     @Override
@@ -30,9 +31,9 @@ class InitTemplateVisCommand extends Command {
         return new AsyncTask<Object, Void, String>() {
             @Override
             protected String doInBackground(Object... params) {
-                SetupOptions setupOptions = SetupOptions.create(client, 6);
-                String settings = toJson(setupOptions);
-                return String.format(RUN_COMMAND_SCRIPT, settings);
+                Server server = new Server(client.getBaseUrl(), pre62);
+                String serverJson = toJson(server);
+                return String.format(RUN_COMMAND_SCRIPT, serverJson);
             }
 
             @Override
@@ -44,5 +45,15 @@ class InitTemplateVisCommand extends Command {
 
     private String toJson(Object object) {
         return new Gson().toJson(object);
+    }
+
+    private static class Server {
+        private final String url;
+        private final boolean pre62;
+
+        public Server(String url, boolean pre62) {
+            this.url = url;
+            this.pre62 = pre62;
+        }
     }
 }

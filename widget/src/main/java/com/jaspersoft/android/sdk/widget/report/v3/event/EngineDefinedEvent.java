@@ -8,7 +8,7 @@ public class EngineDefinedEvent implements Event {
     private final double versionCode;
     private final boolean isPro;
 
-    public EngineDefinedEvent(double versionCode, boolean isPro) {
+    EngineDefinedEvent(double versionCode, boolean isPro) {
         this.versionCode = versionCode;
         this.isPro = isPro;
     }

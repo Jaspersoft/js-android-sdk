@@ -24,7 +24,9 @@ public class ReportRendered {
         this.dispatcher = dispatcher;
         this.stateFactory = stateFactory;
         this.currentState = state;
-        eventPublisher = new EventPublisher();
+
+        ErrorMapper errorMapper = new ErrorMapper();
+        eventPublisher = new EventPublisher(errorMapper);
 
         dispatcher.register(currentState);
         dispatcher.register(this);
@@ -35,8 +37,8 @@ public class ReportRendered {
         currentState.init();
     }
 
-    public void run() {
-        currentState.run();
+    public void run(String reportUri) {
+        currentState.run(reportUri);
     }
 
     public void registerReportRendererCallback(ReportRendererCallback reportRendererCallback) {
@@ -60,7 +62,14 @@ public class ReportRendered {
     @Subscribe
     public void onSwapState(SwapStateEvent nextStateEvent) {
         dispatcher.unregister(currentState);
-        currentState = stateFactory.createInitedState();
+        switch (nextStateEvent.getNextRenderState()) {
+            case INITED:
+                currentState = stateFactory.createInitedState();
+                break;
+            case RENDERED:
+                currentState = stateFactory.createRenderedState();
+                break;
+        }
         dispatcher.register(currentState);
     }
 
@@ -107,7 +116,7 @@ public class ReportRendered {
         }
 
         public class RestoreBuilder {
-            public ReportRendered build() {
+            public ReportRendered restore() {
                 if (reportRendererKey == null) {
                     throw new IllegalArgumentException("Report renderer key should be provided.");
                 }

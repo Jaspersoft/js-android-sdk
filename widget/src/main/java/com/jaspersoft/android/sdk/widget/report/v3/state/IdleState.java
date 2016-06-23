@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 import com.jaspersoft.android.sdk.widget.report.v3.command.Command;
 import com.jaspersoft.android.sdk.widget.report.v3.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EngineDefinedEvent;
+import com.jaspersoft.android.sdk.widget.report.v3.event.ErrorEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.JsInterfaceInjectedEvent;
 import com.jaspersoft.android.sdk.widget.report.v3.event.TemplateInitedEvent;
@@ -31,7 +32,7 @@ class IdleState extends State {
     }
 
     @Override
-    protected void internalRun() {
+    protected void internalRun(String reportUri) {
         throw new IllegalStateException("Could not run report. Renderer still not initialized.");
     }
 
@@ -59,5 +60,10 @@ class IdleState extends State {
     public void onTemplateInited(TemplateInitedEvent templateInitedEvent) {
         setInProgress(false);
         dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.INITED));
+    }
+
+    @Subscribe
+    public void onError(ErrorEvent errorEvent) {
+        setInProgress(false);
     }
 }

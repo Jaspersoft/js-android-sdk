@@ -32,8 +32,8 @@ class InjectJsInterfaceVisCommand extends InjectJsInterfaceCommand implements In
     }
 
     @JavascriptInterface
-    public void onWindowError(String errorLog) {
-        dispatcher.dispatch(eventFactory.createWindowErrorEvent(errorLog));
+    public void onError(String error) {
+        dispatcher.dispatch(eventFactory.createErrorEvent(error));
     }
 
     @JavascriptInterface

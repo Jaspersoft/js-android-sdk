@@ -37,7 +37,7 @@ public class ClientProvider implements Provider<AuthorizedClient> {
                 .build();
 
         CookieManager cookieManager = new RestCookieManager.Builder(context)
-                .handleWebViewCookies(false)
+                .handleWebViewCookies(true)
                 .build();
         AuthenticationLifecycle lifecycle = new CookieAuthenticationHandler(cookieManager);
 

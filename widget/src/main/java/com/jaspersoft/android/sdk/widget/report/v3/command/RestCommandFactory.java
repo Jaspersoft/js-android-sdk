@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.v3.command;
 import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
@@ -11,7 +12,7 @@ import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
  * @since 2.6
  */
 class RestCommandFactory extends SimpleCommandFactory {
-    private static final String REST_TEMPLATE = "report-rest-template.html";
+    private static final String REST_TEMPLATE = "report-rest-template-v3.html";
 
     public RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
         super(webView, dispatcher, eventFactory, client);
@@ -36,5 +37,11 @@ class RestCommandFactory extends SimpleCommandFactory {
     @Override
     public Command createInitTemplateCommand() {
         return new InitTemplateRestCommand(dispatcher, eventFactory);
+    }
+
+    @Override
+    public Command createRunReportCommand(String reportUri) {
+        ReportService reportService = ReportService.newService(client);
+        return new RunReportRestCommand(dispatcher, eventFactory, webView, reportUri, reportService);
     }
 }

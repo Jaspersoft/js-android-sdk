@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
+        "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
+
+<head xmlns="http://www.w3.org/1999/html">
+
+    <title>TIBCO Jaspersoft</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+
+<div id="container"></div>
+<script type="text/javascript">
+
+    var NativeCallbacks = {
+        onScriptReady: function () {
+            return Android.onScriptReady();
+        },
+        onReportRenedered: function () {
+            return Android.onReportRenedered();
+        },
+        onError: function (error) {
+            return Android.onError(error);
+        },
+        onHyperLinkClick: function (hyperlink) {
+            var linkAsString = JSON.stringify(hyperlink);
+            return Android.onHyperLinkClick(linkAsString);
+        }
+    };
+
+    window.onerror = function (message) {
+        NativeCallbacks.onError(message);
+        return false;
+    };
+
+    var MobileClient = (function () {
+        var instance;
+
+        function Client() {
+            var report;
+            var jrsServer;
+
+            function setupVisualizeScript() {
+                var visScript = document.createElement('script');
+                visScript.onload = loadVisualize;
+                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=false");
+                document.head.appendChild(visScript);
+            }
+
+            function loadVisualize() {
+                var auth = {};
+                if (jrsServer.pre62) {
+                    auth.auth = {
+                        loginFn: function(properties, request) {
+                            return (new jQuery.Deferred()).resolve();
+                        }
+                    };
+                }
+                visualize(auth, onVisualizeLoaded, onVisualizeLoadingFailed);
+            };
+
+            function onVisualizeLoaded(v) {
+                report = new Report(v)
+                NativeCallbacks.onScriptReady();
+            };
+
+             function onVisualizeLoadingFailed(error) {
+                var message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            };
+
+            return {
+                setup: function (server) {
+                    console.log("setup");
+                    console.log("cookies: " + document.cookie);
+                    jrsServer = server;
+                    setupVisualizeScript(server);
+                },
+                report: function () {
+                    return report;
+                }
+            }
+        }
+
+        function Report(v) {
+            visualizeClient = v;
+            var reportInstance;
+
+            function reportRenderedFn() {
+                NativeCallbacks.onReportRenedered();
+            };
+
+            function reportErrorFn(error) {
+                message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            };
+
+            function runFn(uri) {
+                reportInstance = visualizeClient.report({
+                    resource: uri,
+                    container: "#container",
+                    success: reportRenderedFn,
+                    error: reportErrorFn
+                });
+            };
+
+            return {
+                run: runFn
+            }
+        }
+
+        return {
+            getInstance: function() {
+                if (!instance) {
+                    instance = new Client();
+                }
+                return instance;
+            }
+        };
+    })();
+</script>
+</body>

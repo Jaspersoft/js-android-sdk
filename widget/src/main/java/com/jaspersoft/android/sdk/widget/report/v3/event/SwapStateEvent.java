@@ -9,7 +9,7 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 public class SwapStateEvent implements Event {
     private RenderState nextRenderState;
 
-    public SwapStateEvent(RenderState nextRenderState) {
+    SwapStateEvent(RenderState nextRenderState) {
         this.nextRenderState = nextRenderState;
     }
 

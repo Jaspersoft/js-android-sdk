@@ -1,26 +1,26 @@
 package com.jaspersoft.android.sdk.sample;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import com.jaspersoft.android.sdk.cookie.CookieAuthenticationHandler;
-import com.jaspersoft.android.sdk.cookie.RestCookieManager;
-import com.jaspersoft.android.sdk.network.AuthenticationLifecycle;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.network.Credentials;
-import com.jaspersoft.android.sdk.network.Server;
-import com.jaspersoft.android.sdk.network.SpringCredentials;
+import com.jaspersoft.android.sdk.network.HttpException;
+import com.jaspersoft.android.sdk.sample.di.ClientProvider;
+import com.jaspersoft.android.sdk.sample.di.Provider;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererKey;
 
-import java.net.CookieManager;
+import java.io.IOException;
 
 /**
  * @author Tom Koptel
@@ -32,6 +32,8 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
     private TextView progress;
     private WebView webView;
     private ReportRendered reportRendered;
+    private Resource resource;
+    private AuthorizedClient authorizedClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,18 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
 
         setContentView(R.layout.report_renderer_preview);
         progress = (TextView) findViewById(R.id.progress);
+        progress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reportRendered.run(resource.getUri());
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
-        Resource resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
+        resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
+
+        Provider<AuthorizedClient> clientProvider = new ClientProvider(this, resource.getProfile());
+        authorizedClient = clientProvider.provide();
 
         if (savedInstanceState != null) {
             webView = WebViewStore.getInstance().getWebView();
@@ -50,15 +61,14 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
             ReportRendererKey key = (ReportRendererKey) savedInstanceState.getSerializable(RENDERER_KEY_ARG);
             reportRendered = new ReportRendered.Builder()
                     .withKey(key)
-                    .build();
-            reportRendered.init();
+                    .restore();
         } else {
             webView = new WebView(getApplicationContext());
             webView.getSettings().setJavaScriptEnabled(true);
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             reportRendered = new ReportRendered.Builder()
-                    .withClient(provideClient(resource))
+                    .withClient(authorizedClient)
                     .withWebView(webView)
                     .build();
             reportRendered.init();
@@ -95,27 +105,29 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
 
     @Override
     public void onError(ServiceException exception) {
-
+        progress.setText(exception.getMessage());
+        if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
+            new AuthTask().execute();
+        }
     }
 
-    private AuthorizedClient provideClient(Resource resource) {
-        Server server = Server.builder()
-                .withBaseUrl(resource.getProfile().getUrl())
-                .build();
-        Credentials credentials = SpringCredentials.builder()
-                .withPassword("superuser")
-                .withUsername("superuser")
-                .build();
+    private class AuthTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                authorizedClient.repositoryApi().searchResources(null);
+            } catch (IOException e) {
+                return false;
+            } catch (HttpException e) {
+                return false;
+            }
+            return true;
+        }
 
-        CookieManager cookieManager = new RestCookieManager.Builder(this)
-                .handleWebViewCookies(false)
-                .build();
-        AuthenticationLifecycle lifecycle = new CookieAuthenticationHandler(cookieManager);
-
-        return server.newClient(credentials)
-                .withCookieHandler(cookieManager)
-                .withAuthenticationLifecycle(lifecycle)
-                .create();
+        @Override
+        protected void onPostExecute(Boolean login) {
+            reportRendered.run(resource.getUri());
+        }
     }
 
     private static class WebViewStore {
