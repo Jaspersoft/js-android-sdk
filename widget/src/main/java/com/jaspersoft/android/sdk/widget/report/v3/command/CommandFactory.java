@@ -4,6 +4,7 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
 /**
@@ -37,8 +38,8 @@ public class CommandFactory {
         return simpleCommandFactory.createLoadTemplateCommand();
     }
 
-    public Command createInitTemplateCommand() {
-        return simpleCommandFactory.createInitTemplateCommand();
+    public Command createInitTemplateCommand(SetupOptions setupOptions) {
+        return simpleCommandFactory.createInitTemplateCommand(setupOptions);
     }
 
     public Command createRunReportCommand(String reportUri) {

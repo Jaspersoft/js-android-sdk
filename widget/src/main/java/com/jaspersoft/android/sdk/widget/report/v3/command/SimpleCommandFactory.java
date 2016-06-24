@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.info.ServerInfoService;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
 /**
@@ -37,7 +38,7 @@ class SimpleCommandFactory {
         throw new UnsupportedOperationException("Can not create template if engine is not defied.");
     }
 
-    public Command createInitTemplateCommand() {
+    public Command createInitTemplateCommand(SetupOptions setupOptions) {
         throw new UnsupportedOperationException("Can not init template if engine is not defied.");
     }
 

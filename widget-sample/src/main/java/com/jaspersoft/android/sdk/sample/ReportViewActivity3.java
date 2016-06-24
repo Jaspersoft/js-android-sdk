@@ -1,11 +1,11 @@
 package com.jaspersoft.android.sdk.sample;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
@@ -15,10 +15,12 @@ import com.jaspersoft.android.sdk.sample.di.Provider;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.widget.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererKey;
+import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 
 import java.io.IOException;
 
@@ -30,7 +32,7 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
     private static final String RENDERER_KEY_ARG = "renderer_key";
 
     private TextView progress;
-    private WebView webView;
+    private ResourceWebView webView;
     private ReportRendered reportRendered;
     private Resource resource;
     private AuthorizedClient authorizedClient;
@@ -55,7 +57,7 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
         authorizedClient = clientProvider.provide();
 
         if (savedInstanceState != null) {
-            webView = WebViewStore.getInstance().getWebView();
+            webView = ResourceWebViewStore.getInstance().getResourceWebView();
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             ReportRendererKey key = (ReportRendererKey) savedInstanceState.getSerializable(RENDERER_KEY_ARG);
@@ -63,15 +65,15 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
                     .withKey(key)
                     .restore();
         } else {
-            webView = new WebView(getApplicationContext());
-            webView.getSettings().setJavaScriptEnabled(true);
+            webView = new ResourceWebView(getApplicationContext());
+            webView.setBackgroundColor(Color.RED);
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             reportRendered = new ReportRendered.Builder()
                     .withClient(authorizedClient)
                     .withWebView(webView)
                     .build();
-            reportRendered.init();
+            reportRendered.init(new SetupOptions(0.5f));
         }
     }
 
@@ -83,7 +85,7 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
         outState.putSerializable(RENDERER_KEY_ARG, key);
 
         ((ViewGroup) webView.getParent()).removeView(webView);
-        WebViewStore.getInstance().setWebView(webView);
+        ResourceWebViewStore.getInstance().setWebView(webView);
     }
 
     @Override
@@ -130,32 +132,32 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
         }
     }
 
-    private static class WebViewStore {
-        private static WebViewStore webViewStore;
+    private static class ResourceWebViewStore {
+        private static ResourceWebViewStore resourceWebViewStore;
 
-        private WebView webView;
+        private ResourceWebView webView;
 
-        public static WebViewStore getWebViewStore() {
-            return webViewStore;
+        public static ResourceWebViewStore getResourceWebViewStore() {
+            return resourceWebViewStore;
         }
 
-        public static void setWebViewStore(WebViewStore webViewStore) {
-            WebViewStore.webViewStore = webViewStore;
+        public static void setResourceWebViewStore(ResourceWebViewStore resourceWebViewStore) {
+            ResourceWebViewStore.resourceWebViewStore = resourceWebViewStore;
         }
 
-        public WebView getWebView() {
+        public ResourceWebView getResourceWebView() {
             return webView;
         }
 
-        public void setWebView(WebView webView) {
+        public void setWebView(ResourceWebView webView) {
             this.webView = webView;
         }
 
-        public static WebViewStore getInstance() {
-            if (webViewStore == null) {
-                webViewStore = new WebViewStore();
+        public static ResourceWebViewStore getInstance() {
+            if (resourceWebViewStore == null) {
+                resourceWebViewStore = new ResourceWebViewStore();
             }
-            return webViewStore;
+            return resourceWebViewStore;
         }
     }
 }

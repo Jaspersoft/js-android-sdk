@@ -1,15 +1,10 @@
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
         "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
-
+<!--suppress CheckValidXmlInScriptTagBody -->
 <head xmlns="http://www.w3.org/1999/html">
-
     <title>TIBCO Jaspersoft</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-</head>
-<body>
-
-<div id="container"></div>
-<script type="text/javascript">
+    <script type="text/javascript">
 
     var NativeCallbacks = {
         onScriptReady: function () {
@@ -38,6 +33,16 @@
         function Client() {
             var report;
             var jrsServer;
+            var initOptions;
+
+            function appendViewportMeta() {
+                if (initOptions.deviceWidth != 0) {
+                    var viewport = "<meta name='viewport' content='width=" + initOptions.deviceWidth + ", minimum-scale=0.1, maximum-scale=3, user-scalable=yes'>";
+                    jQuery('head').append(viewport);
+                } else if (initOptions.initialScale != 0) {
+
+                }
+            }
 
             function setupVisualizeScript() {
                 var visScript = document.createElement('script');
@@ -59,7 +64,15 @@
             };
 
             function onVisualizeLoaded(v) {
-                report = new Report(v)
+                appendViewportMeta();
+                if (jrsServer.pre61) {
+                    report = new Report(v)
+                } else {
+                    report = new Report(v, {
+                        animation: false,
+                        zoom: false
+                    })
+                }
                 NativeCallbacks.onScriptReady();
             };
 
@@ -69,10 +82,10 @@
             };
 
             return {
-                setup: function (server) {
-                    console.log("setup");
-                    console.log("cookies: " + document.cookie);
+                setup: function (server, options) {
                     jrsServer = server;
+                    initOptions = options;
+
                     setupVisualizeScript(server);
                 },
                 report: function () {
@@ -81,11 +94,13 @@
             }
         }
 
-        function Report(v) {
-            visualizeClient = v;
-            var reportInstance;
+        function Report(v, chartOptions) {
+            this.vis = v;
+            this.reportInstance;
+            this.chartOptions = chartOptions;
 
             function reportRenderedFn() {
+                jQuery(window).resize(adjustScaleForReport);
                 NativeCallbacks.onReportRenedered();
             };
 
@@ -94,18 +109,26 @@
                 NativeCallbacks.onError(message);
             };
 
-            function runFn(uri) {
-                reportInstance = visualizeClient.report({
+            function adjustScaleForReport() {
+                var container = jQuery("#container")[0];
+                container.style.display = 'none';
+                container.offsetHeight;
+                container.style.display = '';
+            }
+
+            Report.prototype.run = function (uri) {
+                 var reportBundle = {
                     resource: uri,
                     container: "#container",
+                    scale: "width",
                     success: reportRenderedFn,
                     error: reportErrorFn
-                });
+                 };
+                 if (this.chartOptions) {
+                    reportBundle.chart = chartOptions;
+                 }
+                 this.reportInstance = this.vis.report(reportBundle);
             };
-
-            return {
-                run: runFn
-            }
         }
 
         return {
@@ -117,5 +140,9 @@
             }
         };
     })();
+
 </script>
+</head>
+<body>
+<div id="container"></div>
 </body>

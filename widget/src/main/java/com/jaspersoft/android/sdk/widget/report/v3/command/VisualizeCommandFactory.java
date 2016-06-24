@@ -4,6 +4,7 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
 /**
@@ -36,8 +37,8 @@ class VisualizeCommandFactory extends SimpleCommandFactory {
     }
 
     @Override
-    public Command createInitTemplateCommand() {
-        return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client, serverVersion < 6.1);
+    public Command createInitTemplateCommand(SetupOptions setupOptions) {
+        return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client, serverVersion < 6.1, setupOptions);
     }
 
     @Override

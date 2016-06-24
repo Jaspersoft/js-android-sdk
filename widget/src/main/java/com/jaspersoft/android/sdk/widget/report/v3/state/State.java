@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.v3.state;
 
 
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
@@ -31,9 +32,9 @@ public abstract class State {
         this.inProgress = inProgress;
     }
 
-    public final void init() {
+    public final void init(SetupOptions setupOptions) {
         checkProgressState();
-        internalInit();
+        internalInit(setupOptions);
     }
 
     public final void run(String reportUri) {
@@ -41,7 +42,7 @@ public abstract class State {
         internalRun(reportUri);
     }
 
-    protected abstract void internalInit();
+    protected abstract void internalInit(SetupOptions setupOptions);
 
     protected abstract void internalRun(String reportUri);
 

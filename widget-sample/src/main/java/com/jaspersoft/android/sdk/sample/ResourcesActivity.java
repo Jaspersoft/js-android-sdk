@@ -50,7 +50,7 @@ public class ResourcesActivity extends AppCompatActivity {
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
-            SERVER_6_2_1.newReport("6.2.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_6_2_1.newReport("6.2.1 - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
             SERVER_MOB_DEMO.newReport("Mob demo - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_0_1.newDashboard("6.0.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
