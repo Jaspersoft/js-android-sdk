@@ -5,7 +5,6 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
 /**
@@ -36,7 +35,7 @@ class RestCommandFactory extends SimpleCommandFactory {
     }
 
     @Override
-    public Command createInitTemplateCommand(SetupOptions setupOptions) {
+    public Command createInitTemplateCommand(double initialScale) {
         return new InitTemplateRestCommand(dispatcher, eventFactory);
     }
 

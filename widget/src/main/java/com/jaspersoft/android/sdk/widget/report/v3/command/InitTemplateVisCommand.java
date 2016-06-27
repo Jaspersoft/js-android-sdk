@@ -6,7 +6,6 @@ import android.webkit.WebView;
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
 
 /**
@@ -19,14 +18,14 @@ class InitTemplateVisCommand extends Command {
     private final WebView webView;
     private final AuthorizedClient client;
     private final boolean pre61;
-    private final SetupOptions setupOptions;
+    private final double initialScale;
 
-    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client, boolean pre61, SetupOptions setupOptions) {
+    protected InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, AuthorizedClient client, boolean pre61, double initialScale) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.client = client;
         this.pre61 = pre61;
-        this.setupOptions = setupOptions;
+        this.initialScale = initialScale;
     }
 
     @Override
@@ -36,8 +35,7 @@ class InitTemplateVisCommand extends Command {
             protected String doInBackground(Object... params) {
                 Server server = new Server(client.getBaseUrl(), pre61);
                 String serverJson = toJson(server);
-                String optionsJson = toJson(setupOptions);
-                return String.format(RUN_COMMAND_SCRIPT, serverJson, optionsJson);
+                return String.format(RUN_COMMAND_SCRIPT, serverJson, initialScale);
             }
 
             @Override

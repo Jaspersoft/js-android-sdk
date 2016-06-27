@@ -1,9 +1,9 @@
 package com.jaspersoft.android.sdk.sample;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,7 +20,6 @@ import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.v3.ReportRendererKey;
-import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 
 import java.io.IOException;
 
@@ -66,14 +65,13 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
                     .restore();
         } else {
             webView = new ResourceWebView(getApplicationContext());
-            webView.setBackgroundColor(Color.RED);
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             reportRendered = new ReportRendered.Builder()
                     .withClient(authorizedClient)
                     .withWebView(webView)
                     .build();
-            reportRendered.init(new SetupOptions(0.5f));
+            reportRendered.init(0.5f);
         }
     }
 
@@ -111,6 +109,19 @@ public class ReportViewActivity3 extends AppCompatActivity implements ReportRend
         if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
             new AuthTask().execute();
         }
+    }
+
+    private double getScreenDiagonal() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width=dm.widthPixels;
+        int height=dm.heightPixels;
+        int dens=dm.densityDpi;
+        double wi=(double)width/(double)dens;
+        double hi=(double)height/(double)dens;
+        double x = Math.pow(wi,2);
+        double y = Math.pow(hi,2);
+        return Math.sqrt(x+y);
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {

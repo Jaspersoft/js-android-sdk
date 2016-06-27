@@ -3,6 +3,10 @@
 <!--suppress CheckValidXmlInScriptTagBody -->
 <head xmlns="http://www.w3.org/1999/html">
     <title>TIBCO Jaspersoft</title>
+    <style>
+        html {height: 100%;}
+        body {min-height: 100%;}
+    </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script type="text/javascript">
 
@@ -33,21 +37,46 @@
         function Client() {
             var report;
             var jrsServer;
-            var initOptions;
 
-            function appendViewportMeta() {
-                if (initOptions.deviceWidth != 0) {
-                    var viewport = "<meta name='viewport' content='width=" + initOptions.deviceWidth + ", minimum-scale=0.1, maximum-scale=3, user-scalable=yes'>";
-                    jQuery('head').append(viewport);
-                } else if (initOptions.initialScale != 0) {
+            window.onresize = function() {
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+            }
 
-                }
+            function setupFn(server, initialScale) {
+                jrsServer = server;
+
+                appendViewportMeta(initialScale);
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+                setupVisualizeScript(server);
+            }
+
+              function appendViewportMeta(reportScale) {
+                var maxScale = reportScale * 5;
+                var viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                viewport.content = "target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=" + reportScale + ", minimum-scale=" + reportScale +" , maximum-scale=" + maxScale + ", user-scalable=yes";
+                document.head.appendChild(viewport);
+            }
+
+            function updateRenderRect(width, height) {
+                var container = document.getElementById('container');
+
+                // Because of default body margin (8px)
+                var newContainerHeight = height - 16;
+                var newContainerWidth = width - 16;
+
+                container.style.height = newContainerHeight + "px";
+                container.style.width = newContainerWidth + "px";
+
+	            if (report) {
+	                report.resize();
+	            }
             }
 
             function setupVisualizeScript() {
                 var visScript = document.createElement('script');
                 visScript.onload = loadVisualize;
-                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=false");
+                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true");
                 document.head.appendChild(visScript);
             }
 
@@ -64,7 +93,6 @@
             };
 
             function onVisualizeLoaded(v) {
-                appendViewportMeta();
                 if (jrsServer.pre61) {
                     report = new Report(v)
                 } else {
@@ -82,12 +110,7 @@
             };
 
             return {
-                setup: function (server, options) {
-                    jrsServer = server;
-                    initOptions = options;
-
-                    setupVisualizeScript(server);
-                },
+                setup: setupFn,
                 report: function () {
                     return report;
                 }
@@ -95,40 +118,42 @@
         }
 
         function Report(v, chartOptions) {
-            this.vis = v;
-            this.reportInstance;
-            this.chartOptions = chartOptions;
+            vis = v;
+            chartOptions = chartOptions;
+            var reportInstance;
 
             function reportRenderedFn() {
-                jQuery(window).resize(adjustScaleForReport);
                 NativeCallbacks.onReportRenedered();
-            };
+            }
 
             function reportErrorFn(error) {
                 message = JSON.stringify(error);
                 NativeCallbacks.onError(message);
-            };
-
-            function adjustScaleForReport() {
-                var container = jQuery("#container")[0];
-                container.style.display = 'none';
-                container.offsetHeight;
-                container.style.display = '';
             }
 
-            Report.prototype.run = function (uri) {
-                 var reportBundle = {
+            function runFn(uri) {
+                var reportBundle = {
                     resource: uri,
                     container: "#container",
                     scale: "width",
+                    autoresize: false,
                     success: reportRenderedFn,
                     error: reportErrorFn
-                 };
-                 if (this.chartOptions) {
+                };
+                if (chartOptions) {
                     reportBundle.chart = chartOptions;
-                 }
-                 this.reportInstance = this.vis.report(reportBundle);
-            };
+                }
+                reportInstance = vis.report(reportBundle);
+            }
+
+            return {
+                run: runFn,
+                resize: function () {
+                    if (reportInstance) {
+                        reportInstance.resize();
+                    }
+                }
+            }
         }
 
         return {
@@ -144,5 +169,5 @@
 </script>
 </head>
 <body>
-<div id="container"></div>
+    <div id="container"/>
 </body>

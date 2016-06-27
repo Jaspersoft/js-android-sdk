@@ -3,7 +3,6 @@ package com.jaspersoft.android.sdk.widget.report.v3.state;
 
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.v3.RenderState;
-import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.command.Command;
 import com.jaspersoft.android.sdk.widget.report.v3.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EngineDefinedEvent;
@@ -20,17 +19,17 @@ import com.squareup.otto.Subscribe;
  */
 class IdleState extends State {
 
-    private SetupOptions setupOptions;
+    private double initialScale;
 
     public IdleState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 
     @Override
-    protected void internalInit(SetupOptions setupOptions) {
+    protected void internalInit(double initialScale) {
         setInProgress(true);
 
-        this.setupOptions = setupOptions;
+        this.initialScale = initialScale;
         Command defineEngineCommand = commandFactory.createDefineEngineCommand();
         defineEngineCommand.execute();
     }
@@ -56,7 +55,7 @@ class IdleState extends State {
 
     @Subscribe
     public void onTemplateLoaded(TemplateLoadedEvent templateLoadedEvent) {
-        Command initTemplateCommand = commandFactory.createInitTemplateCommand(setupOptions);
+        Command initTemplateCommand = commandFactory.createInitTemplateCommand(initialScale);
         initTemplateCommand.execute();
     }
 

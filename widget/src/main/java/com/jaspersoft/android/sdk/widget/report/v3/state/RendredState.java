@@ -2,7 +2,6 @@ package com.jaspersoft.android.sdk.widget.report.v3.state;
 
 
 import com.jaspersoft.android.sdk.widget.report.v3.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.v3.SetupOptions;
 import com.jaspersoft.android.sdk.widget.report.v3.command.Command;
 import com.jaspersoft.android.sdk.widget.report.v3.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.v3.event.EventFactory;
@@ -21,7 +20,7 @@ class RendredState extends State {
     }
 
     @Override
-    protected void internalInit(SetupOptions setupOptions) {
+    protected void internalInit(double initialScale) {
         throw new IllegalStateException("Could not init. Already inited.");
     }
 

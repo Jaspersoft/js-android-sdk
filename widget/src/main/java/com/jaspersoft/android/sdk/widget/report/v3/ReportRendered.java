@@ -31,8 +31,12 @@ public class ReportRendered {
         dispatcher.register(eventPublisher);
     }
 
-    public void init(SetupOptions setupOptions) {
-        currentState.init(setupOptions);
+    public void init() {
+        currentState.init(1);
+    }
+
+    public void init(double initialScale) {
+        currentState.init(initialScale);
     }
 
     public void run(String reportUri) {
