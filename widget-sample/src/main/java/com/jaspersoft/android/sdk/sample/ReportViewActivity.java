@@ -1,187 +1,192 @@
 package com.jaspersoft.android.sdk.sample;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.webkit.WebView;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.sample.page.ReportMessageFactory;
-import com.jaspersoft.android.sdk.sample.page.ReportPage;
-import com.jaspersoft.android.sdk.widget.RunOptions;
-import com.jaspersoft.android.sdk.widget.WindowError;
-import com.jaspersoft.android.sdk.widget.report.v1.ReportClient;
+import com.jaspersoft.android.sdk.sample.di.ClientProvider;
+import com.jaspersoft.android.sdk.sample.di.Provider;
+import com.jaspersoft.android.sdk.sample.entity.Resource;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.widget.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.report.RenderState;
+import com.jaspersoft.android.sdk.widget.report.ReportRendered;
+import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
+import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import static com.jaspersoft.android.sdk.sample.DashboardViewActivity.RESOURCE_VIEW_KEY;
+import java.util.Set;
 
 /**
  * @author Tom Koptel
  * @since 2.5
  */
-public class ReportViewActivity extends ResourceActivity implements ParamsDialog.OnResult {
-    static final String PAGE_STATE_KEY = "page-state";
-    static final String DIALOG_STATE_KEY = "params-dialog";
+public class ReportViewActivity extends AppCompatActivity implements ReportRendererCallback {
+    private static final String RENDERER_KEY_ARG = "renderer_key";
 
     private TextView progress;
-    private ReportClient reportClient;
-    private ReportPage pageState;
-    private WebView webView;
-    private ParamsDialog paramsDialog;
+    private ResourceWebView webView;
+    private ReportRendered reportRendered;
+    private Resource resource;
+    private AuthorizedClient authorizedClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        paramsDialog = new ParamsDialog.Builder(this, savedInstanceState)
-                .params(provideResource().getParams())
-                .build();
-        paramsDialog.setCallback(this);
-
+        setContentView(R.layout.report_renderer_preview);
         progress = (TextView) findViewById(R.id.progress);
-        reportClient = provideReportClient(savedInstanceState);
-        pageState = provideState(savedInstanceState);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(RESOURCE_VIEW_KEY, reportClient);
-        outState.putParcelable(PAGE_STATE_KEY, pageState);
-        outState.putBundle(DIALOG_STATE_KEY, paramsDialog.saveInstanceState());
-    }
-
-    private ReportPage provideState(Bundle in) {
-        if (in == null) {
-            return new ReportPage();
-        }
-        return in.getParcelable(PAGE_STATE_KEY);
-    }
-
-    private ReportClient provideReportClient(Bundle in) {
-        if (in == null) {
-            return new ReportClient();
-        }
-        return in.getParcelable(RESOURCE_VIEW_KEY);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.controls, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            case R.id.set_params:
-                showParamsDialog();
-                break;
-            case R.id.run:
-                runReport(webView);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showParamsDialog() {
-        paramsDialog.show();
-    }
-
-    @Override
-    public void onWebViewReady(WebView webView) {
-        this.webView = webView;
-        reportClient.registerErrorCallbacks(new ReportClient.SimpleErrorCallbacks() {
+        progress.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onWindowError(WindowError error) {
-                progress.setText("Window error: " + error.getMessage());
+            public void onClick(View v) {
+                List<ReportParameter> reportParameterList = new ArrayList<>();
+                Set<String> values = new HashSet<>();
+                values.add("Food");
+                values.add("Drink");
+                reportParameterList.add(new ReportParameter("ProductFamily", values));
+                reportRendered.applyParams(reportParameterList);
             }
-        })
-                .registerLifecycleCallbacks(new ReportClient.LifecycleCallbacks() {
-                    @Override
-                    public void onInflateFinish() {
-                        updateState();
-                        updateProgress();
-                    }
+        });
 
-                    @Override
-                    public void onScriptLoaded() {
-                        updateState();
-                        updateProgress();
-                    }
+        Bundle extras = getIntent().getExtras();
+        resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
 
-                    @Override
-                    public void onReportRendered() {
-                        updateState();
-                        updateProgress();
-                    }
-                });
+        Provider<AuthorizedClient> clientProvider = new ClientProvider(this, resource.getProfile());
+        authorizedClient = clientProvider.provide();
 
-        if (pageState.loadingInProgress()) {
-            updateProgress();
+        if (savedInstanceState != null) {
+            webView = ResourceWebViewStore.getInstance().getResourceWebView();
+            ((ViewGroup) findViewById(R.id.container)).addView(webView);
+
+            ReportRendererKey key = (ReportRendererKey) savedInstanceState.getSerializable(RENDERER_KEY_ARG);
+            reportRendered = new ReportRendered.Builder()
+                    .withKey(key)
+                    .restore();
         } else {
-            runReport(webView);
+            webView = new ResourceWebView(getApplicationContext());
+            ((ViewGroup) findViewById(R.id.container)).addView(webView);
+
+            reportRendered = new ReportRendered.Builder()
+                    .withClient(authorizedClient)
+                    .withWebView(webView)
+                    .build();
+            reportRendered.init(0.5f);
         }
     }
 
-    private void runReport(WebView webView) {
-        resetPage();
-        updateProgress();
-
-        RunOptions runOptions = new RunOptions.Builder()
-                .client(provideClient())
-                .uri(provideResource().getUri())
-                .webView(webView)
-                .build();
-        reportClient.run(runOptions);
-    }
-
     @Override
-    public void onParamsResult(List<ReportParameter> params) {
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-    }
+        ReportRendererKey key = reportRendered.persist();
+        outState.putSerializable(RENDERER_KEY_ARG, key);
 
-    private void updateState() {
-        pageState.moveToNextState();
-    }
-
-    private void resetPage() {
-        pageState.resetState();
-    }
-
-    private void updateProgress() {
-        progress.setText(ReportMessageFactory.INSTANCE.messageFromState(pageState));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        reportClient.pause();
+        ((ViewGroup) webView.getParent()).removeView(webView);
+        ResourceWebViewStore.getInstance().setWebView(webView);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        reportClient.resume();
+        reportRendered.registerReportRendererCallback(this);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        reportClient.removeCallbacks();
-        paramsDialog.removeCallbacks();
+    protected void onPause() {
+        super.onPause();
+        reportRendered.unregisterReportRendererCallback();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (!isChangingConfigurations()) {
-            reportClient.destroy();
+    public void onProgressStateChange(boolean inProgress) {
+        webView.setVisibility(inProgress ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onRenderStateChanged(RenderState renderState) {
+        progress.setText(renderState.name());
+        if (renderState == RenderState.INITED) {
+            reportRendered.run(resource.getUri());
+        }
+    }
+
+    @Override
+    public void onError(ServiceException exception) {
+        progress.setText(exception.getMessage());
+        if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
+            new AuthTask().execute();
+        }
+    }
+
+    private double getScreenDiagonal() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width=dm.widthPixels;
+        int height=dm.heightPixels;
+        int dens=dm.densityDpi;
+        double wi=(double)width/(double)dens;
+        double hi=(double)height/(double)dens;
+        double x = Math.pow(wi,2);
+        double y = Math.pow(hi,2);
+        return Math.sqrt(x+y);
+    }
+
+    private class AuthTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                authorizedClient.repositoryApi().searchResources(null);
+            } catch (IOException e) {
+                return false;
+            } catch (HttpException e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean login) {
+            reportRendered.run(resource.getUri());
+        }
+    }
+
+    private static class ResourceWebViewStore {
+        private static ResourceWebViewStore resourceWebViewStore;
+
+        private ResourceWebView webView;
+
+        public static ResourceWebViewStore getResourceWebViewStore() {
+            return resourceWebViewStore;
+        }
+
+        public static void setResourceWebViewStore(ResourceWebViewStore resourceWebViewStore) {
+            ResourceWebViewStore.resourceWebViewStore = resourceWebViewStore;
+        }
+
+        public ResourceWebView getResourceWebView() {
+            return webView;
+        }
+
+        public void setWebView(ResourceWebView webView) {
+            this.webView = webView;
+        }
+
+        public static ResourceWebViewStore getInstance() {
+            if (resourceWebViewStore == null) {
+                resourceWebViewStore = new ResourceWebViewStore();
+            }
+            return resourceWebViewStore;
         }
     }
 }

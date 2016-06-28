@@ -30,7 +30,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ReportViewActivity3"
+            android:name=".ReportViewActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
     </application>

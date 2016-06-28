@@ -50,7 +50,9 @@ public class ResourcesActivity extends AppCompatActivity {
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_6_0_1.newReport("6.0.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
             SERVER_6_2_1.newReport("6.2.1 - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
+            SERVER_6_2_1.newReport("6.2.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
             SERVER_MOB_DEMO.newReport("Mob demo - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
             SERVER_MOB_DEMO.newReport("Mob demo - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
@@ -99,7 +101,7 @@ public class ResourcesActivity extends AppCompatActivity {
     }
 
     private void navigateToReport(Resource resource) {
-        Intent intent = new Intent(this, ReportViewActivity3.class);
+        Intent intent = new Intent(this, ReportViewActivity.class);
         intent.putExtra(RESOURCE_EXTRA, resource);
         startActivity(intent);
     }

@@ -8,21 +8,18 @@
         body {min-height: 100%;}
     </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="https://code.jquery.com/jquery.min.js"></script>
     <script type="text/javascript">
 
     var NativeCallbacks = {
         onScriptReady: function () {
             return Android.onScriptReady();
         },
-        onReportRenedered: function () {
-            return Android.onReportRenedered();
+        onReportRendered: function () {
+            return Android.onReportRendered();
         },
         onError: function (error) {
             return Android.onError(error);
-        },
-        onHyperLinkClick: function (hyperlink) {
-            var linkAsString = JSON.stringify(hyperlink);
-            return Android.onHyperLinkClick(linkAsString);
         }
     };
 
@@ -94,11 +91,14 @@
 
             function onVisualizeLoaded(v) {
                 if (jrsServer.pre61) {
-                    report = new Report(v)
+                    report = new Report(v, {})
                 } else {
                     report = new Report(v, {
-                        animation: false,
-                        zoom: false
+                        autoresize: false,
+                        chart: {
+                            animation: false,
+                            zoom: false
+                        }
                     })
                 }
                 NativeCallbacks.onScriptReady();
@@ -117,13 +117,13 @@
             }
         }
 
-        function Report(v, chartOptions) {
+        function Report(v, initialReportBundle) {
             vis = v;
-            chartOptions = chartOptions;
+            var reportBundle = initialReportBundle;
             var reportInstance;
 
             function reportRenderedFn() {
-                NativeCallbacks.onReportRenedered();
+                NativeCallbacks.onReportRendered();
             }
 
             function reportErrorFn(error) {
@@ -132,22 +132,22 @@
             }
 
             function runFn(uri) {
-                var reportBundle = {
-                    resource: uri,
-                    container: "#container",
-                    scale: "width",
-                    autoresize: false,
-                    success: reportRenderedFn,
-                    error: reportErrorFn
-                };
-                if (chartOptions) {
-                    reportBundle.chart = chartOptions;
-                }
+                reportBundle["resource"] = uri;
+                reportBundle["container"] = "#container";
+                reportBundle["scale"] = "width";
+                reportBundle["success"] = reportRenderedFn;
+                reportBundle["error"] = reportErrorFn;
+
                 reportInstance = vis.report(reportBundle);
+            }
+
+            function applyParamsFn(params) {
+                reportInstance.params(params).run(reportRenderedFn, reportErrorFn);
             }
 
             return {
                 run: runFn,
+                applyParams: applyParamsFn,
                 resize: function () {
                     if (reportInstance) {
                         reportInstance.resize();
@@ -169,5 +169,5 @@
 </script>
 </head>
 <body>
-    <div id="container"/>
+<div id="container"></div>
 </body>
