@@ -49,6 +49,7 @@ public class ResourcesActivity extends AppCompatActivity {
                     "{\"sales__product__product_name_1\":[],\"sales__product__recyclable_package_1\":[\"false\",\"true\"],\"sales__product__low_fat_1\":[\"false\",\"true\"],\"sales_fact_ALL__store_sales_2013_1\":[\"20\"]}"
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
+            SERVER_5_6_1.newReport("5.6.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
             SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0_1.newReport("6.0.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
             SERVER_6_2_1.newReport("6.2.1 - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),

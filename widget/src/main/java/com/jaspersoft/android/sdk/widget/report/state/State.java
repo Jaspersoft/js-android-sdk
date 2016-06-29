@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
@@ -36,9 +37,9 @@ public abstract class State {
         internalInit(initialScale);
     }
 
-    public final void run(String reportUri) {
+    public final void run(RunOptions runOptions) {
         checkProgressState();
-        internalRun(reportUri);
+        internalRun(runOptions);
     }
 
     public final void applyParams(List<ReportParameter> parameters) {
@@ -48,7 +49,7 @@ public abstract class State {
 
     protected abstract void internalInit(double initialScale);
 
-    protected abstract void internalRun(String reportUri);
+    protected abstract void internalRun(RunOptions runOptions);
 
     protected abstract void internalApplyParams(List<ReportParameter> parameters);
 

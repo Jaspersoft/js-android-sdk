@@ -3,30 +3,31 @@ package com.jaspersoft.android.sdk.widget.report.command;
 import android.os.AsyncTask;
 import android.webkit.WebView;
 
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RunReportRestCommand extends Command {
-    private static final String RUN_COMMAND = "javascript:MobileClient.getInstance().report().show(%s);";
+class ApplyParamsRestCommand extends Command {
+    private static final String SHOW_COMMAND = "javascript:MobileClient.getInstance().report().show(%s);";
 
     private final WebView webView;
-    private final RunOptions runOptions;
     private final ReportExecutor reportExecutor;
+    private final List<ReportParameter> parameters;
 
-    protected RunReportRestCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, RunOptions runOptions, ReportExecutor reportExecutor) {
+    protected ApplyParamsRestCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, ReportExecutor reportExecutor, List<ReportParameter> parameters) {
         super(dispatcher, eventFactory);
         this.webView = webView;
-        this.runOptions = runOptions;
         this.reportExecutor = reportExecutor;
+        this.parameters = parameters;
     }
 
     @Override
@@ -35,9 +36,9 @@ class RunReportRestCommand extends Command {
             @Override
             protected String doInBackground(Object... params) {
                 try {
-                    reportExecutor.execute(runOptions.getReportUri(), runOptions.getParameters());
+                    reportExecutor.updateParams(parameters);
                     String page = reportExecutor.export(1);
-                    return String.format(RUN_COMMAND, page);
+                    return String.format(SHOW_COMMAND, page);
                 } catch (ServiceException e) {
                     dispatcher.dispatch(eventFactory.createErrorEvent(e));
                 } catch (IOException e) {
@@ -49,7 +50,6 @@ class RunReportRestCommand extends Command {
 
             @Override
             protected void onPostExecute(String script) {
-                if (script == null) return;
                 webView.loadUrl(script);
             }
         };

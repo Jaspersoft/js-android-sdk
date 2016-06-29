@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -16,9 +17,9 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RendredState extends State {
+class RenderedState extends State {
 
-    public RendredState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
+    public RenderedState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 
@@ -28,9 +29,9 @@ class RendredState extends State {
     }
 
     @Override
-    protected void internalRun(String reportUri) {
+    protected void internalRun(RunOptions runOptions) {
         setInProgress(true);
-        Command runReportCommand = commandFactory.createRunReportCommand(reportUri);
+        Command runReportCommand = commandFactory.createRunReportCommand(runOptions);
         runReportCommand.execute();
     }
 

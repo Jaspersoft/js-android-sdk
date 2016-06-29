@@ -131,8 +131,9 @@
                 NativeCallbacks.onError(message);
             }
 
-            function runFn(uri) {
+            function runFn(uri, params) {
                 reportBundle["resource"] = uri;
+                reportBundle["params"] = params;
                 reportBundle["container"] = "#container";
                 reportBundle["scale"] = "width";
                 reportBundle["success"] = reportRenderedFn;

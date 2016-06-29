@@ -13,7 +13,7 @@ public class Dispatcher {
     private final Bus bus;
     private final Handler mainThread = new Handler(Looper.getMainLooper());
 
-    public Dispatcher() {
+    Dispatcher() {
         bus = new Bus();
     }
 

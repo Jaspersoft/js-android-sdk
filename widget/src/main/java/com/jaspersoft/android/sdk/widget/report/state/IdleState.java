@@ -4,6 +4,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EngineDefinedEvent;
@@ -38,7 +39,7 @@ class IdleState extends State {
     }
 
     @Override
-    protected void internalRun(String reportUri) {
+    protected void internalRun(RunOptions runOptions) {
         throw new IllegalStateException("Could not run report. Renderer still not initialized.");
     }
 

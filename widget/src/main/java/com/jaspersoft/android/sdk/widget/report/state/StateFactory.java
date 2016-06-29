@@ -30,6 +30,6 @@ public class StateFactory {
     }
 
     public State createRenderedState() {
-        return new RendredState(dispatcher, eventFactory, commandFactory);
+        return new RenderedState(dispatcher, eventFactory, commandFactory);
     }
 }

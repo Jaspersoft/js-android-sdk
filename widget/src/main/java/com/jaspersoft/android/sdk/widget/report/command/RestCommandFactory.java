@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.List;
  */
 class RestCommandFactory extends SimpleCommandFactory {
     private static final String REST_TEMPLATE = "report-rest-template-v3.html";
+    private final ReportExecutor reportExecutor;
 
-    public RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
+    private RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client, ReportExecutor reportExecutor) {
         super(webView, dispatcher, eventFactory, client);
+        this.reportExecutor = reportExecutor;
     }
 
     @Override
@@ -43,13 +46,21 @@ class RestCommandFactory extends SimpleCommandFactory {
     }
 
     @Override
-    public Command createRunReportCommand(String reportUri) {
+    public Command createRunReportCommand(RunOptions runOptions) {
         ReportService reportService = ReportService.newService(client);
-        return new RunReportRestCommand(dispatcher, eventFactory, webView, reportUri, reportService);
+        return new RunReportRestCommand(dispatcher, eventFactory, webView, runOptions, reportExecutor);
     }
 
     @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        return new ApplyParamsRestCommand(dispatcher, eventFactory, webView, reportExecutor, parameters);
+    }
+
+    static class Builder extends SimpleCommandFactory.Builder {
+        public RestCommandFactory build() {
+            ReportService reportService = ReportService.newService(client);
+            ReportExecutor reportExecutor = new ReportExecutor(reportService);
+            return new RestCommandFactory(webView, dispatcher, eventFactory, client, reportExecutor);
+        }
     }
 }

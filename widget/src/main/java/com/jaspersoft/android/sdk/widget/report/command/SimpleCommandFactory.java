@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.info.ServerInfoService;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
 import java.util.List;
@@ -20,7 +21,7 @@ class SimpleCommandFactory {
     final EventFactory eventFactory;
     final AuthorizedClient client;
 
-    SimpleCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
+    protected SimpleCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
         this.webView = webView;
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
@@ -44,11 +45,42 @@ class SimpleCommandFactory {
         throw new UnsupportedOperationException("Can not init template if engine is not defied.");
     }
 
-    public Command createRunReportCommand(String reportUri) {
+    public Command createRunReportCommand(RunOptions runOptions) {
         throw new UnsupportedOperationException("Can not run report if engine is not defied.");
     }
 
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
         throw new UnsupportedOperationException("Can not apply params if engine is not defied.");
+    }
+
+    static class Builder{
+        protected WebView webView;
+        protected Dispatcher dispatcher;
+        protected EventFactory eventFactory;
+        protected AuthorizedClient client;
+
+        public Builder withWebView(WebView webView) {
+            this.webView = webView;
+            return this;
+        }
+
+        public Builder withDispatcher(Dispatcher dispatcher) {
+            this.dispatcher = dispatcher;
+            return this;
+        }
+
+        public Builder withEventFactory(EventFactory eventFactory) {
+            this.eventFactory = eventFactory;
+            return this;
+        }
+
+        public Builder withClient(AuthorizedClient client) {
+            this.client = client;
+            return this;
+        }
+
+        public SimpleCommandFactory build() {
+            return new SimpleCommandFactory(webView, dispatcher, eventFactory, client);
+        }
     }
 }

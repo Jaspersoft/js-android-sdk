@@ -42,8 +42,8 @@ public class ReportRendered {
         currentState.init(initialScale);
     }
 
-    public void run(String reportUri) {
-        currentState.run(reportUri);
+    public void run(RunOptions runOptions) {
+        currentState.run(runOptions);
     }
 
     public void applyParams(List<ReportParameter> parameters) {

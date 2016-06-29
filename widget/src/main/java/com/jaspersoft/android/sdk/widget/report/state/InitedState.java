@@ -4,6 +4,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -28,9 +29,9 @@ class InitedState extends State {
     }
 
     @Override
-    protected void internalRun(String reportUri) {
+    protected void internalRun(RunOptions runOptions) {
         setInProgress(true);
-        Command runReportCommand = commandFactory.createRunReportCommand(reportUri);
+        Command runReportCommand = commandFactory.createRunReportCommand(runOptions);
         runReportCommand.execute();
     }
 

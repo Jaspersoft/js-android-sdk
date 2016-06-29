@@ -21,6 +21,7 @@ import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,7 +118,11 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onRenderStateChanged(RenderState renderState) {
         progress.setText(renderState.name());
         if (renderState == RenderState.INITED) {
-            reportRendered.run(resource.getUri());
+            List<ReportParameter> reportParameterList = new ArrayList<>();
+            Set<String> values = new HashSet<>();
+            values.add("Food");
+            reportParameterList.add(new ReportParameter("ProductFamily", values));
+            reportRendered.run(new RunOptions.Builder().reportUri(resource.getUri()).parameters(reportParameterList).build());
         }
     }
 
@@ -157,7 +162,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
         @Override
         protected void onPostExecute(Boolean login) {
-            reportRendered.run(resource.getUri());
+            reportRendered.run(new RunOptions.Builder().reportUri(resource.getUri()).build());
         }
     }
 

@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
 import java.util.List;
@@ -22,9 +23,20 @@ public class CommandFactory {
 
     public final void updateServerMetadata(double versionCode, boolean isPro) {
         if (isPro && versionCode >= 6.0) {
-            simpleCommandFactory = new VisualizeCommandFactory(simpleCommandFactory.webView, simpleCommandFactory.dispatcher, simpleCommandFactory.eventFactory, simpleCommandFactory.client, versionCode);
+            simpleCommandFactory = new VisualizeCommandFactory.Builder()
+                    .withServerVersion(versionCode)
+                    .withWebView(simpleCommandFactory.webView)
+                    .withDispatcher(simpleCommandFactory.dispatcher)
+                    .withEventFactory(simpleCommandFactory.eventFactory)
+                    .withClient(simpleCommandFactory.client)
+                    .build();
         } else {
-            simpleCommandFactory = new RestCommandFactory(simpleCommandFactory.webView, simpleCommandFactory.dispatcher, simpleCommandFactory.eventFactory, simpleCommandFactory.client);
+            simpleCommandFactory = new RestCommandFactory.Builder()
+                    .withWebView(simpleCommandFactory.webView)
+                    .withDispatcher(simpleCommandFactory.dispatcher)
+                    .withEventFactory(simpleCommandFactory.eventFactory)
+                    .withClient(simpleCommandFactory.client)
+                    .build();
         }
     }
 
@@ -44,8 +56,8 @@ public class CommandFactory {
         return simpleCommandFactory.createInitTemplateCommand(initialScale);
     }
 
-    public Command createRunReportCommand(String reportUri) {
-        return simpleCommandFactory.createRunReportCommand(reportUri);
+    public Command createRunReportCommand(RunOptions runOptions) {
+        return simpleCommandFactory.createRunReportCommand(runOptions);
     }
 
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {

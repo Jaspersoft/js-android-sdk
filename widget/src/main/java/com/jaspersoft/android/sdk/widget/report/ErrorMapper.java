@@ -9,6 +9,10 @@ import com.jaspersoft.android.sdk.widget.report.event.JsException;
  * @since 2.6
  */
 public class ErrorMapper {
+
+    ErrorMapper() {
+    }
+
     private final static String AUTH_ERROR_CODE = "authentication.error";
 
     public ServiceException map(JsException exception) {
