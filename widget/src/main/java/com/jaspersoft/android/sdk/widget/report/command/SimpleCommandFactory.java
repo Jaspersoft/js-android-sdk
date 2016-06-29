@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.info.ServerInfoService;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -51,6 +52,10 @@ class SimpleCommandFactory {
 
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
         throw new UnsupportedOperationException("Can not apply params if engine is not defied.");
+    }
+
+    public Command createNavigateToCommand(Destination destination) {
+        throw new UnsupportedOperationException("Can not navigate to destination if engine is not defied.");
     }
 
     static class Builder{

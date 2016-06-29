@@ -23,7 +23,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class ReportExecutor {
+class ReportExecutor {
     private final ReportService reportService;
     private ReportExecution reportExecution;
 

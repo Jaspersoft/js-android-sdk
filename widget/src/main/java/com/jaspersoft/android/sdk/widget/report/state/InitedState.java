@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
@@ -38,6 +39,11 @@ class InitedState extends State {
     @Override
     protected void internalApplyParams(List<ReportParameter> parameters) {
         throw new IllegalStateException("Could not apply report params. Report still not rendered.");
+    }
+
+    @Override
+    protected void internalNavigateTo(Destination destination) {
+        throw new IllegalStateException("Could not navigate to destination. Report still not rendered.");
     }
 
     @Subscribe

@@ -4,6 +4,7 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -51,13 +52,18 @@ class VisualizeCommandFactory extends SimpleCommandFactory {
     @Override
     public Command createRunReportCommand(RunOptions runOptions) {
         String reportParams = visParamsMapper.mapParams(runOptions.getParameters());
-        return new RunReportVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams);
+        return new RunReportVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams, runOptions.getDestination());
     }
 
     @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
         String reportParams = visParamsMapper.mapParams(parameters);
         return new ApplyParamsVisCommand(dispatcher, eventFactory, webView, reportParams);
+    }
+
+    @Override
+    public Command createNavigateToCommand(Destination destination) {
+        return new NavigateToVisCommand(dispatcher, eventFactory, webView, destination);
     }
 
     static class Builder extends SimpleCommandFactory.Builder {

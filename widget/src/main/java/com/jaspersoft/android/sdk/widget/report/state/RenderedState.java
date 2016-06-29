@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
@@ -40,6 +41,13 @@ class RenderedState extends State {
         setInProgress(true);
         Command applyParamsCommand = commandFactory.createApplyParamsCommand(parameters);
         applyParamsCommand.execute();
+    }
+
+    @Override
+    protected void internalNavigateTo(Destination destination) {
+        setInProgress(true);
+        Command navigateToCommand = commandFactory.createNavigateToCommand(destination);
+        navigateToCommand.execute();
     }
 
     @Subscribe

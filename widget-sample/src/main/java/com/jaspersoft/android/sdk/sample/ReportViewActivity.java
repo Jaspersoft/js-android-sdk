@@ -10,13 +10,13 @@ import android.widget.TextView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.HttpException;
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.sample.di.ClientProvider;
 import com.jaspersoft.android.sdk.sample.di.Provider;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
@@ -24,10 +24,6 @@ import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Tom Koptel
@@ -51,12 +47,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         progress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<ReportParameter> reportParameterList = new ArrayList<>();
-                Set<String> values = new HashSet<>();
-                values.add("Food");
-                values.add("Drink");
-                reportParameterList.add(new ReportParameter("ProductFamily", values));
-                reportRendered.applyParams(reportParameterList);
+                Destination destination = new Destination(4);
+                reportRendered.navigateTo(destination);
             }
         });
 
@@ -118,11 +110,11 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onRenderStateChanged(RenderState renderState) {
         progress.setText(renderState.name());
         if (renderState == RenderState.INITED) {
-            List<ReportParameter> reportParameterList = new ArrayList<>();
-            Set<String> values = new HashSet<>();
-            values.add("Food");
-            reportParameterList.add(new ReportParameter("ProductFamily", values));
-            reportRendered.run(new RunOptions.Builder().reportUri(resource.getUri()).parameters(reportParameterList).build());
+            Destination destination = new Destination(2);
+            reportRendered.run(new RunOptions.Builder()
+                    .reportUri(resource.getUri())
+                    .destination(destination)
+                    .build());
         }
     }
 
@@ -162,7 +154,9 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
         @Override
         protected void onPostExecute(Boolean login) {
-            reportRendered.run(new RunOptions.Builder().reportUri(resource.getUri()).build());
+            reportRendered.run(new RunOptions.Builder()
+                    .reportUri(resource.getUri())
+                    .build());
         }
     }
 

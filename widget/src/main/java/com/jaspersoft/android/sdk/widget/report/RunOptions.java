@@ -12,10 +12,12 @@ import java.util.List;
 public class RunOptions {
     private final String reportUri;
     private final List<ReportParameter> parameters;
+    private final Destination destination;
 
-    RunOptions(String reportUri, List<ReportParameter> parameters) {
+    RunOptions(String reportUri, List<ReportParameter> parameters, Destination destination) {
         this.reportUri = reportUri;
         this.parameters = parameters;
+        this.destination = destination;
     }
 
     public String getReportUri() {
@@ -24,6 +26,10 @@ public class RunOptions {
 
     public List<ReportParameter> getParameters() {
         return parameters;
+    }
+
+    public Destination getDestination() {
+        return destination;
     }
 
     public Builder newBuilder() {
@@ -35,18 +41,21 @@ public class RunOptions {
         return "RunOptions{" +
                 "report uri=" + reportUri +
                 ", parameters=" + parameters +
+                ", destination=" + destination +
                 '}';
     }
 
     public static class Builder {
         private String reportUri;
         private List<ReportParameter> parameters;
+        private Destination destination;
 
         public Builder() {}
 
         private Builder(RunOptions options) {
             this.reportUri = options.reportUri;
             this.parameters = options.parameters;
+            this.destination = options.destination;
         }
 
         public Builder parameters(List<ReportParameter> parameters) {
@@ -59,11 +68,22 @@ public class RunOptions {
             return this;
         }
 
+        public Builder destination(Destination destination) {
+            this.destination = destination;
+            return this;
+        }
+
         public RunOptions build() {
+            if (reportUri == null || reportUri.isEmpty()) {
+                throw new IllegalArgumentException("Report uri should be provided");
+            }
             if (parameters == null) {
                 parameters = Collections.emptyList();
             }
-            return new RunOptions(reportUri, parameters);
+            if (destination == null) {
+                destination = new Destination(1);
+            }
+            return new RunOptions(reportUri, parameters, destination);
         }
     }
 }

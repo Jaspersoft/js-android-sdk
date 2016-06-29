@@ -4,6 +4,7 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -62,6 +63,10 @@ public class CommandFactory {
 
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
         return simpleCommandFactory.createApplyParamsCommand(parameters);
+    }
+
+    public Command createNavigateToCommand(Destination destination) {
+        return simpleCommandFactory.createNavigateToCommand(destination);
     }
 
     public static class Builder {

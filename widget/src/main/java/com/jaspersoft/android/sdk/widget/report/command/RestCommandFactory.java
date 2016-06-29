@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportService;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
@@ -47,13 +48,17 @@ class RestCommandFactory extends SimpleCommandFactory {
 
     @Override
     public Command createRunReportCommand(RunOptions runOptions) {
-        ReportService reportService = ReportService.newService(client);
         return new RunReportRestCommand(dispatcher, eventFactory, webView, runOptions, reportExecutor);
     }
 
     @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters) {
         return new ApplyParamsRestCommand(dispatcher, eventFactory, webView, reportExecutor, parameters);
+    }
+
+    @Override
+    public Command createNavigateToCommand(Destination destination) {
+        return new NavigateToRestCommand(dispatcher, eventFactory, webView, destination, reportExecutor);
     }
 
     static class Builder extends SimpleCommandFactory.Builder {

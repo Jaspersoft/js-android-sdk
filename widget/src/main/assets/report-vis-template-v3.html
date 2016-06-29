@@ -91,15 +91,9 @@
 
             function onVisualizeLoaded(v) {
                 if (jrsServer.pre61) {
-                    report = new Report(v, {})
+                    report = new Pre61Report(v)
                 } else {
-                    report = new Report(v, {
-                        autoresize: false,
-                        chart: {
-                            animation: false,
-                            zoom: false
-                        }
-                    })
+                    report = new BaseReport(v)
                 }
                 NativeCallbacks.onScriptReady();
             };
@@ -117,42 +111,103 @@
             }
         }
 
-        function Report(v, initialReportBundle) {
-            vis = v;
-            var reportBundle = initialReportBundle;
+        function BaseReport(v) {
+            var vis = v;
             var reportInstance;
 
-            function reportRenderedFn() {
-                NativeCallbacks.onReportRendered();
-            }
-
-            function reportErrorFn(error) {
-                message = JSON.stringify(error);
-                NativeCallbacks.onError(message);
-            }
-
-            function runFn(uri, params) {
-                reportBundle["resource"] = uri;
-                reportBundle["params"] = params;
-                reportBundle["container"] = "#container";
-                reportBundle["scale"] = "width";
-                reportBundle["success"] = reportRenderedFn;
-                reportBundle["error"] = reportErrorFn;
+            this.run = function(uri, params, page, localAnchor) {
+                var reportBundle = prepareBaseRunReportBundle(uri, params);
+                try {
+                    this._modifyReportBundle(reportBundle, page, localAnchor);
+                } catch (error) {
+                    message = JSON.stringify(error);
+                    NativeCallbacks.onError(message);
+                    return;
+                }
 
                 reportInstance = vis.report(reportBundle);
             }
 
-            function applyParamsFn(params) {
+            this.applyParams = function(params) {
                 reportInstance.params(params).run(reportRenderedFn, reportErrorFn);
             }
 
-            return {
-                run: runFn,
-                applyParams: applyParamsFn,
-                resize: function () {
-                    if (reportInstance) {
-                        reportInstance.resize();
+            this.navigateTo = function(page, localAnchor) {
+                try {
+                    var page = this._provideNavigationBundle(page, localAnchor);
+                } catch (error) {
+                    message = JSON.stringify(error);
+                    NativeCallbacks.onError(message);
+                    return;
+                }
+
+                reportInstance.pages(page).run(reportRenderedFn, reportErrorFn);
+            }
+
+            this.resize = function() {
+                if (reportInstance) {
+                    reportInstance.resize();
+                }
+            }
+
+            this._modifyReportBundle = function(reportBundle, page, localAnchor) {
+                reportBundle["autoresize"] = false;
+                reportBundle["pages"] = page ? page : {anchor: localAnchor};
+                reportBundle["chart"] = {
+                    animation: false,
+                    zoom: false
+                };
+            }
+
+            this._provideNavigationBundle = function(page, localAnchor) {
+                return pages = page ? page : {anchor: localAnchor};
+            }
+
+            prepareBaseRunReportBundle = function(uri, params) {
+                return reportBundle = {
+                    resource: uri,
+                    params: params,
+                    container: "#container",
+                    scale: "width",
+                    success: reportRenderedFn,
+                    error: reportErrorFn
+                }
+            }
+
+            reportRenderedFn = function() {
+                NativeCallbacks.onReportRendered();
+            }
+
+            reportErrorFn = function(error) {
+                message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            }
+        }
+
+        function Pre61Report(v) {
+            BaseReport.apply(this, arguments);
+
+            this._modifyReportBundle = function(reportBundle, page, localAnchor) {
+                if (page) {
+                    reportBundle["pages"] = page;
+                } else {
+                    var error = {
+                        errorCode: "anchor.is.not.supported",
+                        message: "Anchor is not supported for current server version"
                     }
+                    throw error;
+                }
+            }
+
+            this._provideNavigationBundle = function(page, localAnchor) {
+                if (page) {
+                    return page;
+                } else {
+                    var error = {
+                        errorCode: "anchor.is.not.supported",
+                        message: "Anchor is not supported for current server version"
+                    }
+                    throw error;
                 }
             }
         }
@@ -167,7 +222,8 @@
         };
     })();
 
-</script>
+
+    </script>
 </head>
 <body>
 <div id="container"></div>

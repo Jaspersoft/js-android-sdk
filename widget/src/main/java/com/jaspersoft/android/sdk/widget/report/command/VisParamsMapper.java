@@ -30,7 +30,7 @@ class VisParamsMapper {
         if (parameters.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, Set<String>> params = new HashMap<String, Set<String>>(parameters.size());
+        Map<String, Set<String>> params = new HashMap<>(parameters.size());
         for (ReportParameter parameter : parameters) {
             params.put(parameter.getName(), parameter.getValue());
         }

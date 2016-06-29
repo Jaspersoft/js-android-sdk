@@ -50,6 +50,10 @@ public class ReportRendered {
         currentState.applyParams(parameters);
     }
 
+    public void navigateTo(Destination destination) {
+        currentState.navigateTo(destination);
+    }
+
     public void registerReportRendererCallback(ReportRendererCallback reportRendererCallback) {
         eventPublisher.setReportRendererCallback(reportRendererCallback);
     }

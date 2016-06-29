@@ -11,19 +11,14 @@ import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RunReportVisCommand extends Command {
-    private static final String RUN_REPORT_SCRIPT = "javascript:MobileClient.getInstance().report().run('%s', %s, %s, '%s');";
-
+public class NavigateToVisCommand extends Command {
+    private static final String NAVIGATE_TO_SCRIPT = "javascript:MobileClient.getInstance().report().navigateTo(%s, '%s');";
     private final WebView webView;
-    private final String reportUri;
-    private final String reportParams;
     private final Destination destination;
 
-    protected RunReportVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String reportUri, String reportParams, Destination destination) {
+    protected NavigateToVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, Destination destination) {
         super(dispatcher, eventFactory);
         this.webView = webView;
-        this.reportUri = reportUri;
-        this.reportParams = reportParams;
         this.destination = destination;
     }
 
@@ -32,7 +27,7 @@ class RunReportVisCommand extends Command {
         return new AsyncTask<Object, Object, String>() {
             @Override
             protected String doInBackground(Object... params) {
-                return String.format(RUN_REPORT_SCRIPT, reportUri, reportParams, destination.getPage(), destination.getAnchor());
+                return String.format(NAVIGATE_TO_SCRIPT, destination.getPage(), destination.getAnchor());
             }
 
             @Override
