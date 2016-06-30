@@ -32,13 +32,18 @@ class NavigateToRestCommand extends Command {
     @Override
     protected AsyncTask createTask() {
         return new AsyncTask<Object, Object, String>() {
+
             @Override
-            protected String doInBackground(Object... params) {
+            protected void onPreExecute() {
                 if (destination.getPage() == null) {
                     ServiceException anchorException = new ServiceException("Anchor is not supported for current server version", new Throwable("Anchor is not supported for current server version"), StatusCodes.EXPORT_ANCHOR_UNSUPPORTED);
                     dispatcher.dispatch(eventFactory.createErrorEvent(anchorException));
+                    cancel(true);
                 }
+            }
 
+            @Override
+            protected String doInBackground(Object... params) {
                 try {
                     String page = reportExecutor.export(destination.getPage());
                     return String.format(RUN_COMMAND, page);

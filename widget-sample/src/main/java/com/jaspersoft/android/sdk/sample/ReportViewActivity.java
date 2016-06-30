@@ -47,7 +47,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         progress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Destination destination = new Destination(4);
+                Destination destination = new Destination(5);
                 reportRendered.navigateTo(destination);
             }
         });

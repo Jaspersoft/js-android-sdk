@@ -33,12 +33,15 @@ class RunReportRestCommand extends Command {
     protected AsyncTask createTask() {
         return new AsyncTask<Object, Object, String>() {
             @Override
-            protected String doInBackground(Object... params) {
+            protected void onPreExecute() {
                 if (runOptions.getDestination().getPage() == null) {
                     ServiceException anchorException = new ServiceException("Anchor is not supported for current server version", new Throwable("Anchor is not supported for current server version"), StatusCodes.EXPORT_ANCHOR_UNSUPPORTED);
                     dispatcher.dispatch(eventFactory.createErrorEvent(anchorException));
+                    cancel(true);
                 }
-
+            }
+            @Override
+            protected String doInBackground(Object... params) {
                 try {
                     reportExecutor.execute(runOptions.getReportUri(), runOptions.getParameters());
                     String page = reportExecutor.export(runOptions.getDestination().getPage());

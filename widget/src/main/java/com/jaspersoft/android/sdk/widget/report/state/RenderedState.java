@@ -2,8 +2,10 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
@@ -53,6 +55,9 @@ class RenderedState extends State {
     @Subscribe
     public void onError(ExceptionEvent exceptionEvent) {
         setInProgress(false);
+        if (exceptionEvent.getException().code() == StatusCodes.AUTHORIZATION_ERROR) {
+            dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.INITED));
+        }
     }
 
     @Subscribe

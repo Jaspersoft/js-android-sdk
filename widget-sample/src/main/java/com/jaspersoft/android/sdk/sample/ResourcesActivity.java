@@ -50,6 +50,7 @@ public class ResourcesActivity extends AppCompatActivity {
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
             SERVER_5_6_1.newReport("5.6.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
+            SERVER_5_6_1.newReport("5.6.1 - Not existing","/public/Samples/Reports/fail"),
             SERVER_6_0_1.newReport("6.0.1 - 02. Sales mix","/public/Samples/Reports/02._Sales_Mix_by_Demographic_Report"),
             SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0_1.newReport("6.0.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
