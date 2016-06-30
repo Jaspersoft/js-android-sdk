@@ -12,16 +12,16 @@
     <script type="text/javascript">
 
     var NativeCallbacks = {
-        onScriptReady: function () {
+        onScriptReady: function() {
             return Android.onScriptReady();
         },
-        onReportRendered: function () {
+        onReportRendered: function() {
             return Android.onReportRendered();
         },
-        onError: function (error) {
+        onError: function(error) {
             return Android.onError(error);
         },
-        onHyperLinkClick(type, hyperlink) {
+        onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
     };
@@ -205,8 +205,8 @@
                     reportBundle["pages"] = page;
                 } else {
                     var error = {
-                        errorCode: "anchor.is.not.supported",
-                        message: "Anchor is not supported for current server version"
+                        errorCode: "anchor.navigation.is.not.supported",
+                        message: "Anchor navigation is not supported for current server version"
                     }
                     throw error;
                 }
@@ -217,8 +217,8 @@
                     return page;
                 } else {
                     var error = {
-                        errorCode: "anchor.is.not.supported",
-                        message: "Anchor is not supported for current server version"
+                        errorCode: "anchor.navigation.is.not.supported",
+                        message: "Anchor navigation is not supported for current server version"
                     }
                     throw error;
                 }
@@ -282,6 +282,8 @@
             };
 
             handleLocalPageType = function (link) {
+                if (!link.pages) {
+                }
                 NativeCallbacks.onHyperLinkClick(link.type, link.pages);
             };
 
@@ -291,7 +293,7 @@
 
             handleRemotePageType = function (link) {
                 var hyperlink = {
-                    reportUri: link.href,
+                    resourceUri: link.href,
                     destination: {
                         page: link.pages ? link.pages : 1
                     }
@@ -301,7 +303,7 @@
 
             handleRemoteAnchorType = function (link) {
                 var hyperlink = {
-                    reportUri: link.href,
+                    resourceUri: link.href,
                     destination: {
                         anchor: link.anchor,
                     }

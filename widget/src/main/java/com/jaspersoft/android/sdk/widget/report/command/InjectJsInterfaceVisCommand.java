@@ -52,7 +52,7 @@ class InjectJsInterfaceVisCommand extends InjectJsInterfaceCommand implements In
             dispatcher.dispatch(eventFactory.createHyperlinkEvent(hyperlink));
         } else if (type.equals("RemotePage") || type.equals("RemoteAnchor")) {
             RemoteResource remoteHyperlink = new Gson().fromJson(hyperlink, RemoteResource.class);
-            dispatcher.dispatch(eventFactory.createHyperlinkEvent(Uri.parse(remoteHyperlink.getReportUri()), remoteHyperlink.getDestination()));
+            dispatcher.dispatch(eventFactory.createHyperlinkEvent(Uri.parse(remoteHyperlink.getResourceUri()), remoteHyperlink.getDestination()));
         } else if (type.equals("ReportExecution")) {
             RunOptions reportExecution = new Gson().fromJson(hyperlink, RunOptions.class);
             dispatcher.dispatch(eventFactory.createHyperlinkEvent(reportExecution));
@@ -60,16 +60,16 @@ class InjectJsInterfaceVisCommand extends InjectJsInterfaceCommand implements In
     }
 
     private static class RemoteResource {
-        private final String reportUri;
+        private final String resourceUri;
         private final Destination destination;
 
-        public RemoteResource(String reportUri, Destination destination) {
-            this.reportUri = reportUri;
+        public RemoteResource(String resourceUri, Destination destination) {
+            this.resourceUri = resourceUri;
             this.destination = destination;
         }
 
-        public String getReportUri() {
-            return reportUri;
+        public String getResourceUri() {
+            return resourceUri;
         }
 
         public Destination getDestination() {

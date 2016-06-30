@@ -17,7 +17,7 @@ public class ErrorMapper {
     private final static String EXPORT_PAGE_OUT_OF_RANGE_CODE = "export.pages.out.of.range";
     private final static String PAGE_OUT_OF_RANGE_CODE = "page.number.out.of.range";
     private final static String ILLEGAL_PARAMETER_VALUE_CODE = "illegal.parameter.value.error";
-    private final static String ANCHOR_NAVIGATION_NOT_SUPPORTED_CODE = "anchor.is.not.supported";
+    private final static String ANCHOR_NAVIGATION_NOT_SUPPORTED_CODE = "anchor.navigation.is.not.supported";
     private final static String RESOURCE_BOT_FOUND_CODE = "resource.not.found";
 
     public ServiceException map(JsException exception) {
