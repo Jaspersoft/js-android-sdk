@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.Hyperlink;
 
 /**
  * @author Andrew Tivodar
@@ -9,6 +10,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 public interface ReportRendererCallback {
     void onProgressStateChange(boolean inProgress);
     void onRenderStateChanged(RenderState renderState);
+    void onHyperlinkClicked(Hyperlink hyperlink);
     void onError(ServiceException exception);
 
     class SimpleReportRendererCallback implements ReportRendererCallback{
@@ -20,6 +22,11 @@ public interface ReportRendererCallback {
 
         @Override
         public void onRenderStateChanged(RenderState renderState) {
+
+        }
+
+        @Override
+        public void onHyperlinkClicked(Hyperlink hyperlink) {
 
         }
 

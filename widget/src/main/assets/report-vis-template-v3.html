@@ -20,6 +20,9 @@
         },
         onError: function (error) {
             return Android.onError(error);
+        },
+        onHyperLinkClick(type, hyperlink) {
+            return Android.onHyperLinkClick(type, hyperlink);
         }
     };
 
@@ -114,6 +117,7 @@
         function BaseReport(v) {
             var vis = v;
             var reportInstance;
+            var hyperLinkHandler = new HyperLinkHandler();
 
             this.run = function(uri, params, page, localAnchor) {
                 var reportBundle = prepareBaseRunReportBundle(uri, params);
@@ -170,8 +174,17 @@
                     container: "#container",
                     scale: "width",
                     success: reportRenderedFn,
-                    error: reportErrorFn
+                    error: reportErrorFn,
+                    linkOptions: {
+                        events: {
+                            click: handleHyperlinkClick
+                        }
+                    }
                 }
+            }
+
+            handleHyperlinkClick = function(event, link) {
+                hyperLinkHandler.handle(event, link);
             }
 
             reportRenderedFn = function() {
@@ -210,6 +223,91 @@
                     throw error;
                 }
             }
+        }
+
+        function HyperLinkHandler() {
+            this.handle = function(event, link) {
+                var type = link.type;
+                switch (type) {
+                    case "ReportExecution":
+                        return handleReportExecutionType(link);
+                    case "LocalAnchor":
+                        return handleLocalAnchorType(link);
+                    case "LocalPage":
+                        return handleLocalPageType(link);
+                    case "RemoteAnchor":
+                        return handleRemoteAnchorType(link);
+                    case "RemotePage":
+                        return handleRemotePageType(link);
+                    case "Reference":
+                        return handleReferenceType(link);
+                }
+            }
+
+            filterReportParams = function (params) {
+                var filters = [];
+                var blackList = ["_report", "_page", "_anchor"];
+                for (var key in params) {
+                    var value = params[key];
+                    var isFilter = (blackList.indexOf(key) < 0);
+                    if (isFilter) {
+                        var filter = {
+                            name: key,
+                            value: [value]
+                        }
+                        filters.splice(filters.length, 1, filter)
+                    }
+                }
+                return filters;
+            };
+
+            handleReportExecutionType = function(link) {
+                var runOptions = link.parameters;
+                if (!runOptions) return;
+
+                var reportParams = filterReportParams(link.parameters);
+                var hyperlink = {
+                    reportUri: runOptions._report,
+                    parameters: reportParams,
+                    destination: {
+                        page: (runOptions._page || runOptions._anchor) ? runOptions._page : 1,
+                        anchor: runOptions._anchor,
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
+
+            handleReferenceType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.href);
+            };
+
+            handleLocalPageType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.pages);
+            };
+
+            handleLocalAnchorType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.anchor);
+            };
+
+            handleRemotePageType = function (link) {
+                var hyperlink = {
+                    reportUri: link.href,
+                    destination: {
+                        page: link.pages ? link.pages : 1
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
+
+            handleRemoteAnchorType = function (link) {
+                var hyperlink = {
+                    reportUri: link.href,
+                    destination: {
+                        anchor: link.anchor,
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
         }
 
         return {

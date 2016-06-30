@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.HttpException;
@@ -22,6 +23,10 @@ import com.jaspersoft.android.sdk.widget.report.ReportRendered;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.Hyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.LocalHyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.ReferenceHyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.ReportExecutionHyperlink;
 
 import java.io.IOException;
 
@@ -67,7 +72,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
                     .withKey(key)
                     .restore();
         } else {
-            webView = new ResourceWebView(getApplicationContext());
+            webView = new ResourceWebView(this);
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             reportRendered = new ReportRendered.Builder()
@@ -110,11 +115,21 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onRenderStateChanged(RenderState renderState) {
         progress.setText(renderState.name());
         if (renderState == RenderState.INITED) {
-            Destination destination = new Destination(2);
             reportRendered.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
-                    .destination(destination)
                     .build());
+        }
+    }
+
+    @Override
+    public void onHyperlinkClicked(Hyperlink hyperlink) {
+        if (hyperlink instanceof LocalHyperlink) {
+            reportRendered.navigateTo(((LocalHyperlink) hyperlink).getDestination());
+        } else if (hyperlink instanceof ReferenceHyperlink) {
+            Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
+        } else if (hyperlink instanceof ReportExecutionHyperlink) {
+            RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
+            reportRendered.run(runOptions);
         }
     }
 

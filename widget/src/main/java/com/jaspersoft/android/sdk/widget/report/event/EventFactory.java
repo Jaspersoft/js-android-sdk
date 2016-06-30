@@ -1,9 +1,18 @@
 package com.jaspersoft.android.sdk.widget.report.event;
 
+import android.net.Uri;
+
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.Hyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.LocalHyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.ReferenceHyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.RemoteHyperlink;
+import com.jaspersoft.android.sdk.widget.report.hyperlink.ReportExecutionHyperlink;
 
 /**
  * @author Andrew Tivodar
@@ -50,6 +59,31 @@ public class EventFactory {
 
     public Event createErrorEvent(ServiceException exception) {
         return new ExceptionEvent(exception);
+    }
+
+    public Event createHyperlinkEvent(Uri reference) {
+        Hyperlink hyperlink = new ReferenceHyperlink(reference);
+        return new HyperlinkEvent(hyperlink);
+    }
+
+    public Event createHyperlinkEvent(int page) {
+        Hyperlink hyperlink = new LocalHyperlink(new Destination(page));
+        return new HyperlinkEvent(hyperlink);
+    }
+
+    public Event createHyperlinkEvent(String anchor) {
+        Hyperlink hyperlink = new LocalHyperlink(new Destination(anchor));
+        return new HyperlinkEvent(hyperlink);
+    }
+
+    public Event createHyperlinkEvent(Uri resourceUri, Destination destination) {
+        Hyperlink hyperlink = new RemoteHyperlink(resourceUri, destination);
+        return new HyperlinkEvent(hyperlink);
+    }
+
+    public Event createHyperlinkEvent(RunOptions runOptions) {
+        Hyperlink hyperlink = new ReportExecutionHyperlink(runOptions);
+        return new HyperlinkEvent(hyperlink);
     }
 
     public Event createReportRenderedEvent() {

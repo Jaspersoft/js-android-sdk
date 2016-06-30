@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.report.event.Event;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.event.HyperlinkEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ProgressStateEvent;
 import com.jaspersoft.android.sdk.widget.report.event.SwapStateEvent;
 import com.squareup.otto.Subscribe;
@@ -30,6 +31,11 @@ class EventPublisher {
     @Subscribe
     public void onProgressChange(ProgressStateEvent progressStateEvent) {
         handleEvent(progressStateEvent);
+    }
+
+    @Subscribe
+    public void onHyperlinkClicked(HyperlinkEvent hyperlinkEvent) {
+        handleEvent(hyperlinkEvent);
     }
 
     @Subscribe
@@ -62,6 +68,8 @@ class EventPublisher {
             reportRendererCallback.onError(exception);
         } else if (event instanceof ProgressStateEvent) {
             reportRendererCallback.onProgressStateChange(((ProgressStateEvent) event).isInProgress());
+        } else if (event instanceof HyperlinkEvent) {
+            reportRendererCallback.onHyperlinkClicked(((HyperlinkEvent) event).getHyperlink());
         }
     }
 }
