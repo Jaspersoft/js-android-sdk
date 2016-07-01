@@ -14,12 +14,14 @@ import com.jaspersoft.android.sdk.network.HttpException;
 import com.jaspersoft.android.sdk.sample.di.ClientProvider;
 import com.jaspersoft.android.sdk.sample.di.Provider;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
+import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
-import com.jaspersoft.android.sdk.widget.report.ReportRendered;
+import com.jaspersoft.android.sdk.widget.report.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
@@ -39,7 +41,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
     private TextView progress;
     private ResourceWebView webView;
-    private ReportRendered reportRendered;
+    private ReportRenderer reportRenderer;
     private Resource resource;
     private AuthorizedClient authorizedClient;
 
@@ -53,7 +55,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
             @Override
             public void onClick(View v) {
                 Destination destination = new Destination(5);
-                reportRendered.navigateTo(destination);
+                reportRenderer.navigateTo(destination);
             }
         });
 
@@ -68,18 +70,17 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
             ReportRendererKey key = (ReportRendererKey) savedInstanceState.getSerializable(RENDERER_KEY_ARG);
-            reportRendered = new ReportRendered.Builder()
-                    .withKey(key)
-                    .restore();
+            reportRenderer = ReportRenderer.restore(key);
         } else {
             webView = new ResourceWebView(this);
             ((ViewGroup) findViewById(R.id.container)).addView(webView);
 
-            reportRendered = new ReportRendered.Builder()
-                    .withClient(authorizedClient)
-                    .withWebView(webView)
-                    .build();
-            reportRendered.init(0.5f);
+            ServerInfo serverInfo = new ServerInfo();
+            serverInfo.setEdition("PRO");
+            serverInfo.setVersion(ServerVersion.v6_2);
+
+            reportRenderer = ReportRenderer.create(authorizedClient, webView, serverInfo);
+            reportRenderer.init(0.5f);
         }
     }
 
@@ -87,7 +88,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        ReportRendererKey key = reportRendered.persist();
+        ReportRendererKey key = reportRenderer.persist();
         outState.putSerializable(RENDERER_KEY_ARG, key);
 
         ((ViewGroup) webView.getParent()).removeView(webView);
@@ -97,13 +98,13 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     @Override
     protected void onResume() {
         super.onResume();
-        reportRendered.registerReportRendererCallback(this);
+        reportRenderer.registerReportRendererCallback(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        reportRendered.unregisterReportRendererCallback();
+        reportRenderer.unregisterReportRendererCallback();
     }
 
     @Override
@@ -115,7 +116,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onRenderStateChanged(RenderState renderState) {
         progress.setText(renderState.name());
         if (renderState == RenderState.INITED) {
-            reportRendered.run(new RunOptions.Builder()
+            reportRenderer.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
                     .build());
         }
@@ -124,12 +125,12 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     @Override
     public void onHyperlinkClicked(Hyperlink hyperlink) {
         if (hyperlink instanceof LocalHyperlink) {
-            reportRendered.navigateTo(((LocalHyperlink) hyperlink).getDestination());
+            reportRenderer.navigateTo(((LocalHyperlink) hyperlink).getDestination());
         } else if (hyperlink instanceof ReferenceHyperlink) {
             Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
         } else if (hyperlink instanceof ReportExecutionHyperlink) {
             RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
-            reportRendered.run(runOptions);
+            reportRenderer.run(runOptions);
         }
     }
 
@@ -169,7 +170,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
         @Override
         protected void onPostExecute(Boolean login) {
-            reportRendered.run(new RunOptions.Builder()
+            reportRenderer.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
                     .build());
         }

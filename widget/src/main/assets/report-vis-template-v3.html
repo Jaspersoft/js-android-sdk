@@ -119,10 +119,10 @@
             var reportInstance;
             var hyperLinkHandler = new HyperLinkHandler();
 
-            this.run = function(uri, params, page, localAnchor) {
-                var reportBundle = prepareBaseRunReportBundle(uri, params);
+            this.run = function(uri, params, destination) {
+                var reportBundle = prepareBaseRunReportBundle(uri, params, destination);
                 try {
-                    this._modifyReportBundle(reportBundle, page, localAnchor);
+                    this._modifyReportBundle(reportBundle);
                 } catch (error) {
                     message = JSON.stringify(error);
                     NativeCallbacks.onError(message);
@@ -136,16 +136,8 @@
                 reportInstance.params(params).run(reportRenderedFn, reportErrorFn);
             }
 
-            this.navigateTo = function(page, localAnchor) {
-                try {
-                    var page = this._provideNavigationBundle(page, localAnchor);
-                } catch (error) {
-                    message = JSON.stringify(error);
-                    NativeCallbacks.onError(message);
-                    return;
-                }
-
-                reportInstance.pages(page).run(reportRenderedFn, reportErrorFn);
+            this.navigateTo = function(destination) {
+                reportInstance.pages(destination).run(reportRenderedFn, reportErrorFn);
             }
 
             this.resize = function() {
@@ -154,25 +146,21 @@
                 }
             }
 
-            this._modifyReportBundle = function(reportBundle, page, localAnchor) {
+            this._modifyReportBundle = function(reportBundle) {
                 reportBundle["autoresize"] = false;
-                reportBundle["pages"] = page ? page : {anchor: localAnchor};
                 reportBundle["chart"] = {
                     animation: false,
                     zoom: false
                 };
             }
 
-            this._provideNavigationBundle = function(page, localAnchor) {
-                return pages = page ? page : {anchor: localAnchor};
-            }
-
-            prepareBaseRunReportBundle = function(uri, params) {
+            prepareBaseRunReportBundle = function(uri, params, destination) {
                 return reportBundle = {
                     resource: uri,
                     params: params,
                     container: "#container",
                     scale: "width",
+                    pages: destination,
                     success: reportRenderedFn,
                     error: reportErrorFn,
                     linkOptions: {
@@ -201,27 +189,6 @@
             BaseReport.apply(this, arguments);
 
             this._modifyReportBundle = function(reportBundle, page, localAnchor) {
-                if (page) {
-                    reportBundle["pages"] = page;
-                } else {
-                    var error = {
-                        errorCode: "anchor.navigation.is.not.supported",
-                        message: "Anchor navigation is not supported for current server version"
-                    }
-                    throw error;
-                }
-            }
-
-            this._provideNavigationBundle = function(page, localAnchor) {
-                if (page) {
-                    return page;
-                } else {
-                    var error = {
-                        errorCode: "anchor.navigation.is.not.supported",
-                        message: "Anchor navigation is not supported for current server version"
-                    }
-                    throw error;
-                }
             }
         }
 
@@ -246,7 +213,7 @@
 
             filterReportParams = function (params) {
                 var filters = [];
-                var blackList = ["_report", "_page", "_anchor"];
+                var blackList = ["_report", "_page", "_anchor", "_output"];
                 for (var key in params) {
                     var value = params[key];
                     var isFilter = (blackList.indexOf(key) < 0);

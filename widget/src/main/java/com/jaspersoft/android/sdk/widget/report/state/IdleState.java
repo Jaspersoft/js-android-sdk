@@ -8,12 +8,12 @@ import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.event.EngineDefinedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.event.JsInterfaceInjectedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.TemplateInitedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.TemplateLoadedEvent;
+import com.jaspersoft.android.sdk.widget.report.jsinterface.JsInterface;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -22,12 +22,13 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class IdleState extends State {
-
+class IdleState extends State<EventFactory, CommandFactory> {
+    private final JsInterface jsInterface;
     private double initialScale;
 
-    public IdleState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
+    IdleState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, JsInterface jsInterface) {
         super(dispatcher, eventFactory, commandFactory);
+        this.jsInterface = jsInterface;
     }
 
     @Override
@@ -35,8 +36,8 @@ class IdleState extends State {
         setInProgress(true);
 
         this.initialScale = initialScale;
-        Command defineEngineCommand = commandFactory.createDefineEngineCommand();
-        defineEngineCommand.execute();
+        Command injectJsInterfaceCommand = commandFactory.createInjectJsInterfaceCommand(jsInterface);
+        injectJsInterfaceCommand.execute();
     }
 
     @Override
@@ -52,14 +53,6 @@ class IdleState extends State {
     @Override
     protected void internalNavigateTo(Destination destination) {
         throw new IllegalStateException("Could not navigate to destination. Renderer still not initialized.");
-    }
-
-    @Subscribe
-    public void onEngineDefined(EngineDefinedEvent engineDefinedEvent) {
-        commandFactory.updateServerMetadata(engineDefinedEvent.getVersionCode(), engineDefinedEvent.isPro());
-
-        Command injectJsInterfaceCommand = commandFactory.createInjectJsInterfaceCommand();
-        injectJsInterfaceCommand.execute();
     }
 
     @Subscribe

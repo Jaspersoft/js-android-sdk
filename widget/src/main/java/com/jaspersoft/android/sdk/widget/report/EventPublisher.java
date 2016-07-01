@@ -3,7 +3,7 @@ package com.jaspersoft.android.sdk.widget.report;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.report.event.Event;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
-import com.jaspersoft.android.sdk.widget.report.event.HyperlinkEvent;
+import com.jaspersoft.android.sdk.widget.report.event.vis.HyperlinkEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ProgressStateEvent;
 import com.jaspersoft.android.sdk.widget.report.event.SwapStateEvent;
 import com.squareup.otto.Subscribe;

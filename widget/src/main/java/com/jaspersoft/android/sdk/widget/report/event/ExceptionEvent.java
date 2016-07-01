@@ -9,7 +9,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 public class ExceptionEvent implements Event{
     private final ServiceException exception;
 
-    public ExceptionEvent(ServiceException exception) {
+    ExceptionEvent(ServiceException exception) {
         this.exception = exception;
     }
 

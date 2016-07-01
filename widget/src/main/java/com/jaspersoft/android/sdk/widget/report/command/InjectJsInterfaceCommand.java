@@ -6,18 +6,20 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
+import com.jaspersoft.android.sdk.widget.report.jsinterface.JsInterface;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-abstract class InjectJsInterfaceCommand extends Command {
-
+class InjectJsInterfaceCommand extends Command {
     private final WebView webView;
+    private final JsInterface jsInterface;
 
-    protected InjectJsInterfaceCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView) {
+    InjectJsInterfaceCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, JsInterface jsInterface) {
         super(dispatcher, eventFactory);
         this.webView = webView;
+        this.jsInterface = jsInterface;
     }
 
     @Override
@@ -31,15 +33,9 @@ abstract class InjectJsInterfaceCommand extends Command {
             @SuppressLint("JavascriptInterface")
             @Override
             protected void onPostExecute(Void template) {
-                webView.addJavascriptInterface(provideJsInterface(), "Android");
+                webView.addJavascriptInterface(jsInterface, "Android");
                 dispatcher.dispatch(eventFactory.createJsInterfaceInjectEvent());
             }
         };
-    }
-
-    protected abstract JsInterface provideJsInterface();
-
-    protected interface JsInterface{
-
     }
 }

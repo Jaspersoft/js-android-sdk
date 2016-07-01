@@ -4,32 +4,29 @@ package com.jaspersoft.android.sdk.widget.report.state;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
+import com.jaspersoft.android.sdk.widget.report.jsinterface.JsInterface;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class StateFactory {
+public abstract class StateFactory<EF extends EventFactory, CF extends CommandFactory> {
 
-    private final Dispatcher dispatcher;
-    private final EventFactory eventFactory;
-    private final CommandFactory commandFactory;
+    protected final Dispatcher dispatcher;
+    protected final EF eventFactory;
+    protected final CF commandFactory;
 
-    public StateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
+    public StateFactory(Dispatcher dispatcher, EF eventFactory, CF commandFactory) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
     }
 
-    public State createIdleState() {
-        return new IdleState(dispatcher, eventFactory, commandFactory);
+    public final State createIdleState(JsInterface jsInterface) {
+        return new IdleState(dispatcher, eventFactory, commandFactory, jsInterface);
     }
 
-    public State createInitedState() {
-        return new InitedState(dispatcher, eventFactory, commandFactory);
-    }
+    public abstract State createInitedState(State prevState);
 
-    public State createRenderedState() {
-        return new RenderedState(dispatcher, eventFactory, commandFactory);
-    }
+    public abstract State createRenderedState(State prevState);
 }

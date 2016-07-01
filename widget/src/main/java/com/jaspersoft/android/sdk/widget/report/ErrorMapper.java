@@ -2,7 +2,6 @@ package com.jaspersoft.android.sdk.widget.report;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.widget.report.event.JsException;
 
 /**
  * @author Andrew Tivodar

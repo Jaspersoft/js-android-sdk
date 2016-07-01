@@ -14,15 +14,14 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public abstract class State {
-
+public abstract class State<EF extends EventFactory, CF extends CommandFactory> {
     protected final Dispatcher dispatcher;
-    protected final EventFactory eventFactory;
-    protected final CommandFactory commandFactory;
+    protected final EF eventFactory;
+    protected final CF commandFactory;
 
     private boolean inProgress;
 
-    public State(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
+    State(Dispatcher dispatcher, EF eventFactory, CF commandFactory) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;

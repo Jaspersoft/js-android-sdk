@@ -18,7 +18,7 @@ class LoadTemplateCommand extends Command {
     private final String baseUrl;
     private final String restTemplate;
 
-    public LoadTemplateCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String baseUrl, String restTemplate) {
+    LoadTemplateCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String baseUrl, String restTemplate) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.baseUrl = baseUrl;
