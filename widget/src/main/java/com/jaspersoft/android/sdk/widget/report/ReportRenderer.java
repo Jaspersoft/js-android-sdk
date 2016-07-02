@@ -65,6 +65,10 @@ public class ReportRenderer {
         currentState.applyParams(parameters);
     }
 
+    public void refresh() {
+        currentState.refresh();
+    }
+
     public void navigateTo(Destination destination) {
         currentState.navigateTo(destination);
     }

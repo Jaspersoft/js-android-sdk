@@ -5,19 +5,20 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class NavigateToAnchorVisCommand extends Command<VisEventFactory> {
+class NavigateToAnchorVisCommand extends Command {
     private static final String NAVIGATE_TO_ANCHOR_SCRIPT = "javascript:MobileClient.getInstance().report().navigateTo({anchor: '%s'});";
 
     private final WebView webView;
     private final String anchor;
 
-    NavigateToAnchorVisCommand(Dispatcher dispatcher, VisEventFactory eventFactory, WebView webView, String anchor) {
+    NavigateToAnchorVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String anchor) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.anchor = anchor;

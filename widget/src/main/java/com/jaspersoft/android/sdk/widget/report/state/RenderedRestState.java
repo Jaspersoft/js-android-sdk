@@ -9,7 +9,9 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.rest.PageExportedEvent;
@@ -22,10 +24,10 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RenderedRestState extends State<RestEventFactory, RestCommandFactory> {
+class RenderedRestState extends State {
     private final ReportExecution reportExecution;
 
-    RenderedRestState(Dispatcher dispatcher, RestEventFactory eventFactory, RestCommandFactory commandFactory, ReportExecution reportExecution) {
+    RenderedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, ReportExecution reportExecution) {
         super(dispatcher, eventFactory, commandFactory);
         this.reportExecution = reportExecution;
     }
@@ -52,6 +54,11 @@ class RenderedRestState extends State<RestEventFactory, RestCommandFactory> {
         setInProgress(true);
         Command navigateToCommand = commandFactory.createPageExportCommand(destination, reportExecution);
         navigateToCommand.execute();
+    }
+
+    @Override
+    protected void internalRefresh() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Subscribe

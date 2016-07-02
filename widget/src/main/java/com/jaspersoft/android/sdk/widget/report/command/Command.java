@@ -10,13 +10,13 @@ import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
  * @author Tom Koptel
  * @since 2.6
  */
-public abstract class Command<EV extends EventFactory> {
+public abstract class Command {
     protected final Dispatcher dispatcher;
-    protected final EV eventFactory;
+    protected final EventFactory eventFactory;
 
     private AsyncTask task;
 
-    protected Command(Dispatcher dispatcher, EV eventFactory) {
+    protected Command(Dispatcher dispatcher, EventFactory eventFactory) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
     }

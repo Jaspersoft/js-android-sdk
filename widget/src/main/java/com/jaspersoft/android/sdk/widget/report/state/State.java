@@ -14,14 +14,14 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public abstract class State<EF extends EventFactory, CF extends CommandFactory> {
+public abstract class State {
     protected final Dispatcher dispatcher;
-    protected final EF eventFactory;
-    protected final CF commandFactory;
+    protected final EventFactory eventFactory;
+    protected final CommandFactory commandFactory;
 
     private boolean inProgress;
 
-    State(Dispatcher dispatcher, EF eventFactory, CF commandFactory) {
+    State(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
@@ -52,6 +52,11 @@ public abstract class State<EF extends EventFactory, CF extends CommandFactory> 
         internalNavigateTo(destination);
     }
 
+    public final void refresh() {
+        checkProgressState();
+        internalRefresh();
+    }
+
     protected abstract void internalInit(double initialScale);
 
     protected abstract void internalRun(RunOptions runOptions);
@@ -59,6 +64,8 @@ public abstract class State<EF extends EventFactory, CF extends CommandFactory> 
     protected abstract void internalApplyParams(List<ReportParameter> parameters);
 
     protected abstract void internalNavigateTo(Destination destination);
+
+    protected abstract void internalRefresh();
 
     private void checkProgressState() {
         if (inProgress) throw new IllegalStateException("Can not perform action while in progress");

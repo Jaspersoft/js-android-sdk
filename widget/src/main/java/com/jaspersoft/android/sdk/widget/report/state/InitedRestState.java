@@ -7,7 +7,9 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.rest.PageExportedEvent;
@@ -21,10 +23,10 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class InitedRestState extends State<RestEventFactory, RestCommandFactory> {
+class InitedRestState extends State{
     ReportExecution reportExecution;
 
-    InitedRestState(Dispatcher dispatcher, RestEventFactory eventFactory, RestCommandFactory commandFactory) {
+    InitedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 
@@ -48,6 +50,11 @@ class InitedRestState extends State<RestEventFactory, RestCommandFactory> {
     @Override
     protected void internalNavigateTo(Destination destination) {
         throw new IllegalStateException("Could not navigate to destination. Report still not rendered.");
+    }
+
+    @Override
+    protected void internalRefresh() {
+        throw new IllegalStateException("Could not refresh report data. Report still not rendered.");
     }
 
     @Subscribe

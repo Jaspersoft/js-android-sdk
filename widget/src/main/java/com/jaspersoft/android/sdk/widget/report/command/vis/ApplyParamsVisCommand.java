@@ -5,19 +5,20 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ApplyParamsVisCommand extends Command<VisEventFactory> {
+class ApplyParamsVisCommand extends Command {
     private static final String APPLY_PARAMS_SCRIPT = "javascript:MobileClient.getInstance().report().applyParams(%s);";
 
     private final WebView webView;
     private final String parameters;
 
-    ApplyParamsVisCommand(Dispatcher dispatcher, VisEventFactory eventFactory, WebView webView, String parameters) {
+    ApplyParamsVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String parameters) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.parameters = parameters;

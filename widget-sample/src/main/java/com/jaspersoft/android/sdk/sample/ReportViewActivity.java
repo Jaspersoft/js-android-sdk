@@ -54,8 +54,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         progress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Destination destination = new Destination(5);
-                reportRenderer.navigateTo(destination);
+                reportRenderer.navigateTo(new Destination("summary"));
             }
         });
 
@@ -118,6 +117,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         if (renderState == RenderState.INITED) {
             reportRenderer.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
+                    .destination(new Destination("summary"))
                     .build());
         }
     }

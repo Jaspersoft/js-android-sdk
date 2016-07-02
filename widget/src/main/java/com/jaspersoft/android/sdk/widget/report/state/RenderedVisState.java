@@ -8,10 +8,10 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
-import com.jaspersoft.android.sdk.widget.report.command.vis.VisCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
-import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -20,9 +20,8 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RenderedVisState extends State<VisEventFactory, VisCommandFactory> {
-
-    RenderedVisState(Dispatcher dispatcher, VisEventFactory eventFactory, VisCommandFactory commandFactory) {
+class RenderedVisState extends State {
+    RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 
@@ -50,6 +49,13 @@ class RenderedVisState extends State<VisEventFactory, VisCommandFactory> {
         setInProgress(true);
         Command navigateToCommand = commandFactory.createNavigateToCommand(destination);
         navigateToCommand.execute();
+    }
+
+    @Override
+    protected void internalRefresh() {
+        setInProgress(true);
+        Command refreshCommand = commandFactory.createRefreshCommand();
+        refreshCommand.execute();
     }
 
     @Subscribe

@@ -14,6 +14,7 @@ import com.jaspersoft.android.sdk.service.report.ReportExportOptions;
 import com.jaspersoft.android.sdk.service.report.ReportFormat;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 import java.io.BufferedReader;
@@ -25,11 +26,11 @@ import java.io.InputStreamReader;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ExportPageRestCommand extends Command<RestEventFactory> {
+class ExportPageRestCommand extends Command {
     private final int page;
     private final ReportExecution reportExecution;
 
-    ExportPageRestCommand(Dispatcher dispatcher, RestEventFactory eventFactory, int page, ReportExecution reportExecution) {
+    ExportPageRestCommand(Dispatcher dispatcher, EventFactory eventFactory, int page, ReportExecution reportExecution) {
         super(dispatcher, eventFactory);
         this.page = page;
         this.reportExecution = reportExecution;

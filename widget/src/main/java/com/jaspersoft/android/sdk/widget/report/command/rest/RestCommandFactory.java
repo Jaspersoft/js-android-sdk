@@ -11,6 +11,7 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class RestCommandFactory extends CommandFactory<RestEventFactory> {
-    private static final String REST_TEMPLATE = "report-rest-template-v3.html";
+public class RestCommandFactory extends CommandFactory {
+    private static final String REST_TEMPLATE = "report-rest-template.html";
 
-    RestCommandFactory(WebView webView, Dispatcher dispatcher, RestEventFactory eventFactory, AuthorizedClient client) {
+    RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
         super(webView, dispatcher, eventFactory, client);
     }
 
@@ -31,29 +32,44 @@ public class RestCommandFactory extends CommandFactory<RestEventFactory> {
         return new InitTemplateRestCommand(dispatcher, eventFactory);
     }
 
+    @Override
+    public Command createRunReportCommand(RunOptions runOptions) {
+        throw new UnsupportedOperationException("Run report command is not supported for rest");
+    }
+
+    @Override
     public Command createExecuteReportCommand(RunOptions runOptions) {
         if (runOptions.getDestination().getPage() != null) {
             ReportService reportService = ReportService.newService(client);
             return new ExecuteReportRestCommand(dispatcher, eventFactory, runOptions, reportService);
-        } else {
-            return new AnchorRestCommand(dispatcher, eventFactory);
-        }
+        } else return super.createExecuteReportCommand(runOptions);
     }
 
+    @Override
     public Command createPageExportCommand(Destination destination, ReportExecution reportExecution) {
         if (destination.getPage() != null) {
             return new ExportPageRestCommand(dispatcher, eventFactory, destination.getPage(), reportExecution);
-        } else {
-            return new AnchorRestCommand(dispatcher, eventFactory);
-        }
+        } else return super.createPageExportCommand(destination, reportExecution);
     }
 
+    @Override
     public Command createShowPageCommand(String page) {
         return new ShowPageRestCommand(dispatcher, eventFactory, webView, page);
     }
 
+    @Override
+    public Command createApplyParamsCommand(List<ReportParameter> parameters) {
+        throw new UnsupportedOperationException("Apply params command without ReportExecution command is not supported for rest");
+    }
+
+    @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
         return new ApplyParamsRestCommand(dispatcher, eventFactory, reportExecution, parameters);
+    }
+
+    @Override
+    public Command createNavigateToCommand(Destination destination) {
+        throw new UnsupportedOperationException("Navigate to command without ReportExecution command is not supported for rest");
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 import java.util.List;
@@ -15,11 +16,11 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ApplyParamsRestCommand extends Command<RestEventFactory> {
+class ApplyParamsRestCommand extends Command {
     private final ReportExecution reportExecution;
     private final List<ReportParameter> parameters;
 
-    ApplyParamsRestCommand(Dispatcher dispatcher, RestEventFactory eventFactory, ReportExecution reportExecution, List<ReportParameter> parameters) {
+    ApplyParamsRestCommand(Dispatcher dispatcher, EventFactory eventFactory, ReportExecution reportExecution, List<ReportParameter> parameters) {
         super(dispatcher, eventFactory);
         this.reportExecution = reportExecution;
         this.parameters = parameters;

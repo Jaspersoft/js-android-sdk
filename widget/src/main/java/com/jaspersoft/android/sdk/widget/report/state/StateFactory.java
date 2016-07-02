@@ -10,13 +10,13 @@ import com.jaspersoft.android.sdk.widget.report.jsinterface.JsInterface;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public abstract class StateFactory<EF extends EventFactory, CF extends CommandFactory> {
+public abstract class StateFactory {
 
     protected final Dispatcher dispatcher;
-    protected final EF eventFactory;
-    protected final CF commandFactory;
+    protected final EventFactory eventFactory;
+    protected final CommandFactory commandFactory;
 
-    public StateFactory(Dispatcher dispatcher, EF eventFactory, CF commandFactory) {
+    public StateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;

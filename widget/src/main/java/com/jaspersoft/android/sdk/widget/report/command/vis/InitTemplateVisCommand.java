@@ -6,13 +6,14 @@ import android.webkit.WebView;
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class InitTemplateVisCommand extends Command<VisEventFactory> {
+class InitTemplateVisCommand extends Command {
     private static final String RUN_COMMAND_SCRIPT = "javascript:MobileClient.getInstance().setup(%s, %s);";
 
     private final WebView webView;
@@ -20,7 +21,7 @@ class InitTemplateVisCommand extends Command<VisEventFactory> {
     private final boolean pre61;
     private final double initialScale;
 
-    InitTemplateVisCommand(Dispatcher dispatcher, VisEventFactory eventFactory, WebView webView, String serveruri, boolean pre61, double initialScale) {
+    InitTemplateVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String serveruri, boolean pre61, double initialScale) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.serveruri = serveruri;

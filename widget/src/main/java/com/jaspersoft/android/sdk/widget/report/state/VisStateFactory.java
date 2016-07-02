@@ -2,15 +2,15 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.command.vis.VisCommandFactory;
-import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class VisStateFactory extends StateFactory<VisEventFactory, VisCommandFactory> {
-    public VisStateFactory(Dispatcher dispatcher, VisEventFactory eventFactory, VisCommandFactory commandFactory) {
+public class VisStateFactory extends StateFactory {
+    public VisStateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 

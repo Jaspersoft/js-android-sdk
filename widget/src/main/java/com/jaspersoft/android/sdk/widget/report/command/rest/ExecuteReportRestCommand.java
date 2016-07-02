@@ -10,17 +10,18 @@ import com.jaspersoft.android.sdk.service.report.ReportService;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ExecuteReportRestCommand extends Command<RestEventFactory> {
+class ExecuteReportRestCommand extends Command {
     private final RunOptions runOptions;
     private final ReportService reportService;
 
-    ExecuteReportRestCommand(Dispatcher dispatcher, RestEventFactory eventFactory, RunOptions runOptions, ReportService reportService) {
+    ExecuteReportRestCommand(Dispatcher dispatcher, EventFactory eventFactory, RunOptions runOptions, ReportService reportService) {
         super(dispatcher, eventFactory);
         this.runOptions = runOptions;
         this.reportService = reportService;

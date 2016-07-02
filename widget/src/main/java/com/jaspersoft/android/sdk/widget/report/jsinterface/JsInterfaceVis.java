@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.jsinterface;
 import android.webkit.JavascriptInterface;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.HyperlinkMapper;
@@ -11,11 +12,11 @@ import com.jaspersoft.android.sdk.widget.report.hyperlink.HyperlinkMapper;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class JsInterfaceVis extends JsInterface<VisEventFactory> {
+public class JsInterfaceVis extends JsInterface {
 
     private final HyperlinkMapper hyperlinkMapper;
 
-    public JsInterfaceVis(Dispatcher dispatcher, VisEventFactory eventFactory, HyperlinkMapper hyperlinkMapper) {
+    public JsInterfaceVis(Dispatcher dispatcher, EventFactory eventFactory, HyperlinkMapper hyperlinkMapper) {
         super(dispatcher, eventFactory);
         this.hyperlinkMapper = hyperlinkMapper;
     }

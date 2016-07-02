@@ -6,8 +6,8 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
-import com.jaspersoft.android.sdk.widget.report.command.vis.VisCommandFactory;
-import com.jaspersoft.android.sdk.widget.report.command.vis.VisPre61CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.command.vis.BaseVisCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.command.vis.Vis61CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.HyperlinkMapper;
@@ -57,11 +57,11 @@ abstract class ReportRendererFactory {
             Dispatcher dispatcher = new Dispatcher();
             ErrorMapper errorMapper = new ErrorMapper();
             VisEventFactory eventFactory = new VisEventFactory(errorMapper);
-            VisCommandFactory commandFactory;
+            BaseVisCommandFactory commandFactory;
             if (serverInfo.getVersion().lessThan(ServerVersion.v6_1)) {
-                commandFactory = new VisPre61CommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
+                commandFactory = new BaseVisCommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
             } else {
-                commandFactory = new VisCommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
+                commandFactory = new Vis61CommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
             }
             VisStateFactory stateFactory = new VisStateFactory(dispatcher, eventFactory, commandFactory);
             HyperlinkMapper hyperlinkMapper = new HyperlinkMapper();

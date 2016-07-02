@@ -5,18 +5,19 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class NavigateToPageVisCommand extends Command<VisEventFactory> {
+public class NavigateToPageVisCommand extends Command {
     private static final String NAVIGATE_TO_SCRIPT = "javascript:MobileClient.getInstance().report().navigateTo(%s);";
     private final WebView webView;
     private final int page;
 
-    protected NavigateToPageVisCommand(Dispatcher dispatcher, VisEventFactory eventFactory, WebView webView, int page) {
+    protected NavigateToPageVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, int page) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.page = page;

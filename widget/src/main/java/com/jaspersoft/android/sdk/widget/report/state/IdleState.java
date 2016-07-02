@@ -22,7 +22,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class IdleState extends State<EventFactory, CommandFactory> {
+class IdleState extends State {
     private final JsInterface jsInterface;
     private double initialScale;
 
@@ -53,6 +53,11 @@ class IdleState extends State<EventFactory, CommandFactory> {
     @Override
     protected void internalNavigateTo(Destination destination) {
         throw new IllegalStateException("Could not navigate to destination. Renderer still not initialized.");
+    }
+
+    @Override
+    protected void internalRefresh() {
+        throw new IllegalStateException("Could not refresh report data. Renderer still not initialized.");
     }
 
     @Subscribe

@@ -3,21 +3,27 @@ package com.jaspersoft.android.sdk.widget.report.command;
 import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.jsinterface.JsInterface;
+
+import java.util.List;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public abstract class CommandFactory<EV extends EventFactory> {
+public abstract class CommandFactory {
     final protected WebView webView;
     final protected Dispatcher dispatcher;
-    final protected EV eventFactory;
+    final protected EventFactory eventFactory;
     final protected AuthorizedClient client;
 
-    protected CommandFactory(WebView webView, Dispatcher dispatcher, EV eventFactory, AuthorizedClient client) {
+    protected CommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
         if (dispatcher == null) {
             throw new IllegalArgumentException("Dispatcher should be provided.");
         }
@@ -45,6 +51,32 @@ public abstract class CommandFactory<EV extends EventFactory> {
     }
 
     public abstract Command createInitTemplateCommand(double initialScale);
+
+    public Command createRunReportCommand(RunOptions runOptions){
+        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
+    }
+
+    public Command createExecuteReportCommand(RunOptions runOptions){
+        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
+    }
+
+    public Command createPageExportCommand(Destination destination, ReportExecution reportExecution){
+        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
+    }
+
+    public abstract Command createShowPageCommand(String page);
+
+    public abstract Command createApplyParamsCommand(List<ReportParameter> parameters);
+
+    public abstract Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution);
+
+    public Command createNavigateToCommand(Destination destination) {
+        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
+    }
+
+    public Command createRefreshCommand() {
+       return new RefreshUnsupportedCommand(dispatcher, eventFactory);
+    }
 
     protected abstract String provideReportTemplate();
 }

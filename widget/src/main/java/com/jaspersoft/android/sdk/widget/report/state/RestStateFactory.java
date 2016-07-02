@@ -3,16 +3,18 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class RestStateFactory extends StateFactory<RestEventFactory, RestCommandFactory>{
+public class RestStateFactory extends StateFactory{
 
-    public RestStateFactory(Dispatcher dispatcher, RestEventFactory eventFactory, RestCommandFactory commandFactory) {
+    public RestStateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 

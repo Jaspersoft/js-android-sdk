@@ -12,20 +12,14 @@ import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RunReportPageVisCommand extends Command {
-    private static final String RUN_REPORT_SCRIPT = "javascript:MobileClient.getInstance().report().run('%s', %s, %s);";
+class RefreshVisCommand extends Command {
+    private static final String REFRESH_SCRIPT = "javascript:MobileClient.getInstance().report().refresh();";
 
     private final WebView webView;
-    private final String reportUri;
-    private final String reportParams;
-    private final int page;
 
-    RunReportPageVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String reportUri, String reportParams, int page) {
+    RefreshVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView) {
         super(dispatcher, eventFactory);
         this.webView = webView;
-        this.reportUri = reportUri;
-        this.reportParams = reportParams;
-        this.page = page;
     }
 
     @Override
@@ -33,7 +27,7 @@ class RunReportPageVisCommand extends Command {
         return new AsyncTask<Object, Object, String>() {
             @Override
             protected String doInBackground(Object... params) {
-                return String.format(RUN_REPORT_SCRIPT, reportUri, reportParams, page);
+                return REFRESH_SCRIPT;
             }
 
             @Override

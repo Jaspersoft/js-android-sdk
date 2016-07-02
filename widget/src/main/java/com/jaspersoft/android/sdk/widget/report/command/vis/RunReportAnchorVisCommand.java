@@ -5,13 +5,14 @@ import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class RunReportAnchorVisCommand extends Command<VisEventFactory> {
+class RunReportAnchorVisCommand extends Command {
     private static final String RUN_REPORT_SCRIPT = "javascript:MobileClient.getInstance().report().run('%s', %s, {anchor: '%s'});";
 
     private final WebView webView;
@@ -19,7 +20,7 @@ class RunReportAnchorVisCommand extends Command<VisEventFactory> {
     private final String reportParams;
     private final String anchor;
 
-    RunReportAnchorVisCommand(Dispatcher dispatcher, VisEventFactory eventFactory, WebView webView, String reportUri, String reportParams, String anchor) {
+    RunReportAnchorVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String reportUri, String reportParams, String anchor) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.reportUri = reportUri;

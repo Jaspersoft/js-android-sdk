@@ -3,29 +3,20 @@ package com.jaspersoft.android.sdk.widget.report.command.vis;
 import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
-import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
-
-import java.util.List;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class VisCommandFactory extends CommandFactory<VisEventFactory> {
-    private static final String VIS_TEMPLATE = "report-vis-template-v3.html";
-
-    protected final VisParamsMapper visParamsMapper;
-
-    VisCommandFactory(WebView webView, Dispatcher dispatcher, VisEventFactory eventFactory, AuthorizedClient client, VisParamsMapper visParamsMapper) {
-        super(webView, dispatcher, eventFactory, client);
-
-        this.visParamsMapper = visParamsMapper;
+public class Vis61CommandFactory extends BaseVisCommandFactory {
+    private Vis61CommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client, VisParamsMapper visParamsMapper) {
+        super(webView, dispatcher, eventFactory, client, visParamsMapper);
     }
 
     @Override
@@ -33,6 +24,7 @@ public class VisCommandFactory extends CommandFactory<VisEventFactory> {
         return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client.getBaseUrl(), false, initialScale);
     }
 
+    @Override
     public Command createRunReportCommand(RunOptions runOptions) {
         String reportParams = visParamsMapper.mapParams(runOptions.getParameters());
         if (runOptions.getDestination().getPage() != null) {
@@ -42,11 +34,12 @@ public class VisCommandFactory extends CommandFactory<VisEventFactory> {
         }
     }
 
-    public Command createApplyParamsCommand(List<ReportParameter> parameters) {
-        String reportParams = visParamsMapper.mapParams(parameters);
-        return new ApplyParamsVisCommand(dispatcher, eventFactory, webView, reportParams);
+    @Override
+    public Command createRefreshCommand() {
+        return new RefreshVisCommand(dispatcher, eventFactory, webView);
     }
 
+    @Override
     public Command createNavigateToCommand(Destination destination) {
         if (destination.getPage() != null) {
             return new NavigateToPageVisCommand(dispatcher, eventFactory, webView, destination.getPage());
@@ -55,15 +48,10 @@ public class VisCommandFactory extends CommandFactory<VisEventFactory> {
         }
     }
 
-    @Override
-    protected String provideReportTemplate() {
-        return VIS_TEMPLATE;
-    }
-
     public static class Creator {
-        public VisCommandFactory create(WebView webView, Dispatcher dispatcher, VisEventFactory eventFactory, AuthorizedClient client){
+        public Vis61CommandFactory create(WebView webView, Dispatcher dispatcher, VisEventFactory eventFactory, AuthorizedClient client){
             VisParamsMapper visParamsMapper = new VisParamsMapper();
-            return new VisCommandFactory(webView, dispatcher, eventFactory, client, visParamsMapper);
+            return new Vis61CommandFactory(webView, dispatcher, eventFactory, client, visParamsMapper);
         }
     }
 }

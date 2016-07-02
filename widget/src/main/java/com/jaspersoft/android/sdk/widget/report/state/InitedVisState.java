@@ -7,10 +7,10 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
-import com.jaspersoft.android.sdk.widget.report.command.vis.VisCommandFactory;
+import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
-import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class InitedVisState extends State<VisEventFactory, VisCommandFactory> {
-    InitedVisState(Dispatcher dispatcher, VisEventFactory eventFactory, VisCommandFactory commandFactory) {
+class InitedVisState extends State {
+    InitedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
         super(dispatcher, eventFactory, commandFactory);
     }
 
@@ -44,6 +44,11 @@ class InitedVisState extends State<VisEventFactory, VisCommandFactory> {
     @Override
     protected void internalNavigateTo(Destination destination) {
         throw new IllegalStateException("Could not navigate to destination. Report still not rendered.");
+    }
+
+    @Override
+    protected void internalRefresh() {
+        throw new IllegalStateException("Could not refresh report data. Report still not rendered.");
     }
 
     @Subscribe
