@@ -65,8 +65,8 @@ public class ReportRenderer {
         currentState.init(initialScale);
     }
 
-    public void run(RunOptions runOptions) {
-        currentState.run(runOptions);
+    public void render(RunOptions runOptions) {
+        currentState.render(runOptions);
     }
 
     public void applyParams(List<ReportParameter> parameters) {
@@ -79,6 +79,10 @@ public class ReportRenderer {
 
     public void navigateTo(Destination destination) {
         currentState.navigateTo(destination);
+    }
+
+    public void clear() {
+        currentState.clear();
     }
 
     public void registerReportRendererCallback(ReportRendererCallback reportRendererCallback) {

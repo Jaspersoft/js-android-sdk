@@ -7,14 +7,14 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.rest.PageExportedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.rest.ReportExecutedEvent;
-import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -26,8 +26,8 @@ import java.util.List;
 class InitedRestState extends State{
     ReportExecution reportExecution;
 
-    InitedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
-        super(dispatcher, eventFactory, commandFactory);
+    InitedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
+        super(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
 
     @Override
@@ -36,10 +36,10 @@ class InitedRestState extends State{
     }
 
     @Override
-    protected void internalRun(RunOptions runOptions) {
+    protected void internalRender(RunOptions runOptions) {
         setInProgress(true);
         Command executeReportCommand = commandFactory.createExecuteReportCommand(runOptions);
-        executeReportCommand.execute();
+        commandExecutor.execute(executeReportCommand);
     }
 
     @Override
@@ -57,27 +57,42 @@ class InitedRestState extends State{
         throw new IllegalStateException("Could not refresh report data. Report still not rendered.");
     }
 
-    @Subscribe
-    public void onError(ExceptionEvent exceptionEvent) {
-        setInProgress(false);
+    @Override
+    protected void internalClear() {
+        setInProgress(true);
+        commandExecutor.cancelExecution();
+
+        Command clearCommand = commandFactory.createClearCommand();
+        commandExecutor.execute(clearCommand);
     }
 
     @Subscribe
     public void onReportExecuted(ReportExecutedEvent reportExecutedEvent) {
         reportExecution = reportExecutedEvent.getReportExecution();
         Command pageExportCommand = commandFactory.createPageExportCommand(reportExecutedEvent.getDestination(), reportExecution);
-        pageExportCommand.execute();
+        commandExecutor.execute(pageExportCommand);
     }
 
     @Subscribe
     public void onPageExported(PageExportedEvent pageExportedEvent) {
         Command pageExportCommand = commandFactory.createShowPageCommand(pageExportedEvent.getReportPage());
-        pageExportCommand.execute();
+        commandExecutor.execute(pageExportCommand);
     }
 
     @Subscribe
     public void onReportRendered(ReportRenderedEvent reportRenderedEvent) {
         setInProgress(false);
         dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.RENDERED));
+    }
+
+    @Subscribe
+    public void onReportCleared(ReportClearedEvent reportClearedEvent) {
+        setInProgress(false);
+        dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.INITED));
+    }
+
+    @Subscribe
+    public void onError(ExceptionEvent exceptionEvent) {
+        setInProgress(false);
     }
 }

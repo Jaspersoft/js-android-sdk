@@ -28,6 +28,11 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
+    public Command createLoadTemplateCommand() {
+        return super.createLoadTemplateCommand(REST_TEMPLATE);
+    }
+
+    @Override
     public Command createInitTemplateCommand(double initialScale) {
         return new InitTemplateRestCommand(dispatcher, eventFactory);
     }
@@ -70,11 +75,6 @@ public class RestCommandFactory extends CommandFactory {
     @Override
     public Command createNavigateToCommand(Destination destination) {
         throw new UnsupportedOperationException("Navigate to command without ReportExecution command is not supported for rest");
-    }
-
-    @Override
-    protected String provideReportTemplate() {
-        return REST_TEMPLATE;
     }
 
     public static class Creator {

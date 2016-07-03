@@ -46,8 +46,14 @@ public abstract class CommandFactory {
         return new InjectJsInterfaceCommand( dispatcher, eventFactory, webView, jsInterface);
     }
 
-    public final Command createLoadTemplateCommand() {
-        return new LoadTemplateCommand(dispatcher, eventFactory, webView, client.getBaseUrl(), provideReportTemplate());
+    public abstract Command createLoadTemplateCommand();
+
+    public final Command createLoadTemplateCommand(String reportTemplate) {
+        return new LoadTemplateCommand(dispatcher, eventFactory, webView, client.getBaseUrl(), reportTemplate);
+    }
+
+    public final Command createClearCommand() {
+        return new ClearCommand(dispatcher, eventFactory, webView);
     }
 
     public abstract Command createInitTemplateCommand(double initialScale);
@@ -77,6 +83,4 @@ public abstract class CommandFactory {
     public Command createRefreshCommand() {
        return new RefreshUnsupportedCommand(dispatcher, eventFactory);
     }
-
-    protected abstract String provideReportTemplate();
 }

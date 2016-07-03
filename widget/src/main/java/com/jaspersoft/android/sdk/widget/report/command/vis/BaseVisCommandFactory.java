@@ -31,6 +31,11 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
+    public Command createLoadTemplateCommand() {
+        return super.createLoadTemplateCommand(VIS_TEMPLATE);
+    }
+
+    @Override
     public Command createInitTemplateCommand(double initialScale) {
         return new InitTemplateVisCommand(dispatcher, eventFactory, webView, client.getBaseUrl(), true, initialScale);
     }
@@ -79,11 +84,6 @@ public class BaseVisCommandFactory extends CommandFactory {
     @Override
     public Command createRefreshCommand() {
         return super.createRefreshCommand();
-    }
-
-    @Override
-    protected String provideReportTemplate() {
-        return VIS_TEMPLATE;
     }
 
     public static class Creator {

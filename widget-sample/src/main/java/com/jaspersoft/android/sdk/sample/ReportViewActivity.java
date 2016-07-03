@@ -55,12 +55,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         progress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Destination destination = new Destination("summary");
-                if (reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION)) {
-                    reportRenderer.navigateTo(destination);
-                } else {
-                    Toast.makeText(ReportViewActivity.this, "Anchor nav is not supported", Toast.LENGTH_SHORT).show();
-                }
+                reportRenderer.clear();
             }
         });
 
@@ -121,7 +116,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
     public void onRenderStateChanged(RenderState renderState) {
         progress.setText(renderState.name());
         if (renderState == RenderState.INITED) {
-            reportRenderer.run(new RunOptions.Builder()
+            reportRenderer.render(new RunOptions.Builder()
                     .reportUri(resource.getUri())
                     .build());
         }
@@ -135,7 +130,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
             Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
         } else if (hyperlink instanceof ReportExecutionHyperlink) {
             RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
-            reportRenderer.run(runOptions);
+            reportRenderer.render(runOptions);
         }
     }
 
@@ -175,7 +170,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
         @Override
         protected void onPostExecute(Boolean login) {
-            reportRenderer.run(new RunOptions.Builder()
+            reportRenderer.render(new RunOptions.Builder()
                     .reportUri(resource.getUri())
                     .build());
         }

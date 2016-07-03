@@ -22,18 +22,23 @@ public class JsInterfaceVis extends JsInterface {
     }
 
     @JavascriptInterface
-    public void onScriptReady() {
+    public void onInited() {
         dispatcher.dispatch(eventFactory.createTemplateInitedEvent());
     }
 
     @JavascriptInterface
-    public void onReportRendered() {
+    public void onRendered() {
         dispatcher.dispatch(eventFactory.createReportRenderedEvent());
     }
 
     @JavascriptInterface
     public void onError(String error) {
         dispatcher.dispatch(eventFactory.createErrorEvent(error));
+    }
+
+    @JavascriptInterface
+    public void onCleared() {
+        dispatcher.dispatch(eventFactory.createReportClearedEvent());
     }
 
     @JavascriptInterface

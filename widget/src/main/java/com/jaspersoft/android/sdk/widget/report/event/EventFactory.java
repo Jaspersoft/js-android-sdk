@@ -47,7 +47,11 @@ public abstract class EventFactory {
         return new ExceptionEvent(exception);
     }
 
-    public Event createErrorEvent(String error) {
+    public final Event createReportClearedEvent() {
+        return new ReportClearedEvent();
+    }
+
+    public final Event createErrorEvent(String error) {
         JsException exception = new Gson().fromJson(error, JsException.class);
         ServiceException serviceException = errorMapper.map(exception);
         return new ExceptionEvent(serviceException);

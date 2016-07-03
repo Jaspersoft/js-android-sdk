@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.vis.BaseVisCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.vis.Vis61CommandFactory;
@@ -44,10 +45,11 @@ abstract class ReportRendererFactory {
         @Override
         protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
             Dispatcher dispatcher = new Dispatcher();
+            CommandExecutor commandExecutor = new CommandExecutor();
             ErrorMapper errorMapper = new ErrorMapper();
             RestEventFactory eventFactory = new RestEventFactory(errorMapper);
             RestCommandFactory commandFactory = new RestCommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
-            RestStateFactory stateFactory = new RestStateFactory(dispatcher, eventFactory, commandFactory);
+            RestStateFactory stateFactory = new RestStateFactory(dispatcher, eventFactory, commandFactory, commandExecutor);
             JsInterfaceRest jsInterfaceRest = new JsInterfaceRest(dispatcher, eventFactory);
             State idleState = stateFactory.createIdleState(jsInterfaceRest);
             EventPublisher eventPublisher = new EventPublisher();
@@ -60,6 +62,7 @@ abstract class ReportRendererFactory {
         @Override
         protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
             Dispatcher dispatcher = new Dispatcher();
+            CommandExecutor commandExecutor = new CommandExecutor();
             ErrorMapper errorMapper = new ErrorMapper();
             VisEventFactory eventFactory = new VisEventFactory(errorMapper);
             BaseVisCommandFactory commandFactory;
@@ -71,7 +74,7 @@ abstract class ReportRendererFactory {
                 commandFactory = new Vis61CommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
                 reportFeaturesCompat = new Vis61FeaturesCompat();
             }
-            VisStateFactory stateFactory = new VisStateFactory(dispatcher, eventFactory, commandFactory);
+            VisStateFactory stateFactory = new VisStateFactory(dispatcher, eventFactory, commandFactory, commandExecutor);
             HyperlinkMapper hyperlinkMapper = new HyperlinkMapper();
             JsInterfaceVis jsInterfaceVis = new JsInterfaceVis(dispatcher, eventFactory, hyperlinkMapper);
             State idleState = stateFactory.createIdleState(jsInterfaceVis);

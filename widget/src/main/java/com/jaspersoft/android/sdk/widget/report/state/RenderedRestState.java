@@ -9,13 +9,13 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.ReportRenderedEvent;
 import com.jaspersoft.android.sdk.widget.report.event.rest.PageExportedEvent;
-import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -27,8 +27,8 @@ import java.util.List;
 class RenderedRestState extends State {
     private final ReportExecution reportExecution;
 
-    RenderedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, ReportExecution reportExecution) {
-        super(dispatcher, eventFactory, commandFactory);
+    RenderedRestState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, ReportExecution reportExecution) {
+        super(dispatcher, eventFactory, commandFactory, commandExecutor);
         this.reportExecution = reportExecution;
     }
 
@@ -38,27 +38,55 @@ class RenderedRestState extends State {
     }
 
     @Override
-    protected void internalRun(RunOptions runOptions) {
-        throw new IllegalStateException("Could not run. Already rendered.");
+    protected void internalRender(RunOptions runOptions) {
+        throw new IllegalStateException("Could not render. Already rendered.");
     }
 
     @Override
     protected void internalApplyParams(List<ReportParameter> parameters) {
         setInProgress(true);
         Command applyParamsCommand = commandFactory.createApplyParamsCommand(parameters, reportExecution);
-        applyParamsCommand.execute();
+        commandExecutor.execute(applyParamsCommand);
     }
 
     @Override
     protected void internalNavigateTo(Destination destination) {
         setInProgress(true);
         Command navigateToCommand = commandFactory.createPageExportCommand(destination, reportExecution);
-        navigateToCommand.execute();
+        commandExecutor.execute(navigateToCommand);
     }
 
     @Override
     protected void internalRefresh() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        setInProgress(true);
+        Command refreshCommand = commandFactory.createRefreshCommand();
+        commandExecutor.execute(refreshCommand);
+    }
+
+    @Override
+    protected void internalClear() {
+        setInProgress(true);
+        commandExecutor.cancelExecution();
+
+        Command clearCommand = commandFactory.createClearCommand();
+        commandExecutor.execute(clearCommand);
+    }
+
+    @Subscribe
+    public void onPageExported(PageExportedEvent pageExportedEvent) {
+        Command pageExportCommand = commandFactory.createShowPageCommand(pageExportedEvent.getReportPage());
+        commandExecutor.execute(pageExportCommand);
+    }
+
+    @Subscribe
+    public void onReportRendered(ReportRenderedEvent reportRenderedEvent) {
+        setInProgress(false);
+    }
+
+    @Subscribe
+    public void onReportCleared(ReportClearedEvent reportClearedEvent) {
+        setInProgress(false);
+        dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.INITED));
     }
 
     @Subscribe
@@ -67,16 +95,5 @@ class RenderedRestState extends State {
         if (exceptionEvent.getException().code() == StatusCodes.AUTHORIZATION_ERROR) {
             dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.INITED));
         }
-    }
-
-    @Subscribe
-    public void onPageExported(PageExportedEvent pageExportedEvent) {
-        Command pageExportCommand = commandFactory.createShowPageCommand(pageExportedEvent.getReportPage());
-        pageExportCommand.execute();
-    }
-
-    @Subscribe
-    public void onReportRendered(ReportRenderedEvent reportRenderedEvent) {
-        setInProgress(false);
     }
 }

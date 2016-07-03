@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.widget.report.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
+import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.ExceptionEvent;
@@ -26,8 +27,8 @@ class IdleState extends State {
     private final JsInterface jsInterface;
     private double initialScale;
 
-    IdleState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, JsInterface jsInterface) {
-        super(dispatcher, eventFactory, commandFactory);
+    IdleState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, JsInterface jsInterface) {
+        super(dispatcher, eventFactory, commandFactory, commandExecutor);
         this.jsInterface = jsInterface;
     }
 
@@ -37,12 +38,12 @@ class IdleState extends State {
 
         this.initialScale = initialScale;
         Command injectJsInterfaceCommand = commandFactory.createInjectJsInterfaceCommand(jsInterface);
-        injectJsInterfaceCommand.execute();
+        commandExecutor.execute(injectJsInterfaceCommand);
     }
 
     @Override
-    protected void internalRun(RunOptions runOptions) {
-        throw new IllegalStateException("Could not run report. Renderer still not initialized.");
+    protected void internalRender(RunOptions runOptions) {
+        throw new IllegalStateException("Could not render report. Renderer still not initialized.");
     }
 
     @Override
@@ -60,16 +61,21 @@ class IdleState extends State {
         throw new IllegalStateException("Could not refresh report data. Renderer still not initialized.");
     }
 
+    @Override
+    protected void internalClear() {
+        throw new IllegalStateException("Could not clear report renderer. Renderer still not initialized.");
+    }
+
     @Subscribe
     public void onJsInterfaceInjected(JsInterfaceInjectedEvent jsInterfaceInjectedEvent) {
         Command loadTemplateCommand = commandFactory.createLoadTemplateCommand();
-        loadTemplateCommand.execute();
+        commandExecutor.execute(loadTemplateCommand);
     }
 
     @Subscribe
     public void onTemplateLoaded(TemplateLoadedEvent templateLoadedEvent) {
         Command initTemplateCommand = commandFactory.createInitTemplateCommand(initialScale);
-        initTemplateCommand.execute();
+        commandExecutor.execute(initTemplateCommand);
     }
 
     @Subscribe

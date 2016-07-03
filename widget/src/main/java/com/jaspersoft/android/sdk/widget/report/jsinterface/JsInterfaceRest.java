@@ -16,8 +16,13 @@ public class JsInterfaceRest extends JsInterface {
     }
 
     @JavascriptInterface
-    public void onReportRendered() {
+    public void onRendered() {
         dispatcher.dispatch(eventFactory.createReportRenderedEvent());
+    }
+
+    @JavascriptInterface
+    public void onCleared() {
+        dispatcher.dispatch(eventFactory.createReportClearedEvent());
     }
 
     @JavascriptInterface

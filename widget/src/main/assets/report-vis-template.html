@@ -12,14 +12,17 @@
     <script type="text/javascript">
 
     var NativeCallbacks = {
-        onScriptReady: function() {
-            return Android.onScriptReady();
+        onInited: function() {
+            return Android.onInited();
         },
-        onReportRendered: function() {
-            return Android.onReportRendered();
+        onRendered: function() {
+            return Android.onRendered();
         },
         onError: function(error) {
             return Android.onError(error);
+        },
+        onCleared: function () {
+            return Android.onCleared();
         },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
@@ -36,6 +39,7 @@
 
         function Client() {
             var report;
+            var vis;
             var jrsServer;
 
             window.onresize = function() {
@@ -93,12 +97,8 @@
             };
 
             function onVisualizeLoaded(v) {
-                if (jrsServer.pre61) {
-                    report = new Pre61Report(v)
-                } else {
-                    report = new BaseReport(v)
-                }
-                NativeCallbacks.onScriptReady();
+                vis = v;
+                NativeCallbacks.onInited();
             };
 
              function onVisualizeLoadingFailed(error) {
@@ -109,25 +109,27 @@
             return {
                 setup: setupFn,
                 report: function () {
+                    if (!report || report.isInvalid()) {
+                        if (jrsServer.pre61) {
+                            report = new Pre61Report(vis);
+                        } else {
+                            report = new BaseReport(vis);
+                        }
+                    }
                     return report;
                 }
             }
         }
 
         function BaseReport(v) {
+            var invalid = false;
             var vis = v;
-            var reportInstance;
             var hyperLinkHandler = new HyperLinkHandler();
+            var reportInstance;
 
             this.run = function(uri, params, destination) {
                 var reportBundle = prepareBaseRunReportBundle(uri, params, destination);
-                try {
-                    this._modifyReportBundle(reportBundle);
-                } catch (error) {
-                    message = JSON.stringify(error);
-                    NativeCallbacks.onError(message);
-                    return;
-                }
+                this._modifyReportBundle(reportBundle);
 
                 reportInstance = vis.report(reportBundle);
             }
@@ -150,6 +152,18 @@
                 reportInstance.refresh(reportRenderedFn, reportErrorFn);
             }
 
+            this.clear = function() {
+                invalid = true;
+                if (reportInstance && reportInstance.container()) {
+                    destroyReport();
+                }
+                NativeCallbacks.onCleared();
+            }
+
+            this.isInvalid = function() {
+                return invalid;
+            }
+
             this._modifyReportBundle = function(reportBundle) {
                 reportBundle["autoresize"] = false;
                 reportBundle["chart"] = {
@@ -162,10 +176,9 @@
                 return reportBundle = {
                     resource: uri,
                     params: params,
-                    container: "#container",
                     scale: "width",
                     pages: destination,
-                    success: reportRenderedFn,
+                    success: reportExecutedFn,
                     error: reportErrorFn,
                     linkOptions: {
                         events: {
@@ -175,12 +188,27 @@
                 }
             }
 
+            destroyReport = function() {
+                reportInstance.container(null);
+                jQuery("#container").empty();
+                reportInstance.destroy();
+            }
+
             handleHyperlinkClick = function(event, link) {
                 hyperLinkHandler.handle(event, link);
             }
 
+            reportExecutedFn = function (){
+                if (invalid) {
+                    destroyReport();
+                } else {
+                    reportInstance.container("#container");
+                    reportInstance.render(reportRenderedFn, reportErrorFn);
+                }
+            }
+
             reportRenderedFn = function() {
-                NativeCallbacks.onReportRendered();
+                NativeCallbacks.onRendered();
             }
 
             reportErrorFn = function(error) {

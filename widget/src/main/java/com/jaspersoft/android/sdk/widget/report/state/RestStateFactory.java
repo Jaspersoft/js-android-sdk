@@ -3,24 +3,22 @@ package com.jaspersoft.android.sdk.widget.report.state;
 
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.event.EventFactory;
-import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
 public class RestStateFactory extends StateFactory{
-
-    public RestStateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory) {
-        super(dispatcher, eventFactory, commandFactory);
+    public RestStateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
+        super(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
 
     @Override
     public State createInitedState(State prevState) {
-        return new InitedRestState(dispatcher, eventFactory, commandFactory);
+        return new InitedRestState(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
 
     @Override
@@ -30,7 +28,7 @@ public class RestStateFactory extends StateFactory{
             reportExecution = ((InitedRestState) prevState).reportExecution;
         }
         if (reportExecution != null) {
-            return new RenderedRestState(dispatcher, eventFactory, commandFactory, reportExecution);
+            return new RenderedRestState(dispatcher, eventFactory, commandFactory, commandExecutor, reportExecution);
         }
         throw new RuntimeException("ReportExecution form previous state is absent");
     }

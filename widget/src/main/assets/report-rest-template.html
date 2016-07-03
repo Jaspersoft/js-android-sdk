@@ -9,8 +9,11 @@
     <script type="text/javascript">
 
     var NativeCallbacks = {
-        onReportRendered: function () {
-            return Android.onReportRendered();
+        onRendered: function () {
+            return Android.onRendered();
+        },
+        onCleared: function () {
+            return Android.onCleared();
         },
         onError: function (error) {
             return Android.onError(error);
@@ -39,7 +42,11 @@
             return {
                 show: function (reportPage) {
                     jQuery("#container").html(reportPage);
-                    NativeCallbacks.onReportRendered();
+                    NativeCallbacks.onRendered();
+                },
+                 clear: function () {
+                    jQuery("#container").empty();
+                    NativeCallbacks.onCleared();
                 }
             }
         };
