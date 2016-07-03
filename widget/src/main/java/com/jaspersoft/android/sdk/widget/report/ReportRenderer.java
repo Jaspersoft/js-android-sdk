@@ -6,6 +6,8 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
+import com.jaspersoft.android.sdk.widget.report.compat.ReportFeature;
+import com.jaspersoft.android.sdk.widget.report.compat.ReportFeaturesCompat;
 import com.jaspersoft.android.sdk.widget.report.event.SwapStateEvent;
 import com.jaspersoft.android.sdk.widget.report.state.State;
 import com.jaspersoft.android.sdk.widget.report.state.StateFactory;
@@ -21,13 +23,15 @@ public class ReportRenderer {
     private final EventPublisher eventPublisher;
     private final Dispatcher dispatcher;
     private final StateFactory stateFactory;
+    private final ReportFeaturesCompat reportFeaturesCompat;
     private State currentState;
 
-    ReportRenderer(Dispatcher dispatcher, StateFactory stateFactory, State state, EventPublisher eventPublisher) {
+    ReportRenderer(Dispatcher dispatcher, StateFactory stateFactory, State state, EventPublisher eventPublisher, ReportFeaturesCompat reportFeaturesCompat) {
         this.dispatcher = dispatcher;
         this.stateFactory = stateFactory;
         this.currentState = state;
         this.eventPublisher = eventPublisher;
+        this.reportFeaturesCompat = reportFeaturesCompat;
 
         dispatcher.register(currentState);
         dispatcher.register(this);
@@ -51,6 +55,10 @@ public class ReportRenderer {
             throw new IllegalArgumentException("ReportRendererKey should be provided.");
         }
         return RenderersStore.INSTANCE.restoreExecutor(reportRendererKey);
+    }
+
+    public boolean isFeatureSupported(ReportFeature reportFeature) {
+        return reportFeaturesCompat.isSupported(reportFeature);
     }
 
     public void init(double initialScale) {

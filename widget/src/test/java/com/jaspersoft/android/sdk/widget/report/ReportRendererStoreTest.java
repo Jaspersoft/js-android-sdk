@@ -33,7 +33,7 @@ public class ReportRendererStoreTest {
         reportRendererKey = ReportRendererKey.newKey();
 
         Mockito.doNothing().when(dispatcher).register(null);
-        reportRenderer = new ReportRenderer(dispatcher, null, null, null);
+        reportRenderer = new ReportRenderer(dispatcher, null, null, null, reportActionsCompat);
     }
 
     @Test

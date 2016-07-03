@@ -51,7 +51,7 @@ public class ReportRendererTest {
         webView = new FakeWebView(null, WEB_VIEW_ID);
         authorizedClient = Server.builder().withBaseUrl("http://test.com").build().newClient(SpringCredentials.builder().withUsername("asf").withPassword("asf").build()).create();
         Mockito.doNothing().when(dispatcher).register(null);
-        reportRenderer = new ReportRenderer(dispatcher, null, null, null);
+        reportRenderer = new ReportRenderer(dispatcher, null, null, null, reportActionsCompat);
         reportRendererKey = ReportRendererKey.newKey();
         renderersStore = RenderersStore.INSTANCE;
     }

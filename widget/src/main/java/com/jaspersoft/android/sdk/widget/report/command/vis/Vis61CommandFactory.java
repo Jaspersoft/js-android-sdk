@@ -27,7 +27,7 @@ public class Vis61CommandFactory extends BaseVisCommandFactory {
     @Override
     public Command createRunReportCommand(RunOptions runOptions) {
         String reportParams = visParamsMapper.mapParams(runOptions.getParameters());
-        if (runOptions.getDestination().getPage() != null) {
+        if (runOptions.getDestination().isPageType()) {
             return new RunReportPageVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams, runOptions.getDestination().getPage());
         } else {
             return new RunReportAnchorVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams, runOptions.getDestination().getAnchor());
@@ -41,7 +41,7 @@ public class Vis61CommandFactory extends BaseVisCommandFactory {
 
     @Override
     public Command createNavigateToCommand(Destination destination) {
-        if (destination.getPage() != null) {
+        if (destination.isPageType()) {
             return new NavigateToPageVisCommand(dispatcher, eventFactory, webView, destination.getPage());
         } else {
             return new NavigateToAnchorVisCommand(dispatcher, eventFactory, webView, destination.getAnchor());

@@ -39,7 +39,7 @@ public class RestCommandFactory extends CommandFactory {
 
     @Override
     public Command createExecuteReportCommand(RunOptions runOptions) {
-        if (runOptions.getDestination().getPage() != null) {
+        if (runOptions.getDestination().isPageType()) {
             ReportService reportService = ReportService.newService(client);
             return new ExecuteReportRestCommand(dispatcher, eventFactory, runOptions, reportService);
         } else return super.createExecuteReportCommand(runOptions);
@@ -47,7 +47,7 @@ public class RestCommandFactory extends CommandFactory {
 
     @Override
     public Command createPageExportCommand(Destination destination, ReportExecution reportExecution) {
-        if (destination.getPage() != null) {
+        if (destination.isPageType()) {
             return new ExportPageRestCommand(dispatcher, eventFactory, destination.getPage(), reportExecution);
         } else return super.createPageExportCommand(destination, reportExecution);
     }

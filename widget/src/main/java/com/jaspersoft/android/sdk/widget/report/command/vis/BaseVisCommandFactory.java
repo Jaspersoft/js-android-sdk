@@ -37,7 +37,7 @@ public class BaseVisCommandFactory extends CommandFactory {
 
     @Override
     public Command createRunReportCommand(RunOptions runOptions) {
-        if (runOptions.getDestination().getPage() != null) {
+        if (runOptions.getDestination().isPageType()) {
             String reportParams = visParamsMapper.mapParams(runOptions.getParameters());
             return new RunReportPageVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams, runOptions.getDestination().getPage());
         } else return super.createRunReportCommand(runOptions);
@@ -71,7 +71,7 @@ public class BaseVisCommandFactory extends CommandFactory {
 
     @Override
     public Command createNavigateToCommand(Destination destination) {
-        if (destination.getPage() != null) {
+        if (destination.isPageType()) {
             return new NavigateToPageVisCommand(dispatcher, eventFactory, webView, destination.getPage());
         } else return super.createNavigateToCommand(destination);
     }

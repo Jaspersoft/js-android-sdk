@@ -20,7 +20,8 @@ public class Destination {
 
     public Destination(String anchor) {
         this(null, anchor);
-        if (anchor == null) throw new IllegalArgumentException("Destination anchor can not be null");
+        if (anchor == null)
+            throw new IllegalArgumentException("Destination anchor can not be null");
     }
 
     public Integer getPage() {
@@ -29,5 +30,13 @@ public class Destination {
 
     public String getAnchor() {
         return anchor;
+    }
+
+    public boolean isPageType() {
+        return page != null;
+    }
+
+    public boolean isAnchorType() {
+        return !isPageType();
     }
 }

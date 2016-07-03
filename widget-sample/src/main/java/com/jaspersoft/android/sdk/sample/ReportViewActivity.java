@@ -25,6 +25,7 @@ import com.jaspersoft.android.sdk.widget.report.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.ReportRendererKey;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
+import com.jaspersoft.android.sdk.widget.report.compat.ReportFeature;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.LocalHyperlink;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.ReferenceHyperlink;
@@ -54,7 +55,12 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         progress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reportRenderer.navigateTo(new Destination("summary"));
+                Destination destination = new Destination("summary");
+                if (reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION)) {
+                    reportRenderer.navigateTo(destination);
+                } else {
+                    Toast.makeText(ReportViewActivity.this, "Anchor nav is not supported", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -76,7 +82,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
 
             ServerInfo serverInfo = new ServerInfo();
             serverInfo.setEdition("PRO");
-            serverInfo.setVersion(ServerVersion.v6_2);
+            serverInfo.setVersion(ServerVersion.v6_0_1);
 
             reportRenderer = ReportRenderer.create(authorizedClient, webView, serverInfo);
             reportRenderer.init(0.5f);
@@ -117,7 +123,6 @@ public class ReportViewActivity extends AppCompatActivity implements ReportRende
         if (renderState == RenderState.INITED) {
             reportRenderer.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
-                    .destination(new Destination("summary"))
                     .build());
         }
     }

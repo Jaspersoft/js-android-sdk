@@ -8,6 +8,10 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.widget.report.command.rest.RestCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.vis.BaseVisCommandFactory;
 import com.jaspersoft.android.sdk.widget.report.command.vis.Vis61CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.compat.BaseVisFeaturesCompat;
+import com.jaspersoft.android.sdk.widget.report.compat.ReportFeaturesCompat;
+import com.jaspersoft.android.sdk.widget.report.compat.RestFeaturesCompat;
+import com.jaspersoft.android.sdk.widget.report.compat.Vis61FeaturesCompat;
 import com.jaspersoft.android.sdk.widget.report.event.rest.RestEventFactory;
 import com.jaspersoft.android.sdk.widget.report.event.vis.VisEventFactory;
 import com.jaspersoft.android.sdk.widget.report.hyperlink.HyperlinkMapper;
@@ -47,7 +51,8 @@ abstract class ReportRendererFactory {
             JsInterfaceRest jsInterfaceRest = new JsInterfaceRest(dispatcher, eventFactory);
             State idleState = stateFactory.createIdleState(jsInterfaceRest);
             EventPublisher eventPublisher = new EventPublisher();
-            return new ReportRenderer(dispatcher, stateFactory, idleState, eventPublisher);
+            ReportFeaturesCompat reportFeaturesCompat = new RestFeaturesCompat();
+            return new ReportRenderer(dispatcher, stateFactory, idleState, eventPublisher, reportFeaturesCompat);
         }
     }
 
@@ -58,17 +63,20 @@ abstract class ReportRendererFactory {
             ErrorMapper errorMapper = new ErrorMapper();
             VisEventFactory eventFactory = new VisEventFactory(errorMapper);
             BaseVisCommandFactory commandFactory;
+            ReportFeaturesCompat reportFeaturesCompat;
             if (serverInfo.getVersion().lessThan(ServerVersion.v6_1)) {
                 commandFactory = new BaseVisCommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
+                reportFeaturesCompat = new BaseVisFeaturesCompat();
             } else {
                 commandFactory = new Vis61CommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
+                reportFeaturesCompat = new Vis61FeaturesCompat();
             }
             VisStateFactory stateFactory = new VisStateFactory(dispatcher, eventFactory, commandFactory);
             HyperlinkMapper hyperlinkMapper = new HyperlinkMapper();
             JsInterfaceVis jsInterfaceVis = new JsInterfaceVis(dispatcher, eventFactory, hyperlinkMapper);
             State idleState = stateFactory.createIdleState(jsInterfaceVis);
             EventPublisher eventPublisher = new EventPublisher();
-            return new ReportRenderer(dispatcher, stateFactory, idleState, eventPublisher);
+            return new ReportRenderer(dispatcher, stateFactory, idleState, eventPublisher, reportFeaturesCompat);
         }
     }
 }
