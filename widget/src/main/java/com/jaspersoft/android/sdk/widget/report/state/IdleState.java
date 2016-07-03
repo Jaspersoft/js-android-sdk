@@ -63,7 +63,7 @@ class IdleState extends State {
 
     @Override
     protected void internalClear() {
-        throw new IllegalStateException("Could not clear report renderer. Renderer still not initialized.");
+        // no action required
     }
 
     @Subscribe

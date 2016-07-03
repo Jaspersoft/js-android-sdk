@@ -4,6 +4,7 @@ package com.jaspersoft.android.sdk.widget.report.state;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.Destination;
 import com.jaspersoft.android.sdk.widget.report.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.RenderState;
 import com.jaspersoft.android.sdk.widget.report.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.command.Command;
 import com.jaspersoft.android.sdk.widget.report.command.CommandExecutor;
@@ -65,6 +66,10 @@ public abstract class State {
         internalClear();
     }
 
+    public final void destroy() {
+        internalDestroy();
+    }
+
     protected abstract void internalInit(double initialScale);
 
     protected abstract void internalRender(RunOptions runOptions);
@@ -76,6 +81,11 @@ public abstract class State {
     protected abstract void internalRefresh();
 
     protected abstract void internalClear();
+
+    protected void internalDestroy(){
+        clear();
+        dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.DESTROYED));
+    }
 
     private void checkProgressState() {
         if (inProgress) throw new IllegalStateException("Can not perform action while other is in progress");

@@ -32,4 +32,8 @@ public abstract class StateFactory {
     public abstract State createInitedState(State prevState);
 
     public abstract State createRenderedState(State prevState);
+
+    public final State createDestroyedState() {
+        return new DestroyedState(dispatcher, eventFactory, commandFactory, commandExecutor);
+    }
 }

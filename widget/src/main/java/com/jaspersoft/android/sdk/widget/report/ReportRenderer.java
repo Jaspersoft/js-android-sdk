@@ -85,6 +85,10 @@ public class ReportRenderer {
         currentState.clear();
     }
 
+    public void destroy() {
+        currentState.destroy();
+    }
+
     public void registerReportRendererCallback(ReportRendererCallback reportRendererCallback) {
         eventPublisher.setReportRendererCallback(reportRendererCallback);
     }
@@ -97,12 +101,6 @@ public class ReportRenderer {
         return RenderersStore.INSTANCE.saveExecutor(this);
     }
 
-    public void destroy() {
-        dispatcher.unregister(currentState);
-        dispatcher.unregister(this);
-        dispatcher.unregister(eventPublisher);
-    }
-
     @Subscribe
     public void onSwapState(SwapStateEvent nextStateEvent) {
         dispatcher.unregister(currentState);
@@ -113,7 +111,16 @@ public class ReportRenderer {
             case RENDERED:
                 currentState = stateFactory.createRenderedState(currentState);
                 break;
+            case DESTROYED:
+                currentState = stateFactory.createDestroyedState();
+                unregisterFromDispatcher();
+                return;
         }
         dispatcher.register(currentState);
+    }
+
+    private void unregisterFromDispatcher() {
+        dispatcher.unregister(this);
+        dispatcher.unregister(eventPublisher);
     }
 }
