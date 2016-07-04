@@ -7,6 +7,10 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Server;
 import com.jaspersoft.android.sdk.network.SpringCredentials;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.widget.RenderersStore;
+import com.jaspersoft.android.sdk.widget.report.view.ReportRendererKey;
+import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 
 import org.junit.Before;
 import org.junit.Rule;

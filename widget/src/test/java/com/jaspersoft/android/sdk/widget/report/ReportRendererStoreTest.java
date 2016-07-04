@@ -1,5 +1,10 @@
 package com.jaspersoft.android.sdk.widget.report;
 
+import com.jaspersoft.android.sdk.widget.RenderersStore;
+import com.jaspersoft.android.sdk.widget.report.view.ReportRendererKey;
+import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

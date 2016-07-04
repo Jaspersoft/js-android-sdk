@@ -80,6 +80,7 @@
             function setupVisualizeScript() {
                 var visScript = document.createElement('script');
                 visScript.onload = loadVisualize;
+                visScript.onerror = onVisualizeLoadingFailed;
                 visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true");
                 document.head.appendChild(visScript);
             }
