@@ -67,6 +67,10 @@ public class ReportExecution5_6PlusTest {
     @Mock
     ExportIdWrapper mExportIdWrapper;
 
+    ReportExecutionOptions options = ReportExecutionOptions.builder()
+            .withParams(REPORT_PARAMS)
+            .build();
+
     @Mock
     ExportExecutionDescriptor exportDescriptor;
     @Mock
@@ -85,6 +89,7 @@ public class ReportExecution5_6PlusTest {
                 mReportExecutionApi,
                 mExportIdWrapper,
                 mExportFactory,
+                options,
                 EXEC_ID,
                 REPORT_URI,
                 0);
@@ -105,8 +110,17 @@ public class ReportExecution5_6PlusTest {
     }
 
     @Test
-    public void testUpdateExecution() throws Exception {
+    public void testApplyParameters() throws Exception {
         ReportExecution newExecution = reportExecution.updateExecution(REPORT_PARAMS);
+        assertThat("For servers 5.6+ we return same report execution", newExecution, is(reportExecution));
+
+        verify(mReportExecutionApi).update(EXEC_ID, REPORT_PARAMS);
+        verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, Status.execution(), Status.ready());
+    }
+
+    @Test
+    public void testRefresh() throws Exception {
+        ReportExecution newExecution = reportExecution.refresh();
         assertThat("For servers 5.6+ we return same report execution", newExecution, is(reportExecution));
 
         verify(mReportExecutionApi).update(EXEC_ID, REPORT_PARAMS);

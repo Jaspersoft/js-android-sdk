@@ -77,6 +77,12 @@ final class RetryReportExecution extends ReportExecution {
 
     @NotNull
     @Override
+    public ReportExecution refresh() throws ServiceException {
+        return mDelegate.refresh();
+    }
+
+    @NotNull
+    @Override
     public String getExecutionId() {
         return mDelegate.getExecutionId();
     }

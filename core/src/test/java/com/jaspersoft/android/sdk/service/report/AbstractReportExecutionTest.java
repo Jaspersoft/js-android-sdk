@@ -75,6 +75,12 @@ public class AbstractReportExecutionTest {
         abstractReportExecution = new AbstractReportExecution(mReportExecutionApi, EXEC_ID, REPORT_URI, 0) {
             @NotNull
             @Override
+            public ReportExecution refresh() throws ServiceException {
+                return null;
+            }
+
+            @NotNull
+            @Override
             public ReportExport doExport(@NotNull ReportExportOptions options) throws ServiceException {
                 return null;
             }
