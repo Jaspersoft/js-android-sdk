@@ -7,7 +7,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public interface ReportViewEventListener {
+public interface ReportFragmentEventListener {
     void onHyperlinkClicked(Hyperlink hyperlink);
     void onError(ServiceException exception);
 }

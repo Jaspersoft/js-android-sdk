@@ -21,13 +21,13 @@ public class ResourcesActivity extends AppCompatActivity {
             "http://mobiledemo.jaspersoft.com/jasperserver-pro/"
     ));
     private final static ResourceFactory SERVER_5_6_1 = new ResourceFactory(new Profile(
-            "http://194.29.62.80:8082/jasperserver-pro-561/"
+            "http://192.168.88.55:8082/jasperserver-pro-561/"
     ));
     private final static ResourceFactory SERVER_6_0 = new ResourceFactory(new Profile(
             "http://192.168.88.55:8083/jasperserver-pro-60/"
     ));
     private final static ResourceFactory SERVER_6_0_1 = new ResourceFactory(new Profile(
-            "http://194.29.62.80:8084/jasperserver-pro-601/"
+            "http://192.168.88.55:8084/jasperserver-pro-601/"
     ));
     private final static ResourceFactory SERVER_6_1 = new ResourceFactory(new Profile(
             "http://192.168.88.55:8085/jasperserver-pro-61/"

@@ -3,6 +3,8 @@ package com.jaspersoft.android.sdk.sample;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.HttpException;
@@ -15,8 +17,11 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
-import com.jaspersoft.android.sdk.widget.report.view.ReportView;
-import com.jaspersoft.android.sdk.widget.report.view.ReportViewEventListener;
+import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.LocalHyperlink;
+import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
+import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
+import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
+import com.jaspersoft.android.sdk.widget.report.view.ReportFragmentEventListener;
 
 import java.io.IOException;
 
@@ -24,9 +29,9 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.5
  */
-public class ReportViewActivity extends AppCompatActivity implements ReportViewEventListener {
+public class ReportViewActivity extends AppCompatActivity implements ReportFragmentEventListener {
     private Resource resource;
-    private ReportView reportView;
+    private ReportFragment reportFragment;
     private AuthorizedClient authorizedClient;
 
     @Override
@@ -34,7 +39,14 @@ public class ReportViewActivity extends AppCompatActivity implements ReportViewE
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.report_renderer_preview);
-        reportView = (ReportView) findViewById(R.id.reportView);
+        reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
+
+        findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reportFragment.refresh();
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
         resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
@@ -44,25 +56,27 @@ public class ReportViewActivity extends AppCompatActivity implements ReportViewE
 
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setEdition("PRO");
-        serverInfo.setVersion(ServerVersion.v6_0_1);
+        serverInfo.setVersion(ServerVersion.v6_2);
 
-        reportView.init(authorizedClient, serverInfo);
-        reportView.setReportViewEventListener(this);
-        reportView.run(new RunOptions.Builder()
-                .reportUri(resource.getUri())
-                .build());
+        reportFragment.setReportFragmentEventListener(this);
+        if (!reportFragment.isInited()) {
+            reportFragment.init(authorizedClient, serverInfo, 0.5f);
+            reportFragment.run(new RunOptions.Builder()
+                    .reportUri(resource.getUri())
+                    .build());
+        }
     }
 
     @Override
     public void onHyperlinkClicked(Hyperlink hyperlink) {
-//        if (hyperlink instanceof LocalHyperlink) {
-//            reportRenderer.navigateTo(((LocalHyperlink) hyperlink).getDestination());
-//        } else if (hyperlink instanceof ReferenceHyperlink) {
-//            Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
-//        } else if (hyperlink instanceof ReportExecutionHyperlink) {
-//            RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
-//            reportRenderer.render(runOptions);
-//        }
+        if (hyperlink instanceof LocalHyperlink) {
+            reportFragment.navigateTo(((LocalHyperlink) hyperlink).getDestination());
+        } else if (hyperlink instanceof ReferenceHyperlink) {
+            Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
+        } else if (hyperlink instanceof ReportExecutionHyperlink) {
+            RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
+            reportFragment.run(runOptions);
+        }
     }
 
     @Override
@@ -87,7 +101,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportViewE
 
         @Override
         protected void onPostExecute(Boolean login) {
-            reportView.run(new RunOptions.Builder()
+            reportFragment.run(new RunOptions.Builder()
                     .reportUri(resource.getUri())
                     .build());
         }

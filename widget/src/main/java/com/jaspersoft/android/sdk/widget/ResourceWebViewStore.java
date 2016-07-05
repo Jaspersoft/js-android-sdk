@@ -9,14 +9,6 @@ public class ResourceWebViewStore {
 
     private ResourceWebView webView;
 
-    public static ResourceWebViewStore getResourceWebViewStore() {
-        return resourceWebViewStore;
-    }
-
-    public static void setResourceWebViewStore(ResourceWebViewStore resourceWebViewStore) {
-        ResourceWebViewStore.resourceWebViewStore = resourceWebViewStore;
-    }
-
     public ResourceWebView getResourceWebView() {
         return webView;
     }

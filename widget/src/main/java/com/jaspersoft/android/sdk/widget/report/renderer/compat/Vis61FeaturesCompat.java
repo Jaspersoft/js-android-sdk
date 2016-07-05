@@ -12,7 +12,7 @@ public class Vis61FeaturesCompat extends ReportFeaturesCompat {
                 return true;
             case DATA_REFRESHING:
                 return true;
-            case FILTERS_APPLYING:
+            case PARAMS_APPLYING:
                 return true;
             default:
                 return false;

@@ -12,7 +12,7 @@ public class BaseVisFeaturesCompat extends ReportFeaturesCompat {
                 return false;
             case DATA_REFRESHING:
                 return false;
-            case FILTERS_APPLYING:
+            case PARAMS_APPLYING:
                 return false;
             default:
                 return false;

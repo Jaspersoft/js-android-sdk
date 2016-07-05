@@ -58,6 +58,10 @@ public class ReportRenderer {
         return currentState.getName();
     }
 
+    public boolean isActionAvailable(ReportAction reportAction) {
+        return currentState.isActionAvailable(reportAction);
+    }
+
     public void init(double initialScale) {
         currentState.init(initialScale);
     }

@@ -6,6 +6,6 @@ package com.jaspersoft.android.sdk.widget.report.renderer.compat;
  */
 public enum ReportFeature {
     ANCHOR_NAVIGATION,
-    FILTERS_APPLYING,
+    PARAMS_APPLYING,
     DATA_REFRESHING
 }

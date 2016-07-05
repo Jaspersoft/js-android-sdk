@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -70,6 +71,11 @@ class RenderedVisState extends State {
     @Override
     public RenderState getName() {
         return RenderState.RENDERED;
+    }
+
+    @Override
+    public boolean internalIsActionAvailable(ReportAction reportAction) {
+        return reportAction == ReportAction.APPLY_PARAMS || reportAction == ReportAction.NAVIGATE_TO || reportAction == ReportAction.REFRESH;
     }
 
     @Subscribe

@@ -5,6 +5,7 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -29,6 +30,10 @@ public abstract class State {
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
         this.commandExecutor = commandExecutor;
+    }
+
+    public final boolean isActionAvailable(ReportAction reportAction) {
+        return !inProgress && internalIsActionAvailable(reportAction);
     }
 
     protected final void setInProgress(boolean inProgress) {
@@ -62,6 +67,8 @@ public abstract class State {
     }
 
     public abstract RenderState getName();
+
+    public abstract boolean internalIsActionAvailable(ReportAction reportAction);
 
     public final void reset() {
         internalReset();
