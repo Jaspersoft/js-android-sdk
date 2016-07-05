@@ -69,6 +69,15 @@ public abstract class ReportExecution {
     public abstract ReportExecution updateExecution(@Nullable List<ReportParameter> newParameters) throws ServiceException;
 
     /**
+     * Restarts report execution with previously associated parameters
+     *
+     * @return new report execution
+     * @throws ServiceException wraps both http/network/api related errors
+     */
+    @NotNull
+    public abstract ReportExecution refresh() throws ServiceException;
+
+    /**
      * Exposes internal id of report execution session
      *
      * @return execution id

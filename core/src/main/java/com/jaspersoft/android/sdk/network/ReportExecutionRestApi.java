@@ -216,8 +216,6 @@ public class ReportExecutionRestApi {
                                          @NotNull List<ReportParameter> params) throws IOException, HttpException {
         Utils.checkNotNull(executionId, "Execution id should not be null");
         Utils.checkNotNull(params, "Execution params should not be null");
-        Utils.checkArgument(params.isEmpty(), "Execution params should not be empty");
-
 
         HttpUrl url = mNetworkClient.getBaseUrl()
                 .resolve("rest_v2/reportExecutions")

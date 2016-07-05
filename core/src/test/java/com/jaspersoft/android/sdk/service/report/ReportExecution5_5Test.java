@@ -27,6 +27,7 @@ package com.jaspersoft.android.sdk.service.report;
 import com.jaspersoft.android.sdk.network.entity.execution.ReportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.export.ExportExecutionDescriptor;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,6 +78,10 @@ public class ReportExecution5_5Test {
     ReportExecutionDescriptor reportDescriptor;
 
     private ReportExecution5_5 reportExecution;
+    private ReportExecutionOptions initialCriteria;
+    private ReportExecutionOptions newCriteria;
+    private ReportExecutionOptions.Builder criteriaBuilder;
+    private ReportExecution newExecution;
 
     @Before
     public void setUp() throws Exception {
@@ -106,27 +111,73 @@ public class ReportExecution5_5Test {
     }
 
     @Test
-    public void testUpdateExecution() throws Exception {
-        ReportExecutionOptions criteria = spy(REPORT_OPTIONS);
-        ReportExecutionOptions.Builder builder = spy(criteria.newBuilder());
-        ReportExecutionOptions newCriteria = builder.withParams(REPORT_PARAMS).build();
+    public void testApplyParams() throws Exception {
+        givenInitialCriteria();
+        giveReportDescriptorForExecId(EXEC_ID);
 
-        when(builder.build()).thenReturn(newCriteria);
-        when(criteria.newBuilder()).thenReturn(builder);
+        whenAppliesParams();
 
+        thenShouldYieldNewExecution();
+        thenShouldCreateNewCriteria();
+        thenShouldStartExecutionWithNewParams();
+        thenShouldWaitForStatuses(Status.execution(), Status.ready());
+    }
+
+    @Test
+    public void testRefresh() throws Exception {
+        givenInitialCriteria();
+        giveReportDescriptorForExecId(EXEC_ID);
+
+        whenRefreshesExecution();
+
+        thenShouldYieldNewExecution();
+        thenShouldCreateNewCriteria();
+        thenShouldStartExecutionWithSameParams();
+        thenShouldWaitForStatuses(Status.execution(), Status.ready());
+    }
+
+    private void givenInitialCriteria() {
+        initialCriteria = spy(REPORT_OPTIONS);
+        criteriaBuilder = spy(initialCriteria.newBuilder());
+        newCriteria = criteriaBuilder.withParams(REPORT_PARAMS).build();
+
+        when(criteriaBuilder.build()).thenReturn(newCriteria);
+        when(initialCriteria.newBuilder()).thenReturn(criteriaBuilder);
+    }
+
+    private void giveReportDescriptorForExecId(String execId) throws ServiceException {
         when(mReportExecutionApi.start(anyString(), any(ReportExecutionOptions.class))).thenReturn(reportDescriptor);
-        when(reportDescriptor.getExecutionId()).thenReturn(EXEC_ID);
+        when(reportDescriptor.getExecutionId()).thenReturn(execId);
+    }
 
-        ReportExecution newExecution = reportExecution.updateExecution(REPORT_PARAMS);
+    private void whenAppliesParams() throws ServiceException {
+        newExecution = reportExecution.updateExecution(REPORT_PARAMS);
+    }
 
+    private void whenRefreshesExecution() throws ServiceException {
+        newExecution = reportExecution.refresh();
+    }
+
+    private void thenShouldYieldNewExecution() {
         assertThat(newExecution, is(instanceOf(ReportExecution5_5.class)));
         assertThat(newExecution, is(notNullValue()));
+    }
 
-        verify(criteria).newBuilder();
-        verify(builder).withParams(REPORT_PARAMS);
-        verify(builder).build();
+    private void thenShouldWaitForStatuses(Status... statuses) throws ServiceException {
+        verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, statuses);
+    }
 
+    private void thenShouldStartExecutionWithNewParams() throws ServiceException {
         verify(mReportExecutionApi).start(eq(REPORT_URI), not(eq(REPORT_OPTIONS)));
-        verify(mReportExecutionApi).awaitStatus(EXEC_ID, REPORT_URI, 0, Status.execution(), Status.ready());
+    }
+
+    private void thenShouldStartExecutionWithSameParams() throws ServiceException {
+        verify(mReportExecutionApi).start(eq(REPORT_URI), eq(REPORT_OPTIONS));
+    }
+
+    private void thenShouldCreateNewCriteria() {
+        verify(initialCriteria).newBuilder();
+        verify(criteriaBuilder).withParams(REPORT_PARAMS);
+        verify(criteriaBuilder).build();
     }
 }
