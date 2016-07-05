@@ -34,7 +34,7 @@ buildscript {
 subprojects {
     group = 'com.jaspersoft.android.sdk'
 
-    ext.clientModuleVersion = '2.5-SNAPSHOT'
+    ext.clientModuleVersion = '2.6-SNAPSHOT'
     ext.jacocoVersion = '0.7.6.201602180812'
 
     repositories {

@@ -26,6 +26,7 @@ include ':js-android-sdk-client', ':widget-sample'
 include ':js-android-sdk-core'
 include ':js-android-sdk-rx'
 include ':js-android-sdk-widget'
+//include ':core-integration-tests'
 project(':js-android-sdk-client').projectDir = "$rootDir/client" as File
 project(':js-android-sdk-core').projectDir = "$rootDir/core" as File
 project(':js-android-sdk-rx').projectDir = "$rootDir/rx" as File

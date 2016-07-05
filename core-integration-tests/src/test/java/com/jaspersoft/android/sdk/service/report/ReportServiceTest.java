@@ -72,10 +72,19 @@ public class ReportServiceTest {
 
     @Test
     @Parameters(method = "reports")
-    public void report_service_should_update_execution(ReportTestBundle bundle) throws Exception {
+    public void report_service_should_apply_parameters(ReportTestBundle bundle) throws Exception {
         if (bundle.hasParams()) {
             ReportExecution execution = runReport(bundle);
             execution.updateExecution(bundle.getParams());
+        }
+    }
+
+    @Test
+    @Parameters(method = "reports")
+    public void report_service_should_refresh(ReportTestBundle bundle) throws Exception {
+        if (bundle.hasParams()) {
+            ReportExecution execution = runReport(bundle);
+            execution.refresh();
         }
     }
 

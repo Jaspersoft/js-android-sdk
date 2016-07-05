@@ -90,4 +90,10 @@ final class ReportExecution5_5 extends AbstractReportExecution {
                 mDelay
         );
     }
+
+    @NotNull
+    @Override
+    public ReportExecution refresh() throws ServiceException {
+        return doUpdateExecution(mReportExecutionOptions.getParams());
+    }
 }

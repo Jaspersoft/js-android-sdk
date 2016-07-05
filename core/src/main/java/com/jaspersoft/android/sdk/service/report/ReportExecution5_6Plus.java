@@ -30,6 +30,7 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,11 +41,13 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
     private final ExportExecutionApi mExportExecutionApi;
     private final ExportIdWrapper mExportIdWrapper;
     private final ExportFactory mExportFactory;
+    private final ReportExecutionOptions mReportExecutionOptions;
 
     ReportExecution5_6Plus(ExportExecutionApi exportExecutionApi,
                            ReportExecutionApi reportExecutionRestApi,
                            ExportIdWrapper exportIdWrapper,
                            ExportFactory exportFactory,
+                           ReportExecutionOptions reportExecutionOptions,
                            String execId,
                            String reportUri,
                            long delay) {
@@ -52,6 +55,7 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
         mExportExecutionApi = exportExecutionApi;
         mExportIdWrapper = exportIdWrapper;
         mExportFactory = exportFactory;
+        mReportExecutionOptions = reportExecutionOptions;
     }
 
     @NotNull
@@ -73,5 +77,13 @@ final class ReportExecution5_6Plus extends AbstractReportExecution {
         mReportExecutionApi.update(mExecId, newParameters);
         mReportExecutionApi.awaitStatus(mExecId, mReportUri, mDelay, Status.execution(), Status.ready());
         return this;
+    }
+
+    @NotNull
+    @Override
+    public ReportExecution refresh() throws ServiceException {
+        List<ReportParameter> params = mReportExecutionOptions.getParams();
+        List<ReportParameter> selfParams = (params == null) ? Collections.<ReportParameter>emptyList() : params;
+        return doUpdateExecution(selfParams);
     }
 }

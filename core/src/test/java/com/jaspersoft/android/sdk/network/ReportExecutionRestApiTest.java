@@ -141,14 +141,6 @@ public class ReportExecutionRestApiTest {
     }
 
     @Test
-    public void bodyParameterShouldNotBeEmptyForExecutionUpdate() throws Exception {
-        mExpectedException.expect(IllegalArgumentException.class);
-        mExpectedException.expectMessage("Execution params should not be empty");
-
-        restApiUnderTest.updateReportExecution("any_id", Collections.<ReportParameter>emptyList());
-    }
-
-    @Test
     public void shouldStartReportExecution() throws Exception {
         MockResponse response = MockResponseFactory.create200().setBody(reportExecutionResponse.asString());
         mWebMockRule.enqueue(response);
