@@ -10,14 +10,15 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
 class EventPublisher {
+    private final List<Event> eventsQueue;
     private ReportRendererCallback reportRendererCallback;
-    private List<Event> eventsQueue;
 
     public EventPublisher() {
         eventsQueue = new ArrayList<>();
@@ -47,8 +48,10 @@ class EventPublisher {
         this.reportRendererCallback = reportRendererCallback;
         if (reportRendererCallback == null) return;
 
-        for (Event event : eventsQueue) {
-            sendEvent(event);
+        ListIterator<Event> eventsIterator = eventsQueue.listIterator();
+        while (eventsIterator.hasNext()) {
+            sendEvent(eventsIterator.next());
+            eventsIterator.remove();
         }
     }
 
