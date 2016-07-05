@@ -12,12 +12,14 @@ import android.widget.ListView;
 import com.jaspersoft.android.sdk.sample.entity.Profile;
 import com.jaspersoft.android.sdk.sample.entity.Resource;
 import com.jaspersoft.android.sdk.sample.entity.ResourceFactory;
-import com.jaspersoft.android.sdk.sample.util.WebViewCookieCompat;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class ResourcesActivity extends AppCompatActivity {
+    private final static ResourceFactory SERVER_MOB_DEMO = new ResourceFactory(new Profile(
+            "http://mobiledemo.jaspersoft.com/jasperserver-pro/"
+    ));
     private final static ResourceFactory SERVER_5_6_1 = new ResourceFactory(new Profile(
             "http://192.168.88.55:8082/jasperserver-pro-561/"
     ));
@@ -47,7 +49,22 @@ public class ResourcesActivity extends AppCompatActivity {
                     "{\"sales__product__product_name_1\":[],\"sales__product__recyclable_package_1\":[\"false\",\"true\"],\"sales__product__low_fat_1\":[\"false\",\"true\"],\"sales_fact_ALL__store_sales_2013_1\":[\"20\"]}"
             ),
             SERVER_5_6_1.newReport("5.6.1 - 05. Accounts Report", "/public/Samples/Reports/AllAccounts"),
-            SERVER_6_2.newReport("6.2 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_5_6_1.newReport("5.6.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
+            SERVER_5_6_1.newReport("5.6.1 - Not existing","/public/Samples/Reports/fail"),
+            SERVER_6_0_1.newReport("6.0.1 - 02. Sales mix","/public/Samples/Reports/02._Sales_Mix_by_Demographic_Report"),
+            SERVER_6_0_1.newReport("6.0.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_6_0_1.newReport("6.0.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
+            SERVER_6_0_1.newReport("6.0.1 - Hyperlink","/public/Visualize/Hiperlinks/HyperlinkReport"),
+            SERVER_6_0_1.newReport("6.0.1 - Not existing","/public/Samples/Reports/fail"),
+            SERVER_6_0_1.newReport("6.0.1 - 13. Top Fives Report", "/public/Samples/Reports/TopFivesReport"),
+            SERVER_6_2_1.newReport("6.2.1 - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
+            SERVER_6_2_1.newReport("6.2.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_6_2_1.newReport("6.2.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
+            SERVER_6_2_1.newReport("6.2.1 - Fusion_links_report_output_format", "/public/Visualize/Hiperlinks/Fusion_links_report_output_format"),
+            SERVER_6_2_1.newReport("6.2.1 - Hyperlink","/public/Visualize/Hiperlinks/HyperlinkReport"),
+            SERVER_6_2_1.newReport("6.2.1 - Not existing","/public/Samples/Reports/fail"),
+            SERVER_MOB_DEMO.newReport("Mob demo - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
+            SERVER_MOB_DEMO.newReport("Mob demo - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_0_1.newDashboard("6.0.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_1.newDashboard("6.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
@@ -74,7 +91,6 @@ public class ResourcesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                WebViewCookieCompat.removeAllCookies(ResourcesActivity.this);
                 navigate(RESOURCES.get(position));
             }
         });

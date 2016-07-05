@@ -32,12 +32,12 @@ public class ClientProvider implements Provider<AuthorizedClient> {
                 .withBaseUrl(profile.getUrl())
                 .build();
         Credentials credentials = SpringCredentials.builder()
-                .withPassword("superuser")
-                .withUsername("superuser")
+                .withPassword("joeuser")
+                .withUsername("joeuser")
                 .build();
 
         CookieManager cookieManager = new RestCookieManager.Builder(context)
-                .handleWebViewCookies(false)
+                .handleWebViewCookies(true)
                 .build();
         AuthenticationLifecycle lifecycle = new CookieAuthenticationHandler(cookieManager);
 

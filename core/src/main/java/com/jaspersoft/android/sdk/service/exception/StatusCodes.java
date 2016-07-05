@@ -66,6 +66,14 @@ public final class StatusCodes {
      * Requested export execution failed on the JRS side
      */
     public static final int EXPORT_EXECUTION_FAILED = 202;
+    /**
+     * Requested export with anchor does not exist
+     */
+    public static final int EXPORT_ANCHOR_ABSENT = 203;
+    /**
+     * Requesting export with anchor is not supported
+     */
+    public static final int EXPORT_ANCHOR_UNSUPPORTED = 204;
 
     // REPORT
     /**
@@ -80,6 +88,10 @@ public final class StatusCodes {
      * Session has been deprecated therefore associated execution invalid
      */
     public static final int REPORT_EXECUTION_INVALID = 303;
+    /**
+     * Failed to render report
+     */
+    public static final int REPORT_RENDER_FAILED = 304;
 
     // RESOURCE
     /**

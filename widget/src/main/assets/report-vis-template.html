@@ -1,203 +1,335 @@
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
         "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
-
+<!--suppress CheckValidXmlInScriptTagBody -->
 <head xmlns="http://www.w3.org/1999/html">
-
     <title>TIBCO Jaspersoft</title>
+    <style>
+        html {height: 100%;}
+        body {min-height: 100%;}
+    </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-</head>
-<body>
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript">
 
-<div id="container"></div>
-<script type="text/javascript">
     var NativeCallbacks = {
-        onScriptReady: function () {
-            return Android.onScriptReady();
+        onInited: function() {
+            return Android.onInited();
         },
-        onReportRenedered: function () {
-            return Android.onReportRenedered();
+        onRendered: function() {
+            return Android.onRendered();
         },
-        onWindowError: function (error) {
-            return Android.onWindowError(error);
+        onError: function(error) {
+            return Android.onError(error);
         },
-        onHyperLinkClick: function (hyperlink) {
-            var linkAsString = JSON.stringify(hyperlink);
-            return Android.onHyperLinkClick(linkAsString);
+        onCleared: function () {
+            return Android.onCleared();
+        },
+        onHyperLinkClick: function(type, hyperlink) {
+            return Android.onHyperLinkClick(type, hyperlink);
         }
     };
 
-    window.Android = window.Android || new Proxy({}, {
-        get: function (target, name) {
-            return function (args) {
-                var resultArgs = args || [];
-                console.log("Function '" + name + "' has been called with args '" + resultArgs + "' on Android object");
-            }
-        }
-    });
-
-    window.onerror = function (message, source, line, column) {
-        var e = {
-            message: message,
-            source: source,
-            line: line,
-            column: column
-        };
-        var errorLog = JSON.stringify(e);
-        NativeCallbacks.onWindowError(errorLog);
+    window.onerror = function (message) {
+        NativeCallbacks.onError(message);
         return false;
     };
 
     var MobileClient = (function () {
-        var clientContext = this;
-
-        var setupVisualizeScript = function (callback) {
-            var visScript = document.createElement('script');
-            visScript.onload = callback;
-            visScript.setAttribute('src', clientContext.config.server.url + "client/visualize.js?_opt=false");
-            document.head.appendChild(visScript);
-        };
-
-        var loadVisualize = function (callback) {
-            var onComplete = function (v) {
-                var report = new Report(v);
-                clientContext.report = report;
-
-                if (callback !== undefined) {
-                    callback.call(clientContext, report);
-                }
-
-                NativeCallbacks.onScriptReady();
-            };
-
-            var auth = clientContext.config.auth;
-            if (auth === undefined) {
-                visualize(onComplete);
-            } else {
-                visualize({auth: auth}, onComplete);
-            }
-        };
+        var instance;
 
         function Client() {
-            return {
-                setup: function (config, callback) {
-                    clientContext.config = config;
-                    var loadFunc = loadVisualize.bind(this, callback);
-                    setupVisualizeScript(loadFunc);
-                },
-                report: function () {
-                    return clientContext.report;
+            var report;
+            var vis;
+            var jrsServer;
+
+            window.onresize = function() {
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+            }
+
+            function setupFn(server, initialScale) {
+                jrsServer = server;
+
+                appendViewportMeta(initialScale);
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+                setupVisualizeScript(server);
+            }
+
+              function appendViewportMeta(reportScale) {
+                var maxScale = reportScale * 5;
+                var viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                viewport.content = "target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=" + reportScale + ", minimum-scale=" + reportScale +" , maximum-scale=" + maxScale + ", user-scalable=yes";
+                document.head.appendChild(viewport);
+            }
+
+            function updateRenderRect(width, height) {
+                var container = document.getElementById('container');
+
+                // Because of default body margin (8px)
+                var newContainerHeight = height - 16;
+                var newContainerWidth = width - 16;
+
+                container.style.height = newContainerHeight + "px";
+                container.style.width = newContainerWidth + "px";
+
+	            if (report) {
+	                report.resize();
+	            }
+            }
+
+            function setupVisualizeScript() {
+                var visScript = document.createElement('script');
+                visScript.onload = loadVisualize;
+                visScript.onerror = onVisualizeLoadingFailed;
+                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true");
+                document.head.appendChild(visScript);
+            }
+
+            function loadVisualize() {
+                var auth = {};
+                if (jrsServer.pre61) {
+                    auth.auth = {
+                        loginFn: function(properties, request) {
+                            return (new jQuery.Deferred()).resolve();
+                        }
+                    };
                 }
+                visualize(auth, onVisualizeLoaded, onVisualizeLoadingFailed);
+            };
+
+            function onVisualizeLoaded(v) {
+                vis = v;
+                NativeCallbacks.onInited();
+            };
+
+             function onVisualizeLoadingFailed(error) {
+                var message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            };
+
+            return {
+                setup: setupFn,
+                report: function () {
+                    if (!report || report.isInvalid()) {
+                        if (jrsServer.pre61) {
+                            report = new Pre61Report(vis);
+                        } else {
+                            report = new BaseReport(vis);
+                        }
+                    }
+                    return report;
+                }
+            }
+        }
+
+        function BaseReport(v) {
+            var invalid = false;
+            var vis = v;
+            var hyperLinkHandler = new HyperLinkHandler();
+            var reportInstance;
+
+            this.run = function(uri, params, destination) {
+                var reportBundle = prepareBaseRunReportBundle(uri, params, destination);
+                this._modifyReportBundle(reportBundle);
+
+                reportInstance = vis.report(reportBundle);
+            }
+
+            this.applyParams = function(params) {
+                reportInstance.params(params).run(reportRenderedFn, reportErrorFn);
+            }
+
+            this.navigateTo = function(destination) {
+                reportInstance.pages(destination).run(reportRenderedFn, reportErrorFn);
+            }
+
+            this.resize = function() {
+                if (reportInstance) {
+                    reportInstance.resize();
+                }
+            }
+
+            this.refresh = function() {
+                reportInstance.refresh(reportRenderedFn, reportErrorFn);
+            }
+
+            this.clear = function() {
+                invalid = true;
+                if (reportInstance && reportInstance.container()) {
+                    destroyReport();
+                }
+                NativeCallbacks.onCleared();
+            }
+
+            this.isInvalid = function() {
+                return invalid;
+            }
+
+            this._modifyReportBundle = function(reportBundle) {
+                reportBundle["autoresize"] = false;
+                reportBundle["chart"] = {
+                    animation: false,
+                    zoom: false
+                };
+            }
+
+            prepareBaseRunReportBundle = function(uri, params, destination) {
+                return reportBundle = {
+                    resource: uri,
+                    params: params,
+                    scale: "width",
+                    pages: destination,
+                    success: reportExecutedFn,
+                    error: reportErrorFn,
+                    linkOptions: {
+                        events: {
+                            click: handleHyperlinkClick
+                        }
+                    }
+                }
+            }
+
+            destroyReport = function() {
+                reportInstance.container(null);
+                jQuery("#container").empty();
+                reportInstance.destroy();
+            }
+
+            handleHyperlinkClick = function(event, link) {
+                hyperLinkHandler.handle(event, link);
+            }
+
+            reportExecutedFn = function (){
+                if (invalid) {
+                    destroyReport();
+                } else {
+                    reportInstance.container("#container");
+                    reportInstance.render(reportRenderedFn, reportErrorFn);
+                }
+            }
+
+            reportRenderedFn = function() {
+                NativeCallbacks.onRendered();
+            }
+
+            reportErrorFn = function(error) {
+                message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            }
+        }
+
+        function Pre61Report(v) {
+            BaseReport.apply(this, arguments);
+
+            this.resize = function() {
+                // Resize is not supported for 6.0
+            }
+
+            this._modifyReportBundle = function(reportBundle, page, localAnchor) {
+                // Disabling chart zoom and animation is not supported for 6.0
             }
         }
 
         function HyperLinkHandler() {
+            this.handle = function(event, link) {
+                var type = link.type;
+                switch (type) {
+                    case "ReportExecution":
+                        return handleReportExecutionType(link);
+                    case "LocalAnchor":
+                        return handleLocalAnchorType(link);
+                    case "LocalPage":
+                        return handleLocalPageType(link);
+                    case "RemoteAnchor":
+                        return handleRemoteAnchorType(link);
+                    case "RemotePage":
+                        return handleRemotePageType(link);
+                    case "Reference":
+                        return handleReferenceType(link);
+                }
+            }
 
-            var filterReportParams = function (params) {
-                var buffer = {};
-                var whiteList = ["_report", "_page", "_anchor", "_output"];
-
+            filterReportParams = function (params) {
+                var filters = [];
+                var blackList = ["_report", "_page", "_anchor", "_output"];
                 for (var key in params) {
                     var value = params[key];
-                    var isParameter = (whiteList.indexOf(key) < 0);
-                    if (isParameter) {
-                        buffer[key] = Array.isArray(value) ? value : [value];
+                    var isFilter = (blackList.indexOf(key) < 0);
+                    if (isFilter) {
+                        var filter = {
+                            name: key,
+                            value: [value]
+                        }
+                        filters.splice(filters.length, 1, filter)
                     }
                 }
-
-                return buffer;
+                return filters;
             };
 
-            var handleReportExecutionType = function (link) {
-                var params = link.parameters;
-                var reportParams = filterReportParams(params);
-                var metadata = {
-                    uri: params._report,
-                    page: params._page,
-                    anchor: params._anchor,
-                    output: params._output,
-                    params: reportParams
-                };
+            handleReportExecutionType = function(link) {
+                var runOptions = link.parameters;
+                if (!runOptions) return;
 
+                var reportParams = filterReportParams(link.parameters);
                 var hyperlink = {
-                    type: link.type,
-                    metadata: metadata
-                };
-
-                NativeCallbacks.onHyperLinkClick(hyperlink);
-            };
-
-            var handleReferenceType = function (link) {
-                var hyperlink = {
-                    type: link.type,
-                    metadata: {
-                        href: link.href
+                    reportUri: runOptions._report,
+                    parameters: reportParams,
+                    destination: {
+                        page: (runOptions._page || runOptions._anchor) ? runOptions._page : 1,
+                        anchor: runOptions._anchor,
                     }
                 };
-                NativeCallbacks.onHyperLinkClick(hyperlink);
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
             };
 
-            return {
-                handle: function (event, link, defaultHandler) {
-                    var type = link.type;
-                    if (type === "ReportExecution") {
-                        handleReportExecutionType(link);
-                    } else if (type === "Reference") {
-                        handleReferenceType(link);
-                    } else {
-                        if (defaultHandler) {
-                            defaultHandler.call(this);
-                        }
-                    }
-                    console.log(event, link, defaultHandler);
+            handleReferenceType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.href);
+            };
+
+            handleLocalPageType = function (link) {
+                if (!link.pages) {
                 }
-            }
-        }
-
-        function Report(visualize) {
-            var reportContext = this;
-            this.visualize = visualize;
-
-            var reportRenderedFn = function () {
-                NativeCallbacks.onReportRenedered();
+                NativeCallbacks.onHyperLinkClick(link.type, link.pages);
             };
 
-            var reportErrorFn = function (error) {
-                var errorLog = JSON.stringify(error);
-                console.log(errorLog);
+            handleLocalAnchorType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.anchor);
             };
 
-            var runFn = function (uri) {
-                var hyperLinkHandler = new HyperLinkHandler();
-                var v = reportContext.visualize;
-
-                reportContext.instance = v.report({
-                    params: uri,
-                    container: "#container",
-                    success: reportRenderedFn,
-                    error: reportErrorFn,
-                    linkOptions: {
-                        events: {
-                            click: hyperLinkHandler.handle
-                        }
+            handleRemotePageType = function (link) {
+                var hyperlink = {
+                    resourceUri: link.href,
+                    destination: {
+                        page: link.pages ? link.pages : 1
                     }
-                });
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
             };
 
-            return {
-                run: runFn
-            }
+            handleRemoteAnchorType = function (link) {
+                var hyperlink = {
+                    resourceUri: link.href,
+                    destination: {
+                        anchor: link.anchor,
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
         }
 
-        var instance;
         return {
-            instance: function () {
-                if (instance == null) {
+            getInstance: function() {
+                if (!instance) {
                     instance = new Client();
-                    instance.constructor = null;
                 }
                 return instance;
             }
         };
     })();
-</script>
+
+
+    </script>
+</head>
+<body>
+<div id="container"></div>
 </body>
