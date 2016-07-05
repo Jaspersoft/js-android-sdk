@@ -1,13 +1,24 @@
 buildscript {
     repositories {
+        jcenter()
+        mavenCentral()
         maven { url "https://maven.fabric.io/public" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4'
     }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+version = clientModuleVersion
+ext {
+    PUBLISH_GROUP_ID = group
+    PUBLISH_ARTIFACT_ID = 'js-android-sdk-widget'
+    PUBLISH_VERSION = version
+}
 
 android {
     compileSdkVersion 23
@@ -39,3 +50,5 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.robolectric:shadows-support-v4:3.1'
 }
+
+apply from: '../scripts/android-release-aar.gradle'
