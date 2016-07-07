@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -15,7 +16,6 @@ import com.jaspersoft.android.sdk.widget.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.ResourceWebViewStore;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
@@ -33,7 +33,7 @@ public class ReportFragment extends Fragment {
 
     private ReportRenderer reportRenderer;
     private ResourceWebView resourceWebView;
-    private ReportFragmentEventListener reportFragmentEventListener;
+    private ReportRendererCallback reportRendererCallback;
 
     private float scale;
     private boolean inPending;
@@ -52,6 +52,8 @@ public class ReportFragment extends Fragment {
         if (resourceWebView == null) {
             resourceWebView = new ResourceWebView(getContext().getApplicationContext());
         }
+
+        setReportRendererCallback(null);
     }
 
     @Nullable
@@ -105,20 +107,6 @@ public class ReportFragment extends Fragment {
         }
     }
 
-    public boolean isInited() {
-        return reportRenderer != null;
-    }
-
-    public boolean isFeatureSupported(ReportFeature reportFeature) {
-        return reportFeature != ReportFeature.ANCHOR_NAVIGATION || reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION);
-    }
-
-    public boolean isActionAvailable(ReportAction reportAction) {
-        checkInited();
-
-        return reportRenderer.isActionAvailable(reportAction);
-    }
-
     public void init(AuthorizedClient client, ServerInfo serverInfo) {
         init(client, serverInfo, 1f);
     }
@@ -131,6 +119,22 @@ public class ReportFragment extends Fragment {
         this.scale = scale;
     }
 
+    public boolean isInited() {
+        return reportRenderer != null;
+    }
+
+    public boolean isInProgress() {
+        return reportRenderer.isInProgress();
+    }
+
+    public boolean isFeatureSupported(ReportFeature reportFeature) {
+        return reportFeature != ReportFeature.ANCHOR_NAVIGATION || reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION);
+    }
+
+    public RenderState getRenderState() {
+        return reportRenderer.getRenderState();
+    }
+
     public void run(RunOptions runOptions) {
         checkInited();
 
@@ -138,7 +142,9 @@ public class ReportFragment extends Fragment {
         inPending = true;
         switch (reportRenderer.getRenderState()) {
             case IDLE:
-                reportRenderer.init(scale);
+                if (!reportRenderer.isInProgress()) {
+                    reportRenderer.init(scale);
+                }
                 break;
             case INITED:
                 reportRenderer.reset();
@@ -187,8 +193,11 @@ public class ReportFragment extends Fragment {
         reportRenderer.reset();
     }
 
-    public void setReportFragmentEventListener(ReportFragmentEventListener reportFragmentEventListener) {
-        this.reportFragmentEventListener = reportFragmentEventListener;
+    public void setReportRendererCallback(ReportRendererCallback reportRendererCallback) {
+        if (reportRendererCallback == null) {
+            reportRendererCallback = new ReportRendererCallback.SimpleReportRendererCallback();
+        }
+        this.reportRendererCallback = reportRendererCallback;
     }
 
     private void checkInited() {
@@ -199,34 +208,39 @@ public class ReportFragment extends Fragment {
 
     private class RendererEventListener implements ReportRendererCallback {
         @Override
-        public void onProgressStateChange(boolean inProgress) {
-            resourceWebView.setVisibility(inProgress ? View.GONE : View.VISIBLE);
+        public void onProgressStateChanged(boolean inProgress) {
+            resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
+            reportRendererCallback.onProgressStateChanged(inProgress);
         }
 
         @Override
         public void onRenderStateChanged(RenderState renderState) {
-            switch (renderState) {
-                case INITED:
-                    if (inPending) {
-                        reportRenderer.render(runOptions);
-                        inPending = false;
-                    }
-                    break;
+            resourceWebView.setVisibility(renderState == RenderState.RENDERED ? View.VISIBLE : View.GONE);
+            if (renderState == RenderState.INITED && inPending) {
+                reportRenderer.render(runOptions);
             }
+            reportRendererCallback.onRenderStateChanged(renderState);
         }
 
         @Override
         public void onHyperlinkClicked(Hyperlink hyperlink) {
-            if (reportFragmentEventListener != null) {
-                reportFragmentEventListener.onHyperlinkClicked(hyperlink);
-            }
+            reportRendererCallback.onHyperlinkClicked(hyperlink);
+
+        }
+
+        @Override
+        public void onCurrentPageChanged(int currentPage) {
+            Toast.makeText(getContext(), "Current " + currentPage, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPagesCountChanged(int totalCount) {
+            Toast.makeText(getContext(), "Total " + totalCount, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onError(ServiceException exception) {
-            if (reportFragmentEventListener != null) {
-                reportFragmentEventListener.onError(exception);
-            }
+            reportRendererCallback.onError(exception);
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.jaspersoft.android.sdk.widget.report.renderer;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.PagesCountChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ProgressStateEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.SwapStateEvent;
@@ -40,6 +42,16 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onCurrentPageChanged(CurrentPageChangedEvent currentPageChangedEvent) {
+        handleEvent(currentPageChangedEvent);
+    }
+
+    @Subscribe
+    public void onPagesCountChanged(PagesCountChangedEvent pagesCountChangedEvent) {
+        handleEvent(pagesCountChangedEvent);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -70,9 +82,13 @@ class EventPublisher {
             ServiceException exception = ((ExceptionEvent) event).getException();
             reportRendererCallback.onError(exception);
         } else if (event instanceof ProgressStateEvent) {
-            reportRendererCallback.onProgressStateChange(((ProgressStateEvent) event).isInProgress());
+            reportRendererCallback.onProgressStateChanged(((ProgressStateEvent) event).isInProgress());
         } else if (event instanceof HyperlinkEvent) {
             reportRendererCallback.onHyperlinkClicked(((HyperlinkEvent) event).getHyperlink());
+        } else if (event instanceof CurrentPageChangedEvent) {
+            reportRendererCallback.onCurrentPageChanged(((CurrentPageChangedEvent) event).getCurrentPage());
+        } else if (event instanceof PagesCountChangedEvent) {
+            reportRendererCallback.onPagesCountChanged(((PagesCountChangedEvent) event).getTotalCount());
         }
     }
 }

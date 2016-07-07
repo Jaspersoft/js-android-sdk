@@ -80,7 +80,7 @@ class RenderedRestState extends State {
 
     @Override
     public boolean internalIsActionAvailable(ReportAction reportAction) {
-        return reportAction == ReportAction.APPLY_PARAMS || reportAction == ReportAction.NAVIGATE_TO || reportAction == ReportAction.REFRESH;
+        return reportAction == ReportAction.MODIFY || reportAction == ReportAction.DESTROY;
     }
 
     @Subscribe

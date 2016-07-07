@@ -65,4 +65,12 @@ public abstract class EventFactory {
     public abstract Event createPageExportedEvent(String reportPage);
 
     public abstract Event createParamsUpdatedEvent();
+
+    public final Event createCurrentPageChangedEvent(int currentPage) {
+        return new CurrentPageChangedEvent(currentPage);
+    }
+
+    public final Event createPagesCountChangedEvent(int totalCount) {
+        return new PagesCountChangedEvent(totalCount);
+    }
 }

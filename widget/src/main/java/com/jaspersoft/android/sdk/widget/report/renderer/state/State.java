@@ -33,7 +33,12 @@ public abstract class State {
     }
 
     public final boolean isActionAvailable(ReportAction reportAction) {
-        return !inProgress && internalIsActionAvailable(reportAction);
+        if (reportAction == ReportAction.DESTROY) return internalIsActionAvailable(reportAction);
+        else return !inProgress && internalIsActionAvailable(reportAction);
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
     }
 
     protected final void setInProgress(boolean inProgress) {
@@ -66,10 +71,6 @@ public abstract class State {
         internalRefresh();
     }
 
-    public abstract RenderState getName();
-
-    public abstract boolean internalIsActionAvailable(ReportAction reportAction);
-
     public final void reset() {
         internalReset();
     }
@@ -77,6 +78,10 @@ public abstract class State {
     public final void destroy() {
         internalDestroy();
     }
+
+    public abstract RenderState getName();
+
+    public abstract boolean internalIsActionAvailable(ReportAction reportAction);
 
     protected abstract void internalInit(double initialScale);
 

@@ -5,8 +5,8 @@ package com.jaspersoft.android.sdk.widget.report.renderer;
  * @since 2.6
  */
 public enum ReportAction {
+    INIT,
     RENDER,
-    APPLY_PARAMS,
-    NAVIGATE_TO,
-    REFRESH
+    MODIFY,
+    DESTROY
 }

@@ -26,16 +26,18 @@ public class ReportRenderer {
     private final ReportFeaturesCompat reportFeaturesCompat;
     private State currentState;
 
-    ReportRenderer(Dispatcher dispatcher, StateFactory stateFactory, State state, EventPublisher eventPublisher, ReportFeaturesCompat reportFeaturesCompat) {
+    ReportRenderer(Dispatcher dispatcher, StateFactory stateFactory, EventPublisher eventPublisher, ReportFeaturesCompat reportFeaturesCompat, RenderState initialState) {
         this.dispatcher = dispatcher;
         this.stateFactory = stateFactory;
-        this.currentState = state;
         this.eventPublisher = eventPublisher;
         this.reportFeaturesCompat = reportFeaturesCompat;
 
-        dispatcher.register(currentState);
         dispatcher.register(this);
         dispatcher.register(eventPublisher);
+
+        SwapStateEvent initialStateEvent = new SwapStateEvent(initialState);
+        this.onSwapState(initialStateEvent);
+        eventPublisher.onSwapState(initialStateEvent);
     }
 
     public static ReportRenderer create(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
@@ -52,6 +54,10 @@ public class ReportRenderer {
 
     public boolean isFeatureSupported(ReportFeature reportFeature) {
         return reportFeaturesCompat.isSupported(reportFeature);
+    }
+
+    public boolean isInProgress() {
+        return currentState.isInProgress();
     }
 
     public RenderState getRenderState() {
@@ -100,8 +106,14 @@ public class ReportRenderer {
 
     @Subscribe
     public void onSwapState(SwapStateEvent nextStateEvent) {
-        dispatcher.unregister(currentState);
+        if (currentState != null) {
+            dispatcher.unregister(currentState);
+        }
+
         switch (nextStateEvent.getNextRenderState()) {
+            case IDLE:
+                currentState = stateFactory.createIdleState(currentState);
+                break;
             case INITED:
                 currentState = stateFactory.createInitedState(currentState);
                 break;
@@ -109,7 +121,7 @@ public class ReportRenderer {
                 currentState = stateFactory.createRenderedState(currentState);
                 break;
             case DESTROYED:
-                currentState = stateFactory.createDestroyedState();
+                currentState = stateFactory.createDestroyedState(currentState);
                 unregisterFromDispatcher();
                 return;
         }

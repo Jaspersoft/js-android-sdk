@@ -74,7 +74,7 @@ class InitedRestState extends State{
 
     @Override
     public boolean internalIsActionAvailable(ReportAction reportAction) {
-        return reportAction == ReportAction.RENDER;
+        return reportAction == ReportAction.RENDER || reportAction == ReportAction.DESTROY;
     }
 
     @Subscribe

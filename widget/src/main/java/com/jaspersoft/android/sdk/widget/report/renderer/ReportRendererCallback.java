@@ -8,15 +8,17 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
  * @since 2.6
  */
 public interface ReportRendererCallback {
-    void onProgressStateChange(boolean inProgress);
+    void onProgressStateChanged(boolean inProgress);
     void onRenderStateChanged(RenderState renderState);
     void onHyperlinkClicked(Hyperlink hyperlink);
+    void onCurrentPageChanged(int currentPage);
+    void onPagesCountChanged(int totalCount);
     void onError(ServiceException exception);
 
     class SimpleReportRendererCallback implements ReportRendererCallback{
 
         @Override
-        public void onProgressStateChange(boolean inProgress) {
+        public void onProgressStateChanged(boolean inProgress) {
 
         }
 
@@ -27,6 +29,16 @@ public interface ReportRendererCallback {
 
         @Override
         public void onHyperlinkClicked(Hyperlink hyperlink) {
+
+        }
+
+        @Override
+        public void onCurrentPageChanged(int currentPage) {
+
+        }
+
+        @Override
+        public void onPagesCountChanged(int totalCount) {
 
         }
 

@@ -74,7 +74,7 @@ class IdleState extends State {
 
     @Override
     public boolean internalIsActionAvailable(ReportAction reportAction) {
-        return false;
+        return reportAction == ReportAction.INIT || reportAction == ReportAction.DESTROY;
     }
 
     @Subscribe

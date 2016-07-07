@@ -12,17 +12,23 @@
     <script type="text/javascript">
 
     var NativeCallbacks = {
-        onInited: function() {
+        onInited: function () {
             return Android.onInited();
         },
-        onRendered: function() {
+        onRendered: function () {
             return Android.onRendered();
         },
-        onError: function(error) {
+        onError: function (error) {
             return Android.onError(error);
         },
         onCleared: function () {
             return Android.onCleared();
+        },
+        onCurrentPageChanged: function (currentPage) {
+            return Android.onCurrentPageChanged(currentPage);
+        },
+        onPagesCountChanged: function (totalCount) {
+            return Android.onPagesCountChanged(totalCount);
         },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
@@ -181,6 +187,10 @@
                     pages: destination,
                     success: reportExecutedFn,
                     error: reportErrorFn,
+                    events: {
+                        reportCompleted: reportCompletedFn,
+                        changePagesState: currentPageChangedFn
+                    },
                     linkOptions: {
                         events: {
                             click: handleHyperlinkClick
@@ -206,6 +216,15 @@
                     reportInstance.container("#container");
                     reportInstance.render(reportRenderedFn, reportErrorFn);
                 }
+            }
+
+            currentPageChangedFn = function(currentPage) {
+                console.log(currentPage)
+                NativeCallbacks.onCurrentPageChanged(currentPage);
+            }
+
+            reportCompletedFn = function() {
+                NativeCallbacks.onPagesCountChanged(reportInstance.data().totalPages);
             }
 
             reportRenderedFn = function() {

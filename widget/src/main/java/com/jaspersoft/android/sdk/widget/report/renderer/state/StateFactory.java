@@ -12,20 +12,21 @@ import com.jaspersoft.android.sdk.widget.report.renderer.jsinterface.JsInterface
  * @since 2.6
  */
 public abstract class StateFactory {
-
     protected final Dispatcher dispatcher;
     protected final EventFactory eventFactory;
     protected final CommandFactory commandFactory;
     protected final CommandExecutor commandExecutor;
+    private  final JsInterface jsInterface;
 
-    public StateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
+    public StateFactory(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, JsInterface jsInterface) {
         this.dispatcher = dispatcher;
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
         this.commandExecutor = commandExecutor;
+        this.jsInterface = jsInterface;
     }
 
-    public final State createIdleState(JsInterface jsInterface) {
+    public final State createIdleState(State prevState) {
         return new IdleState(dispatcher, eventFactory, commandFactory, commandExecutor, jsInterface);
     }
 
@@ -33,7 +34,7 @@ public abstract class StateFactory {
 
     public abstract State createRenderedState(State prevState);
 
-    public final State createDestroyedState() {
+    public final State createDestroyedState(State prevState) {
         return new DestroyedState(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
 }

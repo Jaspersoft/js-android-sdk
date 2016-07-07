@@ -45,4 +45,14 @@ public class JsInterfaceVis extends JsInterface {
         Hyperlink hyperlink = hyperlinkMapper.map(type, hyperlinkParam);
         dispatcher.dispatch(eventFactory.createHyperlinkEvent(hyperlink));
     }
+
+    @JavascriptInterface
+    public void onCurrentPageChanged(int currentPage) {
+        dispatcher.dispatch(eventFactory.createCurrentPageChangedEvent(currentPage));
+    }
+
+    @JavascriptInterface
+    public void onPagesCountChanged(int totalCount) {
+        dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(totalCount));
+    }
 }
