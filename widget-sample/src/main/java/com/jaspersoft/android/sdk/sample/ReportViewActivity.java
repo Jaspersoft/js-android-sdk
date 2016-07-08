@@ -17,9 +17,9 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
-import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.LocalHyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
+import com.jaspersoft.android.sdk.widget.report.view.PaginationView;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragmentEventListener;
 
@@ -40,7 +40,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportFragm
 
         setContentView(R.layout.report_renderer_preview);
         reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
-
+        PaginationView paginationView = (PaginationView) findViewById(R.id.pagination);
         findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,9 +56,10 @@ public class ReportViewActivity extends AppCompatActivity implements ReportFragm
 
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setEdition("PRO");
-        serverInfo.setVersion(ServerVersion.v6_2);
+        serverInfo.setVersion(ServerVersion.v5_6_1);
 
         reportFragment.setReportFragmentEventListener(this);
+        reportFragment.setPaginationView(paginationView);
         if (!reportFragment.isInited()) {
             reportFragment.init(authorizedClient, serverInfo, 0.5f);
             reportFragment.run(new RunOptions.Builder()
@@ -68,10 +69,13 @@ public class ReportViewActivity extends AppCompatActivity implements ReportFragm
     }
 
     @Override
+    public void onActionsAvailabilityChanged() {
+
+    }
+
+    @Override
     public void onHyperlinkClicked(Hyperlink hyperlink) {
-        if (hyperlink instanceof LocalHyperlink) {
-            reportFragment.navigateTo(((LocalHyperlink) hyperlink).getDestination());
-        } else if (hyperlink instanceof ReferenceHyperlink) {
+        if (hyperlink instanceof ReferenceHyperlink) {
             Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
         } else if (hyperlink instanceof ReportExecutionHyperlink) {
             RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();

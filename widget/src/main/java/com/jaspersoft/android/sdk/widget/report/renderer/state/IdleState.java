@@ -5,7 +5,6 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -70,11 +69,6 @@ class IdleState extends State {
     @Override
     public RenderState getName() {
         return RenderState.IDLE;
-    }
-
-    @Override
-    public boolean internalIsActionAvailable(ReportAction reportAction) {
-        return reportAction == ReportAction.INIT || reportAction == ReportAction.DESTROY;
     }
 
     @Subscribe

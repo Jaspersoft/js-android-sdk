@@ -4,16 +4,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="refresh"/>
-
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.jaspersoft.android.sdk.widget.report.view.ReportFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/pagination"/>
+
+    <com.jaspersoft.android.sdk.sample.SimplePaginationView
+        android:id="@+id/pagination"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:background="#373a43"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh"
+        android:id="@+id/refresh"/>
 
 </RelativeLayout>

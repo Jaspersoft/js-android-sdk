@@ -229,6 +229,7 @@
 
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
+                NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
             }
 
             reportErrorFn = function(error) {

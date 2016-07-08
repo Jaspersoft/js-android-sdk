@@ -14,37 +14,4 @@ public interface ReportRendererCallback {
     void onCurrentPageChanged(int currentPage);
     void onPagesCountChanged(int totalCount);
     void onError(ServiceException exception);
-
-    class SimpleReportRendererCallback implements ReportRendererCallback{
-
-        @Override
-        public void onProgressStateChanged(boolean inProgress) {
-
-        }
-
-        @Override
-        public void onRenderStateChanged(RenderState renderState) {
-
-        }
-
-        @Override
-        public void onHyperlinkClicked(Hyperlink hyperlink) {
-
-        }
-
-        @Override
-        public void onCurrentPageChanged(int currentPage) {
-
-        }
-
-        @Override
-        public void onPagesCountChanged(int totalCount) {
-
-        }
-
-        @Override
-        public void onError(ServiceException exception) {
-
-        }
-    }
 }

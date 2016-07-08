@@ -8,4 +8,7 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+
+    <color name="js_gray_with_opacity">#41000000</color>
+    <color name="js_light_gray">#4b4e57</color>
 </resources>

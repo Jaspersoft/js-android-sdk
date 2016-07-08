@@ -4,7 +4,6 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -54,11 +53,6 @@ public class DestroyedState extends State {
     @Override
     public RenderState getName() {
         return RenderState.DESTROYED;
-    }
-
-    @Override
-    public boolean internalIsActionAvailable(ReportAction reportAction) {
-        return false;
     }
 
     @Override

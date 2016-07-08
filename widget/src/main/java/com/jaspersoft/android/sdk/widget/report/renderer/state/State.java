@@ -5,7 +5,6 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportAction;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -30,11 +29,6 @@ public abstract class State {
         this.eventFactory = eventFactory;
         this.commandFactory = commandFactory;
         this.commandExecutor = commandExecutor;
-    }
-
-    public final boolean isActionAvailable(ReportAction reportAction) {
-        if (reportAction == ReportAction.DESTROY) return internalIsActionAvailable(reportAction);
-        else return !inProgress && internalIsActionAvailable(reportAction);
     }
 
     public boolean isInProgress() {
@@ -80,8 +74,6 @@ public abstract class State {
     }
 
     public abstract RenderState getName();
-
-    public abstract boolean internalIsActionAvailable(ReportAction reportAction);
 
     protected abstract void internalInit(double initialScale);
 

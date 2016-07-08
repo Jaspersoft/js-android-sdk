@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+  ~ http://community.jaspersoft.com/project/jaspermobile-android
+  ~
+  ~ Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
+  ~ the following license terms apply:
+  ~
+  ~ This program is part of TIBCO Jaspersoft Mobile for Android.
+  ~
+  ~ TIBCO Jaspersoft Mobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Lesser General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ TIBCO Jaspersoft Mobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with TIBCO Jaspersoft Mobile for Android. If not, see
+  ~ <http://www.gnu.org/licenses/lgpl>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:background="#4b4e57"
+                tools:layout_height="56dp"
+                tools:theme="@style/Theme.AppCompat.Light">
+
+    <ImageButton
+        android:id="@+id/firstPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/ic_page_first"
+        tools:enabled="false"/>
+
+    <ImageButton
+        android:id="@+id/previousPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/firstPage"
+        android:layout_toRightOf="@+id/firstPage"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/ic_page_previous"
+        tools:enabled="false"/>
+
+    <FrameLayout
+        android:id="@+id/pageValues"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:clickable="true"
+        android:background="@drawable/bg_rounded">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/currentPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                tools:text="1"/>
+
+            <TextView
+                android:id="@+id/totalPageLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                tools:text="of 47"/>
+
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/nextPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/lastPage"
+        android:layout_toStartOf="@+id/lastPage"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/ic_page_next"/>
+
+    <ImageButton
+        android:id="@+id/lastPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/ic_page_last"/>
+
+</RelativeLayout>

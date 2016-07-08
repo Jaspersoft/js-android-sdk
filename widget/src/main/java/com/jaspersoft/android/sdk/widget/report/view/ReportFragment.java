@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -21,6 +20,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.compat.ReportFeature;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
+import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.LocalHyperlink;
 
 import java.util.List;
 
@@ -28,12 +28,13 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class ReportFragment extends Fragment {
+public class ReportFragment extends Fragment implements PaginationView.PaginationListener {
     private static final String RENDERER_KEY_ARG = "rendererKey";
 
     private ReportRenderer reportRenderer;
     private ResourceWebView resourceWebView;
-    private ReportRendererCallback reportRendererCallback;
+    private PaginationView paginationView;
+    private ReportFragmentEventListener reportFragmentEventListener;
 
     private float scale;
     private boolean inPending;
@@ -53,7 +54,7 @@ public class ReportFragment extends Fragment {
             resourceWebView = new ResourceWebView(getContext().getApplicationContext());
         }
 
-        setReportRendererCallback(null);
+        setReportFragmentEventListener(null);
     }
 
     @Nullable
@@ -123,16 +124,12 @@ public class ReportFragment extends Fragment {
         return reportRenderer != null;
     }
 
-    public boolean isInProgress() {
-        return reportRenderer.isInProgress();
+    public boolean isControlActionsAvailable() {
+        return !reportRenderer.isInProgress() && reportRenderer.getRenderState() == RenderState.RENDERED;
     }
 
     public boolean isFeatureSupported(ReportFeature reportFeature) {
         return reportFeature != ReportFeature.ANCHOR_NAVIGATION || reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION);
-    }
-
-    public RenderState getRenderState() {
-        return reportRenderer.getRenderState();
     }
 
     public void run(RunOptions runOptions) {
@@ -181,23 +178,25 @@ public class ReportFragment extends Fragment {
         }
     }
 
-    public void navigateTo(Destination destination) {
-        checkInited();
-
-        reportRenderer.navigateTo(destination);
-    }
-
     public void reset() {
         checkInited();
 
         reportRenderer.reset();
     }
 
-    public void setReportRendererCallback(ReportRendererCallback reportRendererCallback) {
-        if (reportRendererCallback == null) {
-            reportRendererCallback = new ReportRendererCallback.SimpleReportRendererCallback();
+    public void setReportFragmentEventListener(ReportFragmentEventListener reportFragmentEventListener) {
+        if (reportFragmentEventListener == null) {
+            reportFragmentEventListener = new ReportFragmentEventListener.SimpleReportFragmentEventListener();
         }
-        this.reportRendererCallback = reportRendererCallback;
+        this.reportFragmentEventListener = reportFragmentEventListener;
+    }
+
+    public void setPaginationView(PaginationView paginationView) {
+        if (paginationView == null) {
+            throw new IllegalArgumentException("PaginationView should not be null");
+        }
+        this.paginationView = paginationView;
+        paginationView.setPaginationListener(this);
     }
 
     private void checkInited() {
@@ -206,11 +205,23 @@ public class ReportFragment extends Fragment {
         }
     }
 
+    private void updatePaginationEnabled() {
+        if (paginationView != null) {
+            paginationView.setEnabled(reportRenderer.getRenderState() == RenderState.RENDERED && !reportRenderer.isInProgress());
+        }
+    }
+
+    @Override
+    public void onNavigateTo(Destination destination) {
+        reportRenderer.navigateTo(destination);
+    }
+
     private class RendererEventListener implements ReportRendererCallback {
         @Override
         public void onProgressStateChanged(boolean inProgress) {
             resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
-            reportRendererCallback.onProgressStateChanged(inProgress);
+            updatePaginationEnabled();
+            reportFragmentEventListener.onActionsAvailabilityChanged();
         }
 
         @Override
@@ -219,28 +230,37 @@ public class ReportFragment extends Fragment {
             if (renderState == RenderState.INITED && inPending) {
                 reportRenderer.render(runOptions);
             }
-            reportRendererCallback.onRenderStateChanged(renderState);
+
+            updatePaginationEnabled();
+            reportFragmentEventListener.onActionsAvailabilityChanged();
         }
 
         @Override
         public void onHyperlinkClicked(Hyperlink hyperlink) {
-            reportRendererCallback.onHyperlinkClicked(hyperlink);
-
+            if (hyperlink instanceof LocalHyperlink) {
+                reportRenderer.navigateTo(((LocalHyperlink) hyperlink).getDestination());
+            } else {
+                reportFragmentEventListener.onHyperlinkClicked(hyperlink);
+            }
         }
 
         @Override
         public void onCurrentPageChanged(int currentPage) {
-            Toast.makeText(getContext(), "Current " + currentPage, Toast.LENGTH_SHORT).show();
+            if (paginationView != null) {
+                paginationView.onCurrentPageChanged(currentPage);
+            }
         }
 
         @Override
         public void onPagesCountChanged(int totalCount) {
-            Toast.makeText(getContext(), "Total " + totalCount, Toast.LENGTH_SHORT).show();
+            if (paginationView != null) {
+                paginationView.onPagesCountChanged(totalCount);
+            }
         }
 
         @Override
         public void onError(ServiceException exception) {
-            reportRendererCallback.onError(exception);
+            reportFragmentEventListener.onError(exception);
         }
     }
 }
