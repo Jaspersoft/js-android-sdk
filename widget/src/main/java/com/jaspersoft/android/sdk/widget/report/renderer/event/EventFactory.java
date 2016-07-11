@@ -62,7 +62,7 @@ public abstract class EventFactory {
 
     public abstract Event createReportExecutedEvent(ReportExecution reportExecution, Destination destination);
 
-    public abstract Event createPageExportedEvent(String reportPage);
+    public abstract Event createPageExportedEvent(String reportPage, int pageNumber);
 
     public abstract Event createParamsUpdatedEvent();
 
@@ -70,7 +70,7 @@ public abstract class EventFactory {
         return new CurrentPageChangedEvent(currentPage);
     }
 
-    public final Event createPagesCountChangedEvent(int totalCount) {
+    public final Event createPagesCountChangedEvent(Integer totalCount) {
         return new PagesCountChangedEvent(totalCount);
     }
 }

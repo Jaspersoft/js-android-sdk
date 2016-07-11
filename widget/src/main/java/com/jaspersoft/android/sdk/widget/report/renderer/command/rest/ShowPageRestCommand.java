@@ -16,11 +16,13 @@ class ShowPageRestCommand extends Command {
 
     private final WebView webView;
     private final String reportPage;
+    private final int pageNumber;
 
-    ShowPageRestCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String reportPage) {
+    ShowPageRestCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String reportPage, int pageNumber) {
         super(dispatcher, eventFactory);
         this.webView = webView;
         this.reportPage = reportPage;
+        this.pageNumber = pageNumber;
     }
 
     @Override
@@ -34,6 +36,7 @@ class ShowPageRestCommand extends Command {
             @Override
             protected void onPostExecute(String script) {
                 webView.loadUrl(script);
+                dispatcher.dispatch(eventFactory.createCurrentPageChangedEvent(pageNumber));
             }
         };
     }

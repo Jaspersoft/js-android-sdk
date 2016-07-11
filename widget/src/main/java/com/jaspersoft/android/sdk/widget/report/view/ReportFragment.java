@@ -252,7 +252,7 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
         }
 
         @Override
-        public void onPagesCountChanged(int totalCount) {
+        public void onPagesCountChanged(Integer totalCount) {
             if (paginationView != null) {
                 paginationView.onPagesCountChanged(totalCount);
             }

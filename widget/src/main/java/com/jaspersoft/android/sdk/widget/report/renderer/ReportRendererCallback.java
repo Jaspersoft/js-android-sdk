@@ -12,6 +12,6 @@ public interface ReportRendererCallback {
     void onRenderStateChanged(RenderState renderState);
     void onHyperlinkClicked(Hyperlink hyperlink);
     void onCurrentPageChanged(int currentPage);
-    void onPagesCountChanged(int totalCount);
+    void onPagesCountChanged(Integer totalCount);
     void onError(ServiceException exception);
 }

@@ -40,10 +40,10 @@ public abstract class PaginationView extends RelativeLayout {
         init();
     }
 
-    public void onPagesCountChanged(int totalPages) {
+    public void onPagesCountChanged(Integer totalPages) {
         this.totalPages = totalPages;
 
-        setVisibility(totalPages > 1 ? VISIBLE : GONE);
+        setVisibility(totalPages == null || totalPages > 1 ? VISIBLE : GONE);
         setEnabled(isEnabled());
     }
 
@@ -99,9 +99,7 @@ public abstract class PaginationView extends RelativeLayout {
 
         setEnabled(ss.enabled);
         onCurrentPageChanged(currentPage);
-        if (totalPages != null) {
-            onPagesCountChanged(totalPages);
-        }
+        onPagesCountChanged(totalPages);
     }
 
     public interface PaginationListener {

@@ -27,8 +27,8 @@ public class RestEventFactory extends EventFactory {
     }
 
     @Override
-    public Event createPageExportedEvent(String reportPage) {
-        return new PageExportedEvent(reportPage);
+    public Event createPageExportedEvent(String reportPage, int pageNumber) {
+        return new PageExportedEvent(reportPage, pageNumber);
     }
 
     @Override

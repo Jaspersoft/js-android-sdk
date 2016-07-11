@@ -5,16 +5,29 @@ package com.jaspersoft.android.sdk.widget.report.renderer.command;
  * @since 2.5
  */
 public class CommandExecutor {
-    private Command lastCommand;
+    private CommandsList commandsList;
 
-    public void execute(Command command) {
-        lastCommand = command;
+    public CommandExecutor() {
+        commandsList = new CommandsList();
+    }
+
+    public final void execute(Command command) {
+        cancelPrevious(command.getClass());
+        commandsList.add(command);
         command.execute();
     }
 
     public final void cancelExecution() {
-        if (lastCommand != null) {
-            lastCommand.cancel();
+        for (Command command : commandsList) {
+            command.cancel();
         }
+    }
+
+    private void cancelPrevious(Class commandType) {
+        Command prevCommand = commandsList.get(commandType);
+        if (prevCommand != null) {
+            prevCommand.cancel();
+        }
+        commandsList.remove(prevCommand);
     }
 }

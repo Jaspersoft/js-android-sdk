@@ -59,8 +59,13 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createShowPageCommand(String page) {
+    public Command createShowPageCommand(String page, int pageNumber) {
         throw new UnsupportedOperationException("Show page command is not supported for visualize");
+    }
+
+    @Override
+    public Command createWaitForReportMetadataCommand(ReportExecution reportExecution) {
+        throw new UnsupportedOperationException("Wait for report metadata command is not supported for visualize");
     }
 
     @Override

@@ -5,13 +5,13 @@ package com.jaspersoft.android.sdk.widget.report.renderer.event;
  * @since 2.6
  */
 public class PagesCountChangedEvent implements Event {
-    private int totalCount;
+    private Integer totalCount;
 
-    PagesCountChangedEvent(int totalCount) {
+    PagesCountChangedEvent(Integer totalCount) {
         this.totalCount = totalCount;
     }
 
-    public int getTotalCount() {
+    public Integer getTotalCount() {
         return totalCount;
     }
 }

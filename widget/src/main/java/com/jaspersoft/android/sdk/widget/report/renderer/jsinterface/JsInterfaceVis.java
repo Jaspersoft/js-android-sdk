@@ -2,7 +2,9 @@ package com.jaspersoft.android.sdk.widget.report.renderer.jsinterface;
 
 import android.webkit.JavascriptInterface;
 
+import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.HyperlinkMapper;
@@ -52,7 +54,8 @@ public class JsInterfaceVis extends JsInterface {
     }
 
     @JavascriptInterface
-    public void onPagesCountChanged(int totalCount) {
+    public void onPagesCountChanged(String totalCountString) {
+        Integer totalCount = new Gson().fromJson(totalCountString, Integer.class);
         dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(totalCount));
     }
 }

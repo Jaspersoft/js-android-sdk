@@ -21,12 +21,12 @@ public abstract class Command {
         this.eventFactory = eventFactory;
     }
 
-    public void execute() {
+    void execute() {
         task = createTask();
         AsyncTaskCompat.executeParallel(task);
     }
 
-    public void cancel() {
+    void cancel() {
         task.cancel(true);
     }
 

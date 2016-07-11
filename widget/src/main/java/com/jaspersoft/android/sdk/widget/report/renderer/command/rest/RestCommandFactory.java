@@ -58,8 +58,13 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createShowPageCommand(String page) {
-        return new ShowPageRestCommand(dispatcher, eventFactory, webView, page);
+    public Command createShowPageCommand(String page, int pageNumber) {
+        return new ShowPageRestCommand(dispatcher, eventFactory, webView, page, pageNumber);
+    }
+
+    @Override
+    public Command createWaitForReportMetadataCommand(ReportExecution reportExecution) {
+        return new WaitMetaDataRestCommand(dispatcher, eventFactory, reportExecution);
     }
 
     @Override

@@ -55,8 +55,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportFragm
         authorizedClient = clientProvider.provide();
 
         ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setEdition("PRO");
-        serverInfo.setVersion(ServerVersion.v5_6_1);
+        serverInfo.setEdition("CE");
+        serverInfo.setVersion(ServerVersion.v6_2);
 
         reportFragment.setReportFragmentEventListener(this);
         reportFragment.setPaginationView(paginationView);

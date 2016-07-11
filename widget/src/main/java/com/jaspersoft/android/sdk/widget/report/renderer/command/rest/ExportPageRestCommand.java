@@ -60,7 +60,7 @@ class ExportPageRestCommand extends Command {
             @Override
             protected void onPostExecute(String reportPage) {
                 if (reportPage != null) {
-                    dispatcher.dispatch(eventFactory.createPageExportedEvent(reportPage));
+                    dispatcher.dispatch(eventFactory.createPageExportedEvent(reportPage, page));
                 }
             }
 

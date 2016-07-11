@@ -8,12 +8,18 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
  */
 public class PageExportedEvent implements Event {
     private final String reportPage;
+    private final int pageNumber;
 
-    PageExportedEvent(String reportPage) {
+    PageExportedEvent(String reportPage, int pageNumber) {
         this.reportPage = reportPage;
+        this.pageNumber = pageNumber;
     }
 
     public String getReportPage() {
         return reportPage;
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
     }
 }

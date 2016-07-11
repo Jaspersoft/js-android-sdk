@@ -26,7 +26,7 @@ public class VisEventFactory extends EventFactory {
     }
 
     @Override
-    public Event createPageExportedEvent(String reportPage) {
+    public Event createPageExportedEvent(String reportPage, int pageNumber) {
         throw new UnsupportedOperationException("Export event is not supported by visualize");
     }
 

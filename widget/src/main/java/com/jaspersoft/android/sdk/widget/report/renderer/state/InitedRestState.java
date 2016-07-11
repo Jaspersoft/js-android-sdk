@@ -80,8 +80,8 @@ class InitedRestState extends State{
 
     @Subscribe
     public void onPageExported(PageExportedEvent pageExportedEvent) {
-        Command pageExportCommand = commandFactory.createShowPageCommand(pageExportedEvent.getReportPage());
-        commandExecutor.execute(pageExportCommand);
+        Command showPageCommand = commandFactory.createShowPageCommand(pageExportedEvent.getReportPage(), pageExportedEvent.getPageNumber());
+        commandExecutor.execute(showPageCommand);
     }
 
     @Subscribe

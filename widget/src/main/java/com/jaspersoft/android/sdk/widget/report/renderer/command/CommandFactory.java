@@ -70,7 +70,9 @@ public abstract class CommandFactory {
         return new AnchorUnsupportedCommand(dispatcher, eventFactory);
     }
 
-    public abstract Command createShowPageCommand(String page);
+    public abstract Command createShowPageCommand(String page, int pageNumber);
+
+    public abstract Command createWaitForReportMetadataCommand(ReportExecution reportExecution);
 
     public abstract Command createApplyParamsCommand(List<ReportParameter> parameters);
 

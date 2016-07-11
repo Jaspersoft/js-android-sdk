@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 TIBCO Software, Inc. All rights reserved.
+ * Copyright ï¿½ 2015 TIBCO Software, Inc. All rights reserved.
  * http://community.jaspersoft.com/project/jaspermobile-android
  *
  * Unless you have purchased a commercial license agreement from TIBCO Jaspersoft,
@@ -66,11 +66,11 @@ public class SimplePaginationView extends PaginationView implements View.OnClick
     }
 
     @Override
-    public void onPagesCountChanged(int totalPages) {
+    public void onPagesCountChanged(Integer totalPages) {
         super.onPagesCountChanged(totalPages);
 
-        this.totalPagesLabel.setText("of" + getTotalPages());
-        loading.setVisibility(GONE);
+        totalPagesLabel.setText(totalPages == null ? "" : "of" + getTotalPages());
+        loading.setVisibility(totalPages == null ? VISIBLE : GONE);
     }
 
     @Override
