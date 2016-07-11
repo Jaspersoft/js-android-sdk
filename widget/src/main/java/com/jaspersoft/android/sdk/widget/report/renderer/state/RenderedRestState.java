@@ -15,6 +15,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.PageExportedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.ParamsUpdatedEvent;
 import com.squareup.otto.Subscribe;
@@ -61,7 +62,7 @@ class RenderedRestState extends State {
     @Override
     protected void internalRefresh() {
         setInProgress(true);
-        Command refreshCommand = commandFactory.createRefreshCommand();
+        Command refreshCommand = commandFactory.createRefreshCommand(reportExecution);
         commandExecutor.execute(refreshCommand);
     }
 
@@ -86,6 +87,13 @@ class RenderedRestState extends State {
 
     @Subscribe
     public void onParamsUpdated(ParamsUpdatedEvent paramsUpdatedEvent) {
+        Command pageExportCommand = commandFactory.createPageExportCommand(new Destination(1), reportExecution);
+        commandExecutor.execute(pageExportCommand);
+        waitForReportMetadata();
+    }
+
+    @Subscribe
+    public void onDataRefreshed(DataRefreshedEvent dataRefreshedEvent) {
         Command pageExportCommand = commandFactory.createPageExportCommand(new Destination(1), reportExecution);
         commandExecutor.execute(pageExportCommand);
         waitForReportMetadata();

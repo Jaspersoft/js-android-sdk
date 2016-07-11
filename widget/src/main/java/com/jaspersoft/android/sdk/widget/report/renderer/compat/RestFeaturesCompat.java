@@ -11,9 +11,9 @@ public class RestFeaturesCompat extends ReportFeaturesCompat {
             case ANCHOR_NAVIGATION:
                 return false;
             case DATA_REFRESHING:
-                return false;
+                return true;
             case PARAMS_APPLYING:
-                return false;
+                return true;
             default:
                 return false;
         }

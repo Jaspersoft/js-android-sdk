@@ -68,11 +68,6 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createApplyParamsCommand(List<ReportParameter> parameters) {
-        throw new UnsupportedOperationException("Apply params command without ReportExecution command is not supported for rest");
-    }
-
-    @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
         return new ApplyParamsRestCommand(dispatcher, eventFactory, reportExecution, parameters);
     }
@@ -80,6 +75,11 @@ public class RestCommandFactory extends CommandFactory {
     @Override
     public Command createNavigateToCommand(Destination destination) {
         throw new UnsupportedOperationException("Navigate to command without ReportExecution command is not supported for rest");
+    }
+
+    @Override
+    public Command createRefreshCommand(ReportExecution reportExecution) {
+        return new RefreshRestCommand(dispatcher, eventFactory, reportExecution);
     }
 
     public static class Creator {

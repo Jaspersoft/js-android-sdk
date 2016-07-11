@@ -15,14 +15,12 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ApplyParamsRestCommand extends Command {
+class RefreshRestCommand extends Command {
     private final ReportExecution reportExecution;
-    private final List<ReportParameter> parameters;
 
-    ApplyParamsRestCommand(Dispatcher dispatcher, EventFactory eventFactory, ReportExecution reportExecution, List<ReportParameter> parameters) {
+    RefreshRestCommand(Dispatcher dispatcher, EventFactory eventFactory, ReportExecution reportExecution) {
         super(dispatcher, eventFactory);
         this.reportExecution = reportExecution;
-        this.parameters = parameters;
     }
 
     @Override
@@ -36,7 +34,7 @@ class ApplyParamsRestCommand extends Command {
             @Override
             protected Void doInBackground(Object... params) {
                 try {
-                    reportExecution.updateExecution(parameters);
+                    reportExecution.refresh();
                 } catch (ServiceException e) {
                     dispatcher.dispatch(eventFactory.createErrorEvent(e));
                 }
@@ -45,7 +43,7 @@ class ApplyParamsRestCommand extends Command {
 
             @Override
             protected void onPostExecute(Void voidy) {
-                dispatcher.dispatch(eventFactory.createParamsUpdatedEvent());
+                dispatcher.dispatch(eventFactory.createDaraRefreshedEvent());
             }
         };
     }

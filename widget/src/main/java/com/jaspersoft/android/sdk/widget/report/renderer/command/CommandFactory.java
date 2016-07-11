@@ -74,15 +74,13 @@ public abstract class CommandFactory {
 
     public abstract Command createWaitForReportMetadataCommand(ReportExecution reportExecution);
 
-    public abstract Command createApplyParamsCommand(List<ReportParameter> parameters);
-
     public abstract Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution);
 
     public Command createNavigateToCommand(Destination destination) {
         return new AnchorUnsupportedCommand(dispatcher, eventFactory);
     }
 
-    public Command createRefreshCommand() {
+    public Command createRefreshCommand(ReportExecution reportExecution) {
        return new RefreshUnsupportedCommand(dispatcher, eventFactory);
     }
 }

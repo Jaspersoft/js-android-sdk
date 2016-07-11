@@ -66,6 +66,8 @@ public abstract class EventFactory {
 
     public abstract Event createParamsUpdatedEvent();
 
+    public abstract Event createDaraRefreshedEvent();
+
     public final Event createCurrentPageChangedEvent(int currentPage) {
         return new CurrentPageChangedEvent(currentPage);
     }

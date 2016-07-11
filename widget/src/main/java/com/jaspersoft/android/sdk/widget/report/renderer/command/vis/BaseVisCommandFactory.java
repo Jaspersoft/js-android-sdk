@@ -69,14 +69,9 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createApplyParamsCommand(List<ReportParameter> parameters) {
+    public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
         String reportParams = visParamsMapper.mapParams(parameters);
         return new ApplyParamsVisCommand(dispatcher, eventFactory, webView, reportParams);
-    }
-
-    @Override
-    public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
-        return createApplyParamsCommand(parameters);
     }
 
     @Override
@@ -87,8 +82,8 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createRefreshCommand() {
-        return super.createRefreshCommand();
+    public Command createRefreshCommand(ReportExecution reportExecution) {
+        return super.createRefreshCommand(reportExecution);
     }
 
     public static class Creator {

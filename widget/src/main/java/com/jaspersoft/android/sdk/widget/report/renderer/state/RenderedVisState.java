@@ -40,7 +40,7 @@ class RenderedVisState extends State {
     @Override
     protected void internalApplyParams(List<ReportParameter> parameters) {
         setInProgress(true);
-        Command applyParamsCommand = commandFactory.createApplyParamsCommand(parameters);
+        Command applyParamsCommand = commandFactory.createApplyParamsCommand(parameters, null);
         commandExecutor.execute(applyParamsCommand);
     }
 
@@ -54,7 +54,7 @@ class RenderedVisState extends State {
     @Override
     protected void internalRefresh() {
         setInProgress(true);
-        Command refreshCommand = commandFactory.createRefreshCommand();
+        Command refreshCommand = commandFactory.createRefreshCommand(null);
         commandExecutor.execute(refreshCommand);
     }
 

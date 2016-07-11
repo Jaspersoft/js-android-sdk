@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer.command.vis;
 import android.webkit.WebView;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
+import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
@@ -35,7 +36,7 @@ public class Vis61CommandFactory extends BaseVisCommandFactory {
     }
 
     @Override
-    public Command createRefreshCommand() {
+    public Command createRefreshCommand(ReportExecution reportExecution) {
         return new RefreshVisCommand(dispatcher, eventFactory, webView);
     }
 

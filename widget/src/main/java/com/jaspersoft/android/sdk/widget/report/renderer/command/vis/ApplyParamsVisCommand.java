@@ -27,6 +27,11 @@ class ApplyParamsVisCommand extends Command {
     protected AsyncTask createTask() {
         return new AsyncTask<Object, Object, String>() {
             @Override
+            protected void onPreExecute() {
+                dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(null));
+            }
+
+            @Override
             protected String doInBackground(Object... params) {
                 return String.format(APPLY_PARAMS_SCRIPT, parameters);
             }

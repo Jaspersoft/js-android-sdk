@@ -35,4 +35,9 @@ public class RestEventFactory extends EventFactory {
     public Event createParamsUpdatedEvent() {
         return new ParamsUpdatedEvent();
     }
+
+    @Override
+    public Event createDaraRefreshedEvent() {
+        return new DataRefreshedEvent();
+    }
 }
