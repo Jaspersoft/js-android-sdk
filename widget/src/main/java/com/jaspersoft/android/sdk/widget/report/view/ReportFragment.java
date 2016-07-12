@@ -11,6 +11,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.ResourceWebViewStore;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
@@ -255,6 +256,11 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
         public void onPagesCountChanged(Integer totalCount) {
             if (paginationView != null) {
                 paginationView.onPagesCountChanged(totalCount);
+            }
+            if (totalCount != null && totalCount == 0) {
+                ServiceException noContentException = new ServiceException("Requested report execution has no content",
+                        new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
+                reportFragmentEventListener.onError(noContentException);
             }
         }
 

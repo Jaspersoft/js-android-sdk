@@ -89,9 +89,13 @@ public final class StatusCodes {
      */
     public static final int REPORT_EXECUTION_INVALID = 303;
     /**
+     * Requested report execution has no content
+     */
+    public static final int REPORT_EXECUTION_EMPTY = 304;
+    /**
      * Failed to render report
      */
-    public static final int REPORT_RENDER_FAILED = 304;
+    public static final int REPORT_RENDER_FAILED = 305;
 
     // RESOURCE
     /**
