@@ -75,4 +75,8 @@ public abstract class EventFactory {
     public final Event createPagesCountChangedEvent(Integer totalCount) {
         return new PagesCountChangedEvent(totalCount);
     }
+
+    public final Event createMultiPageStateChangedEvent(boolean isMultiPage) {
+        return new MultiPageStateChangedEvent(isMultiPage);
+    }
 }

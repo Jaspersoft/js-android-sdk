@@ -12,17 +12,17 @@ import java.util.Map;
 enum RenderersStore {
     INSTANCE;
 
-    Map<ReportRendererKey, ReportRenderer> reportExecutorList = new HashMap<>();
+    Map<ReportRendererKey, ReportRenderer> reportExecutorMap = new HashMap<>();
 
     public ReportRenderer restoreExecutor(ReportRendererKey key){
-        ReportRenderer reportRenderer = reportExecutorList.get(key);
-        reportExecutorList.remove(key);
+        ReportRenderer reportRenderer = reportExecutorMap.get(key);
+        reportExecutorMap.remove(key);
         return reportRenderer;
     }
 
     public ReportRendererKey saveExecutor(ReportRenderer reportRenderer) {
         ReportRendererKey key = ReportRendererKey.newKey();
-        reportExecutorList.put(key, reportRenderer);
+        reportExecutorMap.put(key, reportRenderer);
         return key;
     }
 }

@@ -42,8 +42,6 @@ public abstract class PaginationView extends RelativeLayout {
 
     public void onPagesCountChanged(Integer totalPages) {
         this.totalPages = totalPages;
-
-        setVisibility(totalPages == null || totalPages > 1 ? VISIBLE : GONE);
         setEnabled(isEnabled());
     }
 
@@ -116,16 +114,16 @@ public abstract class PaginationView extends RelativeLayout {
 
         private SavedState(Parcel in) {
             super(in);
-            this.currentPage = in.readInt();
-            this.totalPages = in.readInt();
+            this.currentPage = (Integer) in.readSerializable();
+            this.totalPages = (Integer) in.readSerializable();
             this.enabled = in.readInt() == 1;
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeInt(this.currentPage);
-            out.writeInt(this.totalPages);
+            out.writeSerializable(this.currentPage);
+            out.writeSerializable(this.totalPages);
             out.writeInt(enabled ? 1 : 0);
         }
 

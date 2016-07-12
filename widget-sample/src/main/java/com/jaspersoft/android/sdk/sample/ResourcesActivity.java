@@ -23,6 +23,9 @@ public class ResourcesActivity extends AppCompatActivity {
     private final static ResourceFactory SECURE_SERVER_MOB_DEMO = new ResourceFactory(new Profile(
             "https://mobiledemo.jaspersoft.com/jasperserver-pro/"
     ));
+    private final static ResourceFactory SERVER_TRUNK = new ResourceFactory(new Profile(
+            "http://build-master.jaspersoft.com:5980/jrs-pro-trunk/"
+    ));
     private final static ResourceFactory SERVER_5_6_1 = new ResourceFactory(new Profile(
             "http://192.168.88.55:8082/jasperserver-pro-561/"
     ));
@@ -66,10 +69,13 @@ public class ResourcesActivity extends AppCompatActivity {
             SERVER_6_2_1.newReport("6.2.1 - Fusion_links_report_output_format", "/public/Visualize/Hiperlinks/Fusion_links_report_output_format"),
             SERVER_6_2_1.newReport("6.2.1 - Hyperlink","/public/Visualize/Hiperlinks/HyperlinkReport"),
             SERVER_6_2_1.newReport("6.2.1 - Not existing","/public/Samples/Reports/fail"),
-            SERVER_MOB_DEMO.newReport("Mob demo - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
             SECURE_SERVER_MOB_DEMO.newReport("SECURE Mob demo - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_MOB_DEMO.newReport("Mob demo - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
             SERVER_MOB_DEMO.newReport("Mob demo - 04. Product Results","/public/Samples/Reports/04._Product_Results_by_Store_Type_Report"),
             SERVER_MOB_DEMO.newReport("Mob demo - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
+            SERVER_TRUNK.newReport("Trunk - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
+            SERVER_TRUNK.newReport("Trunk - 04. Product Results","/public/Samples/Reports/04._Product_Results_by_Store_Type_Report"),
+            SERVER_TRUNK.newReport("Trunk - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_0.newDashboard("6.0 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_0_1.newDashboard("6.0.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),
             SERVER_6_1.newDashboard("6.1 Supermat Dashboard", "/public/Samples/Dashboards/1._Supermart_Dashboard"),

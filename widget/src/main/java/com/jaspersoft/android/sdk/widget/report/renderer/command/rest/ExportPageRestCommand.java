@@ -48,11 +48,11 @@ class ExportPageRestCommand extends Command {
                     String escapedHtmlPage = parseReportDocument(pageInputStream);
                     return toJson(escapedHtmlPage);
                 } catch (ServiceException e) {
-                    dispatcher.dispatch(eventFactory.createErrorEvent(e));
+                    onError(e);
                     return null;
                 } catch (IOException e) {
                     ServiceException exception = new ServiceException("Can not render report", e, StatusCodes.REPORT_RENDER_FAILED);
-                    dispatcher.dispatch(eventFactory.createErrorEvent(exception));
+                    onError(exception);
                     return null;
                 }
             }
@@ -60,7 +60,7 @@ class ExportPageRestCommand extends Command {
             @Override
             protected void onPostExecute(String reportPage) {
                 if (reportPage != null) {
-                    dispatcher.dispatch(eventFactory.createPageExportedEvent(reportPage, page));
+                    onExported(reportPage);
                 }
             }
 
@@ -92,5 +92,13 @@ class ExportPageRestCommand extends Command {
                 return gson.toJson(object);
             }
         };
+    }
+
+    protected void onExported(String reportPage) {
+        dispatcher.dispatch(eventFactory.createPageExportedEvent(reportPage, page));
+    }
+
+    protected void onError(ServiceException e) {
+        dispatcher.dispatch(eventFactory.createErrorEvent(e));
     }
 }

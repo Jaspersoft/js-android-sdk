@@ -69,6 +69,11 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
+    public Command createDetectMultiPageCommand(ReportExecution reportExecution) {
+        return null;
+    }
+
+    @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
         String reportParams = visParamsMapper.mapParams(parameters);
         return new ApplyParamsVisCommand(dispatcher, eventFactory, webView, reportParams);

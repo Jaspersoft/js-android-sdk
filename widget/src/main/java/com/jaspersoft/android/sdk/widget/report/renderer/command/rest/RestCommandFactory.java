@@ -68,6 +68,11 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
+    public Command createDetectMultiPageCommand(ReportExecution reportExecution) {
+        return new CheckMultiPageRestCommand(dispatcher, eventFactory, reportExecution);
+    }
+
+    @Override
     public Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution) {
         return new ApplyParamsRestCommand(dispatcher, eventFactory, reportExecution, parameters);
     }

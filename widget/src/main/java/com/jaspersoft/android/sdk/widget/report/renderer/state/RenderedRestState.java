@@ -83,6 +83,9 @@ class RenderedRestState extends State {
     private void waitForReportMetadata() {
         Command waitForReportMetadataCommand = commandFactory.createWaitForReportMetadataCommand(reportExecution);
         commandExecutor.execute(waitForReportMetadataCommand);
+
+        Command detectMultiPageCommand = commandFactory.createWaitForReportMetadataCommand(reportExecution);
+        commandExecutor.execute(detectMultiPageCommand);
     }
 
     @Subscribe

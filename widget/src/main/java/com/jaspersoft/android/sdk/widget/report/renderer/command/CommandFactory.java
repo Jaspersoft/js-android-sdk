@@ -74,6 +74,8 @@ public abstract class CommandFactory {
 
     public abstract Command createWaitForReportMetadataCommand(ReportExecution reportExecution);
 
+    public abstract Command createDetectMultiPageCommand(ReportExecution reportExecution);
+
     public abstract Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution);
 
     public Command createNavigateToCommand(Destination destination) {

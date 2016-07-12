@@ -13,7 +13,6 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.ResourceWebView;
-import com.jaspersoft.android.sdk.widget.ResourceWebViewStore;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
@@ -31,6 +30,8 @@ import java.util.List;
  */
 public class ReportFragment extends Fragment implements PaginationView.PaginationListener {
     private static final String RENDERER_KEY_ARG = "rendererKey";
+    private static final String SCALE_ARG = "scaleKey";
+    private static final String IN_PENDING_ARG = "inPendingKey";
 
     private ReportRenderer reportRenderer;
     private ResourceWebView resourceWebView;
@@ -46,11 +47,15 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(RENDERER_KEY_ARG)) {
+            scale = savedInstanceState.getFloat(SCALE_ARG);
+            inPending = savedInstanceState.getBoolean(IN_PENDING_ARG);
             ReportRendererKey reportRendererKey = savedInstanceState.getParcelable(RENDERER_KEY_ARG);
+
             reportRenderer = RenderersStore.INSTANCE.restoreExecutor(reportRendererKey);
+            resourceWebView = ReportWebViewStore.INSTANCE.restoreReportView(reportRendererKey);
+            runOptions = RunOptionsStore.INSTANCE.restoreRunOptions(reportRendererKey);
         }
 
-        resourceWebView = ResourceWebViewStore.getInstance().getResourceWebView();
         if (resourceWebView == null) {
             resourceWebView = new ResourceWebView(getContext().getApplicationContext());
         }
@@ -80,8 +85,12 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
         super.onSaveInstanceState(outState);
 
         ReportRendererKey reportRendererKey = RenderersStore.INSTANCE.saveExecutor(reportRenderer);
+        ReportWebViewStore.INSTANCE.saveReportView(resourceWebView, reportRendererKey);
+        RunOptionsStore.INSTANCE.saveRunOptions(runOptions, reportRendererKey);
+
         outState.putParcelable(RENDERER_KEY_ARG, reportRendererKey);
-        ResourceWebViewStore.getInstance().setWebView(resourceWebView);
+        outState.putFloat(SCALE_ARG, scale);
+        outState.putBoolean(IN_PENDING_ARG, inPending);
     }
 
     @Override
@@ -242,6 +251,13 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
                 reportRenderer.navigateTo(((LocalHyperlink) hyperlink).getDestination());
             } else {
                 reportFragmentEventListener.onHyperlinkClicked(hyperlink);
+            }
+        }
+
+        @Override
+        public void onMultiPageStateChanged(boolean isMultiPage) {
+            if (paginationView != null) {
+                paginationView.setVisibility(isMultiPage ? View.VISIBLE : View.GONE);
             }
         }
 
