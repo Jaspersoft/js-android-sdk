@@ -50,6 +50,14 @@ public abstract class PaginationView extends RelativeLayout {
         setEnabled(isEnabled());
     }
 
+    public void show(boolean visible) {
+        if (visible && (totalPages == null || totalPages > 1)) {
+            setVisibility(VISIBLE);
+        } else {
+            setVisibility(GONE);
+        }
+    }
+
     public void setPaginationListener(PaginationListener paginationListener) {
         this.paginationListener = paginationListener;
     }

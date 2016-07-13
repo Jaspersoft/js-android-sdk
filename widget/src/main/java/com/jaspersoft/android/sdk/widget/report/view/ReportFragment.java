@@ -257,7 +257,7 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
         @Override
         public void onMultiPageStateChanged(boolean isMultiPage) {
             if (paginationView != null) {
-                paginationView.setVisibility(isMultiPage ? View.VISIBLE : View.GONE);
+                paginationView.show(isMultiPage);
             }
         }
 
@@ -277,6 +277,7 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
                 ServiceException noContentException = new ServiceException("Requested report execution has no content",
                         new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
                 reportFragmentEventListener.onError(noContentException);
+                onMultiPageStateChanged(false);
             }
         }
 
