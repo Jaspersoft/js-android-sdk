@@ -263,6 +263,7 @@ public class ReportFragment extends Fragment implements PaginationView.Paginatio
 
         @Override
         public void onCurrentPageChanged(int currentPage) {
+            while (resourceWebView.zoomOut());
             if (paginationView != null) {
                 paginationView.onCurrentPageChanged(currentPage);
             }
