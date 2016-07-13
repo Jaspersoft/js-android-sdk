@@ -20,8 +20,8 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
 import com.jaspersoft.android.sdk.widget.report.view.PaginationView;
+import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
-import com.jaspersoft.android.sdk.widget.report.view.ReportFragmentEventListener;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.5
  */
-public class ReportViewActivity extends AppCompatActivity implements ReportFragmentEventListener {
+public class ReportViewActivity extends AppCompatActivity implements ReportEventListener {
     private Resource resource;
     private ReportFragment reportFragment;
     private AuthorizedClient authorizedClient;
@@ -58,7 +58,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportFragm
         serverInfo.setEdition("PRO");
         serverInfo.setVersion(ServerVersion.v6_2);
 
-        reportFragment.setReportFragmentEventListener(this);
+        reportFragment.setReportEventListener(this);
         reportFragment.setPaginationView(paginationView);
         if (!reportFragment.isInited()) {
             reportFragment.init(authorizedClient, serverInfo, 0.5f);

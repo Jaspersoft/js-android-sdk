@@ -1,11 +1,10 @@
 package com.jaspersoft.android.sdk.widget.report.view;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
@@ -19,68 +18,34 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class ReportFragment extends Fragment implements ReportViewer {
+public class ReportView extends FrameLayout implements ReportViewer {
     private ReportViewerDelegate reportViewerDelegate;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public ReportView(Context context) {
+        super(context);
+        create();
+    }
+
+    public ReportView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        create();
+    }
+
+    public ReportView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        create();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public ReportView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        create();
+    }
+
+    private void create() {
         reportViewerDelegate = new ReportViewerDelegate();
-
-        if (savedInstanceState != null) {
-            reportViewerDelegate.restoreData(savedInstanceState);
-        }
-
-        if (reportViewerDelegate.getResourceView() == null) {
-            reportViewerDelegate.createResourceView(getContext());
-        }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return reportViewerDelegate.getResourceView();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (!reportViewerDelegate.isInited()) {
-            throw new RuntimeException("Report fragment must be inited before resuming!");
-        }
-
-        reportViewerDelegate.registerReportRendererCallback();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        reportViewerDelegate.persistData(outState);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (!reportViewerDelegate.isInited()) {
-            reportViewerDelegate.unregisterReportRendererCallback();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        reportViewerDelegate.removeResourceView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (reportViewerDelegate.isInited() && getActivity().isFinishing()) {
-            reportViewerDelegate.destroy();
-        }
+        reportViewerDelegate.createResourceView(getContext());
+        addView(reportViewerDelegate.getResourceView());
     }
 
     @Override
@@ -91,6 +56,7 @@ public class ReportFragment extends Fragment implements ReportViewer {
     @Override
     public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
         reportViewerDelegate.init(client, serverInfo, scale);
+        reportViewerDelegate.registerReportRendererCallback();
     }
 
     @Override
