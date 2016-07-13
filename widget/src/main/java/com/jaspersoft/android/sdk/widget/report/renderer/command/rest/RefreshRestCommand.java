@@ -2,14 +2,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.command.rest;
 
 import android.os.AsyncTask;
 
-import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
-
-import java.util.List;
 
 /**
  * @author Andrew Tivodar
@@ -28,6 +25,7 @@ class RefreshRestCommand extends Command {
         return new AsyncTask<Object, Object, Void>() {
             @Override
             protected void onPreExecute() {
+                dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(false));
                 dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(null));
             }
 

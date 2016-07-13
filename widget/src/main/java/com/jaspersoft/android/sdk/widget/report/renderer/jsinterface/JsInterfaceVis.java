@@ -4,7 +4,6 @@ import android.webkit.JavascriptInterface;
 
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.HyperlinkMapper;
@@ -38,6 +37,16 @@ public class JsInterfaceVis extends JsInterface {
     }
 
     @JavascriptInterface
+    public void onDataRefreshed() {
+        dispatcher.dispatch(eventFactory.createDaraRefreshedEvent());
+    }
+
+    @JavascriptInterface
+    public void onParamsUpdated() {
+        dispatcher.dispatch(eventFactory.createParamsUpdatedEvent());
+    }
+
+    @JavascriptInterface
     public void onCleared() {
         dispatcher.dispatch(eventFactory.createReportClearedEvent());
     }
@@ -57,5 +66,10 @@ public class JsInterfaceVis extends JsInterface {
     public void onPagesCountChanged(String totalCountString) {
         Integer totalCount = new Gson().fromJson(totalCountString, Integer.class);
         dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(totalCount));
+    }
+
+    @JavascriptInterface
+    public void onMultiPageStateChanged(boolean isMultiPage) {
+        dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(isMultiPage));
     }
 }

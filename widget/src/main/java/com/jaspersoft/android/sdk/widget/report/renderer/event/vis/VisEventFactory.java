@@ -29,14 +29,4 @@ public class VisEventFactory extends EventFactory {
     public Event createPageExportedEvent(String reportPage, int pageNumber) {
         throw new UnsupportedOperationException("Export event is not supported by visualize");
     }
-
-    @Override
-    public Event createParamsUpdatedEvent() {
-        throw new UnsupportedOperationException("Update params event is not supported by visualize");
-    }
-
-    @Override
-    public Event createDaraRefreshedEvent() {
-        throw new UnsupportedOperationException("Data refreshed event is not supported by visualize");
-    }
 }

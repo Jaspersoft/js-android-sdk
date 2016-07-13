@@ -26,6 +26,7 @@ class RefreshVisCommand extends Command {
         return new AsyncTask<Object, Object, String>() {
             @Override
             protected void onPreExecute() {
+                dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(false));
                 dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(null));
             }
 

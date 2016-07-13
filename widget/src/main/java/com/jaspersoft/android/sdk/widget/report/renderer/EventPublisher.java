@@ -4,10 +4,11 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.MultiPageStateChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.PagesCountChangedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ProgressStateEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.SwapStateEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onMultiPageStateChanged(MultiPageStateChangedEvent multiPageStateChangedEvent) {
+        handleEvent(multiPageStateChangedEvent);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -89,6 +95,8 @@ class EventPublisher {
             reportRendererCallback.onCurrentPageChanged(((CurrentPageChangedEvent) event).getCurrentPage());
         } else if (event instanceof PagesCountChangedEvent) {
             reportRendererCallback.onPagesCountChanged(((PagesCountChangedEvent) event).getTotalCount());
+        } else if (event instanceof MultiPageStateChangedEvent) {
+            reportRendererCallback.onMultiPageStateChanged(((MultiPageStateChangedEvent) event).isMultiPage());
         }
     }
 }

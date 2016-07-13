@@ -58,17 +58,11 @@ public abstract class CommandFactory {
 
     public abstract Command createInitTemplateCommand(double initialScale);
 
-    public Command createRunReportCommand(RunOptions runOptions){
-        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
-    }
+    public abstract Command createRunReportCommand(RunOptions runOptions);
 
-    public Command createExecuteReportCommand(RunOptions runOptions){
-        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
-    }
+    public abstract Command createExecuteReportCommand(RunOptions runOptions);
 
-    public Command createPageExportCommand(Destination destination, ReportExecution reportExecution){
-        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
-    }
+    public abstract Command createPageExportCommand(Destination destination, ReportExecution reportExecution);
 
     public abstract Command createShowPageCommand(String page, int pageNumber);
 
@@ -78,11 +72,13 @@ public abstract class CommandFactory {
 
     public abstract Command createApplyParamsCommand(List<ReportParameter> parameters, ReportExecution reportExecution);
 
-    public Command createNavigateToCommand(Destination destination) {
-        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
-    }
+    public abstract Command createNavigateToCommand(Destination destination);
 
     public Command createRefreshCommand(ReportExecution reportExecution) {
        return new RefreshUnsupportedCommand(dispatcher, eventFactory);
+    }
+
+    protected final Command createAnchorUnsupportedCommand() {
+        return new AnchorUnsupportedCommand(dispatcher, eventFactory);
     }
 }

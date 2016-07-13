@@ -47,14 +47,14 @@ public class RestCommandFactory extends CommandFactory {
         if (runOptions.getDestination().isPageType()) {
             ReportService reportService = ReportService.newService(client);
             return new ExecuteReportRestCommand(dispatcher, eventFactory, runOptions, reportService);
-        } else return super.createExecuteReportCommand(runOptions);
+        } else return createAnchorUnsupportedCommand();
     }
 
     @Override
     public Command createPageExportCommand(Destination destination, ReportExecution reportExecution) {
         if (destination.isPageType()) {
             return new ExportPageRestCommand(dispatcher, eventFactory, destination.getPage(), reportExecution);
-        } else return super.createPageExportCommand(destination, reportExecution);
+        } else return createAnchorUnsupportedCommand();
     }
 
     @Override

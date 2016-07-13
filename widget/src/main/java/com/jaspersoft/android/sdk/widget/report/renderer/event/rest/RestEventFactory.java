@@ -30,14 +30,4 @@ public class RestEventFactory extends EventFactory {
     public Event createPageExportedEvent(String reportPage, int pageNumber) {
         return new PageExportedEvent(reportPage, pageNumber);
     }
-
-    @Override
-    public Event createParamsUpdatedEvent() {
-        return new ParamsUpdatedEvent();
-    }
-
-    @Override
-    public Event createDaraRefreshedEvent() {
-        return new DataRefreshedEvent();
-    }
 }

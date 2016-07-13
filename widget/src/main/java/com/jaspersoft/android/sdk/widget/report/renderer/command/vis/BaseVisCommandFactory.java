@@ -45,7 +45,7 @@ public class BaseVisCommandFactory extends CommandFactory {
         if (runOptions.getDestination().isPageType()) {
             String reportParams = visParamsMapper.mapParams(runOptions.getParameters());
             return new RunReportPageVisCommand(dispatcher, eventFactory, webView, runOptions.getReportUri(), reportParams, runOptions.getDestination().getPage());
-        } else return super.createRunReportCommand(runOptions);
+        } else return createAnchorUnsupportedCommand();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class BaseVisCommandFactory extends CommandFactory {
 
     @Override
     public Command createDetectMultiPageCommand(ReportExecution reportExecution) {
-        return null;
+        return new CheckMultiPageVisCommand(dispatcher, eventFactory, webView);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class BaseVisCommandFactory extends CommandFactory {
     public Command createNavigateToCommand(Destination destination) {
         if (destination.isPageType()) {
             return new NavigateToPageVisCommand(dispatcher, eventFactory, webView, destination.getPage());
-        } else return super.createNavigateToCommand(destination);
+        } else return createAnchorUnsupportedCommand();
     }
 
     @Override

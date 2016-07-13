@@ -21,6 +21,12 @@
         onError: function (error) {
             return Android.onError(error);
         },
+        onDataRefreshed: function () {
+            return Android.onDataRefreshed();
+        },
+        onParamsUpdated: function () {
+            return Android.onParamsUpdated();
+        },
         onCleared: function () {
             return Android.onCleared();
         },
@@ -29,6 +35,9 @@
         },
         onPagesCountChanged: function (totalCount) {
             return Android.onPagesCountChanged(totalCount);
+        },
+        onMultiPageStateChanged: function (isMultiPage) {
+            return Android.onMultiPageStateChanged(isMultiPage);
         },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
@@ -142,7 +151,7 @@
             }
 
             this.applyParams = function(params) {
-                reportInstance.params(params).run(reportRenderedFn, reportErrorFn);
+                reportInstance.params(params).run(paramsUpdatedFn, reportErrorFn);
             }
 
             this.navigateTo = function(destination) {
@@ -156,7 +165,11 @@
             }
 
             this.refresh = function() {
-                reportInstance.refresh(reportRenderedFn, reportErrorFn);
+                reportInstance.refresh(dataRefreshedFn, reportErrorFn);
+            }
+
+            this.checkMultiPage = function() {
+                reportInstance.export({outputFormat: "pdf", pages: 2}, reportExportedFn, reportExportErrorFn);
             }
 
             this.clear = function() {
@@ -235,6 +248,24 @@
             reportErrorFn = function(error) {
                 message = JSON.stringify(error);
                 NativeCallbacks.onError(message);
+            }
+
+            dataRefreshedFn = function() {
+                NativeCallbacks.onDataRefreshed();
+                reportRenderedFn();
+            }
+
+            paramsUpdatedFn = function() {
+                NativeCallbacks.onParamsUpdated();
+                reportRenderedFn();
+            }
+
+            reportExportedFn = function() {
+                 NativeCallbacks.onMultiPageStateChanged(true);
+            }
+
+            reportExportErrorFn = function() {
+                NativeCallbacks.onMultiPageStateChanged(false);
             }
         }
 

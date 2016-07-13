@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.report.renderer.event.rest;
+package com.jaspersoft.android.sdk.widget.report.renderer.event;
 
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 

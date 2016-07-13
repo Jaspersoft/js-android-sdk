@@ -30,6 +30,7 @@ class ApplyParamsRestCommand extends Command {
         return new AsyncTask<Object, Object, Void>() {
             @Override
             protected void onPreExecute() {
+                dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(false));
                 dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(null));
             }
 

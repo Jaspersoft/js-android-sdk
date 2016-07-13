@@ -69,6 +69,7 @@ public abstract class PaginationView extends RelativeLayout {
     protected void init() {
         currentPage = 1;
         onCurrentPageChanged(currentPage);
+        setVisibility(GONE);
     }
 
     @Override

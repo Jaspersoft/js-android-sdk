@@ -11,30 +11,22 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ApplyParamsVisCommand extends Command {
-    private static final String APPLY_PARAMS_SCRIPT = "javascript:MobileClient.getInstance().report().applyParams(%s);";
+class CheckMultiPageVisCommand extends Command {
+    private static final String CHECK_MULTI_PAGE_SCRIPT = "javascript:MobileClient.getInstance().report().checkMultiPage();";
 
     private final WebView webView;
-    private final String parameters;
 
-    ApplyParamsVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView, String parameters) {
+    CheckMultiPageVisCommand(Dispatcher dispatcher, EventFactory eventFactory, WebView webView) {
         super(dispatcher, eventFactory);
         this.webView = webView;
-        this.parameters = parameters;
     }
 
     @Override
     protected AsyncTask createTask() {
         return new AsyncTask<Object, Object, String>() {
             @Override
-            protected void onPreExecute() {
-                dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(false));
-                dispatcher.dispatch(eventFactory.createPagesCountChangedEvent(null));
-            }
-
-            @Override
             protected String doInBackground(Object... params) {
-                return String.format(APPLY_PARAMS_SCRIPT, parameters);
+                return CHECK_MULTI_PAGE_SCRIPT;
             }
 
             @Override

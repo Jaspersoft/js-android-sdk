@@ -15,9 +15,9 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.DataRefreshedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.PageExportedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.ParamsUpdatedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -81,11 +81,11 @@ class RenderedRestState extends State {
     }
 
     private void waitForReportMetadata() {
+        Command detectMultiPageCommand = commandFactory.createDetectMultiPageCommand(reportExecution);
+        commandExecutor.execute(detectMultiPageCommand);
+
         Command waitForReportMetadataCommand = commandFactory.createWaitForReportMetadataCommand(reportExecution);
         commandExecutor.execute(waitForReportMetadataCommand);
-
-        Command detectMultiPageCommand = commandFactory.createWaitForReportMetadataCommand(reportExecution);
-        commandExecutor.execute(detectMultiPageCommand);
     }
 
     @Subscribe
