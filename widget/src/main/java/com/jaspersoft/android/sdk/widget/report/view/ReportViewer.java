@@ -1,5 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.view;
 
+import android.view.View;
+
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
@@ -34,4 +36,8 @@ public interface ReportViewer {
     void setReportEventListener(ReportEventListener reportEventListener);
 
     void setPaginationView(PaginationView paginationView);
+
+    View getView();
+
+    void performViewAction(ViewAction viewAction);
 }

@@ -27,6 +27,7 @@ import java.util.List;
  * @since 2.6
  */
 class ReportViewerDelegate implements PaginationView.PaginationListener {
+    private static final int SCROLL_STEP = 8;
     private static final String RENDERER_KEY_ARG = "rendererKey";
     private static final String SCALE_ARG = "scaleKey";
     private static final String IN_PENDING_ARG = "inPendingKey";
@@ -131,6 +132,34 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
         reportRenderer.reset();
     }
 
+    @Override
+    public void onNavigateTo(Destination destination) {
+        reportRenderer.navigateTo(destination);
+    }
+
+    public void performViewAction(ViewAction viewAction) {
+        switch (viewAction) {
+            case ZOOM_IN:
+                resourceWebView.zoomIn();
+                break;
+            case ZOOM_OUT:
+                resourceWebView.zoomOut();
+                break;
+            case SCROLL_LEFT:
+                scrollHorizontal(-SCROLL_STEP);
+                break;
+            case SCROLL_RIGHT:
+                scrollHorizontal(SCROLL_STEP);
+                break;
+            case SCROLL_TOP:
+                scrollVertical(-SCROLL_STEP);
+                break;
+            case SCROLL_BOTTOM:
+                scrollVertical(SCROLL_STEP);
+                break;
+        }
+    }
+
     void registerReportRendererCallback() {
         reportRenderer.registerReportRendererCallback(new RendererEventListener());
     }
@@ -189,9 +218,16 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
         }
     }
 
-    @Override
-    public void onNavigateTo(Destination destination) {
-        reportRenderer.navigateTo(destination);
+    private void scrollVertical(int scrollValue) {
+        if (resourceWebView.canScrollVertically(scrollValue)) {
+            resourceWebView.scrollBy(0, scrollValue);
+        }
+    }
+
+    private void scrollHorizontal(int scrollValue) {
+        if (resourceWebView.canScrollHorizontally(scrollValue)) {
+            resourceWebView.scrollBy(scrollValue, 0);
+        }
     }
 
     private class RendererEventListener implements ReportRendererCallback {
@@ -199,7 +235,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
         public void onProgressStateChanged(boolean inProgress) {
             resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
             updatePaginationEnabled();
-            reportEventListener.onActionsAvailabilityChanged();
+            reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
         }
 
         @Override
@@ -210,7 +246,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
             }
 
             updatePaginationEnabled();
-            reportEventListener.onActionsAvailabilityChanged();
+            reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
         }
 
         @Override

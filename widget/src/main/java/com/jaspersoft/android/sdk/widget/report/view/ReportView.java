@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
@@ -102,5 +103,15 @@ public class ReportView extends FrameLayout implements ReportViewer {
     @Override
     public void setPaginationView(PaginationView paginationView) {
         reportViewerDelegate.setPaginationView(paginationView);
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    @Override
+    public void performViewAction(ViewAction viewAction) {
+        reportViewerDelegate.performViewAction(viewAction);
     }
 }
