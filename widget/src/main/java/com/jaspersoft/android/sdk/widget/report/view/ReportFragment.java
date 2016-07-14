@@ -137,4 +137,9 @@ public class ReportFragment extends Fragment implements ReportViewer {
     public void setPaginationView(PaginationView paginationView) {
         reportViewerDelegate.setPaginationView(paginationView);
     }
+
+    @Override
+    public void performViewAction(ViewAction viewAction) {
+        reportViewerDelegate.performViewAction(viewAction);
+    }
 }

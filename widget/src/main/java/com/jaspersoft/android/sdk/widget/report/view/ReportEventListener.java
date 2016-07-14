@@ -8,13 +8,13 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
  * @since 2.6
  */
 public interface ReportEventListener {
-    void onActionsAvailabilityChanged();
+    void onActionsAvailabilityChanged(boolean isAvailable);
     void onHyperlinkClicked(Hyperlink hyperlink);
     void onError(ServiceException exception);
 
     class SimpleReportEventListener implements ReportEventListener {
         @Override
-        public void onActionsAvailabilityChanged() {
+        public void onActionsAvailabilityChanged(boolean isAvailable) {
 
         }
 
