@@ -252,7 +252,10 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
         @Override
         public void onHyperlinkClicked(Hyperlink hyperlink) {
             if (hyperlink instanceof LocalHyperlink) {
-                reportRenderer.navigateTo(((LocalHyperlink) hyperlink).getDestination());
+                Destination destination = ((LocalHyperlink) hyperlink).getDestination();
+                if (destination != null) {
+                    reportRenderer.navigateTo(destination);
+                }
             } else {
                 reportEventListener.onHyperlinkClicked(hyperlink);
             }

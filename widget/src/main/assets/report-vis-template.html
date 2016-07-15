@@ -338,34 +338,52 @@
             };
 
             handleLocalPageType = function (link) {
-                if (!link.pages) {
+                var localPage;
+                if (link.pages) {
+                   localPage = link.pages;
+                } else {
+                   localPage = null;
                 }
-                NativeCallbacks.onHyperLinkClick(link.type, link.pages);
+                NativeCallbacks.onHyperLinkClick(link.type, localPage);
             };
 
             handleLocalAnchorType = function (link) {
-                NativeCallbacks.onHyperLinkClick(link.type, link.anchor);
+                var localAnchor;
+                if (link.anchor) {
+                   localAnchor = link.anchor;
+                } else {
+                   localAnchor = null;
+                }
+
+                NativeCallbacks.onHyperLinkClick(link.type, localAnchor);
             };
 
             handleRemotePageType = function (link) {
+                var url = toRestLink(link.href);
                 var hyperlink = {
-                    resourceUri: link.href,
+                    resourceUri: url,
                     destination: {
-                        page: link.pages ? link.pages : 1
+                        page: link.pages
                     }
                 };
                 NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
             };
 
             handleRemoteAnchorType = function (link) {
+                var url = toRestLink(link.href);
                 var hyperlink = {
-                    resourceUri: link.href,
+                    resourceUri: url,
                     destination: {
                         anchor: link.anchor,
                     }
                 };
                 NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
             };
+
+            toRestLink = function (url) {
+                var urlWithoutAnchor = url.replace(/(#.+?)$/, '');
+                return urlWithoutAnchor.replace('fileview/fileview/','');
+            }
         }
 
         return {

@@ -45,7 +45,7 @@ public class ResourcesActivity extends AppCompatActivity {
             "http://192.168.88.55:8088/jasperserver-pro-62/"
     ));
     private final static ResourceFactory SERVER_6_2_1 = new ResourceFactory(new Profile(
-            "http://194.29.62.80:8089/jasperserver-pro-621/"
+            "http://192.168.88.55:8089/jasperserver-pro-621/"
     ));
 
     private static final List<Resource> RESOURCES = Arrays.asList(

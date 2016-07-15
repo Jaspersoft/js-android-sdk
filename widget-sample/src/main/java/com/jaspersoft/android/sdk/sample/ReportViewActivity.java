@@ -69,7 +69,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     }
 
     @Override
-    public void onActionsAvailabilityChanged() {
+    public void onActionsAvailabilityChanged(boolean isAvailable) {
 
     }
 

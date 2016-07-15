@@ -17,10 +17,10 @@ public class HyperlinkMapper {
                 Uri referenceUri = Uri.parse(hyperlink);
                 return new ReferenceHyperlink(referenceUri);
             case "LocalPage":
-                int page = Integer.parseInt(hyperlink);
-                return new LocalHyperlink(new Destination(page));
+                Integer page = new Gson().fromJson(hyperlink, Integer.class);
+                return new LocalHyperlink(page == null ? null : new Destination(page));
             case "LocalAnchor":
-                return new LocalHyperlink(new Destination(hyperlink));
+                return new LocalHyperlink(hyperlink == null ? null : new Destination(hyperlink));
             case "RemotePage":
             case "RemoteAnchor":
                 RemoteResource remoteHyperlink = new Gson().fromJson(hyperlink, RemoteResource.class);
@@ -47,6 +47,7 @@ public class HyperlinkMapper {
         }
 
         public Destination getDestination() {
+            if (destination.getAnchor() == null && destination.getPage() == null) return null;
             return destination;
         }
     }
