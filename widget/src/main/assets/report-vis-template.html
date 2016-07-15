@@ -324,10 +324,12 @@
                 var reportParams = filterReportParams(link.parameters);
                 var hyperlink = {
                     reportUri: runOptions._report,
-                    parameters: reportParams,
-                    destination: {
-                        page: (runOptions._page || runOptions._anchor) ? runOptions._page : 1,
-                        anchor: runOptions._anchor,
+                    parameters: reportParams
+                };
+                if (runOptions._page || runOptions._anchor) {
+                    hyperlink.destination = {
+                        page: runOptions._page,
+                        anchor: runOptions._anchor
                     }
                 };
                 NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
