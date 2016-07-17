@@ -118,8 +118,11 @@
             };
 
              function onVisualizeLoadingFailed(error) {
-                var message = JSON.stringify(error);
-                NativeCallbacks.onError(message);
+                var jsError = {
+                    errorCode: "visualize.load.failed",
+                    message: "Failed to load visualize."
+                };
+                NativeCallbacks.onError(jsError);
             };
 
             return {
@@ -332,6 +335,9 @@
                         anchor: runOptions._anchor
                     }
                 };
+                if (runOptions._output) {
+                    hyperlink.reportFormat = runOptions._output;
+                }
                 NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
             };
 

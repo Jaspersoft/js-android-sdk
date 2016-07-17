@@ -3,8 +3,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.hyperlink;
 import android.net.Uri;
 
 import com.google.gson.Gson;
+import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
+
+import java.util.List;
 
 /**
  * @author Andrew Tivodar
@@ -26,10 +29,46 @@ public class HyperlinkMapper {
                 RemoteResource remoteHyperlink = new Gson().fromJson(hyperlink, RemoteResource.class);
                 return new RemoteHyperlink(Uri.parse(remoteHyperlink.getResourceUri()), remoteHyperlink.getDestination());
             case "ReportExecution":
-                RunOptions reportExecution = new Gson().fromJson(hyperlink, RunOptions.class);
-                return new ReportExecutionHyperlink(reportExecution);
+                ReportExecution reportExecution = new Gson().fromJson(hyperlink, ReportExecution.class);
+                RunOptions runOptions = new RunOptions.Builder()
+                        .reportUri(reportExecution.getReportUri())
+                        .destination(reportExecution.getDestination())
+                        .parameters(reportExecution.parameters)
+                        .build();
+                return new ReportExecutionHyperlink(runOptions, reportExecution.getReportFormat());
             default:
                 return null;
+        }
+    }
+
+    private static class ReportExecution {
+        private final String reportUri;
+        private final List<ReportParameter> parameters;
+        private final Destination destination;
+        private final String reportFormat;
+
+        public ReportExecution(String reportUri, List<ReportParameter> parameters, Destination destination, String reportFormat) {
+            this.reportUri = reportUri;
+            this.parameters = parameters;
+            this.destination = destination;
+            this.reportFormat = reportFormat;
+        }
+
+        public String getReportUri() {
+            return reportUri;
+        }
+
+        public List<ReportParameter> getParameters() {
+            return parameters;
+        }
+
+        public Destination getDestination() {
+            return destination;
+        }
+
+        public String getReportFormat() {
+            if (reportFormat == null) return "html";
+            return reportFormat;
         }
     }
 
