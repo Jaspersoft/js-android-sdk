@@ -10,7 +10,7 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.widget.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;

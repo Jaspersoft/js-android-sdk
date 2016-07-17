@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget;
+package com.jaspersoft.android.sdk.widget.base;
 
 import android.annotation.TargetApi;
 import android.content.Context;

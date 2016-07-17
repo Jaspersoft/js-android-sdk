@@ -1,6 +1,6 @@
 package com.jaspersoft.android.sdk.widget.report.view;
 
-import com.jaspersoft.android.sdk.widget.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
 
 import java.util.HashMap;
 import java.util.Map;
