@@ -84,10 +84,20 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     }
 
     @Override
+    public void onExternalLinkOpened(String url) {
+
+    }
+
+    @Override
     public void onError(ServiceException exception) {
         if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
             new AuthTask().execute();
         }
+    }
+
+    @Override
+    public void onTimeoutWarning() {
+
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {

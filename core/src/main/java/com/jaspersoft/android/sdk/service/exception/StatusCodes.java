@@ -92,10 +92,6 @@ public final class StatusCodes {
      * Requested report execution has no content
      */
     public static final int REPORT_EXECUTION_EMPTY = 304;
-    /**
-     * Failed to render report
-     */
-    public static final int REPORT_RENDER_FAILED = 305;
 
     // RESOURCE
     /**
@@ -166,6 +162,16 @@ public final class StatusCodes {
      * Report option label too long
      */
     public static final int SAVED_VALUES_LABEL_TOO_LONG = 601;
+
+    // WIDGET
+    /**
+     * Failed to render report
+     */
+    public static final int REPORT_RENDER_FAILED = 700;
+    /**
+     * Web view request error
+     */
+    public static final int WEB_VIEW_REQUEST_ERROR = 701;
 
     private StatusCodes() {
     }

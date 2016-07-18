@@ -9,7 +9,7 @@ import android.os.Build;
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class LollipopWebResourceInterceptor implements WebResourceInterceptor.Rule {
-    private static final String[] RESOURCES = new String[]{"bundles", "scripts", "settings"};
+    private static final String[] RESOURCES = new String[]{"bundles", "scripts", "/client/visualize.js?_opt=true"};
 
     @Override
     public boolean shouldIntercept(WebRequest request) {

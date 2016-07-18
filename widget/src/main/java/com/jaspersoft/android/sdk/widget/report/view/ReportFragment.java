@@ -25,7 +25,7 @@ public class ReportFragment extends Fragment implements ReportViewer {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        reportViewerDelegate = new ReportViewerDelegate();
+        reportViewerDelegate = ReportViewerDelegate.create();
 
         if (savedInstanceState != null) {
             reportViewerDelegate.restoreData(savedInstanceState);

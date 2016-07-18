@@ -26,7 +26,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ReportViewerDelegate implements PaginationView.PaginationListener {
+class ReportViewerDelegate implements PaginationView.PaginationListener, ReportRendererCallback, ResourceWebView.ResourceWebViewEventListener {
     private static final int SCROLL_STEP = 8;
     private static final String RENDERER_KEY_ARG = "rendererKey";
     private static final String SCALE_ARG = "scaleKey";
@@ -43,6 +43,10 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
 
     ReportViewerDelegate() {
         setReportEventListener(null);
+    }
+
+    public static ReportViewerDelegate create() {
+        return new ReportViewerDelegate();
     }
 
     public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
@@ -133,6 +137,80 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
     }
 
     @Override
+    public void onProgressStateChanged(boolean inProgress) {
+        resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
+        updatePaginationEnabled();
+        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+    }
+
+    @Override
+    public void onRenderStateChanged(RenderState renderState) {
+        resourceWebView.setVisibility(renderState == RenderState.RENDERED ? View.VISIBLE : View.GONE);
+        if (renderState == RenderState.INITED && inPending) {
+            reportRenderer.render(runOptions);
+        }
+
+        updatePaginationEnabled();
+        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+    }
+
+    @Override
+    public void onHyperlinkClicked(Hyperlink hyperlink) {
+        if (hyperlink instanceof LocalHyperlink) {
+            Destination destination = ((LocalHyperlink) hyperlink).getDestination();
+            if (destination != null) {
+                reportRenderer.navigateTo(destination);
+            }
+        } else {
+            reportEventListener.onHyperlinkClicked(hyperlink);
+        }
+    }
+
+    @Override
+    public void onExternalLinkIntercept(String url) {
+        reportEventListener.onExternalLinkOpened(url);
+    }
+
+    @Override
+    public void onMultiPageStateChanged(boolean isMultiPage) {
+        if (paginationView != null) {
+            paginationView.show(isMultiPage);
+        }
+    }
+
+    @Override
+    public void onCurrentPageChanged(int currentPage) {
+        while (resourceWebView.zoomOut()) ;
+        if (paginationView != null) {
+            paginationView.onCurrentPageChanged(currentPage);
+        }
+    }
+
+    @Override
+    public void onPagesCountChanged(Integer totalCount) {
+        if (paginationView != null) {
+            paginationView.onPagesCountChanged(totalCount);
+        }
+        if (totalCount != null && totalCount == 0) {
+            ServiceException noContentException = new ServiceException("Requested report execution has no content",
+                    new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
+            reportEventListener.onError(noContentException);
+            onMultiPageStateChanged(false);
+        }
+    }
+
+    @Override
+    public void onWebErrorObtain() {
+        ServiceException serviceException = new ServiceException("WebView request error occurred", null, StatusCodes.WEB_VIEW_REQUEST_ERROR);
+        onError(serviceException);
+    }
+
+    @Override
+    public void onError(ServiceException exception) {
+        reportEventListener.onError(exception);
+    }
+
+    @Override
     public void onNavigateTo(Destination destination) {
         reportRenderer.navigateTo(destination);
     }
@@ -161,7 +239,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
     }
 
     void registerReportRendererCallback() {
-        reportRenderer.registerReportRendererCallback(new RendererEventListener());
+        reportRenderer.registerReportRendererCallback(this);
     }
 
     void unregisterReportRendererCallback() {
@@ -192,6 +270,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
 
     void createResourceView(Context context) {
         resourceWebView = new ResourceWebView(context.getApplicationContext());
+        resourceWebView.setResourceWebViewEventListener(this);
     }
 
     ResourceWebView getResourceView() {
@@ -227,71 +306,6 @@ class ReportViewerDelegate implements PaginationView.PaginationListener {
     private void scrollHorizontal(int scrollValue) {
         if (resourceWebView.canScrollHorizontally(scrollValue)) {
             resourceWebView.scrollBy(scrollValue, 0);
-        }
-    }
-
-    private class RendererEventListener implements ReportRendererCallback {
-        @Override
-        public void onProgressStateChanged(boolean inProgress) {
-            resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
-            updatePaginationEnabled();
-            reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
-        }
-
-        @Override
-        public void onRenderStateChanged(RenderState renderState) {
-            resourceWebView.setVisibility(renderState == RenderState.RENDERED ? View.VISIBLE : View.GONE);
-            if (renderState == RenderState.INITED && inPending) {
-                reportRenderer.render(runOptions);
-            }
-
-            updatePaginationEnabled();
-            reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
-        }
-
-        @Override
-        public void onHyperlinkClicked(Hyperlink hyperlink) {
-            if (hyperlink instanceof LocalHyperlink) {
-                Destination destination = ((LocalHyperlink) hyperlink).getDestination();
-                if (destination != null) {
-                    reportRenderer.navigateTo(destination);
-                }
-            } else {
-                reportEventListener.onHyperlinkClicked(hyperlink);
-            }
-        }
-
-        @Override
-        public void onMultiPageStateChanged(boolean isMultiPage) {
-            if (paginationView != null) {
-                paginationView.show(isMultiPage);
-            }
-        }
-
-        @Override
-        public void onCurrentPageChanged(int currentPage) {
-            while (resourceWebView.zoomOut()) ;
-            if (paginationView != null) {
-                paginationView.onCurrentPageChanged(currentPage);
-            }
-        }
-
-        @Override
-        public void onPagesCountChanged(Integer totalCount) {
-            if (paginationView != null) {
-                paginationView.onPagesCountChanged(totalCount);
-            }
-            if (totalCount != null && totalCount == 0) {
-                ServiceException noContentException = new ServiceException("Requested report execution has no content",
-                        new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
-                reportEventListener.onError(noContentException);
-                onMultiPageStateChanged(false);
-            }
-        }
-
-        @Override
-        public void onError(ServiceException exception) {
-            reportEventListener.onError(exception);
         }
     }
 }

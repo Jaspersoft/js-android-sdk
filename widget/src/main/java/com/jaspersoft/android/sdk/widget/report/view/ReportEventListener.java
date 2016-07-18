@@ -10,7 +10,9 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 public interface ReportEventListener {
     void onActionsAvailabilityChanged(boolean isAvailable);
     void onHyperlinkClicked(Hyperlink hyperlink);
+    void onExternalLinkOpened(String url);
     void onError(ServiceException exception);
+    void onTimeoutWarning();
 
     class SimpleReportEventListener implements ReportEventListener {
         @Override
@@ -24,7 +26,17 @@ public interface ReportEventListener {
         }
 
         @Override
+        public void onExternalLinkOpened(String url) {
+
+        }
+
+        @Override
         public void onError(ServiceException exception) {
+
+        }
+
+        @Override
+        public void onTimeoutWarning() {
 
         }
     }
