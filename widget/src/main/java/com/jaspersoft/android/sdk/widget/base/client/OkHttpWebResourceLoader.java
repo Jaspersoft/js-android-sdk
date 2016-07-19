@@ -51,10 +51,20 @@ public class OkHttpWebResourceLoader implements WebResourceLoader {
         if (request == null) return null;
 
         try {
+            request = removeWrongHeaders(request);
             Response response = client.newCall(request).execute();
             return okHttpClientResponseMapper.toWebViewResponse(response);
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private Request removeWrongHeaders(Request request) {
+        return request
+                .newBuilder()
+                .removeHeader("Cache-Control")
+                .removeHeader("Pragma")
+                .removeHeader("User-Agent")
+                .build();
     }
 }
