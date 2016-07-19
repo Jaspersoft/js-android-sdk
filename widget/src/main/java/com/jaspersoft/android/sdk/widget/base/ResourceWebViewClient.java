@@ -9,14 +9,13 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.jaspersoft.android.sdk.widget.base.client.LoadRule;
 import com.jaspersoft.android.sdk.widget.base.client.OkHttpWebResourceLoader;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ResourceWebViewClient extends WebViewClient {
+public class ResourceWebViewClient extends WebViewClient {
     private final static WebClientEventCallback EMPTY = new WebClientEventCallback() {
         @Override
         public void onIntercept(String uri) {
@@ -35,7 +34,7 @@ class ResourceWebViewClient extends WebViewClient {
     private final NativeWebResponseMapper nativeWebResponseMapper;
     private final LoadRule loadRule;
 
-    ResourceWebViewClient(WebClientEventCallback webClientEventCallback, WebResourceLoader requestLoader, NativeWebRequestMapper nativeWebRequestMapper, NativeWebResponseMapper nativeWebResponseMapper, LoadRule loadRule) {
+    private ResourceWebViewClient(WebClientEventCallback webClientEventCallback, WebResourceLoader requestLoader, NativeWebRequestMapper nativeWebRequestMapper, NativeWebResponseMapper nativeWebResponseMapper, LoadRule loadRule) {
         this.webClientEventCallback = webClientEventCallback;
         this.requestLoader = requestLoader;
         this.nativeWebRequestMapper = nativeWebRequestMapper;

@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.base.client;
 
 import android.content.Context;
 
+import com.jaspersoft.android.sdk.widget.base.RequestCacheStore;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -13,9 +14,6 @@ import java.io.File;
  */
 class CachedOkHttpClient extends OkHttpClient {
     private static CachedOkHttpClient instance;
-
-    private final static String CACHE_FOLDER_NAME = "jsRequestCache";
-    private final static int CACHE_SIZE = 52428800; // 50 MB
 
     private CachedOkHttpClient() {
     }
@@ -29,10 +27,9 @@ class CachedOkHttpClient extends OkHttpClient {
 
     private static CachedOkHttpClient create(Context context) {
         CachedOkHttpClient client = new CachedOkHttpClient();
-        File cacheDir = context.getApplicationContext().getExternalCacheDir();
-        File requestCacheDir = new File(cacheDir, CACHE_FOLDER_NAME);
+        File requestCacheDir = RequestCacheStore.getRequestCacheDir(context);
         if (requestCacheDir.exists() || requestCacheDir.mkdirs()) {
-            Cache cache = new Cache(requestCacheDir, CACHE_SIZE);
+            Cache cache = new Cache(requestCacheDir, RequestCacheStore.getCacheSize());
             client.setCache(cache);
         }
 

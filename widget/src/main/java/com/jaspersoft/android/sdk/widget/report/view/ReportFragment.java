@@ -35,7 +35,6 @@ public class ReportFragment extends Fragment implements ReportViewer {
         if (reportViewerDelegate.getResourceView() == null) {
             reportViewerDelegate.createResourceView(getContext());
         }
-        reportViewerDelegate.getResourceView().setResourceWebViewEventListener(reportViewerDelegate);
     }
 
     @Nullable
@@ -83,11 +82,6 @@ public class ReportFragment extends Fragment implements ReportViewer {
         if (reportViewerDelegate.isInited() && getActivity().isFinishing()) {
             reportViewerDelegate.destroy(reportRendererKey);
         }
-    }
-
-    @Override
-    public void init(AuthorizedClient client, ServerInfo serverInfo) {
-        init(client, serverInfo, 1f);
     }
 
     @Override

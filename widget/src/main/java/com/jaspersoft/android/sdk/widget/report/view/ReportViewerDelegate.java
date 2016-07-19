@@ -11,6 +11,7 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
@@ -26,7 +27,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ReportViewerDelegate implements PaginationView.PaginationListener, ReportRendererCallback, ResourceWebView.ResourceWebViewEventListener {
+class ReportViewerDelegate implements PaginationView.PaginationListener, ReportRendererCallback, ResourceWebViewClient.WebClientEventCallback {
     private static final int SCROLL_STEP = 8;
     private static final String RENDERER_KEY_ARG = "rendererKey";
     private static final String SCALE_ARG = "scaleKey";
@@ -53,6 +54,9 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         if (reportRenderer != null) {
             throw new RuntimeException("Report fragment is already inited!");
         }
+        resourceWebView.setWebViewClient(new ResourceWebViewClient.Builder()
+                .withEventListener(this)
+                .build(resourceWebView.getContext()));
         reportRenderer = ReportRenderer.create(client, resourceWebView, serverInfo);
         this.scale = scale;
     }
@@ -167,8 +171,8 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     }
 
     @Override
-    public void onExternalLinkIntercept(String url) {
-        reportEventListener.onExternalLinkOpened(url);
+    public void onIntercept(String uri) {
+        reportEventListener.onExternalLinkOpened(uri);
     }
 
     @Override
@@ -200,7 +204,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     }
 
     @Override
-    public void onWebErrorObtain() {
+    public void onWebError(int errorCode, String failingUrl) {
         ServiceException serviceException = new ServiceException("WebView request error occurred", null, StatusCodes.WEB_VIEW_REQUEST_ERROR);
         onError(serviceException);
     }
@@ -320,4 +324,5 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
             resourceWebView.scrollBy(scrollValue, 0);
         }
     }
+
 }

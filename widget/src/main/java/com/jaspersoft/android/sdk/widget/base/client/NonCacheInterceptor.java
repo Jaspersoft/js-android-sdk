@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class NonCacheInterceptor implements Interceptor {
+class NonCacheInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request()

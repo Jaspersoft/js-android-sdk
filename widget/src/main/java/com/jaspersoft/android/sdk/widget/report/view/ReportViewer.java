@@ -15,7 +15,6 @@ import java.util.List;
  * @since 2.6
  */
 public interface ReportViewer {
-    void init(AuthorizedClient client, ServerInfo serverInfo);
 
     void init(AuthorizedClient client, ServerInfo serverInfo, float scale);
 

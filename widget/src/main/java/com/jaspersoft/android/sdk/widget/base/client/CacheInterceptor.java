@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class CacheInterceptor implements Interceptor{
+class CacheInterceptor implements Interceptor{
     private static final int CACHE_LIFE_TIME = 604800; // 1 week
 
     @Override

@@ -1,12 +1,10 @@
-package com.jaspersoft.android.sdk.widget.base.client;
-
-import com.jaspersoft.android.sdk.widget.base.WebRequest;
+package com.jaspersoft.android.sdk.widget.base;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class LoadRule {
+class LoadRule {
     private static final String[] RESOURCES = new String[]{"bundles", "scripts", "/client/visualize.js?_opt=true"};
 
     public boolean shouldInterceptLoading(WebRequest webRequest) {
