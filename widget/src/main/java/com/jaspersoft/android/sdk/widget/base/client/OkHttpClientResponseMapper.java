@@ -1,5 +1,6 @@
-package com.jaspersoft.android.sdk.widget.base;
+package com.jaspersoft.android.sdk.widget.base.client;
 
+import com.jaspersoft.android.sdk.widget.base.WebResponse;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * @author Andrew Tivodar
  * @since 2.5
  */
-class ClientResponseMapper {
+class OkHttpClientResponseMapper {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_ENCODING = "Content-Encoding";
 
@@ -48,6 +49,7 @@ class ClientResponseMapper {
 
             @Override
             public String getReasonPhrase() {
+                if (reasonPhrase == null || reasonPhrase.trim().isEmpty()) return "OK";
                 return reasonPhrase;
             }
 

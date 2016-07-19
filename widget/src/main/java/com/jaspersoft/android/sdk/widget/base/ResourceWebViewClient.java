@@ -3,12 +3,14 @@ package com.jaspersoft.android.sdk.widget.base;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.jaspersoft.android.sdk.widget.base.client.LoadRule;
+import com.jaspersoft.android.sdk.widget.base.client.OkHttpWebResourceLoader;
 
 /**
  * @author Andrew Tivodar
@@ -28,15 +30,17 @@ class ResourceWebViewClient extends WebViewClient {
     };
 
     private final WebClientEventCallback webClientEventCallback;
-    private final WebResourceInterceptor requestInterceptor;
+    private final WebResourceLoader requestLoader;
     private final NativeWebRequestMapper nativeWebRequestMapper;
     private final NativeWebResponseMapper nativeWebResponseMapper;
+    private final LoadRule loadRule;
 
-    ResourceWebViewClient(WebClientEventCallback webClientEventCallback, WebResourceInterceptor requestInterceptor, NativeWebRequestMapper nativeWebRequestMapper, NativeWebResponseMapper nativeWebResponseMapper) {
+    ResourceWebViewClient(WebClientEventCallback webClientEventCallback, WebResourceLoader requestLoader, NativeWebRequestMapper nativeWebRequestMapper, NativeWebResponseMapper nativeWebResponseMapper, LoadRule loadRule) {
         this.webClientEventCallback = webClientEventCallback;
-        this.requestInterceptor = requestInterceptor;
+        this.requestLoader = requestLoader;
         this.nativeWebRequestMapper = nativeWebRequestMapper;
         this.nativeWebResponseMapper = nativeWebResponseMapper;
+        this.loadRule = loadRule;
     }
 
     @Override
@@ -49,7 +53,10 @@ class ResourceWebViewClient extends WebViewClient {
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest webResourceRequest) {
         WebRequest request = nativeWebRequestMapper.toGenericRequest(webResourceRequest);
-        WebResponse webResponse = intercept(view, request);
+        WebResponse webResponse = null;
+        if (loadRule.shouldInterceptLoading(request)) {
+            webResponse = requestLoader.load(view, request);
+        }
         WebResourceResponse webResourceResponse = nativeWebResponseMapper.toNativeResponse(webResponse);
         return webResourceResponse != null ? webResourceResponse : super.shouldInterceptRequest(view, webResourceRequest);
     }
@@ -67,36 +74,37 @@ class ResourceWebViewClient extends WebViewClient {
         webClientEventCallback.onWebError(errorCode, failingUrl);
     }
 
-    @Nullable
-    private WebResponse intercept(WebView view, WebRequest request) {
-        return requestInterceptor.interceptRequest(view, request);
-    }
-
     public interface WebClientEventCallback {
         void onIntercept(String uri);
+
         void onWebError(int errorCode, String failingUrl);
     }
 
     public static class Builder {
+        private boolean cacheEnabled;
         private WebClientEventCallback webClientEventCallback;
+
+        public Builder() {
+            cacheEnabled = true;
+        }
 
         public Builder withEventListener(WebClientEventCallback webClientEventCallback) {
             this.webClientEventCallback = webClientEventCallback;
             return this;
         }
 
+        public Builder withCacheEnabled(boolean cacheEnabled) {
+            this.cacheEnabled = cacheEnabled;
+            return this;
+        }
+
         public ResourceWebViewClient build(Context context) {
-            boolean preLollipop = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
-            WebResourceInterceptor.Rule rule = preLollipop ? new LegacyWebResourceInterceptor() : new LollipopWebResourceInterceptor();
-            CachedOkHttpClient cachedOkHttpClient = CachedOkHttpClient.getInstance(context);
-            ClientRequestMapper clientRequestMapper = new ClientRequestMapper();
-            ClientResponseMapper clientResponseMapper = new ClientResponseMapper();
-            WebResourceInterceptor webResourceInterceptor = new ClientWebResourceInterceptor(rule, cachedOkHttpClient,
-                    clientRequestMapper, clientResponseMapper);
+            WebResourceLoader webResourceLoader = OkHttpWebResourceLoader.create(context, cacheEnabled);
             NativeWebRequestMapper nativeWebRequestMapper = new NativeWebRequestMapper();
-            NativeWebResponseMapper nativeWebResponseMapper = preLollipop ? new LegacyNativeWebResponseMapper() : new LollipopNativeWebResponseMapper();
-            return new ResourceWebViewClient(webClientEventCallback != null ? webClientEventCallback : EMPTY, webResourceInterceptor,
-                    nativeWebRequestMapper, nativeWebResponseMapper);
+            NativeWebResponseMapper nativeWebResponseMapper = new NativeWebResponseMapper();
+            LoadRule loadRule = new LoadRule();
+            return new ResourceWebViewClient(webClientEventCallback != null ? webClientEventCallback : EMPTY, webResourceLoader,
+                    nativeWebRequestMapper, nativeWebResponseMapper, loadRule);
         }
     }
 }

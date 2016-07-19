@@ -41,7 +41,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     private boolean inPending;
     private RunOptions runOptions;
 
-    ReportViewerDelegate() {
+    private ReportViewerDelegate() {
         setReportEventListener(null);
     }
 
@@ -246,31 +246,38 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         reportRenderer.unregisterReportRendererCallback();
     }
 
-    void persistData(Bundle bundle) {
-        ReportRendererKey reportRendererKey = RenderersStore.INSTANCE.saveExecutor(reportRenderer);
-        ReportWebViewStore.INSTANCE.saveReportView(resourceWebView, reportRendererKey);
-        RunOptionsStore.INSTANCE.saveRunOptions(runOptions, reportRendererKey);
+    ReportRendererKey saveInStore() {
+        ReportRendererKey reportRendererKey = ReportRendererKey.newKey();
+        RenderersStore.getInstance().save(reportRenderer, reportRendererKey);
+        ReportWebViewStore.getInstance().save(resourceWebView, reportRendererKey);
+        RunOptionsStore.getInstance().save(runOptions, reportRendererKey);
+        return reportRendererKey;
+    }
+
+    void persistData(Bundle bundle, ReportRendererKey reportRendererKey) {
+        if (reportRendererKey == null) return;
 
         bundle.putParcelable(RENDERER_KEY_ARG, reportRendererKey);
         bundle.putFloat(SCALE_ARG, scale);
         bundle.putBoolean(IN_PENDING_ARG, inPending);
     }
 
-    void restoreData(Bundle bundle) {
-        if (!bundle.containsKey(RENDERER_KEY_ARG)) return;
+    ReportRendererKey restoreData(Bundle bundle) {
+        if (!bundle.containsKey(RENDERER_KEY_ARG)) return null;
 
         scale = bundle.getFloat(SCALE_ARG);
         inPending = bundle.getBoolean(IN_PENDING_ARG);
         ReportRendererKey reportRendererKey = bundle.getParcelable(RENDERER_KEY_ARG);
 
-        reportRenderer = RenderersStore.INSTANCE.restoreExecutor(reportRendererKey);
-        resourceWebView = ReportWebViewStore.INSTANCE.restoreReportView(reportRendererKey);
-        runOptions = RunOptionsStore.INSTANCE.restoreRunOptions(reportRendererKey);
+        reportRenderer = RenderersStore.getInstance().restore(reportRendererKey);
+        resourceWebView = ReportWebViewStore.getInstance().restore(reportRendererKey);
+        runOptions = RunOptionsStore.getInstance().restore(reportRendererKey);
+
+        return reportRendererKey;
     }
 
     void createResourceView(Context context) {
         resourceWebView = new ResourceWebView(context.getApplicationContext());
-        resourceWebView.setResourceWebViewEventListener(this);
     }
 
     ResourceWebView getResourceView() {
@@ -281,8 +288,13 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         ((ViewGroup) resourceWebView.getParent()).removeView(resourceWebView);
     }
 
-    void destroy() {
+    void destroy(ReportRendererKey reportRendererKey) {
         reportRenderer.destroy();
+        if (reportRendererKey != null) {
+            RenderersStore.getInstance().remove(reportRendererKey);
+            ReportWebViewStore.getInstance().remove(reportRendererKey);
+            RunOptionsStore.getInstance().remove(reportRendererKey);
+        }
     }
 
     private void checkInited() {

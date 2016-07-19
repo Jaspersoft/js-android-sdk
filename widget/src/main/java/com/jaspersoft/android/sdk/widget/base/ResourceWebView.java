@@ -73,6 +73,7 @@ public class ResourceWebView extends WebView implements ResourceWebViewClient.We
 
         setWebViewClient(new ResourceWebViewClient.Builder()
                 .withEventListener(this)
+                .withCacheEnabled(true)
                 .build(getContext()));
 
         setResourceWebViewEventListener(null);

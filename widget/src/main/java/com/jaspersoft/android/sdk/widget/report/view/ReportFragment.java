@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class ReportFragment extends Fragment implements ReportViewer {
     private ReportViewerDelegate reportViewerDelegate;
+    private ReportRendererKey reportRendererKey;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,12 +29,13 @@ public class ReportFragment extends Fragment implements ReportViewer {
         reportViewerDelegate = ReportViewerDelegate.create();
 
         if (savedInstanceState != null) {
-            reportViewerDelegate.restoreData(savedInstanceState);
+            reportRendererKey = reportViewerDelegate.restoreData(savedInstanceState);
         }
 
         if (reportViewerDelegate.getResourceView() == null) {
             reportViewerDelegate.createResourceView(getContext());
         }
+        reportViewerDelegate.getResourceView().setResourceWebViewEventListener(reportViewerDelegate);
     }
 
     @Nullable
@@ -56,7 +58,7 @@ public class ReportFragment extends Fragment implements ReportViewer {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        reportViewerDelegate.persistData(outState);
+        reportViewerDelegate.persistData(outState, reportRendererKey);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class ReportFragment extends Fragment implements ReportViewer {
         super.onDestroy();
 
         if (reportViewerDelegate.isInited() && getActivity().isFinishing()) {
-            reportViewerDelegate.destroy();
+            reportViewerDelegate.destroy(reportRendererKey);
         }
     }
 
@@ -91,6 +93,7 @@ public class ReportFragment extends Fragment implements ReportViewer {
     @Override
     public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
         reportViewerDelegate.init(client, serverInfo, scale);
+        reportRendererKey = reportViewerDelegate.saveInStore();
     }
 
     @Override

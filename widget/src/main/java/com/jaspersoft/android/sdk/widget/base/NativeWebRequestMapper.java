@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.webkit.WebResourceRequest;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -34,29 +33,6 @@ class NativeWebRequestMapper {
             @Override
             public Map<String, String> getRequestHeaders() {
                 return request.getRequestHeaders();
-            }
-        };
-    }
-
-    @NonNull
-    public WebRequest toGenericRequest(final String url) {
-        return new WebRequest() {
-            @NonNull
-            @Override
-            public String getUrl() {
-                return url;
-            }
-
-            @Nullable
-            @Override
-            public String getMethod() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Map<String, String> getRequestHeaders() {
-                return Collections.emptyMap();
             }
         };
     }

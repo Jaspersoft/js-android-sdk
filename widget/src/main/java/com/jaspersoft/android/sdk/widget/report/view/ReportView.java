@@ -46,6 +46,7 @@ public class ReportView extends FrameLayout implements ReportViewer {
     private void create() {
         reportViewerDelegate = ReportViewerDelegate.create();
         reportViewerDelegate.createResourceView(getContext());
+        reportViewerDelegate.getResourceView().setResourceWebViewEventListener(reportViewerDelegate);
         addView(reportViewerDelegate.getResourceView());
     }
 

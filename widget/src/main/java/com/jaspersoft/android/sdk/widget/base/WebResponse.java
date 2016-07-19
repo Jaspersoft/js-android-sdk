@@ -7,7 +7,7 @@ import java.util.Map;
  * @author Andrew Tivodar
  * @since 2.6
  */
-interface WebResponse {
+public interface WebResponse {
     String getMimeType();
 
     String getEncoding();

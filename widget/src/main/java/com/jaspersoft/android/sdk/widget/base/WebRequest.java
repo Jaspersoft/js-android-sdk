@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Andrew Tivodar
  * @since 2.5
  */
-interface WebRequest {
+public interface WebRequest {
     @NonNull
     String getUrl();
 
