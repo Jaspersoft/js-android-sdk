@@ -54,9 +54,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         if (reportRenderer != null) {
             throw new RuntimeException("Report fragment is already inited!");
         }
-        resourceWebView.setWebViewClient(new ResourceWebViewClient.Builder()
-                .withEventListener(this)
-                .build(resourceWebView.getContext()));
+        setWebViewClient();
         reportRenderer = ReportRenderer.create(client, resourceWebView, serverInfo);
         this.scale = scale;
     }
@@ -277,6 +275,8 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         resourceWebView = ReportWebViewStore.getInstance().restore(reportRendererKey);
         runOptions = RunOptionsStore.getInstance().restore(reportRendererKey);
 
+        setWebViewClient();
+
         return reportRendererKey;
     }
 
@@ -325,4 +325,9 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         }
     }
 
+    private void setWebViewClient() {
+        resourceWebView.setWebViewClient(new ResourceWebViewClient.Builder()
+                .withEventListener(this)
+                .build(resourceWebView.getContext()));
+    }
 }
