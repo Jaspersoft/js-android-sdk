@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.compat.ReportFeature;
 
@@ -118,6 +119,11 @@ public class ReportFragment extends Fragment implements ReportViewer {
     @Override
     public void refresh() {
         reportViewerDelegate.refresh();
+    }
+
+    @Override
+    public List<Bookmark> getBookmarks() {
+        return reportViewerDelegate.getBookmarks();
     }
 
     @Override

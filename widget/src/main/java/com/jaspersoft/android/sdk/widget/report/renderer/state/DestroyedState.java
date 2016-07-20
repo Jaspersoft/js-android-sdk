@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -48,6 +49,11 @@ public class DestroyedState extends State {
     @Override
     protected void internalReset() {
         throw new IllegalStateException("Could not clear. Already destroyed.");
+    }
+
+    @Override
+    protected List<Bookmark> internalGetBookmarks() {
+        throw new IllegalStateException("Could not get report bookmarks. Already destroyed.");
     }
 
     @Override

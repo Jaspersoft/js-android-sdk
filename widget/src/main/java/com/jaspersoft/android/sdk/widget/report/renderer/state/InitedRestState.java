@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -64,6 +65,11 @@ class InitedRestState extends State{
 
         Command resetCommand = commandFactory.createResetCommand();
         commandExecutor.execute(resetCommand);
+    }
+
+    @Override
+    protected List<Bookmark> internalGetBookmarks() {
+        throw new IllegalStateException("Could not get report bookmarks. Report still not rendered.");
     }
 
     @Override

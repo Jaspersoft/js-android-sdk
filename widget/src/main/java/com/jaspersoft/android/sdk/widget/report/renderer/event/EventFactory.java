@@ -3,11 +3,14 @@ package com.jaspersoft.android.sdk.widget.report.renderer.event;
 import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
+
+import java.util.List;
 
 /**
  * @author Andrew Tivodar
@@ -59,6 +62,10 @@ public abstract class EventFactory {
     }
 
     public abstract Event createHyperlinkEvent(Hyperlink hyperlink);
+
+    public final Event createBookmarkEvent(List<Bookmark> bookmarkList){
+        return new BookmarksEvent(bookmarkList);
+    }
 
     public abstract Event createReportExecutedEvent(ReportExecution reportExecution, Destination destination);
 

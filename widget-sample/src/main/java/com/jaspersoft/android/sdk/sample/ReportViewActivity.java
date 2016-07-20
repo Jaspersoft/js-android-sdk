@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
@@ -15,6 +16,7 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
@@ -24,6 +26,7 @@ import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Tom Koptel
@@ -34,6 +37,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     private ReportFragment reportFragment;
     private AuthorizedClient authorizedClient;
 
+    private Button bookmark;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +46,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         setContentView(R.layout.report_renderer_preview);
         reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
         PaginationView paginationView = (PaginationView) findViewById(R.id.pagination);
-        findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reportFragment.refresh();
-            }
-        });
+        bookmark = (Button) findViewById(R.id.bookmark);
 
         Bundle extras = getIntent().getExtras();
         resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
@@ -56,7 +56,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
 
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setEdition("PRO");
-        serverInfo.setVersion(ServerVersion.v6_2);
+        serverInfo.setVersion(ServerVersion.v6_0_1);
 
         reportFragment.setReportEventListener(this);
         reportFragment.setPaginationView(paginationView);
@@ -96,8 +96,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     }
 
     @Override
-    public void onTimeoutWarning() {
-
+    public void onBookmarkListChanged(List<Bookmark> bookmarks) {
+        bookmark.setVisibility(bookmarks != null ? View.VISIBLE : View.GONE);
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {

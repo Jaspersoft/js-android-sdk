@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -65,6 +66,10 @@ public abstract class State {
         internalRefresh();
     }
 
+    public final List<Bookmark> getBookmarks() {
+        return internalGetBookmarks();
+    }
+
     public final void reset() {
         internalReset();
     }
@@ -84,6 +89,8 @@ public abstract class State {
     protected abstract void internalNavigateTo(Destination destination);
 
     protected abstract void internalRefresh();
+
+    protected abstract List<Bookmark> internalGetBookmarks();
 
     protected abstract void internalReset();
 

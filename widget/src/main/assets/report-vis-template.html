@@ -39,6 +39,9 @@
         onMultiPageStateChanged: function (isMultiPage) {
             return Android.onMultiPageStateChanged(isMultiPage);
         },
+        onBookmarkListChanged: function (bookmark) {
+            return Android.onBookmarkListChanged(bookmark);
+        },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
@@ -205,7 +208,8 @@
                     error: reportErrorFn,
                     events: {
                         reportCompleted: reportCompletedFn,
-                        changePagesState: currentPageChangedFn
+                        changePagesState: currentPageChangedFn,
+                        bookmarksReady: bookmarksReadyFn
                     },
                     linkOptions: {
                         events: {
@@ -237,6 +241,11 @@
             currentPageChangedFn = function(currentPage) {
                 reportInstance.pages(currentPage);
                 NativeCallbacks.onCurrentPageChanged(currentPage);
+            }
+
+            bookmarksReadyFn = function(bookmarks) {
+                bookmarkList = JSON.stringify(bookmarks);
+                NativeCallbacks.onBookmarkListChanged(bookmarkList);
             }
 
             reportCompletedFn = function() {

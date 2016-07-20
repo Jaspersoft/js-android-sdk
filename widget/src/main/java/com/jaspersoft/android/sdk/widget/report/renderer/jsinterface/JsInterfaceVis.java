@@ -3,10 +3,15 @@ package com.jaspersoft.android.sdk.widget.report.renderer.jsinterface;
 import android.webkit.JavascriptInterface;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.HyperlinkMapper;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * @author Andrew Tivodar
@@ -56,6 +61,14 @@ public class JsInterfaceVis extends JsInterface {
         Hyperlink hyperlink = hyperlinkMapper.map(type, hyperlinkParam);
         dispatcher.dispatch(eventFactory.createHyperlinkEvent(hyperlink));
     }
+
+    @JavascriptInterface
+    public void onBookmarkListChanged(String bookmarks) {
+        Type listType = new TypeToken<List<Bookmark>>(){}.getType();
+        List<Bookmark> bookmarksList = new Gson().fromJson(bookmarks, listType);
+        dispatcher.dispatch(eventFactory.createBookmarkEvent(bookmarksList));
+    }
+
 
     @JavascriptInterface
     public void onCurrentPageChanged(int currentPage) {

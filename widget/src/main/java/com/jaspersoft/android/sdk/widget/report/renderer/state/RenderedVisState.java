@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -10,12 +11,13 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -25,8 +27,11 @@ import java.util.List;
  * @since 2.6
  */
 class RenderedVisState extends State {
-    RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
+    List<Bookmark> bookmarkList;
+
+    RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, List<Bookmark> bookmarkList) {
         super(dispatcher, eventFactory, commandFactory, commandExecutor);
+        this.bookmarkList = bookmarkList;
         waitForReportMetadata();
     }
 
@@ -62,6 +67,11 @@ class RenderedVisState extends State {
     }
 
     @Override
+    protected List<Bookmark> internalGetBookmarks() {
+        return bookmarkList;
+    }
+
+    @Override
     protected void internalReset() {
         setInProgress(true);
         commandExecutor.cancelExecution();
@@ -88,6 +98,11 @@ class RenderedVisState extends State {
     @Subscribe
     public void onParamsUpdated(ParamsUpdatedEvent paramsUpdatedEvent) {
         waitForReportMetadata();
+    }
+
+    @Subscribe
+    public void onBookmarkListChanged(BookmarksEvent bookmarksEvent) {
+        bookmarkList = bookmarksEvent.getBookmarkList();
     }
 
     @Subscribe
