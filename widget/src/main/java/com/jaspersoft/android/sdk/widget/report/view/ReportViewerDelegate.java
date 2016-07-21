@@ -84,10 +84,6 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         return !reportRenderer.isInProgress() && reportRenderer.getRenderState() == RenderState.RENDERED;
     }
 
-    public boolean isFeatureSupported(ReportFeature reportFeature) {
-        return reportFeature != ReportFeature.ANCHOR_NAVIGATION || reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION);
-    }
-
     public void run(RunOptions runOptions) {
         checkInited();
 
@@ -132,6 +128,17 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
             reportRenderer.reset();
             inPending = true;
         }
+    }
+
+    public void navigateToBookmark(Bookmark bookmark) {
+        String bookmarkAnchor = bookmark.getAnchor();
+        Destination bookmarkDestination;
+        if (bookmarkAnchor != null) {
+            bookmarkDestination = new Destination(bookmarkAnchor);
+        } else {
+            bookmarkDestination = new Destination(bookmark.getPage());
+        }
+        onNavigateTo(bookmarkDestination);
     }
 
     public void reset() {

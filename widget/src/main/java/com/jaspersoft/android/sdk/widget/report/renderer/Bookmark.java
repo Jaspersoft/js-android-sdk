@@ -23,7 +23,8 @@ public class Bookmark implements Parcelable{
     private Bookmark(Parcel in) {
         anchor = in.readString();
         page = in.readInt();
-        bookmarks = in.readArrayList(Bookmark.class.getClassLoader());
+        bookmarks = new ArrayList<>();
+        in.readTypedList(bookmarks, Bookmark.CREATOR);
     }
 
     public String getAnchor() {
