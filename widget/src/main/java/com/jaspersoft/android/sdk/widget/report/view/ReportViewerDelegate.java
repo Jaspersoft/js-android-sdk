@@ -12,6 +12,7 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
@@ -21,6 +22,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.compat.ReportFeature;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.LocalHyperlink;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,10 +84,6 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         return !reportRenderer.isInProgress() && reportRenderer.getRenderState() == RenderState.RENDERED;
     }
 
-    public boolean isFeatureSupported(ReportFeature reportFeature) {
-        return reportFeature != ReportFeature.ANCHOR_NAVIGATION || reportRenderer.isFeatureSupported(ReportFeature.ANCHOR_NAVIGATION);
-    }
-
     public void run(RunOptions runOptions) {
         checkInited();
 
@@ -132,6 +130,17 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         }
     }
 
+    public void navigateToBookmark(Bookmark bookmark) {
+        String bookmarkAnchor = bookmark.getAnchor();
+        Destination bookmarkDestination;
+        if (bookmarkAnchor != null) {
+            bookmarkDestination = new Destination(bookmarkAnchor);
+        } else {
+            bookmarkDestination = new Destination(bookmark.getPage());
+        }
+        onNavigateTo(bookmarkDestination);
+    }
+
     public void reset() {
         checkInited();
 
@@ -165,6 +174,15 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
             }
         } else {
             reportEventListener.onHyperlinkClicked(hyperlink);
+        }
+    }
+
+    @Override
+    public void onBookmarkListChanged(List<Bookmark> bookmarkList) {
+        if (bookmarkList == null) {
+            reportEventListener.onBookmarkListChanged(new ArrayList<Bookmark>());
+        } else {
+            reportEventListener.onBookmarkListChanged(bookmarkList);
         }
     }
 
@@ -215,6 +233,11 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     @Override
     public void onNavigateTo(Destination destination) {
         reportRenderer.navigateTo(destination);
+    }
+
+    public List<Bookmark> getBookmarks() {
+        List<Bookmark> bookmarkList = reportRenderer.getBookmarkList();
+        return bookmarkList == null ? new ArrayList<Bookmark>() : bookmarkList;
     }
 
     public void performViewAction(ViewAction viewAction) {

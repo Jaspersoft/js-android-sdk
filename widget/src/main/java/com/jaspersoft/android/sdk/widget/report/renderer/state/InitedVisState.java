@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -9,6 +10,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
@@ -22,6 +24,8 @@ import java.util.List;
  * @since 2.6
  */
 class InitedVisState extends State {
+    List<Bookmark> bookmarkList;
+
     InitedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
         super(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
@@ -54,6 +58,11 @@ class InitedVisState extends State {
     }
 
     @Override
+    protected List<Bookmark> internalGetBookmarks() {
+        throw new IllegalStateException("Could not get report bookmarks. Report still not rendered.");
+    }
+
+    @Override
     protected void internalReset() {
         setInProgress(true);
         commandExecutor.cancelExecution();
@@ -71,6 +80,11 @@ class InitedVisState extends State {
     public void onReportRendered(ReportRenderedEvent reportRenderedEvent) {
         setInProgress(false);
         dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.RENDERED));
+    }
+
+    @Subscribe
+    public void onBookmarkListChanged(BookmarksEvent bookmarksEvent) {
+        bookmarkList = bookmarksEvent.getBookmarkList();
     }
 
     @Subscribe

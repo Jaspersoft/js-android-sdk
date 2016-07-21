@@ -10,8 +10,8 @@ import android.widget.FrameLayout;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
-import com.jaspersoft.android.sdk.widget.report.renderer.compat.ReportFeature;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class ReportView extends FrameLayout implements ReportViewer {
+public class ReportView extends FrameLayout implements ReportWidget {
     private ReportViewerDelegate reportViewerDelegate;
 
     public ReportView(Context context) {
@@ -66,11 +66,6 @@ public class ReportView extends FrameLayout implements ReportViewer {
     }
 
     @Override
-    public boolean isFeatureSupported(ReportFeature reportFeature) {
-        return reportViewerDelegate.isFeatureSupported(reportFeature);
-    }
-
-    @Override
     public void run(RunOptions runOptions) {
         reportViewerDelegate.run(runOptions);
     }
@@ -83,6 +78,16 @@ public class ReportView extends FrameLayout implements ReportViewer {
     @Override
     public void refresh() {
         reportViewerDelegate.refresh();
+    }
+
+    @Override
+    public void navigateToBookmark(Bookmark bookmark) {
+        reportViewerDelegate.navigateToBookmark(bookmark);
+    }
+
+    @Override
+    public List<Bookmark> getBookmarks() {
+        return reportViewerDelegate.getBookmarks();
     }
 
     @Override

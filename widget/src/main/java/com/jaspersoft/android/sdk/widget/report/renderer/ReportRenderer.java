@@ -84,6 +84,10 @@ public class ReportRenderer {
         currentState.navigateTo(destination);
     }
 
+    public List<Bookmark> getBookmarkList() {
+        return currentState.getBookmarks();
+    }
+
     public void reset() {
         currentState.reset();
     }

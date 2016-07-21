@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.renderer;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
@@ -58,6 +59,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onBookmarkListChanged(BookmarksEvent bookmarksEvent) {
+        handleEvent(bookmarksEvent);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -97,6 +103,8 @@ class EventPublisher {
             reportRendererCallback.onPagesCountChanged(((PagesCountChangedEvent) event).getTotalCount());
         } else if (event instanceof MultiPageStateChangedEvent) {
             reportRendererCallback.onMultiPageStateChanged(((MultiPageStateChangedEvent) event).isMultiPage());
+        } else if (event instanceof BookmarksEvent) {
+            reportRendererCallback.onBookmarkListChanged(((BookmarksEvent) event).getBookmarkList());
         }
     }
 }
