@@ -2,11 +2,9 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -66,16 +64,6 @@ class IdleState extends State {
     @Override
     protected void internalReset() {
         // no action required
-    }
-
-    @Override
-    protected List<Bookmark> internalGetBookmarks() {
-        throw new IllegalStateException("Could not get report bookmarks. Renderer still not initialized.");
-    }
-
-    @Override
-    protected List<ReportPart> internalGetReportParts() {
-        throw new IllegalStateException("Could not get report parts. Renderer still not initialized.");
     }
 
     @Override

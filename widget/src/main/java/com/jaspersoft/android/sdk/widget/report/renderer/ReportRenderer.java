@@ -24,13 +24,20 @@ public class ReportRenderer {
     private final Dispatcher dispatcher;
     private final StateFactory stateFactory;
     private final ReportFeaturesCompat reportFeaturesCompat;
+    private final double initialScale;
     private State currentState;
 
-    ReportRenderer(Dispatcher dispatcher, StateFactory stateFactory, EventPublisher eventPublisher, ReportFeaturesCompat reportFeaturesCompat, RenderState initialState) {
+    ReportRenderer(Dispatcher dispatcher,
+                   StateFactory stateFactory,
+                   EventPublisher eventPublisher,
+                   ReportFeaturesCompat reportFeaturesCompat,
+                   RenderState initialState,
+                   double initialScale) {
         this.dispatcher = dispatcher;
         this.stateFactory = stateFactory;
         this.eventPublisher = eventPublisher;
         this.reportFeaturesCompat = reportFeaturesCompat;
+        this.initialScale = initialScale;
 
         dispatcher.register(this);
         dispatcher.register(eventPublisher);
@@ -40,15 +47,15 @@ public class ReportRenderer {
         eventPublisher.onSwapState(initialStateEvent);
     }
 
-    public static ReportRenderer create(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
+    public static ReportRenderer create(AuthorizedClient client, WebView webView, ServerInfo serverInfo, double initialScale) {
         if (serverInfo == null) {
             throw new IllegalArgumentException("ServerInfo should be provided.");
         }
 
         if (serverInfo.isEditionPro() && serverInfo.getVersion().greaterThanOrEquals(ServerVersion.v6)) {
-            return new ReportRendererFactory.VisualizeReportRendererFactory().create(client, webView, serverInfo);
+            return new ReportRendererFactory.VisualizeReportRendererFactory().create(client, webView, serverInfo, initialScale);
         } else {
-            return new ReportRendererFactory.RestReportRendererFactory().create(client, webView, serverInfo);
+            return new ReportRendererFactory.RestReportRendererFactory().create(client, webView, serverInfo, initialScale);
         }
     }
 
@@ -64,7 +71,7 @@ public class ReportRenderer {
         return currentState.getName();
     }
 
-    public void init(double initialScale) {
+    public void init() {
         currentState.init(initialScale);
     }
 
@@ -82,14 +89,6 @@ public class ReportRenderer {
 
     public void navigateTo(Destination destination) {
         currentState.navigateTo(destination);
-    }
-
-    public List<Bookmark> getBookmarkList() {
-        return currentState.getBookmarks();
-    }
-
-    public List<ReportPart> getReportPartList() {
-        return currentState.getReportParts();
     }
 
     public void reset() {

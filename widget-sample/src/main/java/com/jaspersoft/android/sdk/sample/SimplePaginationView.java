@@ -35,13 +35,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
-import com.jaspersoft.android.sdk.widget.report.view.PaginationView;
+import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class SimplePaginationView extends PaginationView implements View.OnClickListener {
+public class SimplePaginationView extends ReportPaginationListener implements View.OnClickListener {
 
     private View pageValues;
     private ImageButton firstPage, previousPage, nextPage, lastPage;

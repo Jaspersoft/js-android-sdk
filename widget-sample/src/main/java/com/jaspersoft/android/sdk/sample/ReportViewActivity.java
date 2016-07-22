@@ -22,7 +22,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
-import com.jaspersoft.android.sdk.widget.report.view.PaginationView;
+import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
 
@@ -46,7 +46,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
 
         setContentView(R.layout.report_renderer_preview);
         reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
-        PaginationView paginationView = (PaginationView) findViewById(R.id.pagination);
+        ReportPaginationListener reportPaginationListener = (ReportPaginationListener) findViewById(R.id.pagination);
         bookmark = (Button) findViewById(R.id.bookmark);
 
         Bundle extras = getIntent().getExtras();
@@ -60,7 +60,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         serverInfo.setVersion(ServerVersion.v6_0_1);
 
         reportFragment.setReportEventListener(this);
-        reportFragment.setPaginationView(paginationView);
+        reportFragment.setPaginationView(reportPaginationListener);
         if (!reportFragment.isInited()) {
             reportFragment.init(authorizedClient, serverInfo, 0.5f);
             reportFragment.run(new RunOptions.Builder()

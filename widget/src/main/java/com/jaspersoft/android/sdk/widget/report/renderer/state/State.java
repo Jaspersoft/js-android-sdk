@@ -2,11 +2,9 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -67,14 +65,6 @@ public abstract class State {
         internalRefresh();
     }
 
-    public final List<Bookmark> getBookmarks() {
-        return internalGetBookmarks();
-    }
-
-    public final List<ReportPart> getReportParts() {
-        return internalGetReportParts();
-    }
-
     public final void reset() {
         internalReset();
     }
@@ -95,19 +85,16 @@ public abstract class State {
 
     protected abstract void internalRefresh();
 
-    protected abstract List<Bookmark> internalGetBookmarks();
-
-    protected abstract List<ReportPart> internalGetReportParts();
-
     protected abstract void internalReset();
 
-    protected void internalDestroy(){
+    protected void internalDestroy() {
         reset();
         dispatcher.dispatch(eventFactory.createSwapStateEvent(RenderState.DESTROYED));
     }
 
     private void checkProgressState() {
-        if (inProgress) throw new IllegalStateException("Can not perform action while other is in progress");
+        if (inProgress)
+            throw new IllegalStateException("Can not perform action while other is in progress");
     }
 
     private void sendProgressChangeEvent() {

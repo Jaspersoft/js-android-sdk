@@ -1,15 +1,11 @@
 package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.jsinterface.JsInterface;
-
-import java.util.List;
 
 /**
  * @author Andrew Tivodar
@@ -27,12 +23,6 @@ public class VisStateFactory extends StateFactory {
 
     @Override
     public State createRenderedState(State prevState) {
-        List<Bookmark> bookmarkList = null;
-        List<ReportPart> reportPartList = null;
-        if (prevState instanceof InitedVisState) {
-            bookmarkList = ((InitedVisState) prevState).bookmarkList;
-            reportPartList = ((InitedVisState) prevState).reportPartList;
-        }
-        return new RenderedVisState(dispatcher, eventFactory, commandFactory, commandExecutor, bookmarkList, reportPartList);
+        return new RenderedVisState(dispatcher, eventFactory, commandFactory, commandExecutor);
     }
 }

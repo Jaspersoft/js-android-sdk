@@ -5,8 +5,6 @@ import android.view.View;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
 import java.util.List;
@@ -23,9 +21,15 @@ public interface ReportWidget {
 
     boolean isControlActionsAvailable();
 
+    ReportProperties getReportProperties();
+
     void setReportEventListener(ReportEventListener reportEventListener);
 
-    void setPaginationView(PaginationView paginationView);
+    void setReportPaginationListener(ReportPaginationListener reportPaginationLsitener);
+
+    void setReportBookmarkListener(ReportBookmarkListener reportBookmarkListener);
+
+    void setReportPartsListener(ReportPartsListener reportPartsListener);
 
     View getView();
 
@@ -35,15 +39,9 @@ public interface ReportWidget {
 
     void refresh();
 
-    void navigateToBookmark(Bookmark bookmark);
-
-    void navigateToReportPart(ReportPart reportPart);
+    void navigateToPage(int page);
 
     void performViewAction(ViewAction viewAction);
-
-    List<Bookmark> getBookmarks();
-
-    List<ReportPart> getReportParts();
 
     void reset();
 }

@@ -110,9 +110,9 @@ class EventPublisher {
         } else if (event instanceof MultiPageStateChangedEvent) {
             reportRendererCallback.onMultiPageStateChanged(((MultiPageStateChangedEvent) event).isMultiPage());
         } else if (event instanceof BookmarksEvent) {
-            reportRendererCallback.onBookmarkListChanged(((BookmarksEvent) event).getBookmarkList());
+            reportRendererCallback.onBookmarkListAvailable(((BookmarksEvent) event).getBookmarkList());
         } else if (event instanceof ReportPartsEvent) {
-            reportRendererCallback.onReportPartsChanged(((ReportPartsEvent) event).getReportPartList());
+            reportRendererCallback.onReportPartsAvailable(((ReportPartsEvent) event).getReportPartList());
         }
     }
 }
