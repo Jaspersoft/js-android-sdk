@@ -2,6 +2,7 @@ package com.jaspersoft.android.sdk.widget.report.view;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface ReportEventListener {
     void onExternalLinkOpened(String url);
     void onError(ServiceException exception);
     void onBookmarkListChanged(List<Bookmark> bookmarks);
+    void onReportPartsChanged(List<ReportPart> reportPartList);
 
     class SimpleReportEventListener implements ReportEventListener {
         @Override
@@ -40,6 +42,11 @@ public interface ReportEventListener {
 
         @Override
         public void onBookmarkListChanged(List<Bookmark> bookmarks) {
+
+        }
+
+        @Override
+        public void onReportPartsChanged(List<ReportPart> reportPartList) {
 
         }
     }

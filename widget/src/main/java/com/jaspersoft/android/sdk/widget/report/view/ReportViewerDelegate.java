@@ -15,6 +15,7 @@ import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
@@ -141,6 +142,12 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         onNavigateTo(bookmarkDestination);
     }
 
+    public void navigateToReportPart(ReportPart reportPart) {
+        Destination reportPartDestination = new Destination(reportPart.getPage());
+        onNavigateTo(reportPartDestination);
+    }
+
+
     public void reset() {
         checkInited();
 
@@ -183,6 +190,15 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
             reportEventListener.onBookmarkListChanged(new ArrayList<Bookmark>());
         } else {
             reportEventListener.onBookmarkListChanged(bookmarkList);
+        }
+    }
+
+    @Override
+    public void onReportPartsChanged(List<ReportPart> reportPartList) {
+        if (reportPartList == null) {
+            reportEventListener.onReportPartsChanged(new ArrayList<ReportPart>());
+        } else {
+            reportEventListener.onReportPartsChanged(reportPartList);
         }
     }
 
@@ -238,6 +254,11 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     public List<Bookmark> getBookmarks() {
         List<Bookmark> bookmarkList = reportRenderer.getBookmarkList();
         return bookmarkList == null ? new ArrayList<Bookmark>() : bookmarkList;
+    }
+
+    public List<ReportPart> getReportParts() {
+        List<ReportPart> reportPartList = reportRenderer.getReportPartList();
+        return reportPartList == null ? new ArrayList<ReportPart>() : reportPartList;
     }
 
     public void performViewAction(ViewAction viewAction) {

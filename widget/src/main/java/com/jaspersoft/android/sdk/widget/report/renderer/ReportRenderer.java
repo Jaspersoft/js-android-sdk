@@ -88,6 +88,10 @@ public class ReportRenderer {
         return currentState.getBookmarks();
     }
 
+    public List<ReportPart> getReportPartList() {
+        return currentState.getReportParts();
+    }
+
     public void reset() {
         currentState.reset();
     }

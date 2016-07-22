@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -70,6 +71,10 @@ public abstract class State {
         return internalGetBookmarks();
     }
 
+    public final List<ReportPart> getReportParts() {
+        return internalGetReportParts();
+    }
+
     public final void reset() {
         internalReset();
     }
@@ -91,6 +96,8 @@ public abstract class State {
     protected abstract void internalRefresh();
 
     protected abstract List<Bookmark> internalGetBookmarks();
+
+    protected abstract List<ReportPart> internalGetReportParts();
 
     protected abstract void internalReset();
 

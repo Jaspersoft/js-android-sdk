@@ -6,6 +6,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -14,6 +15,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportPartsEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -25,6 +27,7 @@ import java.util.List;
  */
 class InitedVisState extends State {
     List<Bookmark> bookmarkList;
+    List<ReportPart> reportPartList;
 
     InitedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
         super(dispatcher, eventFactory, commandFactory, commandExecutor);
@@ -63,6 +66,11 @@ class InitedVisState extends State {
     }
 
     @Override
+    protected List<ReportPart> internalGetReportParts() {
+        throw new IllegalStateException("Could not get report parts. Report still not rendered.");
+    }
+
+    @Override
     protected void internalReset() {
         setInProgress(true);
         commandExecutor.cancelExecution();
@@ -85,6 +93,11 @@ class InitedVisState extends State {
     @Subscribe
     public void onBookmarkListChanged(BookmarksEvent bookmarksEvent) {
         bookmarkList = bookmarksEvent.getBookmarkList();
+    }
+
+    @Subscribe
+    public void onReportPartsChanged(ReportPartsEvent reportPartsEvent) {
+        reportPartList = reportPartsEvent.getReportPartList();
     }
 
     @Subscribe

@@ -11,6 +11,7 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
 import java.util.List;
@@ -86,8 +87,18 @@ public class ReportView extends FrameLayout implements ReportWidget {
     }
 
     @Override
+    public void navigateToReportPart(ReportPart reportPart) {
+        reportViewerDelegate.navigateToReportPart(reportPart);
+    }
+
+    @Override
     public List<Bookmark> getBookmarks() {
         return reportViewerDelegate.getBookmarks();
+    }
+
+    @Override
+    public List<ReportPart> getReportParts() {
+        return reportViewerDelegate.getReportParts();
     }
 
     @Override

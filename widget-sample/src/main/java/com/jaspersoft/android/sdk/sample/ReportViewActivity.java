@@ -17,6 +17,7 @@ import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
@@ -98,6 +99,11 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     @Override
     public void onBookmarkListChanged(List<Bookmark> bookmarks) {
         bookmark.setVisibility(bookmarks != null ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onReportPartsChanged(List<ReportPart> reportPartList) {
+
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {

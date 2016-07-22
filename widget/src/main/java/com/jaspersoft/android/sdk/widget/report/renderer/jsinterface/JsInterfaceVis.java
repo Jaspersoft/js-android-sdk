@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.HyperlinkMapper;
@@ -67,6 +68,13 @@ public class JsInterfaceVis extends JsInterface {
         Type listType = new TypeToken<List<Bookmark>>(){}.getType();
         List<Bookmark> bookmarksList = new Gson().fromJson(bookmarks, listType);
         dispatcher.dispatch(eventFactory.createBookmarkEvent(bookmarksList));
+    }
+
+    @JavascriptInterface
+    public void onReportPartsChanged(String reportParts) {
+        Type listType = new TypeToken<List<ReportPart>>(){}.getType();
+        List<ReportPart> reportPartList = new Gson().fromJson(reportParts, listType);
+        dispatcher.dispatch(eventFactory.createReportPartEvent(reportPartList));
     }
 
 

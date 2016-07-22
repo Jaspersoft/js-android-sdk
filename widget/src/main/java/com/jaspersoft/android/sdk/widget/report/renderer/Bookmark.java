@@ -20,7 +20,7 @@ public class Bookmark implements Parcelable{
         this.bookmarks = bookmarks;
     }
 
-    private Bookmark(Parcel in) {
+    protected Bookmark(Parcel in) {
         anchor = in.readString();
         page = in.readInt();
         bookmarks = new ArrayList<>();

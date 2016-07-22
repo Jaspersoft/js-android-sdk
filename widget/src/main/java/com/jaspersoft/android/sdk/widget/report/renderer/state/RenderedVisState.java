@@ -7,6 +7,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -28,10 +29,12 @@ import java.util.List;
  */
 class RenderedVisState extends State {
     List<Bookmark> bookmarkList;
+    List<ReportPart> reportPartList;
 
-    RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, List<Bookmark> bookmarkList) {
+    RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor, List<Bookmark> bookmarkList, List<ReportPart> reportPartList) {
         super(dispatcher, eventFactory, commandFactory, commandExecutor);
         this.bookmarkList = bookmarkList;
+        this.reportPartList = reportPartList;
         waitForReportMetadata();
     }
 
@@ -69,6 +72,11 @@ class RenderedVisState extends State {
     @Override
     protected List<Bookmark> internalGetBookmarks() {
         return bookmarkList;
+    }
+
+    @Override
+    protected List<ReportPart> internalGetReportParts() {
+        return reportPartList;
     }
 
     @Override
