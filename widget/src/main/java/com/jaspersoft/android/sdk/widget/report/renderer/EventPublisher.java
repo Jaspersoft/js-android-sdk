@@ -8,6 +8,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.MultiPageStateChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.PagesCountChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ProgressStateEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportPartsEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.SwapStateEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
 import com.squareup.otto.Subscribe;
@@ -64,6 +65,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onReportPartsChanged(ReportPartsEvent reportPartsEvent) {
+        handleEvent(reportPartsEvent);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -104,7 +110,9 @@ class EventPublisher {
         } else if (event instanceof MultiPageStateChangedEvent) {
             reportRendererCallback.onMultiPageStateChanged(((MultiPageStateChangedEvent) event).isMultiPage());
         } else if (event instanceof BookmarksEvent) {
-            reportRendererCallback.onBookmarkListChanged(((BookmarksEvent) event).getBookmarkList());
+            reportRendererCallback.onBookmarkListAvailable(((BookmarksEvent) event).getBookmarkList());
+        } else if (event instanceof ReportPartsEvent) {
+            reportRendererCallback.onReportPartsAvailable(((ReportPartsEvent) event).getReportPartList());
         }
     }
 }

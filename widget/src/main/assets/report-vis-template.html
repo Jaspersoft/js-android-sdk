@@ -42,6 +42,9 @@
         onBookmarkListChanged: function (bookmark) {
             return Android.onBookmarkListChanged(bookmark);
         },
+        onReportPartsChanged: function (reportParts) {
+            return Android.onReportPartsChanged(reportParts);
+        },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
@@ -209,7 +212,8 @@
                     events: {
                         reportCompleted: reportCompletedFn,
                         changePagesState: currentPageChangedFn,
-                        bookmarksReady: bookmarksReadyFn
+                        bookmarksReady: bookmarksReadyFn,
+                        reportPartsReady: reportPartsReadyFn
                     },
                     linkOptions: {
                         events: {
@@ -246,6 +250,11 @@
             bookmarksReadyFn = function(bookmarks) {
                 bookmarkList = JSON.stringify(bookmarks);
                 NativeCallbacks.onBookmarkListChanged(bookmarkList);
+            }
+
+            reportPartsReadyFn = function(parts) {
+                reportParts = JSON.stringify(parts);
+                NativeCallbacks.onReportPartsChanged(reportParts);
             }
 
             reportCompletedFn = function() {

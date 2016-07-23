@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class Bookmark implements Parcelable{
+public class Bookmark implements Parcelable {
     private final String anchor;
     private final int page;
     private final ArrayList<Bookmark> bookmarks;
@@ -20,7 +20,7 @@ public class Bookmark implements Parcelable{
         this.bookmarks = bookmarks;
     }
 
-    private Bookmark(Parcel in) {
+    protected Bookmark(Parcel in) {
         anchor = in.readString();
         page = in.readInt();
         bookmarks = new ArrayList<>();
@@ -37,6 +37,28 @@ public class Bookmark implements Parcelable{
 
     public ArrayList<Bookmark> getBookmarks() {
         return bookmarks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bookmark bookmark = (Bookmark) o;
+
+        if (page != bookmark.page) return false;
+        if (anchor != null ? !anchor.equals(bookmark.anchor) : bookmark.anchor != null)
+            return false;
+        return bookmarks != null ? bookmarks.equals(bookmark.bookmarks) : bookmark.bookmarks == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = anchor != null ? anchor.hashCode() : 0;
+        result = 31 * result + page;
+        result = 31 * result + (bookmarks != null ? bookmarks.hashCode() : 0);
+        return result;
     }
 
     @Override

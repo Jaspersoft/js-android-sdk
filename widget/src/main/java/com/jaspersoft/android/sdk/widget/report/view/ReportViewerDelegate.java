@@ -1,7 +1,6 @@
 package com.jaspersoft.android.sdk.widget.report.view;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,6 +14,7 @@ import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
@@ -22,43 +22,68 @@ import com.jaspersoft.android.sdk.widget.report.renderer.compat.ReportFeature;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.LocalHyperlink;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
-class ReportViewerDelegate implements PaginationView.PaginationListener, ReportRendererCallback, ResourceWebViewClient.WebClientEventCallback {
+class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewClient.WebClientEventCallback {
     private static final int SCROLL_STEP = 8;
-    private static final String RENDERER_KEY_ARG = "rendererKey";
-    private static final String SCALE_ARG = "scaleKey";
-    private static final String IN_PENDING_ARG = "inPendingKey";
 
-    private ReportRenderer reportRenderer;
-    private ResourceWebView resourceWebView;
-    private PaginationView paginationView;
+    private ReportPaginationListener reportPaginationListener;
     private ReportEventListener reportEventListener;
+    private ReportBookmarkListener reportBookmarkListener;
+    private ReportPartsListener reportPartsListener;
 
-    private float scale;
-    private boolean inPending;
-    private RunOptions runOptions;
+    ReportRenderer reportRenderer;
+    ResourceWebView resourceWebView;
+
+    boolean inPending;
+    RunOptions runOptions;
+    ReportProperties reportProperties;
 
     private ReportViewerDelegate() {
         setReportEventListener(null);
+        setReportPaginationListener(null);
+        setReportBookmarkListener(null);
+        setReportPartsListener(null);
+        reportProperties = new ReportProperties();
+    }
+
+    private ReportViewerDelegate(ReportRenderer reportRenderer,
+                                 ResourceWebView resourceWebView,
+                                 boolean inPending,
+                                 RunOptions runOptions,
+                                 ReportProperties reportProperties) {
+        this();
+        this.reportRenderer = reportRenderer;
+        this.resourceWebView = resourceWebView;
+        this.inPending = inPending;
+        this.runOptions = runOptions;
+        this.reportProperties = reportProperties;
     }
 
     public static ReportViewerDelegate create() {
         return new ReportViewerDelegate();
     }
 
-    public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
+    public static ReportViewerDelegate restore(ReportRenderer reportRenderer,
+                                               ResourceWebView resourceWebView,
+                                               boolean inPending,
+                                               RunOptions runOptions,
+                                               ReportProperties reportProperties) {
+        ReportViewerDelegate reportViewerDelegate = new ReportViewerDelegate(reportRenderer, resourceWebView, inPending, runOptions, reportProperties);
+        reportViewerDelegate.setWebViewClient();
+        return reportViewerDelegate;
+    }
+
+    public void init(AuthorizedClient client, ServerInfo serverInfo, double scale) {
         if (reportRenderer != null) {
             throw new RuntimeException("Report fragment is already inited!");
         }
         setWebViewClient();
-        reportRenderer = ReportRenderer.create(client, resourceWebView, serverInfo);
-        this.scale = scale;
+        reportRenderer = ReportRenderer.create(client, resourceWebView, serverInfo, scale);
     }
 
     public void setReportEventListener(ReportEventListener reportEventListener) {
@@ -68,12 +93,25 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         this.reportEventListener = reportEventListener;
     }
 
-    public void setPaginationView(PaginationView paginationView) {
-        if (paginationView == null) {
-            throw new IllegalArgumentException("PaginationView should not be null");
+    public void setReportPaginationListener(ReportPaginationListener reportPaginationListener) {
+        if (reportPaginationListener == null) {
+            reportPaginationListener = new ReportPaginationListener.SimpleReportPaginationListener();
         }
-        this.paginationView = paginationView;
-        paginationView.setPaginationListener(this);
+        this.reportPaginationListener = reportPaginationListener;
+    }
+
+    public void setReportBookmarkListener(ReportBookmarkListener reportBookmarkListener) {
+        if (reportBookmarkListener == null) {
+            reportBookmarkListener = new ReportBookmarkListener.SimpleReportBookmarkListener();
+        }
+        this.reportBookmarkListener = reportBookmarkListener;
+    }
+
+    public void setReportPartsListener(ReportPartsListener reportPartsListener) {
+        if (reportPartsListener == null) {
+            reportPartsListener = new ReportPartsListener.SimpleReportPartsListener();
+        }
+        this.reportPartsListener = reportPartsListener;
     }
 
     public boolean isInited() {
@@ -92,7 +130,7 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         switch (reportRenderer.getRenderState()) {
             case IDLE:
                 if (!reportRenderer.isInProgress()) {
-                    reportRenderer.init(scale);
+                    reportRenderer.init();
                 }
                 break;
             case INITED:
@@ -130,15 +168,11 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         }
     }
 
-    public void navigateToBookmark(Bookmark bookmark) {
-        String bookmarkAnchor = bookmark.getAnchor();
-        Destination bookmarkDestination;
-        if (bookmarkAnchor != null) {
-            bookmarkDestination = new Destination(bookmarkAnchor);
-        } else {
-            bookmarkDestination = new Destination(bookmark.getPage());
-        }
-        onNavigateTo(bookmarkDestination);
+    public void navigateToPage(int page) {
+        checkInited();
+
+        Destination pageDestination = new Destination(page);
+        reportRenderer.navigateTo(pageDestination);
     }
 
     public void reset() {
@@ -150,7 +184,6 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     @Override
     public void onProgressStateChanged(boolean inProgress) {
         resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
-        updatePaginationEnabled();
         reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
     }
 
@@ -161,7 +194,6 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
             reportRenderer.render(runOptions);
         }
 
-        updatePaginationEnabled();
         reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
     }
 
@@ -178,11 +210,18 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
     }
 
     @Override
-    public void onBookmarkListChanged(List<Bookmark> bookmarkList) {
-        if (bookmarkList == null) {
-            reportEventListener.onBookmarkListChanged(new ArrayList<Bookmark>());
-        } else {
-            reportEventListener.onBookmarkListChanged(bookmarkList);
+    public void onBookmarkListAvailable(List<Bookmark> bookmarkList) {
+        if (!bookmarkList.equals(reportProperties.getBookmarkList())) {
+            reportProperties.setBookmarkList(bookmarkList);
+            reportBookmarkListener.onBookmarkListChanged(bookmarkList);
+        }
+    }
+
+    @Override
+    public void onReportPartsAvailable(List<ReportPart> reportPartList) {
+        if (!reportPartList.equals(reportProperties.getReportPartList())) {
+            reportProperties.setReportPartList(reportPartList);
+            reportPartsListener.onReportPartsChanged(reportPartList);
         }
     }
 
@@ -193,24 +232,30 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
 
     @Override
     public void onMultiPageStateChanged(boolean isMultiPage) {
-        if (paginationView != null) {
-            paginationView.show(isMultiPage);
-        }
+        reportProperties.setMultiPage(isMultiPage);
+        reportPaginationListener.onMultiPageStateChange(isMultiPage);
     }
 
     @Override
     public void onCurrentPageChanged(int currentPage) {
         while (resourceWebView.zoomOut()) ;
-        if (paginationView != null) {
-            paginationView.onCurrentPageChanged(currentPage);
+
+        ReportPart previousReportPart = reportProperties.getCurrentReportPart();
+
+        reportProperties.setCurrentPage(currentPage);
+        reportPaginationListener.onCurrentPageChanged(currentPage);
+
+        ReportPart currentReportPart = reportProperties.getCurrentReportPart();
+        if (currentReportPart != null && !currentReportPart.equals(previousReportPart)) {
+            reportPartsListener.onCurrentReportPartChanged(reportProperties.getCurrentReportPart());
         }
     }
 
     @Override
     public void onPagesCountChanged(Integer totalCount) {
-        if (paginationView != null) {
-            paginationView.onPagesCountChanged(totalCount);
-        }
+        reportProperties.setPagesCount(totalCount);
+        reportPaginationListener.onPagesCountChanged(totalCount);
+
         if (totalCount != null && totalCount == 0) {
             ServiceException noContentException = new ServiceException("Requested report execution has no content",
                     new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
@@ -230,14 +275,8 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         reportEventListener.onError(exception);
     }
 
-    @Override
-    public void onNavigateTo(Destination destination) {
-        reportRenderer.navigateTo(destination);
-    }
-
-    public List<Bookmark> getBookmarks() {
-        List<Bookmark> bookmarkList = reportRenderer.getBookmarkList();
-        return bookmarkList == null ? new ArrayList<Bookmark>() : bookmarkList;
+    public ReportProperties getReportMetadata() {
+        return reportProperties;
     }
 
     public void performViewAction(ViewAction viewAction) {
@@ -263,51 +302,19 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         }
     }
 
-    void registerReportRendererCallback() {
+    public void registerReportRendererCallback() {
         reportRenderer.registerReportRendererCallback(this);
     }
 
-    void unregisterReportRendererCallback() {
+    public void unregisterReportRendererCallback() {
         reportRenderer.unregisterReportRendererCallback();
     }
 
-    ReportRendererKey saveInStore() {
-        ReportRendererKey reportRendererKey = ReportRendererKey.newKey();
-        RenderersStore.getInstance().save(reportRenderer, reportRendererKey);
-        ReportWebViewStore.getInstance().save(resourceWebView, reportRendererKey);
-        RunOptionsStore.getInstance().save(runOptions, reportRendererKey);
-        return reportRendererKey;
-    }
-
-    void persistData(Bundle bundle, ReportRendererKey reportRendererKey) {
-        if (reportRendererKey == null) return;
-
-        bundle.putParcelable(RENDERER_KEY_ARG, reportRendererKey);
-        bundle.putFloat(SCALE_ARG, scale);
-        bundle.putBoolean(IN_PENDING_ARG, inPending);
-    }
-
-    ReportRendererKey restoreData(Bundle bundle) {
-        if (!bundle.containsKey(RENDERER_KEY_ARG)) return null;
-
-        scale = bundle.getFloat(SCALE_ARG);
-        inPending = bundle.getBoolean(IN_PENDING_ARG);
-        ReportRendererKey reportRendererKey = bundle.getParcelable(RENDERER_KEY_ARG);
-
-        reportRenderer = RenderersStore.getInstance().restore(reportRendererKey);
-        resourceWebView = ReportWebViewStore.getInstance().restore(reportRendererKey);
-        runOptions = RunOptionsStore.getInstance().restore(reportRendererKey);
-
-        setWebViewClient();
-
-        return reportRendererKey;
-    }
-
-    void createResourceView(Context context) {
+    public void createResourceView(Context context) {
         resourceWebView = new ResourceWebView(context.getApplicationContext());
     }
 
-    ResourceWebView getResourceView() {
+    public ResourceWebView getResourceView() {
         return resourceWebView;
     }
 
@@ -315,24 +322,13 @@ class ReportViewerDelegate implements PaginationView.PaginationListener, ReportR
         ((ViewGroup) resourceWebView.getParent()).removeView(resourceWebView);
     }
 
-    void destroy(ReportRendererKey reportRendererKey) {
+    void destroy() {
         reportRenderer.destroy();
-        if (reportRendererKey != null) {
-            RenderersStore.getInstance().remove(reportRendererKey);
-            ReportWebViewStore.getInstance().remove(reportRendererKey);
-            RunOptionsStore.getInstance().remove(reportRendererKey);
-        }
     }
 
     private void checkInited() {
         if (reportRenderer == null) {
             throw new IllegalStateException("Report fragment was not inited");
-        }
-    }
-
-    private void updatePaginationEnabled() {
-        if (paginationView != null) {
-            paginationView.setEnabled(reportRenderer.getRenderState() == RenderState.RENDERED && !reportRenderer.isInProgress());
         }
     }
 

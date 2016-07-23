@@ -28,7 +28,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.state.VisStateFactory;
  */
 abstract class ReportRendererFactory {
 
-    public final ReportRenderer create(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
+    public final ReportRenderer create(AuthorizedClient client, WebView webView, ServerInfo serverInfo, double initialScale) {
         if (webView == null) {
             throw new IllegalArgumentException("WebView should be provided.");
         }
@@ -36,14 +36,14 @@ abstract class ReportRendererFactory {
             throw new IllegalArgumentException("Client should be provided.");
         }
 
-        return internalCreate(client, webView, serverInfo);
+        return internalCreate(client, webView, serverInfo, initialScale);
     }
 
-    protected abstract ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo);
+    protected abstract ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo, double initialScale);
 
     static class RestReportRendererFactory extends ReportRendererFactory{
         @Override
-        protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
+        protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo, double initialScale) {
             Dispatcher dispatcher = new Dispatcher();
             CommandExecutor commandExecutor = new CommandExecutor();
             ErrorMapper errorMapper = new ErrorMapper();
@@ -53,13 +53,13 @@ abstract class ReportRendererFactory {
             RestStateFactory stateFactory = new RestStateFactory(dispatcher, eventFactory, commandFactory, commandExecutor, jsInterfaceRest);
             EventPublisher eventPublisher = new EventPublisher();
             ReportFeaturesCompat reportFeaturesCompat = new RestFeaturesCompat();
-            return new ReportRenderer(dispatcher, stateFactory, eventPublisher, reportFeaturesCompat, RenderState.IDLE);
+            return new ReportRenderer(dispatcher, stateFactory, eventPublisher, reportFeaturesCompat, RenderState.IDLE, initialScale);
         }
     }
 
     static class VisualizeReportRendererFactory extends ReportRendererFactory{
         @Override
-        protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo) {
+        protected ReportRenderer internalCreate(AuthorizedClient client, WebView webView, ServerInfo serverInfo, double initialScale) {
             Dispatcher dispatcher = new Dispatcher();
             CommandExecutor commandExecutor = new CommandExecutor();
             ErrorMapper errorMapper = new ErrorMapper();
@@ -77,7 +77,7 @@ abstract class ReportRendererFactory {
             JsInterface jsInterfaceVis = new JsInterfaceVis(dispatcher, eventFactory, hyperlinkMapper);
             VisStateFactory stateFactory = new VisStateFactory(dispatcher, eventFactory, commandFactory, commandExecutor, jsInterfaceVis);
             EventPublisher eventPublisher = new EventPublisher();
-            return new ReportRenderer(dispatcher, stateFactory, eventPublisher, reportFeaturesCompat, RenderState.IDLE);
+            return new ReportRenderer(dispatcher, stateFactory, eventPublisher, reportFeaturesCompat, RenderState.IDLE, initialScale);
         }
     }
 }

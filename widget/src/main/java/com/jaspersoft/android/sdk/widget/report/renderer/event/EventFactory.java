@@ -8,6 +8,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 
 import java.util.List;
@@ -65,6 +66,10 @@ public abstract class EventFactory {
 
     public final Event createBookmarkEvent(List<Bookmark> bookmarkList){
         return new BookmarksEvent(bookmarkList);
+    }
+
+    public final Event createReportPartEvent(List<ReportPart> reportPartList){
+        return new ReportPartsEvent(reportPartList);
     }
 
     public abstract Event createReportExecutedEvent(ReportExecution reportExecution, Destination destination);

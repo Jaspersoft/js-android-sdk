@@ -8,21 +8,12 @@
         android:id="@+id/reportFragment"
         android:name="com.jaspersoft.android.sdk.widget.report.view.ReportFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/pagination"/>
-
-    <com.jaspersoft.android.sdk.sample.SimplePaginationView
-        android:id="@+id/pagination"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_alignParentBottom="true"
-        android:background="#373a43"/>
+        android:layout_height="match_parent"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bookmarks"
-        android:id="@+id/bookmark"
-        android:visibility="gone"/>
+        android:id="@+id/bookmark"/>
 
 </RelativeLayout>

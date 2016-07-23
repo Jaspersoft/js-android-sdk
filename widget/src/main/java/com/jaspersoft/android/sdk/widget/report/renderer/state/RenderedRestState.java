@@ -4,7 +4,6 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
@@ -12,13 +11,13 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.PageExportedEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -65,11 +64,6 @@ class RenderedRestState extends State {
         setInProgress(true);
         Command refreshCommand = commandFactory.createRefreshCommand(reportExecution);
         commandExecutor.execute(refreshCommand);
-    }
-
-    @Override
-    protected List<Bookmark> internalGetBookmarks() {
-        return null;
     }
 
     @Override

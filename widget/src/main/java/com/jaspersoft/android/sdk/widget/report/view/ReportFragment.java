@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
 import java.util.List;
@@ -20,16 +21,22 @@ import java.util.List;
  * @since 2.6
  */
 public class ReportFragment extends Fragment implements ReportWidget {
+    private static final String RENDERER_KEY_ARG = "rendererKey";
+    private static final String IN_PENDING_ARG = "inPendingKey";
+    private static final String REPORT_PROPERTIES_ARG = "reportPropertiesKey";
+
     private ReportViewerDelegate reportViewerDelegate;
     private ReportRendererKey reportRendererKey;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        reportViewerDelegate = ReportViewerDelegate.create();
 
         if (savedInstanceState != null) {
-            reportRendererKey = reportViewerDelegate.restoreData(savedInstanceState);
+            reportRendererKey = restoreState(savedInstanceState);
+        } else {
+            reportViewerDelegate = ReportViewerDelegate.create();
+            reportRendererKey = ReportRendererKey.newKey();
         }
 
         if (reportViewerDelegate.getResourceView() == null) {
@@ -57,7 +64,7 @@ public class ReportFragment extends Fragment implements ReportWidget {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        reportViewerDelegate.persistData(outState, reportRendererKey);
+        saveState(outState);
     }
 
     @Override
@@ -80,14 +87,14 @@ public class ReportFragment extends Fragment implements ReportWidget {
         super.onDestroy();
 
         if (reportViewerDelegate.isInited() && getActivity().isFinishing()) {
-            reportViewerDelegate.destroy(reportRendererKey);
+            reportViewerDelegate.destroy();
+            destroyState();
         }
     }
 
     @Override
     public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
         reportViewerDelegate.init(client, serverInfo, scale);
-        reportRendererKey = reportViewerDelegate.saveInStore();
     }
 
     @Override
@@ -98,6 +105,11 @@ public class ReportFragment extends Fragment implements ReportWidget {
     @Override
     public boolean isControlActionsAvailable() {
         return reportViewerDelegate.isControlActionsAvailable();
+    }
+
+    @Override
+    public ReportProperties getReportProperties() {
+        return reportViewerDelegate.getReportMetadata();
     }
 
     @Override
@@ -116,13 +128,8 @@ public class ReportFragment extends Fragment implements ReportWidget {
     }
 
     @Override
-    public void navigateToBookmark(Bookmark bookmark) {
-        reportViewerDelegate.navigateToBookmark(bookmark);
-    }
-
-    @Override
-    public List<Bookmark> getBookmarks() {
-        return reportViewerDelegate.getBookmarks();
+    public void navigateToPage(int page) {
+        reportViewerDelegate.navigateToPage(page);
     }
 
     @Override
@@ -136,12 +143,58 @@ public class ReportFragment extends Fragment implements ReportWidget {
     }
 
     @Override
-    public void setPaginationView(PaginationView paginationView) {
-        reportViewerDelegate.setPaginationView(paginationView);
+    public void setReportPaginationListener(ReportPaginationListener reportPaginationLsitener) {
+        reportViewerDelegate.setReportPaginationListener(reportPaginationLsitener);
+    }
+
+    @Override
+    public void setReportBookmarkListener(ReportBookmarkListener reportBookmarkListener) {
+        reportViewerDelegate.setReportBookmarkListener(reportBookmarkListener);
+    }
+
+    @Override
+    public void setReportPartsListener(ReportPartsListener reportPartsListener) {
+        reportViewerDelegate.setReportPartsListener(reportPartsListener);
     }
 
     @Override
     public void performViewAction(ViewAction viewAction) {
         reportViewerDelegate.performViewAction(viewAction);
+    }
+
+    private void saveState(Bundle outState) {
+        if (!reportViewerDelegate.isInited()) return;
+
+        outState.putParcelable(RENDERER_KEY_ARG, reportRendererKey);
+        outState.putBoolean(IN_PENDING_ARG, reportViewerDelegate.inPending);
+        outState.putParcelable(REPORT_PROPERTIES_ARG, reportViewerDelegate.reportProperties);
+
+        RenderersStore.getInstance().save(reportViewerDelegate.reportRenderer, reportRendererKey);
+        ReportWebViewStore.getInstance().save(reportViewerDelegate.resourceWebView, reportRendererKey);
+        RunOptionsStore.getInstance().save(reportViewerDelegate.runOptions, reportRendererKey);
+    }
+
+    private ReportRendererKey restoreState(Bundle state) {
+        if (!state.containsKey(RENDERER_KEY_ARG)) return null;
+
+        ReportRendererKey reportRendererKey = state.getParcelable(RENDERER_KEY_ARG);
+
+        boolean inPending = state.getBoolean(IN_PENDING_ARG);
+        ReportProperties reportProperties = state.getParcelable(REPORT_PROPERTIES_ARG);
+        ReportRenderer reportRenderer = RenderersStore.getInstance().restore(reportRendererKey);
+        ResourceWebView resourceWebView = ReportWebViewStore.getInstance().restore(reportRendererKey);
+        RunOptions runOptions = RunOptionsStore.getInstance().restore(reportRendererKey);
+
+        reportViewerDelegate = ReportViewerDelegate.restore(reportRenderer, resourceWebView, inPending, runOptions, reportProperties);
+
+        return reportRendererKey;
+    }
+
+    private void destroyState() {
+        if (reportRendererKey != null) {
+            RenderersStore.getInstance().remove(reportRendererKey);
+            ReportWebViewStore.getInstance().remove(reportRendererKey);
+            RunOptionsStore.getInstance().remove(reportRendererKey);
+        }
     }
 }

@@ -48,7 +48,7 @@ public class ResourcesActivity extends AppCompatActivity {
             "http://192.168.88.55:8088/jasperserver-pro-62/"
     ));
     private final static ResourceFactory SERVER_6_2_1 = new ResourceFactory(new Profile(
-            "http://192.168.88.55:8089/jasperserver-pro-621/"
+            "http://194.29.62.80:8089/jasperserver-pro-621/"
     ));
 
     private static final List<Resource> RESOURCES = Arrays.asList(
@@ -69,6 +69,7 @@ public class ResourcesActivity extends AppCompatActivity {
             SERVER_6_2_1.newReport("6.2.1 - 03. Store Segment","/public/Samples/Reports/03._Store_Segment_Performance_Report"),
             SERVER_6_2_1.newReport("6.2.1 - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),
             SERVER_6_2_1.newReport("6.2.1 - 06. Profit Detail Report","/public/Samples/Reports/ProfitDetailReport"),
+            SERVER_6_2_1.newReport("6.2.1 - 17. Report Workbook","/public/Samples/Reports/17._Report_Workbook"),
             SERVER_6_2_1.newReport("6.2.1 - Fusion_links_report_output_format", "/public/Visualize/Hiperlinks/Fusion_links_report_output_format"),
             SERVER_6_2_1.newReport("6.2.1 - Hyperlink","/public/Visualize/Hiperlinks/HyperlinkReport"),
             SERVER_6_2_1.newReport("6.2.1 - Not existing","/public/Samples/Reports/fail"),
