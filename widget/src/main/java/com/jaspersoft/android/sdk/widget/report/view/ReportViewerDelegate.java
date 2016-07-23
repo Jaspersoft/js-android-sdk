@@ -46,6 +46,8 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     private ReportViewerDelegate() {
         setReportEventListener(null);
         setReportPaginationListener(null);
+        setReportBookmarkListener(null);
+        setReportPartsListener(null);
         reportProperties = new ReportProperties();
     }
 
@@ -237,8 +239,16 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     @Override
     public void onCurrentPageChanged(int currentPage) {
         while (resourceWebView.zoomOut()) ;
+
+        ReportPart previousReportPart = reportProperties.getCurrentReportPart();
+
         reportProperties.setCurrentPage(currentPage);
         reportPaginationListener.onCurrentPageChanged(currentPage);
+
+        ReportPart currentReportPart = reportProperties.getCurrentReportPart();
+        if (currentReportPart != null && !currentReportPart.equals(previousReportPart)) {
+            reportPartsListener.onCurrentReportPartChanged(reportProperties.getCurrentReportPart());
+        }
     }
 
     @Override

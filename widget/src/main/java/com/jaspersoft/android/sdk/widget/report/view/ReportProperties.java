@@ -19,8 +19,9 @@ public class ReportProperties implements Parcelable {
     private Integer pagesCount;
     private List<Bookmark> bookmarkList;
     private List<ReportPart> reportPartList;
+    private ReportPart currentReportPart;
 
-    public ReportProperties() {
+    ReportProperties() {
         currentPage = 1;
         bookmarkList = new ArrayList<>();
         reportPartList = new ArrayList<>();
@@ -30,7 +31,7 @@ public class ReportProperties implements Parcelable {
         return isMultiPage;
     }
 
-    public void setMultiPage(boolean multiPage) {
+    void setMultiPage(boolean multiPage) {
         isMultiPage = multiPage;
     }
 
@@ -38,15 +39,16 @@ public class ReportProperties implements Parcelable {
         return currentPage;
     }
 
-    public void setCurrentPage(Integer currentPage) {
+    void setCurrentPage(Integer currentPage) {
         this.currentPage = currentPage;
+        updateCurrentReportPart();
     }
 
     public Integer getPagesCount() {
         return pagesCount;
     }
 
-    public void setPagesCount(Integer pagesCount) {
+    void setPagesCount(Integer pagesCount) {
         this.pagesCount = pagesCount;
     }
 
@@ -54,7 +56,7 @@ public class ReportProperties implements Parcelable {
         return bookmarkList;
     }
 
-    public void setBookmarkList(List<Bookmark> bookmarkList) {
+    void setBookmarkList(List<Bookmark> bookmarkList) {
         this.bookmarkList = bookmarkList;
     }
 
@@ -62,8 +64,27 @@ public class ReportProperties implements Parcelable {
         return reportPartList;
     }
 
-    public void setReportPartList(List<ReportPart> reportPartList) {
+    public ReportPart getCurrentReportPart() {
+       return currentReportPart;
+    }
+
+    void setReportPartList(List<ReportPart> reportPartList) {
         this.reportPartList = reportPartList;
+    }
+
+    private void updateCurrentReportPart() {
+        if (currentPage == null || reportPartList.isEmpty()) {
+            currentReportPart = null;
+            return;
+        }
+
+        currentReportPart = reportPartList.get(0);
+        for (int i = 1; i < reportPartList.size(); i++) {
+            ReportPart reportPart = reportPartList.get(i);
+            if (reportPart.getPage() <= currentPage) {
+                currentReportPart = reportPart;
+            }
+        }
     }
 
     private ReportProperties(Parcel in) {

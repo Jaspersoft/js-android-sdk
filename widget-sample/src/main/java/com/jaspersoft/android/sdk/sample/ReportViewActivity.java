@@ -16,18 +16,16 @@ import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.service.data.server.ServerVersion;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
-import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
-import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
-import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
+import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Random;
 
 /**
  * @author Tom Koptel
@@ -46,8 +44,13 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
 
         setContentView(R.layout.report_renderer_preview);
         reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
-        ReportPaginationListener reportPaginationListener = (ReportPaginationListener) findViewById(R.id.pagination);
         bookmark = (Button) findViewById(R.id.bookmark);
+        bookmark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reportFragment.navigateToPage(11);
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
         resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
@@ -60,7 +63,6 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         serverInfo.setVersion(ServerVersion.v6_0_1);
 
         reportFragment.setReportEventListener(this);
-        reportFragment.setPaginationView(reportPaginationListener);
         if (!reportFragment.isInited()) {
             reportFragment.init(authorizedClient, serverInfo, 0.5f);
             reportFragment.run(new RunOptions.Builder()
@@ -94,16 +96,6 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
             new AuthTask().execute();
         }
-    }
-
-    @Override
-    public void onBookmarkListChanged(List<Bookmark> bookmarks) {
-        bookmark.setVisibility(bookmarks != null ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void onReportPartsChanged(List<ReportPart> reportPartList) {
-
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {
