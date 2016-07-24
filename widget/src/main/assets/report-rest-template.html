@@ -4,6 +4,10 @@
 <head xmlns="http://www.w3.org/1999/html">
 
     <title>TIBCO Jaspersoft</title>
+    <style>
+        html {height: 100%;}
+        body {min-height: 100%;}
+    </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="https://code.jquery.com/jquery.min.js"></script>
     <script type="text/javascript">
@@ -31,8 +35,31 @@
         function Client() {
             var report = new Report();
 
+            window.onresize = function() {
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+            }
+
+            function appendViewportMeta() {
+                var viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                viewport.content = "width=" + document.documentElement.offsetWidth + ", height=" + document.documentElement.offsetHeight + ", user-scalable=yes";
+                document.head.appendChild(viewport);
+            }
+
+            function updateRenderRect(width, height) {
+                var container = document.getElementById('container');
+
+                // Because of default body margin (8px)
+                var newContainerHeight = height - 16;
+                var newContainerWidth = width - 16;
+
+                container.style.height = newContainerHeight + "px";
+                container.style.width = newContainerWidth + "px";
+            }
+
             return {
                 report: function () {
+                    appendViewportMeta();
                     return report;
                 }
             }
@@ -44,7 +71,7 @@
                     jQuery("#container").html(reportPage);
                     NativeCallbacks.onRendered();
                 },
-                 clear: function () {
+                clear: function () {
                     jQuery("#container").empty();
                     NativeCallbacks.onCleared();
                 }
