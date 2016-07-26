@@ -22,10 +22,8 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHype
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
 import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
-import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * @author Tom Koptel
@@ -59,8 +57,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         authorizedClient = clientProvider.provide();
 
         ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setEdition("CE");
-        serverInfo.setVersion(ServerVersion.v6_0_1);
+        serverInfo.setEdition("PRO");
+        serverInfo.setVersion(ServerVersion.v5_6_1);
 
         reportFragment.setReportEventListener(this);
         if (!reportFragment.isInited()) {

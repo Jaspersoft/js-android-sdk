@@ -59,7 +59,7 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createShowPageCommand(String page, int pageNumber) {
+    public Command createShowPageCommand(String page, int pageNumber, String executionId) {
         throw new UnsupportedOperationException("Show page command is not supported for visualize");
     }
 

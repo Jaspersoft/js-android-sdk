@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
         "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
 
+<!--suppress CheckValidXmlInScriptTagBody -->
 <head xmlns="http://www.w3.org/1999/html">
 
     <title>TIBCO Jaspersoft</title>
@@ -37,39 +38,249 @@
 
             window.onresize = function() {
                 updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
-            }
-
-            function appendViewportMeta() {
-                var viewport = document.createElement('meta');
-                viewport.name = "viewport";
-                viewport.content = "width=" + document.documentElement.offsetWidth + ", height=" + document.documentElement.offsetHeight + ", user-scalable=yes";
-                document.head.appendChild(viewport);
+                report.show();
             }
 
             function updateRenderRect(width, height) {
                 var container = document.getElementById('container');
 
-                // Because of default body margin (8px)
-                var newContainerHeight = height - 16;
-                var newContainerWidth = width - 16;
-
-                container.style.height = newContainerHeight + "px";
-                container.style.width = newContainerWidth + "px";
+                container.style.height = height + "px";
+                container.style.width = width + "px";
             }
 
             return {
+                setup: function (initialScale) {
+                    report.setScale(initialScale);
+                },
                 report: function () {
-                    appendViewportMeta();
                     return report;
                 }
             }
         }
 
-        function Report() {
+        var RendererFactory = function() {
+            var deferred = $.Deferred();
+
+            function parseComponents(data) {
+                var components = [];
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        var component = data[key];
+                        components.push(new Component(component));
+                    }
+                }
+                return components;
+            };
+
+            function checkIsElasticReport(components) {
+                var isElastic = false;
+                for (var i in components) {
+                    var component = components[i];
+                    isElastic = isElastic || component.isElastic();
+                }
+                return isElastic;
+            };
+
+            function appendViewportMeta(reportScale) {
+                if (reportScale >= 1) {
+                    reportScale = 0.99;
+                }
+                var maxScale = reportScale * 5;
+                var viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                viewport.content = "target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=" + reportScale + ", minimum-scale=" + reportScale +" , maximum-scale=" + maxScale + ", user-scalable=yes";
+                document.head.appendChild(viewport);
+            }
+
+            function resolveRenderer(isElasticReport, scale) {
+                if (isElasticReport) {
+                    appendViewportMeta(scale);
+                    deferred.resolve(new HighChartsRenderer());
+                } else {
+                    deferred.resolve(new TableRenderer());
+                }
+            };
+
+            function createFn(isPro, requestData, scale) {
+                if (!isPro) {
+                    resolveRenderer(false, scale);
+                    return deferred.promise();
+                }
+
+                var endpoint = location.href + "getReportComponents.html";
+
+                $.ajax({
+                    type: "POST",
+                    url: endpoint,
+                    data: jQuery.param(requestData),
+                    tryCount: 0,
+                    retryLimit: 3,
+                    success: function (data, textStatus, jqXHR) {
+                        var contentType = jqXHR.getResponseHeader("Content-Type");
+                        if (contentType) {
+                            var sessionIssue = contentType.indexOf("text/html") > -1;
+
+                            if (sessionIssue) {
+                                var error = {message: "Session is missing", status: 401};
+                                deferred.reject(error);
+                            }
+                        }
+
+                        var components = parseComponents(data);
+                        var isElasticReport = checkIsElasticReport(components);
+                        resolveRenderer(isElasticReport, scale);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        this.tryCount++;
+                        if (this.tryCount <= this.retryLimit) {
+                            $.ajax(this);
+                        } else {
+                            var error = {message: "", status: xhr.status};
+                            if (xhr.status == 500) {
+                                error.message = ("Get report components failed. Server encountered internal error!");
+                            } else if (xhr.status == 401) {
+                                error.message = ("Session is missing");
+                            } else {
+                                error.message = ("Get report components failed. Encountered http error with code: " + xhr.status);
+                            }
+                            deferred.reject(error);
+                        }
+                    }
+                });
+
+                return deferred.promise();
+            }
             return {
-                show: function (reportPage) {
-                    jQuery("#container").html(reportPage);
+                create: createFn
+            }
+        };
+
+        var Component = function (data) {
+            var _findValues = function (obj, key) {
+                var list = [];
+                if (obj instanceof Array) {
+                    for (var i in obj) {
+                        list = list.concat(_findValues(obj[i], key, []));
+                    }
+                    return list;
+                }
+                if (obj && obj[key]) list.push(obj[key]);
+
+                if ((typeof obj == "object") && (obj !== null)) {
+                    var children = Object.keys(obj);
+                    if (children.length > 0) {
+                        for (i = 0; i < children.length; i++) {
+                            list = list.concat(_findValues(obj[children[i]], key, []));
+                        }
+                    }
+                }
+                return list;
+            };
+
+            return {
+                isElastic: function () {
+                    var creator = _findValues(data, "service")[0];
+                    if (typeof creator === "undefined") {
+                        return false;
+                    }
+                    return "chart" === data.type && "adhocHighchartsSettingService" === creator;
+                }
+            }
+        };
+
+        var HighChartsRenderer = function () {
+            var reportParams = null;
+
+            var _toJsonParameters = function (raw) {
+                var objKeysRegex = /({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g;
+                var newQuotedKeysString = raw.replace(objKeysRegex, "$1\"$2\":");
+                return JSON.parse(newQuotedKeysString);
+            };
+
+            var _getScriptContent = function (reportPage) {
+                var rawScript = $(reportPage).find(".jasperreports")[0];
+                return rawScript.innerHTML;
+            };
+
+            var _getRawParameters = function (body) {
+                body = body.replace("__renderHighcharts(", "");
+                body = body.replace(/\);/i, "");
+                return body;
+            };
+
+            var _normalizeDimensions = function (params) {
+                var globalOptions = params.globalOptions;
+                var chartDimensions = params.chartDimensions;
+                chartDimensions.width = document.documentElement.offsetWidth;
+                chartDimensions.height = document.documentElement.offsetHeight;
+                globalOptions.plotOptions = {"series": {"animation": false}};
+                return params;
+            };
+
+            var defineParams = function (reportPage) {
+                var body = _getScriptContent(reportPage);
+                var rawParams = _getRawParameters(body);
+                var jsonParams = _toJsonParameters(rawParams);
+                params = jQuery.extend(true, {}, jsonParams);
+                reportParams = params;
+            };
+
+            var _render = function (reportPage) {
+                $("#container").empty().append(reportPage);
+                defineParams(reportPage);
+                NativeCallbacks.onRendered();
+            };
+
+            var _refresh = function () {
+                if (reportParams) {
+                    var params = _normalizeDimensions(reportParams);
+                    __renderHighcharts(params);
+                }
+            };
+
+            return {
+                render: _render,
+                refresh: _refresh
+            }
+        };
+
+        var TableRenderer = function () {
+            return {
+                render: function (reportPage) {
+                    $("#container").empty().append(reportPage);
                     NativeCallbacks.onRendered();
+                },
+                refresh: function() {
+
+                }
+            }
+        };
+
+        function Report() {
+            var renderer;
+            var scale = 1;
+
+            return {
+                setScale: function (initialScale) {
+                    scale = initialScale;
+                },
+                show: function (reportPage, isPro, requestData) {
+                    if (renderer) {
+                        renderer.refresh();
+                    } else {
+                        new RendererFactory().create(isPro, requestData, scale)
+                            .done(function (reportRenderer) {
+                                renderer = reportRenderer;
+                                renderer.render(reportPage);
+                            })
+                            .fail(function (error) {
+                                if (error.status == 401) {
+                                    Android.onAuthError("Session is missing");
+                                } else {
+                                    console.log(error.message);
+                                }
+                            });
+                    }
                 },
                 clear: function () {
                     jQuery("#container").empty();

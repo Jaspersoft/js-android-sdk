@@ -22,9 +22,11 @@ import java.util.List;
  */
 public class RestCommandFactory extends CommandFactory {
     private static final String REST_TEMPLATE = "report-rest-template.html";
+    private final boolean isPro;
 
-    RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client) {
+    RestCommandFactory(WebView webView, Dispatcher dispatcher, EventFactory eventFactory, AuthorizedClient client, boolean isPro) {
         super(webView, dispatcher, eventFactory, client);
+        this.isPro = isPro;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class RestCommandFactory extends CommandFactory {
 
     @Override
     public Command createInitTemplateCommand(double initialScale) {
-        return new InitTemplateRestCommand(dispatcher, eventFactory);
+        return new InitTemplateRestCommand(dispatcher, eventFactory, webView, initialScale);
     }
 
     @Override
@@ -58,8 +60,8 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createShowPageCommand(String page, int pageNumber) {
-        return new ShowPageRestCommand(dispatcher, eventFactory, webView, page, pageNumber);
+    public Command createShowPageCommand(String page, int pageNumber, String executionId) {
+        return new ShowPageRestCommand(dispatcher, eventFactory, webView, page, executionId, isPro, pageNumber);
     }
 
     @Override
@@ -88,8 +90,8 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     public static class Creator {
-        public RestCommandFactory create(WebView webView, Dispatcher dispatcher, RestEventFactory eventFactory, AuthorizedClient client){
-            return new RestCommandFactory(webView, dispatcher, eventFactory, client);
+        public RestCommandFactory create(WebView webView, Dispatcher dispatcher, RestEventFactory eventFactory, AuthorizedClient client, boolean isPro){
+            return new RestCommandFactory(webView, dispatcher, eventFactory, client, isPro);
         }
     }
 }

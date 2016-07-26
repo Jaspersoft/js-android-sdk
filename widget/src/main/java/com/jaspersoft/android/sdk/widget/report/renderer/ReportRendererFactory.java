@@ -48,7 +48,7 @@ abstract class ReportRendererFactory {
             CommandExecutor commandExecutor = new CommandExecutor();
             ErrorMapper errorMapper = new ErrorMapper();
             RestEventFactory eventFactory = new RestEventFactory(errorMapper);
-            RestCommandFactory commandFactory = new RestCommandFactory.Creator().create(webView, dispatcher, eventFactory, client);
+            RestCommandFactory commandFactory = new RestCommandFactory.Creator().create(webView, dispatcher, eventFactory, client, serverInfo.isEditionPro());
             JsInterface jsInterfaceRest = new JsInterfaceRest(dispatcher, eventFactory);
             RestStateFactory stateFactory = new RestStateFactory(dispatcher, eventFactory, commandFactory, commandExecutor, jsInterfaceRest);
             EventPublisher eventPublisher = new EventPublisher();

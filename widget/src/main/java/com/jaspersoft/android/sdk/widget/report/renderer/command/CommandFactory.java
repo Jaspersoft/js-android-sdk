@@ -64,7 +64,7 @@ public abstract class CommandFactory {
 
     public abstract Command createPageExportCommand(Destination destination, ReportExecution reportExecution);
 
-    public abstract Command createShowPageCommand(String page, int pageNumber);
+    public abstract Command createShowPageCommand(String page, int pageNumber, String executionId);
 
     public abstract Command createWaitForReportMetadataCommand(ReportExecution reportExecution);
 
