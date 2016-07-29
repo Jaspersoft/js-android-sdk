@@ -10,11 +10,10 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportReadyEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -27,7 +26,6 @@ import java.util.List;
 class RenderedVisState extends State {
     RenderedVisState(Dispatcher dispatcher, EventFactory eventFactory, CommandFactory commandFactory, CommandExecutor commandExecutor) {
         super(dispatcher, eventFactory, commandFactory, commandExecutor);
-        waitForReportMetadata();
     }
 
     @Override
@@ -75,24 +73,15 @@ class RenderedVisState extends State {
         return RenderState.RENDERED;
     }
 
-    private void waitForReportMetadata() {
-        Command detectMultiPageCommand = commandFactory.createDetectMultiPageCommand(null);
-        commandExecutor.execute(detectMultiPageCommand);
-    }
-
     @Subscribe
     public void onReportRendered(ReportRenderedEvent reportRenderedEvent) {
         setInProgress(false);
     }
 
     @Subscribe
-    public void onParamsUpdated(ParamsUpdatedEvent paramsUpdatedEvent) {
-        waitForReportMetadata();
-    }
-
-    @Subscribe
-    public void onDataRefreshed(DataRefreshedEvent dataRefreshedEvent) {
-        waitForReportMetadata();
+    public void onReportReady(ReportReadyEvent reportReadyEvent) {
+        Command detectMultiPageCommand = commandFactory.createDetectMultiPageCommand(null);
+        commandExecutor.execute(detectMultiPageCommand);
     }
 
     @Subscribe

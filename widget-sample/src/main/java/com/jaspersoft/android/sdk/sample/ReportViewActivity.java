@@ -22,6 +22,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHype
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
 import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
+import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
 
 import java.io.IOException;
 
@@ -29,7 +30,7 @@ import java.io.IOException;
  * @author Tom Koptel
  * @since 2.5
  */
-public class ReportViewActivity extends AppCompatActivity implements ReportEventListener {
+public class ReportViewActivity extends AppCompatActivity implements ReportEventListener, ReportPaginationListener {
     private Resource resource;
     private ReportFragment reportFragment;
     private AuthorizedClient authorizedClient;
@@ -57,10 +58,11 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         authorizedClient = clientProvider.provide();
 
         ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setEdition("PRO");
-        serverInfo.setVersion(ServerVersion.v5_6_1);
+        serverInfo.setEdition("CE");
+        serverInfo.setVersion(ServerVersion.v6_2);
 
         reportFragment.setReportEventListener(this);
+        reportFragment.setReportPaginationListener(this);
         if (!reportFragment.isInited()) {
             reportFragment.init(authorizedClient, serverInfo, 0.5f);
             reportFragment.run(new RunOptions.Builder()
@@ -94,6 +96,21 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         if (exception.code() == StatusCodes.AUTHORIZATION_ERROR) {
             new AuthTask().execute();
         }
+    }
+
+    @Override
+    public void onPagesCountChanged(Integer totalPages) {
+
+    }
+
+    @Override
+    public void onCurrentPageChanged(int currentPage) {
+
+    }
+
+    @Override
+    public void onMultiPageStateChange(boolean isMultiPage) {
+
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Boolean> {

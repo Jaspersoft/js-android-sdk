@@ -41,7 +41,7 @@ class RefreshRestCommand extends Command {
 
             @Override
             protected void onPostExecute(Void voidy) {
-                dispatcher.dispatch(eventFactory.createDaraRefreshedEvent());
+                dispatcher.dispatch(eventFactory.createReportReady());
             }
         };
     }

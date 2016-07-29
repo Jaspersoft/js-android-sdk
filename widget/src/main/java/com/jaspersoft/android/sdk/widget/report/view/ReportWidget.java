@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ReportWidget {
 
-    void init(AuthorizedClient client, ServerInfo serverInfo, float scale);
+    void init(AuthorizedClient client, ServerInfo serverInfo, double scale);
 
     boolean isInited();
 

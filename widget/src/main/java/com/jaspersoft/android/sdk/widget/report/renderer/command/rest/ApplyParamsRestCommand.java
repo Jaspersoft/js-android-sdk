@@ -46,7 +46,7 @@ class ApplyParamsRestCommand extends Command {
 
             @Override
             protected void onPostExecute(Void voidy) {
-                dispatcher.dispatch(eventFactory.createParamsUpdatedEvent());
+                dispatcher.dispatch(eventFactory.createReportReady());
             }
         };
     }

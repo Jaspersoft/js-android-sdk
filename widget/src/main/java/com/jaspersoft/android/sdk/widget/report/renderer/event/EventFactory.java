@@ -76,12 +76,8 @@ public abstract class EventFactory {
 
     public abstract Event createPageExportedEvent(String reportPage, int pageNumber);
 
-    public final Event createParamsUpdatedEvent(){
-        return new ParamsUpdatedEvent();
-    }
-
-    public final Event createDaraRefreshedEvent(){
-        return new DataRefreshedEvent();
+    public final Event createReportReady(){
+        return new ReportReadyEvent();
     }
 
     public final Event createCurrentPageChangedEvent(int currentPage) {

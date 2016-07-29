@@ -93,7 +93,7 @@ public class ReportFragment extends Fragment implements ReportWidget {
     }
 
     @Override
-    public void init(AuthorizedClient client, ServerInfo serverInfo, float scale) {
+    public void init(AuthorizedClient client, ServerInfo serverInfo, double scale) {
         reportViewerDelegate.init(client, serverInfo, scale);
     }
 

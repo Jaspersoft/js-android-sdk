@@ -12,6 +12,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportReadyEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -65,6 +66,12 @@ class InitedVisState extends State {
     @Override
     public RenderState getName() {
         return RenderState.INITED;
+    }
+
+    @Subscribe
+    public void onReportReady(ReportReadyEvent reportReadyEvent) {
+        Command detectMultiPageCommand = commandFactory.createDetectMultiPageCommand(null);
+        commandExecutor.execute(detectMultiPageCommand);
     }
 
     @Subscribe

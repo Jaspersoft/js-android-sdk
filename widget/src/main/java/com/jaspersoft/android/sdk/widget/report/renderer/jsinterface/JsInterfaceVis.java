@@ -43,13 +43,8 @@ public class JsInterfaceVis extends JsInterface {
     }
 
     @JavascriptInterface
-    public void onDataRefreshed() {
-        dispatcher.dispatch(eventFactory.createDaraRefreshedEvent());
-    }
-
-    @JavascriptInterface
-    public void onParamsUpdated() {
-        dispatcher.dispatch(eventFactory.createParamsUpdatedEvent());
+    public void onReportReady() {
+        dispatcher.dispatch(eventFactory.createReportReady());
     }
 
     @JavascriptInterface

@@ -21,11 +21,8 @@
         onError: function (error) {
             return Android.onError(error);
         },
-        onDataRefreshed: function () {
-            return Android.onDataRefreshed();
-        },
-        onParamsUpdated: function () {
-            return Android.onParamsUpdated();
+        onReportReady: function () {
+            return Android.onReportReady();
         },
         onCleared: function () {
             return Android.onCleared();
@@ -166,7 +163,7 @@
             }
 
             this.applyParams = function(params) {
-                reportInstance.params(params).run(paramsUpdatedFn, reportErrorFn);
+                reportInstance.params(params).run(reportReadyFn, reportErrorFn);
             }
 
             this.navigateTo = function(destination) {
@@ -180,11 +177,11 @@
             }
 
             this.refresh = function() {
-                reportInstance.refresh(dataRefreshedFn, reportErrorFn);
+                reportInstance.refresh(reportReadyFn, reportErrorFn);
             }
 
             this.checkMultiPage = function() {
-                reportInstance.export({outputFormat: "pdf", pages: 2}, reportExportedFn, reportExportErrorFn);
+                reportInstance.export({outputFormat: "html", pages: 2}, reportExportedFn, reportExportErrorFn);
             }
 
             this.clear = function() {
@@ -243,6 +240,7 @@
                 if (invalid) {
                     destroyReport();
                 } else {
+                    reportReadyFn();
                     reportInstance.container("#container");
                     reportInstance.render(reportRenderedFn, reportErrorFn);
                 }
@@ -277,13 +275,8 @@
                 NativeCallbacks.onError(message);
             }
 
-            dataRefreshedFn = function() {
-                NativeCallbacks.onDataRefreshed();
-                reportRenderedFn();
-            }
-
-            paramsUpdatedFn = function() {
-                NativeCallbacks.onParamsUpdated();
+            reportReadyFn = function() {
+                NativeCallbacks.onReportReady();
                 reportRenderedFn();
             }
 

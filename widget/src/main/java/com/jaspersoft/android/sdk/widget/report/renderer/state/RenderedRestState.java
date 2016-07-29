@@ -11,11 +11,10 @@ import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.DataRefreshedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
-import com.jaspersoft.android.sdk.widget.report.renderer.event.ParamsUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportClearedEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportReadyEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportRenderedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.rest.PageExportedEvent;
 import com.squareup.otto.Subscribe;
@@ -89,14 +88,7 @@ class RenderedRestState extends State {
     }
 
     @Subscribe
-    public void onParamsUpdated(ParamsUpdatedEvent paramsUpdatedEvent) {
-        Command pageExportCommand = commandFactory.createPageExportCommand(new Destination(1), reportExecution);
-        commandExecutor.execute(pageExportCommand);
-        waitForReportMetadata();
-    }
-
-    @Subscribe
-    public void onDataRefreshed(DataRefreshedEvent dataRefreshedEvent) {
+    public void onReportReady(ReportReadyEvent reportReadyEvent) {
         Command pageExportCommand = commandFactory.createPageExportCommand(new Destination(1), reportExecution);
         commandExecutor.execute(pageExportCommand);
         waitForReportMetadata();
