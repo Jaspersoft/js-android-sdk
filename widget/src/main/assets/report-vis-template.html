@@ -50,8 +50,13 @@
         }
     };
 
-    window.onerror = function (message) {
-        NativeCallbacks.onError(message);
+    window.onerror = function (errorMessage) {
+        var jsError = {
+            errorCode: "general.window.error",
+            message: errorMessage
+        };
+        var errorString = JSON.stringify(jsError);
+        NativeCallbacks.onError(errorString);
         return false;
     };
 
@@ -128,7 +133,8 @@
                     errorCode: "visualize.load.failed",
                     message: "Failed to load visualize."
                 };
-                NativeCallbacks.onError(jsError);
+                var errorString = JSON.stringify(jsError);
+                NativeCallbacks.onError(errorString);
             };
 
             return {

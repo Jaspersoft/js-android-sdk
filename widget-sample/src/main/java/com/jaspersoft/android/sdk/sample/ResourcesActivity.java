@@ -72,6 +72,7 @@ public class ResourcesActivity extends AppCompatActivity {
             SERVER_6_2_1.newReport("6.2.1 - 17. Report Workbook","/public/Samples/Reports/17._Report_Workbook"),
             SERVER_6_2_1.newReport("6.2.1 - Fusion_links_report_output_format", "/public/Visualize/Hiperlinks/Fusion_links_report_output_format"),
             SERVER_6_2_1.newReport("6.2.1 - Hyperlink","/public/Visualize/Hiperlinks/HyperlinkReport"),
+            SERVER_6_2_1.newReport("6.2.1 - Map Report","/organizations/organization_1/reports/interactive/MapReport"),
             SERVER_6_2_1.newReport("6.2.1 - Not existing","/public/Samples/Reports/fail"),
             SERVER_63_QA.newReport("6.3.0 QA - 04. Product Results","/public/Samples/Reports/04._Product_Results_by_Store_Type_Report"),
             SECURE_SERVER_MOB_DEMO.newReport("SECURE Mob demo - 05. Accounts Report","/public/Samples/Reports/AllAccounts"),

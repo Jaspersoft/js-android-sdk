@@ -25,8 +25,13 @@
         }
     };
 
-    window.onerror = function (message) {
-        NativeCallbacks.onError(message);
+    window.onerror = function (errorMessage) {
+        var jsError = {
+            errorCode: "general.window.error",
+            message: errorMessage
+        };
+        var errorString = JSON.stringify(jsError);
+        NativeCallbacks.onError(errorString);
         return false;
     };
 
@@ -38,7 +43,7 @@
 
             window.onresize = function() {
                 updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
-                report.show();
+                report.refresh();
             }
 
             function updateRenderRect(width, height) {
@@ -245,11 +250,54 @@
         };
 
         var TableRenderer = function () {
+
             return {
+
+                loadScripts: function(scripts, index) {
+                    var self = this;
+
+                    index = index || 0;
+
+                    var script = scripts[index];
+
+                    if (index === scripts.length) {
+                        return;
+                    }
+
+
+                    var oldScript = script;
+
+                    script = document.createElement('script');
+
+                    if (oldScript.src) {
+                        script.src = oldScript.src;
+
+                        document.body.appendChild(script);
+
+                        script.onload = function() {
+                            self.loadScripts(scripts, index + 1);
+                        };
+                    } else {
+                        script.text = oldScript.text;
+
+                        document.body.appendChild(script);
+
+                        self.loadScripts(scripts, index + 1);
+                    }
+                },
+
                 render: function (reportPage) {
-                    $("#container").empty().append(reportPage);
+                    var self = this;
+                    var reportPageWithScripts = $(reportPage);
+                    var reportPageWithoutScripts = $.parseHTML(reportPage);
+
+                    $("#container").html(reportPageWithoutScripts);
+
+                    this.loadScripts(reportPageWithScripts.find('script'));
+
                     NativeCallbacks.onRendered();
                 },
+
                 refresh: function() {
 
                 }
@@ -265,21 +313,27 @@
                     scale = initialScale;
                 },
                 show: function (reportPage, isPro, requestData) {
+                    new RendererFactory().create(isPro, requestData, scale)
+                        .done(function (reportRenderer) {
+                            renderer = reportRenderer;
+                            renderer.render(reportPage);
+                        })
+                        .fail(function (error) {
+                            if (error.status == 401) {
+                                var jsError = {
+                                    errorCode: "authentication.error",
+                                    message: "User is not authorized."
+                                };
+                                var errorString = JSON.stringify(jsError);
+                                NativeCallbacks.onError(errorString);
+                            } else {
+                                console.log(error.message);
+                            }
+                        });
+                },
+                refresh: function () {
                     if (renderer) {
                         renderer.refresh();
-                    } else {
-                        new RendererFactory().create(isPro, requestData, scale)
-                            .done(function (reportRenderer) {
-                                renderer = reportRenderer;
-                                renderer.render(reportPage);
-                            })
-                            .fail(function (error) {
-                                if (error.status == 401) {
-                                    Android.onAuthError("Session is missing");
-                                } else {
-                                    console.log(error.message);
-                                }
-                            });
                     }
                 },
                 clear: function () {
