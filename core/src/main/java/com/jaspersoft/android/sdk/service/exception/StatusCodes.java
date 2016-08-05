@@ -70,10 +70,6 @@ public final class StatusCodes {
      * Requested export with anchor does not exist
      */
     public static final int EXPORT_ANCHOR_ABSENT = 203;
-    /**
-     * Requesting export with anchor is not supported
-     */
-    public static final int EXPORT_ANCHOR_UNSUPPORTED = 204;
 
     // REPORT
     /**
@@ -165,13 +161,9 @@ public final class StatusCodes {
 
     // WIDGET
     /**
-     * Failed to render report
-     */
-    public static final int REPORT_RENDER_FAILED = 700;
-    /**
      * Web view request error
      */
-    public static final int WEB_VIEW_REQUEST_ERROR = 701;
+    public static final int WEB_VIEW_REQUEST_ERROR = 700;
 
     private StatusCodes() {
     }

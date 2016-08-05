@@ -51,7 +51,7 @@ class ExportPageRestCommand extends Command {
                     onError(e);
                     return null;
                 } catch (IOException e) {
-                    ServiceException exception = new ServiceException("Can not render report", e, StatusCodes.REPORT_RENDER_FAILED);
+                    ServiceException exception = new ServiceException("Failed to perform report export", e, StatusCodes.EXPORT_EXECUTION_FAILED);
                     onError(exception);
                     return null;
                 }

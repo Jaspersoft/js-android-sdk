@@ -272,6 +272,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     @Override
     public void onError(ServiceException exception) {
+        boolean isRendered = reportRenderer.getRenderState() == RenderState.RENDERED;
+        boolean isExportPageError = exception.code() >= 200 && exception.code() < 300;
+        if (!isRendered || !isExportPageError) {
+            reportRenderer.reset();
+        }
         reportEventListener.onError(exception);
     }
 
