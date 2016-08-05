@@ -192,6 +192,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
         resourceWebView.setVisibility(renderState == RenderState.RENDERED ? View.VISIBLE : View.GONE);
         if (renderState == RenderState.INITED && inPending) {
             reportRenderer.render(runOptions);
+            inPending = false;
         }
 
         reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
@@ -257,10 +258,10 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
         reportPaginationListener.onPagesCountChanged(totalCount);
 
         if (totalCount != null && totalCount == 0) {
+            reset();
             ServiceException noContentException = new ServiceException("Requested report execution has no content",
                     new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
             reportEventListener.onError(noContentException);
-            onMultiPageStateChanged(false);
         }
     }
 
