@@ -104,7 +104,12 @@
                 var visScript = document.createElement('script');
                 visScript.onload = loadVisualize;
                 visScript.onerror = onVisualizeLoadingFailed;
-                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true");
+
+                var baseServerUrl = jrsServer.url.replace(/\/$/, "");
+                console.log(baseServerUrl);
+                var encodedBaseServerUrl = encodeURIComponent(baseServerUrl);
+                console.log(encodedBaseServerUrl);
+                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true&baseUrl=" + encodedBaseServerUrl);
                 document.head.appendChild(visScript);
             }
 

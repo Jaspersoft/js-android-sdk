@@ -58,7 +58,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
         authorizedClient = clientProvider.provide();
 
         ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setEdition("CE");
+        serverInfo.setEdition("PRO");
         serverInfo.setVersion(ServerVersion.v6_2);
 
         reportFragment.setReportEventListener(this);
