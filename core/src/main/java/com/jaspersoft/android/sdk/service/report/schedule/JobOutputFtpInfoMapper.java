@@ -40,39 +40,40 @@ class JobOutputFtpInfoMapper {
     static final JobOutputFtpInfoMapper INSTANCE = new JobOutputFtpInfoMapper();
 
     public void mapFormOnEntity(JobForm form, JobFormEntity formEntity) {
-        OutputFtpInfoEntity ftpEntity = createFtpEntity(formEntity);
         JobOutputFtpInfo ftpInfo = extractFtpInfo(form);
+        if (ftpInfo == null) {
+            return;
+        }
 
-        if (ftpInfo != null) {
-            JobOutputFtpInfo.Type type = ftpInfo.getType();
-            if (type != null) {
-                ftpEntity.setType(type.name().toLowerCase());
-            }
-            JobOutputFtpInfo.Prot prot = ftpInfo.getProt();
-            if (prot != null) {
-                ftpEntity.setProt(prot.getValue());
-            }
+        OutputFtpInfoEntity ftpEntity = createFtpEntity(formEntity);
 
+        JobOutputFtpInfo.Type type = ftpInfo.getType();
+        if (type != null) {
+            ftpEntity.setType(type.name().toLowerCase());
+        }
+        JobOutputFtpInfo.Prot prot = ftpInfo.getProt();
+        if (prot != null) {
+            ftpEntity.setProt(prot.getValue());
+        }
 
-            ftpEntity.setProtectionBufferSize(ftpInfo.getProtectionBufferSize());
-            ftpEntity.setPort(ftpInfo.getPort());
+        ftpEntity.setProtectionBufferSize(ftpInfo.getProtectionBufferSize());
+        ftpEntity.setPort(ftpInfo.getPort());
 
-            JobOutputFtpInfo.Protocol protocol = ftpInfo.getProtocol();
-            if (protocol != null) {
-                ftpEntity.setProtocol(protocol.name());
-            }
+        JobOutputFtpInfo.Protocol protocol = ftpInfo.getProtocol();
+        if (protocol != null) {
+            ftpEntity.setProtocol(protocol.name());
+        }
 
-            ftpEntity.setImplicit(ftpInfo.getImplicit());
-            ftpEntity.setPassword(ftpInfo.getPassword());
-            ftpEntity.setUserName(ftpInfo.getUserName());
-            ftpEntity.setFolderPath(ftpInfo.getFolderPath());
-            ftpEntity.setServerName(ftpInfo.getServerName());
+        ftpEntity.setImplicit(ftpInfo.getImplicit());
+        ftpEntity.setPassword(ftpInfo.getPassword());
+        ftpEntity.setUserName(ftpInfo.getUserName());
+        ftpEntity.setFolderPath(ftpInfo.getFolderPath());
+        ftpEntity.setServerName(ftpInfo.getServerName());
 
-            JobFtpAuthKey authKey = ftpInfo.getAuthenticationKey();
-            if (authKey != null) {
-                ftpEntity.setSshKeyPath(authKey.getKeyPath());
-                ftpEntity.setSshPassPhrase(authKey.getPassPhrase());
-            }
+        JobFtpAuthKey authKey = ftpInfo.getAuthenticationKey();
+        if (authKey != null) {
+            ftpEntity.setSshKeyPath(authKey.getKeyPath());
+            ftpEntity.setSshPassPhrase(authKey.getPassPhrase());
         }
     }
 
@@ -90,49 +91,52 @@ class JobOutputFtpInfoMapper {
 
     public void mapEntityOnForm(RepositoryDestination.Builder destinationBuilder, JobFormEntity formEntity) {
         OutputFtpInfoEntity entity = extractFtpEntity(formEntity);
-        if (entity != null) {
-            JobOutputFtpInfo.Builder builder = new JobOutputFtpInfo.Builder();
 
-            String stringType = entity.getType();
-            if (stringType != null) {
-                stringType = stringType.toUpperCase();
-                JobOutputFtpInfo.Type type = JobOutputFtpInfo.Type.valueOf(stringType);
-                builder.withType(type);
-            }
-
-            String stringProt = entity.getProt();
-            if (stringProt != null) {
-                stringProt = stringProt.toUpperCase();
-                JobOutputFtpInfo.Prot prot = JobOutputFtpInfo.Prot.valueOfEntity(stringProt);
-                builder.withProt(prot);
-            }
-
-
-            builder.withProtectionBufferSize(entity.getProtectionBufferSize());
-            builder.withPort(entity.getPort());
-
-            String stringProtocol = entity.getProtocol();
-            if (stringProtocol != null) {
-                stringProtocol = stringProtocol.toUpperCase();
-                JobOutputFtpInfo.Protocol protocol = JobOutputFtpInfo.Protocol.valueOf(stringProtocol);
-                builder.withProtocol(protocol);
-            }
-
-            builder.withImplicit(entity.getImplicit());
-            builder.withPassword(entity.getPassword());
-            builder.withUserName(entity.getUserName());
-            builder.withFolderPath(entity.getFolderPath());
-            builder.withServerName(entity.getServerName());
-
-            String sshPassPhrase = entity.getSshPassPhrase();
-            String sshKeyPath = entity.getSshKeyPath();
-            if (sshKeyPath != null) {
-                JobFtpAuthKey key = JobFtpAuthKey.newPair(sshKeyPath, sshPassPhrase);
-                builder.withAuthenticationKey(key);
-            }
-
-            destinationBuilder.withFtp(builder.build());
+        if (entity == null) {
+            return;
         }
+
+        JobOutputFtpInfo.Builder builder = new JobOutputFtpInfo.Builder();
+
+        String stringType = entity.getType();
+        if (stringType != null) {
+            stringType = stringType.toUpperCase();
+            JobOutputFtpInfo.Type type = JobOutputFtpInfo.Type.valueOf(stringType);
+            builder.withType(type);
+        }
+
+        String stringProt = entity.getProt();
+        if (stringProt != null) {
+            stringProt = stringProt.toUpperCase();
+            JobOutputFtpInfo.Prot prot = JobOutputFtpInfo.Prot.valueOfEntity(stringProt);
+            builder.withProt(prot);
+        }
+
+
+        builder.withProtectionBufferSize(entity.getProtectionBufferSize());
+        builder.withPort(entity.getPort());
+
+        String stringProtocol = entity.getProtocol();
+        if (stringProtocol != null) {
+            stringProtocol = stringProtocol.toUpperCase();
+            JobOutputFtpInfo.Protocol protocol = JobOutputFtpInfo.Protocol.valueOf(stringProtocol);
+            builder.withProtocol(protocol);
+        }
+
+        builder.withImplicit(entity.getImplicit());
+        builder.withPassword(entity.getPassword());
+        builder.withUserName(entity.getUserName());
+        builder.withFolderPath(entity.getFolderPath());
+        builder.withServerName(entity.getServerName());
+
+        String sshPassPhrase = entity.getSshPassPhrase();
+        String sshKeyPath = entity.getSshKeyPath();
+        if (sshKeyPath != null) {
+            JobFtpAuthKey key = JobFtpAuthKey.newPair(sshKeyPath, sshPassPhrase);
+            builder.withAuthenticationKey(key);
+        }
+
+        destinationBuilder.withFtp(builder.build());
     }
 
     private OutputFtpInfoEntity extractFtpEntity(JobFormEntity entity) {
