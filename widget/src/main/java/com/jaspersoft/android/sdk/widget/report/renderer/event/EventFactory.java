@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
@@ -90,5 +91,9 @@ public abstract class EventFactory {
 
     public final Event createMultiPageStateChangedEvent(boolean isMultiPage) {
         return new MultiPageStateChangedEvent(isMultiPage);
+    }
+
+    public final Event createAvailableChartTypesEvent(List<ChartType> chartTypes) {
+        return new AvailableChartTypesEvent(chartTypes);
     }
 }

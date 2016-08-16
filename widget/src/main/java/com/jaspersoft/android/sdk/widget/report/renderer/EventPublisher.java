@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.widget.report.renderer;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.AvailableChartTypesEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
@@ -70,6 +71,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onAvailableChartTypes(AvailableChartTypesEvent event) {
+        handleEvent(event);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -113,6 +119,8 @@ class EventPublisher {
             reportRendererCallback.onBookmarkListAvailable(((BookmarksEvent) event).getBookmarkList());
         } else if (event instanceof ReportPartsEvent) {
             reportRendererCallback.onReportPartsAvailable(((ReportPartsEvent) event).getReportPartList());
+        } else if (event instanceof AvailableChartTypesEvent) {
+            reportRendererCallback.onAvailableChartTypes(((AvailableChartTypesEvent) event).getChartTypes());
         }
     }
 }

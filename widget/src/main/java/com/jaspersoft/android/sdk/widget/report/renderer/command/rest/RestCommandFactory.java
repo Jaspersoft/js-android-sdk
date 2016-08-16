@@ -89,6 +89,11 @@ public class RestCommandFactory extends CommandFactory {
         return new RefreshRestCommand(dispatcher, eventFactory, reportExecution);
     }
 
+    @Override
+    public Command createAvailableChartTypesCommand() {
+        throw new UnsupportedOperationException("Command is not supported for rest");
+    }
+
     public static class Creator {
         public RestCommandFactory create(WebView webView, Dispatcher dispatcher, RestEventFactory eventFactory, AuthorizedClient client, boolean isPro){
             return new RestCommandFactory(webView, dispatcher, eventFactory, client, isPro);

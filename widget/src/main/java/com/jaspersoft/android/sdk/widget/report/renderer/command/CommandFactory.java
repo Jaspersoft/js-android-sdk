@@ -74,6 +74,8 @@ public abstract class CommandFactory {
 
     public abstract Command createNavigateToCommand(Destination destination);
 
+    public abstract Command createAvailableChartTypesCommand();
+
     public Command createRefreshCommand(ReportExecution reportExecution) {
        return new RefreshUnsupportedCommand(dispatcher, eventFactory);
     }

@@ -42,6 +42,9 @@
         onReportPartsChanged: function (reportParts) {
             return Android.onReportPartsChanged(reportParts);
         },
+        onAvailableChartTypesChanged: function(chartTypes) {
+            return Android.onAvailableChartTypes(chartTypes);
+        },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
@@ -273,6 +276,9 @@
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
                 NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
+                <!--Replace this with actual data (vis.report.chart.types)-->
+                NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify([{"name" : "Bar"}]));
+                <!--NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(vis.report.chart.types));-->
             }
 
             reportErrorFn = function(error) {

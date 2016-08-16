@@ -15,6 +15,7 @@ public interface ReportRendererCallback {
     void onHyperlinkClicked(Hyperlink hyperlink);
     void onBookmarkListAvailable(List<Bookmark> bookmarkList);
     void onReportPartsAvailable(List<ReportPart> reportPartList);
+    void onAvailableChartTypes(List<ChartType> chartTypes);
     void onMultiPageStateChanged(boolean isMultiPage);
     void onCurrentPageChanged(int currentPage);
     void onPagesCountChanged(Integer totalCount);

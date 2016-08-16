@@ -12,6 +12,7 @@ import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
@@ -42,6 +43,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     boolean inPending;
     RunOptions runOptions;
     ReportProperties reportProperties;
+    List<ChartType> availableChartTypes;
 
     private ReportViewerDelegate() {
         setReportEventListener(null);
@@ -227,6 +229,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     }
 
     @Override
+    public void onAvailableChartTypes(List<ChartType> chartTypes) {
+        availableChartTypes = chartTypes;
+    }
+
+    @Override
     public void onIntercept(String uri) {
         reportEventListener.onExternalLinkOpened(uri);
     }
@@ -283,6 +290,10 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     public ReportProperties getReportMetadata() {
         return reportProperties;
+    }
+
+    public List<ChartType> getAvailableChartTypes() {
+        return availableChartTypes;
     }
 
     public void performViewAction(ViewAction viewAction) {

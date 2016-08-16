@@ -91,6 +91,11 @@ public class BaseVisCommandFactory extends CommandFactory {
         return super.createRefreshCommand(reportExecution);
     }
 
+    @Override
+    public Command createAvailableChartTypesCommand() {
+        return new AvailableChartTypesCommand(dispatcher, eventFactory, webView);
+    }
+
     public static class Creator {
         public BaseVisCommandFactory create(WebView webView, Dispatcher dispatcher, VisEventFactory eventFactory, AuthorizedClient client){
             VisParamsMapper visParamsMapper = new VisParamsMapper();

@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
 import java.util.List;
@@ -92,6 +93,11 @@ public class ReportView extends FrameLayout implements ReportWidget {
     @Override
     public void reset() {
         reportViewerDelegate.reset();
+    }
+
+    @Override
+    public List<ChartType> getAvailableChartTypes() {
+        return reportViewerDelegate.getAvailableChartTypes();
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.view.View;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
 import java.util.List;
@@ -44,4 +45,6 @@ public interface ReportWidget {
     void performViewAction(ViewAction viewAction);
 
     void reset();
+
+    List<ChartType> getAvailableChartTypes();
 }
