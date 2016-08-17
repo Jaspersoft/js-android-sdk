@@ -9,6 +9,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 
@@ -79,6 +80,10 @@ public abstract class EventFactory {
 
     public final Event createReportReady(){
         return new ReportReadyEvent();
+    }
+
+    public final Event createReportComponentsChanged(List<ReportComponent> reportComponents) {
+        return new ReportComponentsChangedEvent(reportComponents);
     }
 
     public final Event createCurrentPageChangedEvent(int currentPage) {

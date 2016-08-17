@@ -9,6 +9,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.MultiPageStateChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.PagesCountChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ProgressStateEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportComponentsChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportPartsEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.SwapStateEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
@@ -71,6 +72,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onReportComponentsChanged(ReportComponentsChangedEvent reportComponentsEvent) {
+        handleEvent(reportComponentsEvent);
+    }
+
+    @Subscribe
     public void onAvailableChartTypes(AvailableChartTypesEvent event) {
         handleEvent(event);
     }
@@ -121,6 +127,8 @@ class EventPublisher {
             reportRendererCallback.onReportPartsAvailable(((ReportPartsEvent) event).getReportPartList());
         } else if (event instanceof AvailableChartTypesEvent) {
             reportRendererCallback.onAvailableChartTypes(((AvailableChartTypesEvent) event).getChartTypes());
+        } else if (event instanceof ReportComponentsChangedEvent) {
+            reportRendererCallback.onReportComponentsChanged(((ReportComponentsChangedEvent) event).getReportComponents());
         }
     }
 }

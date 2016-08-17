@@ -15,6 +15,7 @@ import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
 import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
@@ -270,6 +271,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
                     new Throwable("Requested report execution has no content"), StatusCodes.REPORT_EXECUTION_EMPTY);
             reportEventListener.onError(noContentException);
         }
+    }
+
+    @Override
+    public void onReportComponentsChanged(List<ReportComponent> reportComponents) {
+        reportProperties.setComponents(reportComponents);
     }
 
     @Override

@@ -16,6 +16,7 @@ public interface ReportRendererCallback {
     void onBookmarkListAvailable(List<Bookmark> bookmarkList);
     void onReportPartsAvailable(List<ReportPart> reportPartList);
     void onAvailableChartTypes(List<ChartType> chartTypes);
+    void onReportComponentsChanged(List<ReportComponent> reportComponents);
     void onMultiPageStateChanged(boolean isMultiPage);
     void onCurrentPageChanged(int currentPage);
     void onPagesCountChanged(Integer totalCount);

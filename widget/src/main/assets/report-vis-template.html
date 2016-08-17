@@ -33,6 +33,9 @@
         onPagesCountChanged: function (totalCount) {
             return Android.onPagesCountChanged(totalCount);
         },
+        onReportComponentsChanged: function(reportComponents) {
+            return Android.onReportComponentsChanged(reportComponents);
+        },
         onMultiPageStateChanged: function (isMultiPage) {
             return Android.onMultiPageStateChanged(isMultiPage);
         },
@@ -271,6 +274,7 @@
 
             reportCompletedFn = function() {
                 NativeCallbacks.onPagesCountChanged(reportInstance.data().totalPages);
+                NativeCallbacks.onReportComponentsChanged(JSON.stringify(reportInstance.data().components));
             }
 
             reportRenderedFn = function() {
