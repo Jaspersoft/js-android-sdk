@@ -63,6 +63,7 @@ public abstract class State {
     }
 
     public final void updateChartType(ReportComponent component, ChartType newChartType) {
+        checkProgressState();
         internalUpdateChartType(component, newChartType);
     }
 
