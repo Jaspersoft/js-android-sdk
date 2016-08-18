@@ -192,7 +192,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     @Override
     public void onProgressStateChanged(boolean inProgress) {
         resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
-        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+        reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_ALL, isControlActionsAvailable());
     }
 
     @Override
@@ -203,7 +203,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
             inPending = false;
         }
 
-        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+        reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_ALL, isControlActionsAvailable());
     }
 
     @Override
@@ -285,7 +285,22 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     @Override
     public void onReportComponentsChanged(List<ReportComponent> reportComponents) {
-        reportProperties.setComponents(reportComponents);
+        if (reportComponents.size() == 0) {
+            // TODO: should we throw exception?
+            return;
+        }
+
+        boolean isElasticChart = false;
+        ReportComponent firstComponent = reportComponents.get(0);
+        if (reportComponents.size() == 1 && firstComponent.getComponentType().equals("chart")) {
+            isElasticChart = true;
+        }
+        if (isElasticChart) {
+            reportProperties.setComponents(reportComponents);
+            reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_CHANGE_CHART_TYPE, true);
+        } else {
+            reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_CHANGE_CHART_TYPE, false);
+        }
     }
 
     @Override
