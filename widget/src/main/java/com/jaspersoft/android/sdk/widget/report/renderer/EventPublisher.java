@@ -3,6 +3,7 @@ package com.jaspersoft.android.sdk.widget.report.renderer;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.AvailableChartTypesEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ComponentUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
@@ -82,6 +83,11 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onComponentUpdated(ComponentUpdatedEvent event) {
+        handleEvent(event);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -129,6 +135,8 @@ class EventPublisher {
             reportRendererCallback.onAvailableChartTypes(((AvailableChartTypesEvent) event).getChartTypes());
         } else if (event instanceof ReportComponentsChangedEvent) {
             reportRendererCallback.onReportComponentsChanged(((ReportComponentsChangedEvent) event).getReportComponents());
+        } else if (event instanceof ComponentUpdatedEvent) {
+            reportRendererCallback.onComponentUpdated();
         }
     }
 }

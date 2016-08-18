@@ -178,6 +178,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
         reportRenderer.navigateTo(pageDestination);
     }
 
+    public void updateChartType(ReportComponent component, ChartType newChartType) {
+        checkInited();
+        reportRenderer.updateChartType(component, newChartType);
+    }
+
     public void reset() {
         checkInited();
 
@@ -232,6 +237,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     @Override
     public void onAvailableChartTypes(List<ChartType> chartTypes) {
         availableChartTypes = chartTypes;
+    }
+
+    @Override
+    public void onComponentUpdated() {
+//        Log.d(this.getClass().toString(), "onComponentUpdated");
     }
 
     @Override

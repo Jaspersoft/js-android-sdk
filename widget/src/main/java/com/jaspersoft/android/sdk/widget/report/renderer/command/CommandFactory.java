@@ -5,8 +5,10 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.jsinterface.JsInterface;
@@ -75,6 +77,8 @@ public abstract class CommandFactory {
     public abstract Command createNavigateToCommand(Destination destination);
 
     public abstract Command createAvailableChartTypesCommand();
+
+    public abstract Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType);
 
     public Command createRefreshCommand(ReportExecution reportExecution) {
        return new RefreshUnsupportedCommand(dispatcher, eventFactory);

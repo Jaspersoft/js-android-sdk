@@ -48,6 +48,9 @@
         onAvailableChartTypesChanged: function(chartTypes) {
             return Android.onAvailableChartTypes(chartTypes);
         },
+        onComponentUpdated: function(componentId, errorMessage) {
+            return Android.onComponentUpdated(componentId, errorMessage);
+        },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
@@ -181,6 +184,18 @@
                 reportInstance.pages(destination).run(reportRenderedFn, reportErrorFn);
             }
 
+            this.updateChartType = function(componentId, chartTypeId) {
+                reportInstance.updateComponent(componentId, {chartType : chartTypeId})
+                    .done(function() {
+                        console.log("success");
+                        componentUpdatedFn(componentId, null);
+                    })
+                    .fail(function(error) {
+                        console.log(error);
+                        componentUpdatedFn(componentId, JSON.stringify(error));
+                    });
+            }
+
             this.resize = function() {
                 if (reportInstance) {
                     reportInstance.resize();
@@ -279,7 +294,6 @@
 
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
-                NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
                 <!--Replace this with actual data (vis.report.chart.types)-->
                 NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify([{"name" : "Bar"}]));
                 <!--NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(vis.report.chart.types));-->
@@ -301,6 +315,11 @@
 
             reportExportErrorFn = function() {
                 NativeCallbacks.onMultiPageStateChanged(false);
+            }
+
+            componentUpdatedFn = function(componentId, errorMessage) {
+                NativeCallbacks.onRendered();
+                NativeCallbacks.onComponentUpdated(componentId, errorMessage);
             }
         }
 

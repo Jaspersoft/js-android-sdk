@@ -5,8 +5,10 @@ import android.webkit.WebView;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -94,6 +96,11 @@ public class BaseVisCommandFactory extends CommandFactory {
     @Override
     public Command createAvailableChartTypesCommand() {
         return new AvailableChartTypesCommand(dispatcher, eventFactory, webView);
+    }
+
+    @Override
+    public Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType) {
+        return new UpdateChartTypeCommand(dispatcher, eventFactory, webView, component, newChartType);
     }
 
     public static class Creator {

@@ -3,9 +3,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -50,6 +52,13 @@ class RenderedVisState extends State {
         setInProgress(true);
         Command navigateToCommand = commandFactory.createNavigateToCommand(destination);
         commandExecutor.execute(navigateToCommand);
+    }
+
+    @Override
+    protected void internalUpdateChartType(ReportComponent component, ChartType newChartType) {
+        setInProgress(true);
+        Command udpateChartTypeCommand = commandFactory.createUpdateChartTypeCommand(component, newChartType);
+        commandExecutor.execute(udpateChartTypeCommand);
     }
 
     @Override

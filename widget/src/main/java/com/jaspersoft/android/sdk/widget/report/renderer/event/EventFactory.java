@@ -101,4 +101,8 @@ public abstract class EventFactory {
     public final Event createAvailableChartTypesEvent(List<ChartType> chartTypes) {
         return new AvailableChartTypesEvent(chartTypes);
     }
+
+    public final Event createComponentUpdatedEvent(String componentId, String errorMessage) {
+        return new ComponentUpdatedEvent();
+    }
 }

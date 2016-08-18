@@ -6,8 +6,10 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.service.report.ReportService;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -91,6 +93,11 @@ public class RestCommandFactory extends CommandFactory {
 
     @Override
     public Command createAvailableChartTypesCommand() {
+        throw new UnsupportedOperationException("Command is not supported for rest");
+    }
+
+    @Override
+    public Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType) {
         throw new UnsupportedOperationException("Command is not supported for rest");
     }
 
