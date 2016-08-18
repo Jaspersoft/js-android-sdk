@@ -294,9 +294,18 @@
 
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
-                <!--Replace this with actual data (vis.report.chart.types)-->
-                NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify([{"name" : "Bar"}]));
-                <!--NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(vis.report.chart.types));-->
+                NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(collectChartTypes()));
+            }
+
+            collectChartTypes = function() {
+                var chartTypes = vis.report.chart.types;
+                var result = [];
+                for (var i = 0; i < chartTypes.length; i++) {
+                    result.push({
+                        "name" : chartTypes[i]
+                    });
+                }
+                return result;
             }
 
             reportErrorFn = function(error) {
