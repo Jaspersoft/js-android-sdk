@@ -50,4 +50,18 @@ public class ChartType implements Parcelable {
             return new ChartType[size];
         }
     };
+
+    /*
+     * Equals
+     */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChartType chartType = (ChartType) o;
+        boolean isNameEquals = chartType.name.equals(this.name);
+        return isNameEquals;
+    }
 }
