@@ -94,11 +94,6 @@ public class BaseVisCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createAvailableChartTypesCommand() {
-        return new AvailableChartTypesCommand(dispatcher, eventFactory, webView);
-    }
-
-    @Override
     public Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType) {
         return new UpdateChartTypeCommand(dispatcher, eventFactory, webView, component, newChartType);
     }

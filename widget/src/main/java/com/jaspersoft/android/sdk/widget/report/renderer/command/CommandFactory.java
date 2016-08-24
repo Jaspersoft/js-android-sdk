@@ -76,8 +76,6 @@ public abstract class CommandFactory {
 
     public abstract Command createNavigateToCommand(Destination destination);
 
-    public abstract Command createAvailableChartTypesCommand();
-
     public abstract Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType);
 
     public Command createRefreshCommand(ReportExecution reportExecution) {

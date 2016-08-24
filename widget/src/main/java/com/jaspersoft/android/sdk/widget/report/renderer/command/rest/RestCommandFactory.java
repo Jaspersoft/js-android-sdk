@@ -92,11 +92,6 @@ public class RestCommandFactory extends CommandFactory {
     }
 
     @Override
-    public Command createAvailableChartTypesCommand() {
-        throw new UnsupportedOperationException("Command is not supported for rest");
-    }
-
-    @Override
     public Command createUpdateChartTypeCommand(ReportComponent component, ChartType newChartType) {
         throw new UnsupportedOperationException("Command is not supported for rest");
     }
