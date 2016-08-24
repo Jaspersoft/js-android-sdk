@@ -240,11 +240,6 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     }
 
     @Override
-    public void onComponentUpdated() {
-//        Log.d(this.getClass().toString(), "onComponentUpdated");
-    }
-
-    @Override
     public void onIntercept(String uri) {
         reportEventListener.onExternalLinkOpened(uri);
     }

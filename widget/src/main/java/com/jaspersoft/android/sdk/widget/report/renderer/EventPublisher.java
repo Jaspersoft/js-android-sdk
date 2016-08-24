@@ -83,11 +83,6 @@ class EventPublisher {
     }
 
     @Subscribe
-    public void onComponentUpdated(ComponentUpdatedEvent event) {
-        handleEvent(event);
-    }
-
-    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -135,8 +130,6 @@ class EventPublisher {
             reportRendererCallback.onAvailableChartTypes(((AvailableChartTypesEvent) event).getChartTypes());
         } else if (event instanceof ReportComponentsChangedEvent) {
             reportRendererCallback.onReportComponentsChanged(((ReportComponentsChangedEvent) event).getReportComponents());
-        } else if (event instanceof ComponentUpdatedEvent) {
-            reportRendererCallback.onComponentUpdated();
         }
     }
 }

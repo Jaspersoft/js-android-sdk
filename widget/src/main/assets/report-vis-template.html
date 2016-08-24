@@ -48,9 +48,6 @@
         onAvailableChartTypesChanged: function(chartTypes) {
             return Android.onAvailableChartTypes(chartTypes);
         },
-        onComponentUpdated: function(componentId, errorMessage) {
-            return Android.onComponentUpdated(componentId, errorMessage);
-        },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
         }
@@ -185,15 +182,7 @@
             }
 
             this.updateChartType = function(componentId, chartTypeId) {
-                reportInstance.updateComponent(componentId, {chartType : chartTypeId})
-                    .done(function() {
-                        console.log("success");
-                        componentUpdatedFn(componentId, null);
-                    })
-                    .fail(function(error) {
-                        console.log(error);
-                        componentUpdatedFn(componentId, JSON.stringify(error));
-                    });
+                reportInstance.updateComponent(componentId, {chartType : chartTypeId}, reportRenderedFn, reportErrorFn);
             }
 
             this.resize = function() {
@@ -295,6 +284,7 @@
 
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
+                NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
                 NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(collectChartTypes()));
             }
 
@@ -325,11 +315,6 @@
 
             reportExportErrorFn = function() {
                 NativeCallbacks.onMultiPageStateChanged(false);
-            }
-
-            componentUpdatedFn = function(componentId, errorMessage) {
-                NativeCallbacks.onRendered();
-                NativeCallbacks.onComponentUpdated(componentId, errorMessage);
             }
         }
 

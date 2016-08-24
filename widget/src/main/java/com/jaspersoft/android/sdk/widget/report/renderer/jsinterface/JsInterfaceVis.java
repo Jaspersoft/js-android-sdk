@@ -104,9 +104,4 @@ public class JsInterfaceVis extends JsInterface {
         List<ChartType> chartTypeList = new Gson().fromJson(chartTypes, listType);
         dispatcher.dispatch(eventFactory.createAvailableChartTypesEvent(chartTypeList));
     }
-
-    @JavascriptInterface
-    public void onComponentUpdated(String componentId, String errorMessage) {
-        dispatcher.dispatch(eventFactory.createComponentUpdatedEvent(componentId, errorMessage));
-    }
 }

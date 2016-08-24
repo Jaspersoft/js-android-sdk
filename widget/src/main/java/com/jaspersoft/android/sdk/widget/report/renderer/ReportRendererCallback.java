@@ -17,7 +17,6 @@ public interface ReportRendererCallback {
     void onReportPartsAvailable(List<ReportPart> reportPartList);
     void onAvailableChartTypes(List<ChartType> chartTypes);
     void onReportComponentsChanged(List<ReportComponent> reportComponents);
-    void onComponentUpdated();
     void onMultiPageStateChanged(boolean isMultiPage);
     void onCurrentPageChanged(int currentPage);
     void onPagesCountChanged(Integer totalCount);
