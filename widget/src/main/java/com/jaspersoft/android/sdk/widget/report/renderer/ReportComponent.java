@@ -16,16 +16,8 @@ public class ReportComponent {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getComponentType() {
         return componentType;
-    }
-
-    public void setComponentType(String componentType) {
-        this.componentType = componentType;
     }
 
     public ChartType getChartTypeInstance() {
@@ -35,17 +27,5 @@ public class ReportComponent {
             // TODO: implement other cases
         }
         return mChartTypeInstance;
-    }
-
-    public void setChartTypeInstance(ChartType chartTypeInstance) {
-        this.mChartTypeInstance = chartTypeInstance;
-    }
-
-    public String getChartType() {
-        return chartType;
-    }
-
-    public void setChartType(String chartType) {
-        this.chartType = chartType;
     }
 }
