@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.ErrorMapper;
 import com.jaspersoft.android.sdk.widget.report.renderer.JsException;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
 
@@ -80,6 +82,10 @@ public abstract class EventFactory {
         return new ReportReadyEvent();
     }
 
+    public final Event createReportComponentsChanged(List<ReportComponent> reportComponents) {
+        return new ReportComponentsChangedEvent(reportComponents);
+    }
+
     public final Event createCurrentPageChangedEvent(int currentPage) {
         return new CurrentPageChangedEvent(currentPage);
     }
@@ -90,5 +96,13 @@ public abstract class EventFactory {
 
     public final Event createMultiPageStateChangedEvent(boolean isMultiPage) {
         return new MultiPageStateChangedEvent(isMultiPage);
+    }
+
+    public final Event createAvailableChartTypesEvent(List<ChartType> chartTypes) {
+        return new AvailableChartTypesEvent(chartTypes);
+    }
+
+    public final Event createComponentUpdatedEvent(String componentId, String errorMessage) {
+        return new ComponentUpdatedEvent();
     }
 }

@@ -2,9 +2,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -47,6 +49,11 @@ class InitedVisState extends State {
     @Override
     protected void internalNavigateTo(Destination destination) {
         throw new IllegalStateException("Could not navigate to destination. Report still not rendered.");
+    }
+
+    @Override
+    protected void internalUpdateChartType(ReportComponent component, ChartType newChartType) {
+        throw new IllegalStateException("Could not udpate chart type. Report still not rendered.");
     }
 
     @Override

@@ -8,14 +8,20 @@ import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
  * @since 2.6
  */
 public interface ReportEventListener {
-    void onActionsAvailabilityChanged(boolean isAvailable);
+
+    public enum ActionType {
+        ACTION_TYPE_ALL,
+        ACTION_TYPE_CHANGE_CHART_TYPE
+    }
+
+    void onActionAvailabilityChanged(ActionType actionType, boolean isAvailable);
     void onHyperlinkClicked(Hyperlink hyperlink);
     void onExternalLinkOpened(String url);
     void onError(ServiceException exception);
 
     class SimpleReportEventListener implements ReportEventListener {
         @Override
-        public void onActionsAvailabilityChanged(boolean isAvailable) {
+        public void onActionAvailabilityChanged(ActionType actionType, boolean isAvailable) {
 
         }
 

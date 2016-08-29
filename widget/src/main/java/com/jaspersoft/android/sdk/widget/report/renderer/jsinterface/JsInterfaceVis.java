@@ -5,7 +5,9 @@ import android.webkit.JavascriptInterface;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
@@ -48,6 +50,13 @@ public class JsInterfaceVis extends JsInterface {
     }
 
     @JavascriptInterface
+    public void onReportComponentsChanged(String reportComponents) {
+        Type listType = new TypeToken<List<ReportComponent>>(){}.getType();
+        List<ReportComponent> reportComponentsList = new Gson().fromJson(reportComponents, listType);
+        dispatcher.dispatch(eventFactory.createReportComponentsChanged(reportComponentsList));
+    }
+
+    @JavascriptInterface
     public void onCleared() {
         dispatcher.dispatch(eventFactory.createReportClearedEvent());
     }
@@ -87,5 +96,12 @@ public class JsInterfaceVis extends JsInterface {
     @JavascriptInterface
     public void onMultiPageStateChanged(boolean isMultiPage) {
         dispatcher.dispatch(eventFactory.createMultiPageStateChangedEvent(isMultiPage));
+    }
+
+    @JavascriptInterface
+    public void onAvailableChartTypes(String chartTypes) {
+        Type listType = new TypeToken<List<ChartType>>(){}.getType();
+        List<ChartType> chartTypeList = new Gson().fromJson(chartTypes, listType);
+        dispatcher.dispatch(eventFactory.createAvailableChartTypesEvent(chartTypeList));
     }
 }

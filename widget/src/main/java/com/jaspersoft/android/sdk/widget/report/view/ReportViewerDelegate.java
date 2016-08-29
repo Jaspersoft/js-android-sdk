@@ -12,8 +12,10 @@ import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebViewClient;
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRendererCallback;
@@ -42,6 +44,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     boolean inPending;
     RunOptions runOptions;
     ReportProperties reportProperties;
+    List<ChartType> availableChartTypes;
 
     private ReportViewerDelegate() {
         setReportEventListener(null);
@@ -175,6 +178,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
         reportRenderer.navigateTo(pageDestination);
     }
 
+    public void updateChartType(ReportComponent component, ChartType newChartType) {
+        checkInited();
+        reportRenderer.updateChartType(component, newChartType);
+    }
+
     public void reset() {
         checkInited();
 
@@ -184,7 +192,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     @Override
     public void onProgressStateChanged(boolean inProgress) {
         resourceWebView.setVisibility(inProgress ? View.INVISIBLE : View.VISIBLE);
-        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+        reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_ALL, isControlActionsAvailable());
     }
 
     @Override
@@ -195,7 +203,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
             inPending = false;
         }
 
-        reportEventListener.onActionsAvailabilityChanged(isControlActionsAvailable());
+        reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_ALL, isControlActionsAvailable());
     }
 
     @Override
@@ -224,6 +232,11 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
             reportProperties.setReportPartList(reportPartList);
             reportPartsListener.onReportPartsChanged(reportPartList);
         }
+    }
+
+    @Override
+    public void onAvailableChartTypes(List<ChartType> chartTypes) {
+        availableChartTypes = chartTypes;
     }
 
     @Override
@@ -266,6 +279,26 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     }
 
     @Override
+    public void onReportComponentsChanged(List<ReportComponent> reportComponents) {
+        if (reportComponents.size() == 0) {
+            // TODO: should we throw exception?
+            return;
+        }
+
+        boolean isElasticChart = false;
+        ReportComponent firstComponent = reportComponents.get(0);
+        if (reportComponents.size() == 1 && firstComponent.getComponentType().equals("chart")) {
+            isElasticChart = true;
+        }
+        if (isElasticChart) {
+            reportProperties.setComponents(reportComponents);
+            reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_CHANGE_CHART_TYPE, true);
+        } else {
+            reportEventListener.onActionAvailabilityChanged(ReportEventListener.ActionType.ACTION_TYPE_CHANGE_CHART_TYPE, false);
+        }
+    }
+
+    @Override
     public void onWebError(int errorCode, String failingUrl) {
         ServiceException serviceException = new ServiceException("WebView request error occurred", null, StatusCodes.WEB_VIEW_REQUEST_ERROR);
         onError(serviceException);
@@ -283,6 +316,10 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     public ReportProperties getReportMetadata() {
         return reportProperties;
+    }
+
+    public List<ChartType> getAvailableChartTypes() {
+        return availableChartTypes;
     }
 
     public void performViewAction(ViewAction viewAction) {

@@ -91,6 +91,10 @@ public class ReportRenderer {
         currentState.navigateTo(destination);
     }
 
+    public void updateChartType(ReportComponent component, ChartType newChartType) {
+        currentState.updateChartType(component, newChartType);
+    }
+
     public void reset() {
         currentState.reset();
     }

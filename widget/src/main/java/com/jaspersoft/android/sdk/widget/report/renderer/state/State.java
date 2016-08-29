@@ -2,9 +2,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 
 
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandFactory;
@@ -60,6 +62,11 @@ public abstract class State {
         internalNavigateTo(destination);
     }
 
+    public final void updateChartType(ReportComponent component, ChartType newChartType) {
+        checkProgressState();
+        internalUpdateChartType(component, newChartType);
+    }
+
     public final void refresh() {
         checkProgressState();
         internalRefresh();
@@ -82,6 +89,8 @@ public abstract class State {
     protected abstract void internalApplyParams(List<ReportParameter> parameters);
 
     protected abstract void internalNavigateTo(Destination destination);
+
+    protected abstract void internalUpdateChartType(ReportComponent component, ChartType newChartType);
 
     protected abstract void internalRefresh();
 

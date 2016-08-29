@@ -11,6 +11,8 @@ import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.data.server.ServerInfo;
 import com.jaspersoft.android.sdk.widget.base.ResourceWebView;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportRenderer;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 
@@ -133,8 +135,18 @@ public class ReportFragment extends Fragment implements ReportWidget {
     }
 
     @Override
+    public void updateChartType(ReportComponent component, ChartType newChartType) {
+        reportViewerDelegate.updateChartType(component, newChartType);
+    }
+
+    @Override
     public void reset() {
         reportViewerDelegate.reset();
+    }
+
+    @Override
+    public List<ChartType> getAvailableChartTypes() {
+        return reportViewerDelegate.getAvailableChartTypes();
     }
 
     @Override

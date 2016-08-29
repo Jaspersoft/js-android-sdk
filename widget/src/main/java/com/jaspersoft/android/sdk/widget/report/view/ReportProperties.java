@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 
 import java.util.ArrayList;
@@ -20,12 +21,18 @@ public class ReportProperties implements Parcelable {
     private List<Bookmark> bookmarkList;
     private List<ReportPart> reportPartList;
     private ReportPart currentReportPart;
+    private List<ReportComponent> components;
 
     ReportProperties() {
         currentPage = 1;
         bookmarkList = new ArrayList<>();
         reportPartList = new ArrayList<>();
+        components = new ArrayList<>();
     }
+
+    /*
+     *  Accessors
+     */
 
     public boolean isMultiPage() {
         return isMultiPage;
@@ -72,20 +79,17 @@ public class ReportProperties implements Parcelable {
         this.reportPartList = reportPartList;
     }
 
-    private void updateCurrentReportPart() {
-        if (currentPage == null || reportPartList.isEmpty()) {
-            currentReportPart = null;
-            return;
-        }
-
-        currentReportPart = reportPartList.get(0);
-        for (int i = 1; i < reportPartList.size(); i++) {
-            ReportPart reportPart = reportPartList.get(i);
-            if (reportPart.getPage() <= currentPage) {
-                currentReportPart = reportPart;
-            }
-        }
+    public List<ReportComponent> getComponents() {
+        return components;
     }
+
+    public void setComponents(List<ReportComponent> components) {
+        this.components = components;
+    }
+
+    /*
+     * Parcelable Impl
+     */
 
     private ReportProperties(Parcel in) {
         isMultiPage = in.readByte() != 0;
@@ -120,4 +124,23 @@ public class ReportProperties implements Parcelable {
             return new ReportProperties[size];
         }
     };
+
+    /*
+     *  Helpers
+     */
+
+    private void updateCurrentReportPart() {
+        if (currentPage == null || reportPartList.isEmpty()) {
+            currentReportPart = null;
+            return;
+        }
+
+        currentReportPart = reportPartList.get(0);
+        for (int i = 1; i < reportPartList.size(); i++) {
+            ReportPart reportPart = reportPartList.get(i);
+            if (reportPart.getPage() <= currentPage) {
+                currentReportPart = reportPart;
+            }
+        }
+    }
 }

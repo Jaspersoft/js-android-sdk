@@ -4,9 +4,11 @@ package com.jaspersoft.android.sdk.widget.report.renderer.state;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.service.report.ReportExecution;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.Destination;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.RenderState;
+import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.Command;
 import com.jaspersoft.android.sdk.widget.report.renderer.command.CommandExecutor;
@@ -56,6 +58,11 @@ class RenderedRestState extends State {
         setInProgress(true);
         Command navigateToCommand = commandFactory.createPageExportCommand(destination, reportExecution);
         commandExecutor.execute(navigateToCommand);
+    }
+
+    @Override
+    protected void internalUpdateChartType(ReportComponent component, ChartType newChartType) {
+        throw new IllegalStateException("Not available for REST Flow");
     }
 
     @Override

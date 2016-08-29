@@ -33,6 +33,9 @@
         onPagesCountChanged: function (totalCount) {
             return Android.onPagesCountChanged(totalCount);
         },
+        onReportComponentsChanged: function(reportComponents) {
+            return Android.onReportComponentsChanged(reportComponents);
+        },
         onMultiPageStateChanged: function (isMultiPage) {
             return Android.onMultiPageStateChanged(isMultiPage);
         },
@@ -41,6 +44,9 @@
         },
         onReportPartsChanged: function (reportParts) {
             return Android.onReportPartsChanged(reportParts);
+        },
+        onAvailableChartTypesChanged: function(chartTypes) {
+            return Android.onAvailableChartTypes(chartTypes);
         },
         onHyperLinkClick: function(type, hyperlink) {
             return Android.onHyperLinkClick(type, hyperlink);
@@ -175,6 +181,10 @@
                 reportInstance.pages(destination).run(reportRenderedFn, reportErrorFn);
             }
 
+            this.updateChartType = function(componentId, chartTypeId) {
+                reportInstance.updateComponent(componentId, {chartType : chartTypeId}, reportRenderedFn, reportErrorFn);
+            }
+
             this.resize = function() {
                 if (reportInstance) {
                     reportInstance.resize();
@@ -268,11 +278,25 @@
 
             reportCompletedFn = function() {
                 NativeCallbacks.onPagesCountChanged(reportInstance.data().totalPages);
+                var reportComponents = reportInstance.data().components;
+                NativeCallbacks.onReportComponentsChanged(JSON.stringify(reportInstance.data().components));
             }
 
             reportRenderedFn = function() {
                 NativeCallbacks.onRendered();
                 NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
+                NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(collectChartTypes()));
+            }
+
+            collectChartTypes = function() {
+                var chartTypes = vis.report.chart.types;
+                var result = [];
+                for (var i = 0; i < chartTypes.length; i++) {
+                    result.push({
+                        "name" : chartTypes[i]
+                    });
+                }
+                return result;
             }
 
             reportErrorFn = function(error) {

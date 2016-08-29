@@ -1,13 +1,16 @@
 package com.jaspersoft.android.sdk.widget.report.renderer;
 
 import com.jaspersoft.android.sdk.service.exception.ServiceException;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.AvailableChartTypesEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.BookmarksEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ComponentUpdatedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.CurrentPageChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.Event;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ExceptionEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.MultiPageStateChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.PagesCountChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ProgressStateEvent;
+import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportComponentsChangedEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.ReportPartsEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.SwapStateEvent;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.vis.HyperlinkEvent;
@@ -70,6 +73,16 @@ class EventPublisher {
     }
 
     @Subscribe
+    public void onReportComponentsChanged(ReportComponentsChangedEvent reportComponentsEvent) {
+        handleEvent(reportComponentsEvent);
+    }
+
+    @Subscribe
+    public void onAvailableChartTypes(AvailableChartTypesEvent event) {
+        handleEvent(event);
+    }
+
+    @Subscribe
     public void onException(ExceptionEvent exceptionEvent) {
         handleEvent(exceptionEvent);
     }
@@ -113,6 +126,10 @@ class EventPublisher {
             reportRendererCallback.onBookmarkListAvailable(((BookmarksEvent) event).getBookmarkList());
         } else if (event instanceof ReportPartsEvent) {
             reportRendererCallback.onReportPartsAvailable(((ReportPartsEvent) event).getReportPartList());
+        } else if (event instanceof AvailableChartTypesEvent) {
+            reportRendererCallback.onAvailableChartTypes(((AvailableChartTypesEvent) event).getChartTypes());
+        } else if (event instanceof ReportComponentsChangedEvent) {
+            reportRendererCallback.onReportComponentsChanged(((ReportComponentsChangedEvent) event).getReportComponents());
         }
     }
 }
