@@ -58,4 +58,9 @@ public final class MockResponseFactory {
         return new MockResponse()
                 .setStatus("HTTP/1.1 401 Unauthorized");
     }
+
+    public static MockResponse create404() {
+        return new MockResponse()
+                .setStatus("HTTP/1.1 404 Not Found");
+    }
 }
