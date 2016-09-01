@@ -30,6 +30,7 @@ public class DashboardService {
     /**
      * Performs request that export dashboard
      *
+     * @param dashboardExportOptions options for exporting dashboard
      * @return dashboard resource output
      * @throws ServiceException wraps both http/network/api related errors
      */
