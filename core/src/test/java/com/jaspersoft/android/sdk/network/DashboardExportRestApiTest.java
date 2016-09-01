@@ -63,7 +63,7 @@ public class DashboardExportRestApiTest {
 
         mWebMockRule.enqueue(MockResponseFactory.create500());
 
-        dashboardExportRestApi.createExportJob(new DashboardExportExecutionOptions.Builder("/any/uri", "pdf").build());
+        dashboardExportRestApi.createExportJob(new DashboardExportExecutionOptions("/any/uri", null, null, "pdf", null));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class DashboardExportRestApiTest {
         MockResponse response = MockResponseFactory.create200().setBody(dashboardExecutionCreate.asString());
         mWebMockRule.enqueue(response);
 
-        DashboardExportExecutionOptions options = new DashboardExportExecutionOptions.Builder("/my/uri", "pdf").build();
+        DashboardExportExecutionOptions options = new DashboardExportExecutionOptions("/my/uri", null, null, "pdf", null);
         DashboardExportExecution result = dashboardExportRestApi.createExportJob(options);
 
         RecordedRequest request = mWebMockRule.get().takeRequest();
@@ -180,6 +180,5 @@ public class DashboardExportRestApiTest {
         assertThat(request, wasMethod("GET"));
 
         assertThat(result.getMimeType(), is("image"));
-        assertThat(result.getLength(), is(404044L));
     }
 }

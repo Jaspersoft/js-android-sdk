@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.network.entity.dashboard;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Andrew Tivodar
@@ -16,9 +17,18 @@ public class DashboardExportExecutionOptions {
     @Expose
     private String format;
     @Expose
-    private String params;
+    @SerializedName("dashboardParameter")
+    private DashboardParameters params;
 
-    DashboardExportExecutionOptions(String uri, Integer width, Integer height, String format, String params) {
+    public DashboardExportExecutionOptions(String uri, Integer width, Integer height, String format, DashboardParameters params) {
+        if (uri == null) {
+            throw new IllegalArgumentException("Uri can not be null!");
+        }
+
+        if (format == null) {
+            throw new IllegalArgumentException("Format can not be null!");
+        }
+
         this.uri = uri;
         this.width = width;
         this.height = height;
@@ -26,42 +36,28 @@ public class DashboardExportExecutionOptions {
         this.params = params;
     }
 
-    public static class Builder{
-        private String uri;
-        private Integer width;
-        private Integer height;
-        private String format;
-        private String params;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        public Builder(String uri, String format) {
-            if (uri == null) {
-                throw new IllegalArgumentException("Uri can not be null!");
-            }
+        DashboardExportExecutionOptions that = (DashboardExportExecutionOptions) o;
 
-            if (format == null) {
-                throw new IllegalArgumentException("Format can not be null!");
-            }
+        if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
+        if (width != null ? !width.equals(that.width) : that.width != null) return false;
+        if (height != null ? !height.equals(that.height) : that.height != null) return false;
+        if (format != null ? !format.equals(that.format) : that.format != null) return false;
+        return params != null ? params.equals(that.params) : that.params == null;
 
-            this.uri = uri;
-            this.format = format;
-        }
+    }
 
-        public Builder setWidth(int width) {
-            this.width = width;
-            return this;
-        }
-
-        public Builder setHeight(int height) {
-            this.height = height;
-            return this;
-        }
-
-        public void setParams(String params) {
-            this.params = params;
-        }
-
-        public DashboardExportExecutionOptions build() {
-            return new DashboardExportExecutionOptions(uri, width, height, format, params);
-        }
+    @Override
+    public int hashCode() {
+        int result = uri != null ? uri.hashCode() : 0;
+        result = 31 * result + (width != null ? width.hashCode() : 0);
+        result = 31 * result + (height != null ? height.hashCode() : 0);
+        result = 31 * result + (format != null ? format.hashCode() : 0);
+        result = 31 * result + (params != null ? params.hashCode() : 0);
+        return result;
     }
 }

@@ -13,7 +13,27 @@ public class DashboardParameters {
     @Expose
     private List<ReportParameter> parameters;
 
+    public DashboardParameters(List<ReportParameter> parameters) {
+        this.parameters = parameters;
+    }
+
     public List<ReportParameter> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DashboardParameters that = (DashboardParameters) o;
+
+        return parameters != null ? parameters.equals(that.parameters) : that.parameters == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return parameters != null ? parameters.hashCode() : 0;
     }
 }
