@@ -1,6 +1,7 @@
 package com.jaspersoft.android.sdk.network.entity.dashboard;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 public class DashboardParameters {
     @Expose
+    @SerializedName("dashboardParameter")
     private List<ReportParameter> parameters;
 
     public DashboardParameters(List<ReportParameter> parameters) {

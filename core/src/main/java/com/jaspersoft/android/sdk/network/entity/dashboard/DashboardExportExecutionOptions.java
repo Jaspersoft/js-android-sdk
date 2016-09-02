@@ -17,7 +17,7 @@ public class DashboardExportExecutionOptions {
     @Expose
     private String format;
     @Expose
-    @SerializedName("dashboardParameter")
+    @SerializedName("parameters")
     private DashboardParameters params;
 
     public DashboardExportExecutionOptions(String uri, Integer width, Integer height, String format, DashboardParameters params) {
