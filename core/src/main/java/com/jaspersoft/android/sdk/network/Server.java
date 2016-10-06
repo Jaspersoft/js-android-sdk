@@ -27,12 +27,16 @@ package com.jaspersoft.android.sdk.network;
 import com.jaspersoft.android.sdk.network.entity.type.GsonFactory;
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.OkHttpClient;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.CookieHandler;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Represents particular Server configuration.
@@ -141,6 +145,31 @@ public final class Server {
          */
         public Builder withProxy(Proxy proxy) {
             mOkHttpClient.setProxy(proxy);
+            return this;
+        }
+
+
+        /**
+         * Sets the verifier used to confirm that response certificates apply to
+         * requested hostnames for HTTPS connections.
+         *
+         * @param hostnameVerifier your hostname verifier
+         * @return builder for convenient configuration
+         */
+        public Builder withHostnameVerifier(HostnameVerifier hostnameVerifier) {
+            mOkHttpClient.setHostnameVerifier(hostnameVerifier);
+            return this;
+        }
+
+        /**
+         *Sets the socket factory used to secure HTTPS connections.
+         *If unset, a lazily created SSL socket factory will be used.
+         *
+         * @param sslSocketFactory your ssl socket factory
+         * @return builder for convenient configuration
+         */
+        public Builder withSslSocketFactory(SSLSocketFactory sslSocketFactory) {
+            mOkHttpClient.setSslSocketFactory(sslSocketFactory);
             return this;
         }
 
