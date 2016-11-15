@@ -102,11 +102,6 @@ public class ReportView extends FrameLayout implements ReportWidget {
     }
 
     @Override
-    public List<ChartType> getAvailableChartTypes() {
-        return reportViewerDelegate.getAvailableChartTypes();
-    }
-
-    @Override
     public void setReportEventListener(ReportEventListener reportEventListener) {
         reportViewerDelegate.setReportEventListener(reportEventListener);
     }
@@ -124,6 +119,11 @@ public class ReportView extends FrameLayout implements ReportWidget {
     @Override
     public void setReportPartsListener(ReportPartsListener reportPartsListener) {
         reportViewerDelegate.setReportPartsListener(reportPartsListener);
+    }
+
+    @Override
+    public void setReportChartTypeListener(ReportChartTypeListener reportChartTypeListener) {
+        reportViewerDelegate.setReportChartTypeListener(reportChartTypeListener);
     }
 
     @Override

@@ -37,6 +37,7 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     private ReportEventListener reportEventListener;
     private ReportBookmarkListener reportBookmarkListener;
     private ReportPartsListener reportPartsListener;
+    private ReportChartTypeListener reportChartTypeListener;
 
     ReportRenderer reportRenderer;
     ResourceWebView resourceWebView;
@@ -44,13 +45,13 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
     boolean inPending;
     RunOptions runOptions;
     ReportProperties reportProperties;
-    List<ChartType> availableChartTypes;
 
     private ReportViewerDelegate() {
         setReportEventListener(null);
         setReportPaginationListener(null);
         setReportBookmarkListener(null);
         setReportPartsListener(null);
+        setReportChartTypeListener(null);
         reportProperties = new ReportProperties();
     }
 
@@ -115,6 +116,13 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
             reportPartsListener = new ReportPartsListener.SimpleReportPartsListener();
         }
         this.reportPartsListener = reportPartsListener;
+    }
+
+    public void setReportChartTypeListener(ReportChartTypeListener reportChartTypeListener) {
+        if (reportChartTypeListener == null) {
+            reportChartTypeListener = new ReportChartTypeListener.SimpleReportChartTypeListener();
+        }
+        this.reportChartTypeListener = reportChartTypeListener;
     }
 
     public boolean isInited() {
@@ -236,7 +244,10 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     @Override
     public void onAvailableChartTypes(List<ChartType> chartTypes) {
-        availableChartTypes = chartTypes;
+        if (!chartTypes.equals(reportProperties.getAvailableChartTypes())) {
+            reportProperties.setAvailableChartTypes(chartTypes);
+            reportChartTypeListener.onChartTypesChanged(chartTypes);
+        }
     }
 
     @Override
@@ -316,10 +327,6 @@ class ReportViewerDelegate implements ReportRendererCallback, ResourceWebViewCli
 
     public ReportProperties getReportMetadata() {
         return reportProperties;
-    }
-
-    public List<ChartType> getAvailableChartTypes() {
-        return availableChartTypes;
     }
 
     public void performViewAction(ViewAction viewAction) {

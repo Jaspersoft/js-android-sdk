@@ -27,11 +27,13 @@ public interface ReportWidget {
 
     void setReportEventListener(ReportEventListener reportEventListener);
 
-    void setReportPaginationListener(ReportPaginationListener reportPaginationLsitener);
+    void setReportPaginationListener(ReportPaginationListener reportPaginationListener);
 
     void setReportBookmarkListener(ReportBookmarkListener reportBookmarkListener);
 
     void setReportPartsListener(ReportPartsListener reportPartsListener);
+
+    void setReportChartTypeListener(ReportChartTypeListener reportChartTypeListener);
 
     View getView();
 
@@ -48,6 +50,4 @@ public interface ReportWidget {
     void updateChartType(ReportComponent component, ChartType newChartType);
 
     void reset();
-
-    List<ChartType> getAvailableChartTypes();
 }
