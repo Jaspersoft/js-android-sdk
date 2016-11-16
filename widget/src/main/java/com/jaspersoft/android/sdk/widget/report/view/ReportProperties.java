@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.jaspersoft.android.sdk.widget.report.renderer.Bookmark;
+import com.jaspersoft.android.sdk.widget.report.renderer.ChartType;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportComponent;
 import com.jaspersoft.android.sdk.widget.report.renderer.ReportPart;
 
@@ -22,12 +23,14 @@ public class ReportProperties implements Parcelable {
     private List<ReportPart> reportPartList;
     private ReportPart currentReportPart;
     private List<ReportComponent> components;
+    private List<ChartType> availableChartTypes;
 
     ReportProperties() {
         currentPage = 1;
         bookmarkList = new ArrayList<>();
         reportPartList = new ArrayList<>();
         components = new ArrayList<>();
+        availableChartTypes = new ArrayList<>();
     }
 
     /*
@@ -85,6 +88,14 @@ public class ReportProperties implements Parcelable {
 
     public void setComponents(List<ReportComponent> components) {
         this.components = components;
+    }
+
+    public List<ChartType> getAvailableChartTypes() {
+        return availableChartTypes;
+    }
+
+    public void setAvailableChartTypes(List<ChartType> availableChartTypes) {
+        this.availableChartTypes = availableChartTypes;
     }
 
     /*
