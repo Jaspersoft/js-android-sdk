@@ -2,7 +2,9 @@ package com.jaspersoft.android.sdk.widget.base;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.net.http.SslError;
 import android.os.Build;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -65,6 +67,11 @@ public class ResourceWebViewClient extends WebViewClient {
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
         super.onReceivedError(view, request, error);
         webClientEventCallback.onWebError(error.getErrorCode(), request.getUrl().toString());
+    }
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        handler.proceed();
     }
 
     @Override
