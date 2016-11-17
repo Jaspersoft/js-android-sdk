@@ -32,8 +32,8 @@ public class ClientProvider implements Provider<AuthorizedClient> {
                 .withBaseUrl(profile.getUrl())
                 .build();
         Credentials credentials = SpringCredentials.builder()
-                .withPassword("joeuser")
-                .withUsername("joeuser")
+                .withPassword("superuser")
+                .withUsername("superuser")
                 .build();
 
         CookieManager cookieManager = new RestCookieManager.Builder(context)

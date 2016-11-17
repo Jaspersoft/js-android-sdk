@@ -3,9 +3,6 @@ package com.jaspersoft.android.sdk.sample;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.HttpException;
@@ -18,8 +15,6 @@ import com.jaspersoft.android.sdk.service.exception.ServiceException;
 import com.jaspersoft.android.sdk.service.exception.StatusCodes;
 import com.jaspersoft.android.sdk.widget.report.renderer.RunOptions;
 import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.Hyperlink;
-import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReferenceHyperlink;
-import com.jaspersoft.android.sdk.widget.report.renderer.hyperlink.ReportExecutionHyperlink;
 import com.jaspersoft.android.sdk.widget.report.view.ReportEventListener;
 import com.jaspersoft.android.sdk.widget.report.view.ReportFragment;
 import com.jaspersoft.android.sdk.widget.report.view.ReportPaginationListener;
@@ -35,21 +30,12 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     private ReportFragment reportFragment;
     private AuthorizedClient authorizedClient;
 
-    private Button bookmark;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.report_renderer_preview);
         reportFragment = (ReportFragment) getSupportFragmentManager().findFragmentById(R.id.reportFragment);
-        bookmark = (Button) findViewById(R.id.bookmark);
-        bookmark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reportFragment.navigateToPage(11);
-            }
-        });
 
         Bundle extras = getIntent().getExtras();
         resource = extras.getParcelable(ResourcesActivity.RESOURCE_EXTRA);
@@ -72,18 +58,12 @@ public class ReportViewActivity extends AppCompatActivity implements ReportEvent
     }
 
     @Override
-    public void onActionsAvailabilityChanged(boolean isAvailable) {
+    public void onActionAvailabilityChanged(ActionType actionType, boolean isAvailable) {
 
     }
 
     @Override
     public void onHyperlinkClicked(Hyperlink hyperlink) {
-        if (hyperlink instanceof ReferenceHyperlink) {
-            Toast.makeText(this, ((ReferenceHyperlink) hyperlink).getReference().toString(), Toast.LENGTH_SHORT).show();
-        } else if (hyperlink instanceof ReportExecutionHyperlink) {
-            RunOptions runOptions = ((ReportExecutionHyperlink) hyperlink).getRunOptions();
-            reportFragment.run(runOptions);
-        }
     }
 
     @Override

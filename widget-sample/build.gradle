@@ -22,13 +22,14 @@ android {
         versionName "1.0"
         proguardFiles getDefaultProguardFile('proguard-android.txt')
     }
+
+    lintOptions {
+        lintConfig file("lint.xml")
+    }
 }
 
 dependencies {
     compile project(':js-android-sdk-widget')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 }
