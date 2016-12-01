@@ -33,11 +33,6 @@ public class ResourceWebView extends WebView {
         init();
     }
 
-    @Override
-    public final WebSettings getSettings() {
-        throw new UnsupportedOperationException("Configuring options is not supported");
-    }
-
     private void init() {
         final WebSettings settings = super.getSettings();
         settings.setJavaScriptEnabled(true);
