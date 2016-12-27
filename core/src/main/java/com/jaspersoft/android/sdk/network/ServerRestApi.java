@@ -93,6 +93,9 @@ public class ServerRestApi {
                 .get()
                 .build();
         Response response = mClientWrapper.makeCall(request);
+        if (response.body().contentLength() == 0) {
+            throw new HttpException("Not Found. The URI requested is invalid or the resource requested does not exists.", 404, response.body());
+        }
         ServerInfoData serverInfo;
         try {
             serverInfo = mClientWrapper.deserializeJson(response, ServerInfoData.class);
