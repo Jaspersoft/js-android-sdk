@@ -194,52 +194,38 @@
         };
 
         var HighChartsRenderer = function () {
-            var reportParams = null;
+            var rendered = false;
 
-            var _toJsonParameters = function (raw) {
-                var objKeysRegex = /({|,)(?:\s*)(?:')?([A-Za-z_$\.][A-Za-z0-9_ \-\.$]*)(?:')?(?:\s*):/g;
-                var newQuotedKeysString = raw.replace(objKeysRegex, "$1\"$2\":");
-                return JSON.parse(newQuotedKeysString);
-            };
+            function waitForChartRendered(count) {
+                if (count == 100 || ($(".highcharts_parent_container").highcharts && $(".highcharts_parent_container").highcharts())) {
+                    rendered = true;
+                    applyChartParams();
+                    NativeCallbacks.onRendered();
+                }
+                else {
+                    setTimeout(function() {
+                        waitForChartRendered(count + 1);
+                    }, 50);
+                }
+            }
 
-            var _getScriptContent = function (reportPage) {
-                var rawScript = $(reportPage).find(".jasperreports")[0];
-                return rawScript.innerHTML;
-            };
+             function applyChartParams() {
+                $(".highcharts_parent_container").highcharts().animation = false;
 
-            var _getRawParameters = function (body) {
-                body = body.replace("__renderHighcharts(", "");
-                body = body.replace(/\);/i, "");
-                return body;
-            };
+                $(".highcharts_parent_container").highcharts().pointer.zoomHor = false
+                $(".highcharts_parent_container").highcharts().pointer.zoomVert = false
 
-            var _normalizeDimensions = function (params) {
-                var globalOptions = params.globalOptions;
-                var chartDimensions = params.chartDimensions;
-                chartDimensions.width = document.documentElement.offsetWidth;
-                chartDimensions.height = document.documentElement.offsetHeight;
-                globalOptions.plotOptions = {"series": {"animation": false}};
-                return params;
-            };
-
-            var defineParams = function (reportPage) {
-                var body = _getScriptContent(reportPage);
-                var rawParams = _getRawParameters(body);
-                var jsonParams = _toJsonParameters(rawParams);
-                params = jQuery.extend(true, {}, jsonParams);
-                reportParams = params;
-            };
+                $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth, document.documentElement.offsetHeight, false);
+            }
 
             var _render = function (reportPage) {
                 $("#container").empty().append(reportPage);
-                defineParams(reportPage);
-                NativeCallbacks.onRendered();
+                waitForChartRendered();
             };
 
             var _refresh = function () {
-                if (reportParams) {
-                    var params = _normalizeDimensions(reportParams);
-                    __renderHighcharts(params);
+                if (rendered) {
+                    $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth, document.documentElement.offsetHeight, false)
                 }
             };
 
