@@ -2,8 +2,8 @@ package com.jaspersoft.android.sdk.sample.di;
 
 import android.content.Context;
 
-import com.jaspersoft.android.sdk.cookie.CookieAuthenticationHandler;
-import com.jaspersoft.android.sdk.cookie.RestCookieManager;
+import com.jaspersoft.android.sdk.sample.cookie.CookieAuthenticationHandler;
+import com.jaspersoft.android.sdk.sample.cookie.RestCookieManager;
 import com.jaspersoft.android.sdk.network.AuthenticationLifecycle;
 import com.jaspersoft.android.sdk.network.AuthorizedClient;
 import com.jaspersoft.android.sdk.network.Credentials;

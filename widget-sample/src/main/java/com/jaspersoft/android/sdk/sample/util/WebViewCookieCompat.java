@@ -2,7 +2,7 @@ package com.jaspersoft.android.sdk.sample.util;
 
 import android.content.Context;
 
-import com.jaspersoft.android.sdk.cookie.WebViewCookieStore;
+import com.jaspersoft.android.sdk.sample.cookie.WebViewCookieStore;
 
 /**
  * @author Tom Koptel

@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-import com.jaspersoft.android.sdk.widget.internal.AssetFile;
+import com.jaspersoft.android.sdk.widget.report.renderer.AssetFile;
 import com.jaspersoft.android.sdk.widget.report.renderer.Dispatcher;
 import com.jaspersoft.android.sdk.widget.report.renderer.event.EventFactory;
 

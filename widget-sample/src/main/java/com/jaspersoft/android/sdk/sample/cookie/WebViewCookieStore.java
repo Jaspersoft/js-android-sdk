@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.cookie;
+package com.jaspersoft.android.sdk.sample.cookie;
 
 import android.content.Context;
 import android.os.Build;

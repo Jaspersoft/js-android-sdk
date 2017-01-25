@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.cookie;
+package com.jaspersoft.android.sdk.sample.cookie;
 
 
 import com.jaspersoft.android.sdk.network.AuthenticationLifecycle;

@@ -1,6 +1,6 @@
 
 
-package com.jaspersoft.android.sdk.cookie;
+package com.jaspersoft.android.sdk.sample.cookie;
 
 import android.annotation.TargetApi;
 import android.os.Build;

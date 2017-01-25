@@ -1,4 +1,4 @@
-package com.jaspersoft.android.sdk.widget.internal;
+package com.jaspersoft.android.sdk.widget.report.renderer;
 
 import android.content.Context;
 import android.content.res.AssetManager;

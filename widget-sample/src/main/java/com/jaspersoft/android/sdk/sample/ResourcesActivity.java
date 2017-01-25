@@ -68,19 +68,10 @@ public class ResourcesActivity extends AppCompatActivity {
         if (resource.isReport()) {
             navigateToReport(resource);
         }
-        if (resource.isDashboard()) {
-            navigateToDashboard(resource);
-        }
     }
 
     private void navigateToReport(Resource resource) {
         Intent intent = new Intent(this, ReportViewActivity.class);
-        intent.putExtra(RESOURCE_EXTRA, resource);
-        startActivity(intent);
-    }
-
-    private void navigateToDashboard(Resource resource) {
-        Intent intent = new Intent(this, DashboardViewActivity.class);
         intent.putExtra(RESOURCE_EXTRA, resource);
         startActivity(intent);
     }
