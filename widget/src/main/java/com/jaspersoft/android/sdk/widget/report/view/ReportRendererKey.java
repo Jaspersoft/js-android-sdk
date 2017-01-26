@@ -9,7 +9,7 @@ import java.util.UUID;
  * @author Andrew Tivodar
  * @since 2.6
  */
-public class ReportRendererKey implements Parcelable {
+class ReportRendererKey implements Parcelable {
     private final String key;
 
     private ReportRendererKey(String key) {
