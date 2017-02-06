@@ -36,6 +36,10 @@ public class AuthStrategyTest {
     @Mock
     SpringAuthServiceFactory springAuthServiceFactory;
     @Mock
+    SingleSignOnServiceFactory singleSignOnServiceFactory;
+    @Mock
+    PreAuthenticationServiceFactory preAuthenticationServiceFactory;
+    @Mock
     SpringAuthService springAuthService;
     @Mock
     AuthenticationLifecycle authenticationLifecycle;
@@ -46,7 +50,7 @@ public class AuthStrategyTest {
     public void setUp() throws Exception {
         initMocks(this);
         when(springAuthServiceFactory.create()).thenReturn(springAuthService);
-        authStrategy = new AuthStrategy(springAuthServiceFactory, authenticationLifecycle);
+        authStrategy = new AuthStrategy(springAuthServiceFactory, preAuthenticationServiceFactory, singleSignOnServiceFactory, authenticationLifecycle);
     }
 
     @Test
