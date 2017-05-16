@@ -1,0 +1,18 @@
+{
+  "width": 1280,
+  "height": 768,
+  "referenceWidth": 0,
+  "referenceHeight": 0,
+  "format": "pdf",
+  "uri": "/public/Samples/Dashboards/1._Supermart_Dashboard",
+  "id": "cbe07ecc-631e-40d9-93fc-adecce5592f3",
+  "parameters": {
+    "dashboardParameter": [
+      {
+        "name": "store_country_1",
+        "value": []
+      }
+    ]
+  },
+  "jrStyle": []
+}

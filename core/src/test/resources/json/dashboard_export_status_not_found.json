@@ -1,0 +1,7 @@
+{
+  "message": "Resource 0 not found.",
+  "errorCode": "resource.not.found",
+  "parameters": [
+    "0"
+  ]
+}
