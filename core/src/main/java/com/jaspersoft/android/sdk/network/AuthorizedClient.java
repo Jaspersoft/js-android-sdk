@@ -41,6 +41,7 @@ public class AuthorizedClient extends AnonymousClient {
     private InputControlRestApi mInputControlRestApi;
     private RepositoryRestApi mRepositoryRestApi;
     private ReportScheduleRestApi mReportScheduleRestApi;
+    private DashboardExportRestApi mDashboardExportRestApi;
 
     AuthorizedClient(NetworkClient networkClient, AnonymousClient anonymousClient, Credentials credentials) {
         super(networkClient);
@@ -127,6 +128,18 @@ public class AuthorizedClient extends AnonymousClient {
             mReportScheduleRestApi = new ReportScheduleRestApi(mNetworkClient);
         }
         return mReportScheduleRestApi;
+    }
+
+    /**
+     * Provides instance of particular dashboard export API.
+     *
+     * @return api that implements dashboard export
+     */
+    public DashboardExportRestApi dashboardExportApi() {
+        if (mDashboardExportRestApi == null) {
+            mDashboardExportRestApi = new DashboardExportRestApi(mNetworkClient);
+        }
+        return mDashboardExportRestApi;
     }
 
     /**

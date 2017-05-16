@@ -22,51 +22,46 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.network;
+package com.jaspersoft.android.sdk.service.dashboard;
+
+import com.jaspersoft.android.sdk.network.entity.export.OutputResource;
+import com.jaspersoft.android.sdk.service.data.report.ResourceOutput;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.mockito.Mockito.*;
+import java.io.InputStream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class AuthStrategyTest {
+public class DashboardExportMapperTest {
+    private static final long OUTPUT_LENGTH = 123L;
+    private static final String MIME_TYPE = "image";
 
     @Mock
-    SpringAuthServiceFactory springAuthServiceFactory;
+    OutputResource outputResource;
     @Mock
-    SingleSignOnServiceFactory singleSignOnServiceFactory;
-    @Mock
-    PreAuthenticationServiceFactory preAuthenticationServiceFactory;
-    @Mock
-    SpringAuthService springAuthService;
-    @Mock
-    AuthenticationLifecycle authenticationLifecycle;
+    InputStream stream;
 
-    private AuthStrategy authStrategy;
+    private DashboardExportMapper mapper;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        when(springAuthServiceFactory.create()).thenReturn(springAuthService);
-        authStrategy = new AuthStrategy(springAuthServiceFactory, preAuthenticationServiceFactory, singleSignOnServiceFactory, authenticationLifecycle);
+        mapper = new DashboardExportMapper();
     }
 
     @Test
-    public void testApply() throws Exception {
-        SpringCredentials springCredentials = SpringCredentials.builder()
-                .withUsername("user")
-                .withPassword("1234")
-                .build();
+    public void testTransform() throws Exception {
+        when(outputResource.getLength()).thenReturn(OUTPUT_LENGTH);
+        when(outputResource.getMimeType()).thenReturn(MIME_TYPE);
+        when(outputResource.getStream()).thenReturn(stream);
 
-        authStrategy.apply(springCredentials);
-        verify(springAuthServiceFactory).create();
-
-        authStrategy.apply(springCredentials);
-        verifyNoMoreInteractions(springAuthServiceFactory);
-
-        verify(authenticationLifecycle, times(2)).beforeSessionReload();
-        verify(authenticationLifecycle, times(2)).afterSessionReload();
+        ResourceOutput export = mapper.transform(outputResource);
+        assertThat(export.getStream(), is(stream));
     }
 }

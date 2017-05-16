@@ -22,45 +22,26 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
+package com.jaspersoft.android.sdk.network;
 
-import com.squareup.okhttp.mockwebserver.MockResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
+
+import java.io.IOException;
 
 /**
- * @author Tom Koptel
- * @since 2.3
+ * @author Andrew Tivodar
+ * @since 2.6
  */
-public final class MockResponseFactory {
+class SingleSignOnLoginService {
+    private final AuthRestApi mRestApi;
 
-    private MockResponseFactory() {}
-
-    public static MockResponse create200() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 200 Ok");
+    @TestOnly
+    SingleSignOnLoginService(@NotNull AuthRestApi restApi) {
+        mRestApi = restApi;
     }
 
-    public static MockResponse create204() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 204 No Content");
-    }
-
-    public static MockResponse create500() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
-    }
-
-    public static MockResponse create302() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 302 Found");
-    }
-
-    public static MockResponse create401() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 401 Unauthorized");
-    }
-
-    public static MockResponse create404() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 404 Not Found");
+    public void authenticate(SingleSignOnCredentials credentials) throws IOException, HttpException {
+        mRestApi.singleSignOnAuth(credentials.getParameterName(), credentials.getTicket());
     }
 }

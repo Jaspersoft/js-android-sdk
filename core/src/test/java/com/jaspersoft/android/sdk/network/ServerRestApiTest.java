@@ -85,6 +85,15 @@ public class ServerRestApiTest {
     }
 
     @Test
+    public void shouldHandleEmptyTextResponse() throws Exception {
+        mExpectedException.expect(HttpException.class);
+
+        mWebMockRule.enqueue(MockResponseFactory.create200().setBody(""));
+
+        objectUnderTest.requestServerInfo();
+    }
+
+    @Test
     public void shouldHandlePlainTextResponseForBuild() throws Exception {
         mWebMockRule.enqueue(
                 MockResponseFactory.create200().setBody("Enterprise for AWS")

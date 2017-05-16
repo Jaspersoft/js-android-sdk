@@ -41,10 +41,12 @@ class JobSourceMapper extends JobMapper {
     @Override
     public void mapFormOnEntity(JobForm form, JobFormEntity entity) {
         JobSource source = form.getSource();
-        List<ReportParameter> params = source.getParameters();
-        Map<String, Set<String>> values = mapSourceParamValues(params);
         entity.setSourceUri(source.getUri());
-        entity.setSourceParameters(values);
+        List<ReportParameter> params = source.getParameters();
+        if (params != null) {
+            Map<String, Set<String>> values = mapSourceParamValues(params);
+            entity.setSourceParameters(values);
+        }
     }
 
     private Map<String, Set<String>> mapSourceParamValues(List<ReportParameter> params) {

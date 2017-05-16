@@ -302,7 +302,9 @@ public final class Server {
                     .build();
 
             SpringAuthServiceFactory springAuthServiceFactory = new SpringAuthServiceFactory(networkClient);
-            return new AuthStrategy(springAuthServiceFactory, authenticationLifecycle);
+            PreAuthenticationServiceFactory preAuthenticationServiceFactory = new PreAuthenticationServiceFactory(networkClient);
+            SingleSignOnServiceFactory singleSignOnServiceFactory = new SingleSignOnServiceFactory(networkClient);
+            return new AuthStrategy(springAuthServiceFactory, preAuthenticationServiceFactory, singleSignOnServiceFactory, authenticationLifecycle);
         }
 
         private void configureAuthenticator(OkHttpClient client, AuthStrategy authStrategy) {

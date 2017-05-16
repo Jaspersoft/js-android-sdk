@@ -31,6 +31,8 @@ import com.jaspersoft.android.sdk.service.data.schedule.JobFtpAuthKey;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobOutputFtpInfo;
 import com.jaspersoft.android.sdk.service.data.schedule.RepositoryDestination;
+import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,6 +56,15 @@ public class JobJobOutputFtpInfoMapperTest {
         mapperUnderTest = new JobOutputFtpInfoMapper();
         mappedEntity = factory.givenNewJobFormEntity();
         mappedBuilder = new RepositoryDestination.Builder();
+    }
+
+    @Test
+    public void should_not_map_empty_entity() throws Exception {
+        givenFormWithEmptyInfo();
+
+        whenMapsFormToEntity();
+
+        Assert.assertNull(mappedOutputInfoEntity);
     }
 
     @Test
@@ -345,6 +356,18 @@ public class JobJobOutputFtpInfoMapperTest {
                 .build();
     }
 
+    private void createFormWithoutFtpInfo() {
+        RepositoryDestination destination = new RepositoryDestination.Builder()
+                .build();
+        targetFrom = factory.givenJobFormBuilderWithValues()
+                .withRepositoryDestination(destination)
+                .build();
+    }
+
+    private void givenFormWithEmptyInfo() {
+        createFormWithoutFtpInfo();
+    }
+
     private void givenEntityWithFtpType(String type) {
         OutputFtpInfoEntity infoEntity = givenTargetInfoEntity();
         infoEntity.setType(type);
@@ -411,8 +434,8 @@ public class JobJobOutputFtpInfoMapperTest {
 
     private void whenMapsFormToEntity() {
         mapperUnderTest.mapFormOnEntity(targetFrom, mappedEntity);
-        RepositoryDestinationEntity repoDestination = mappedEntity.getRepoDestination();
-        mappedOutputInfoEntity = repoDestination.getOutputFTPInfo();
+
+        mappedOutputInfoEntity = mappedEntity.getRepoDestination().getOutputFTPInfo();
     }
 
     private void whenMapsEntityToForm() {

@@ -22,45 +22,21 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-package com.jaspersoft.android.sdk.test;
-
-import com.squareup.okhttp.mockwebserver.MockResponse;
+package com.jaspersoft.android.sdk.network;
 
 /**
  * @author Tom Koptel
  * @since 2.3
  */
-public final class MockResponseFactory {
+class SingleSignOnServiceFactory {
+    private final NetworkClient mClient;
 
-    private MockResponseFactory() {}
-
-    public static MockResponse create200() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 200 Ok");
+    SingleSignOnServiceFactory(NetworkClient client) {
+        mClient = client;
     }
 
-    public static MockResponse create204() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 204 No Content");
-    }
-
-    public static MockResponse create500() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 500 Internal Server Error");
-    }
-
-    public static MockResponse create302() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 302 Found");
-    }
-
-    public static MockResponse create401() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 401 Unauthorized");
-    }
-
-    public static MockResponse create404() {
-        return new MockResponse()
-                .setStatus("HTTP/1.1 404 Not Found");
+    public SingleSignOnLoginService create() {
+        AuthRestApi restApi = new AuthRestApi(mClient);
+        return new SingleSignOnLoginService(restApi);
     }
 }
