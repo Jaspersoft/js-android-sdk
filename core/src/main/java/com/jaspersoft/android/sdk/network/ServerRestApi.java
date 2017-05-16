@@ -24,10 +24,12 @@
 
 package com.jaspersoft.android.sdk.network;
 
+import com.google.gson.JsonSyntaxException;
 import com.jaspersoft.android.sdk.network.entity.server.ServerInfoData;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -91,7 +93,16 @@ public class ServerRestApi {
                 .get()
                 .build();
         Response response = mClientWrapper.makeCall(request);
-        return mClientWrapper.deserializeJson(response, ServerInfoData.class);
+        if (response.body().contentLength() == 0) {
+            throw new HttpException("Not Found. The URI requested is invalid or the resource requested does not exists.", 404, response.body());
+        }
+        ServerInfoData serverInfo;
+        try {
+            serverInfo = mClientWrapper.deserializeJson(response, ServerInfoData.class);
+        } catch (JsonSyntaxException exception) {
+            throw new HttpException("Not Found. The URI requested is invalid or the resource requested does not exists.", 404, response.body());
+        }
+        return serverInfo;
     }
 
     /**

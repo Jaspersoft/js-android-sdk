@@ -51,7 +51,7 @@ public class JobSource {
         return uri;
     }
 
-    @NotNull
+    @Nullable
     public List<ReportParameter> getParameters() {
         return parameters;
     }
@@ -64,9 +64,7 @@ public class JobSource {
         private String uri;
         private List<ReportParameter> parameters;
 
-        public Builder() {
-            parameters = new ArrayList<>();
-        }
+        public Builder() {}
 
         private Builder(JobSource jobSource) {
             uri = jobSource.uri;
