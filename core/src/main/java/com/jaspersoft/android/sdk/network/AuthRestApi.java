@@ -30,15 +30,15 @@ import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- *
- *
  * @author Tom Koptel
  * @since 2.3
  */
@@ -78,6 +78,84 @@ class AuthRestApi {
                 .url(url)
                 .addHeader("x-jasper-xdm", xdm)
                 .post(formBody.build())
+                .build();
+
+        Response response = mNetworkClient.makeCall(request);
+
+        int statusCode = response.code();
+        if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+            String location = response.headers().get("Location");
+            boolean error = location.contains("error");
+            if (error) {
+                com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                        .protocol(response.protocol())
+                        .request(response.request())
+                        .headers(response.headers())
+                        .body(response.body())
+                        .code(401)
+                        .build();
+                throw HttpException.httpError(response401);
+            }
+        } else {
+            throw HttpException.httpError(response);
+        }
+    }
+
+    public void preAuthenticationAuth(@NotNull final String parameterName,
+                                      @NotNull final String token) throws HttpException, IOException {
+        HttpUrl serverUrl = mNetworkClient.getBaseUrl();
+        List<String> pathSegments = serverUrl.pathSegments();
+        if (pathSegments.get(pathSegments.size() - 1).isEmpty()) {
+            serverUrl = serverUrl
+                    .newBuilder()
+                    .removePathSegment(pathSegments.size() - 1)
+                    .build();
+        }
+
+        HttpUrl url = serverUrl
+                .newBuilder()
+                .addQueryParameter(parameterName, token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
+                .build();
+
+        Response response = mNetworkClient.makeCall(request);
+
+        int statusCode = response.code();
+        if (statusCode >= 300 && statusCode < 400) { // 3XX == redirect request
+            String location = response.headers().get("Location");
+            boolean error = location.contains("error");
+            if (error) {
+                com.squareup.okhttp.Response response401 = new com.squareup.okhttp.Response.Builder()
+                        .protocol(response.protocol())
+                        .request(response.request())
+                        .headers(response.headers())
+                        .body(response.body())
+                        .code(401)
+                        .build();
+                throw HttpException.httpError(response401);
+            }
+        } else {
+            throw HttpException.httpError(response);
+        }
+    }
+
+    public void singleSignOnAuth(@NotNull final String parameterName,
+                                 @NotNull final String ticket) throws HttpException, IOException {
+        HttpUrl url = mNetworkClient.getBaseUrl()
+                .newBuilder()
+                .addPathSegment("j_spring_security_check")
+                .addQueryParameter(parameterName, ticket)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", "application/json; charset=UTF-8")
+                .get()
                 .build();
 
         Response response = mNetworkClient.makeCall(request);
