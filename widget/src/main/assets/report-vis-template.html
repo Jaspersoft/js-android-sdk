@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
+        "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
+<!--suppress CheckValidXmlInScriptTagBody -->
+<head xmlns="http://www.w3.org/1999/html">
+    <title>TIBCO Jaspersoft</title>
+    <style>
+        html {height: 100%;}
+        body {min-height: 100%;}
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    var NativeCallbacks = {
+        onInited: function () {
+            return Android.onInited();
+        },
+        onRendered: function () {
+            return Android.onRendered();
+        },
+        onError: function (error) {
+            return Android.onError(error);
+        },
+        onReportReady: function () {
+            return Android.onReportReady();
+        },
+        onCleared: function () {
+            return Android.onCleared();
+        },
+        onCurrentPageChanged: function (currentPage) {
+            return Android.onCurrentPageChanged(currentPage);
+        },
+        onPagesCountChanged: function (totalCount) {
+            return Android.onPagesCountChanged(totalCount);
+        },
+        onReportComponentsChanged: function(reportComponents) {
+            return Android.onReportComponentsChanged(reportComponents);
+        },
+        onMultiPageStateChanged: function (isMultiPage) {
+            return Android.onMultiPageStateChanged(isMultiPage);
+        },
+        onBookmarkListChanged: function (bookmark) {
+            return Android.onBookmarkListChanged(bookmark);
+        },
+        onReportPartsChanged: function (reportParts) {
+            return Android.onReportPartsChanged(reportParts);
+        },
+        onAvailableChartTypesChanged: function(chartTypes) {
+            return Android.onAvailableChartTypes(chartTypes);
+        },
+        onHyperLinkClick: function(type, hyperlink) {
+            return Android.onHyperLinkClick(type, hyperlink);
+        }
+    };
+
+    window.onerror = function (errorMessage) {
+        var jsError = {
+            errorCode: "general.window.error",
+            message: errorMessage
+        };
+        var errorString = JSON.stringify(jsError);
+        NativeCallbacks.onError(errorString);
+        return false;
+    };
+
+    var MobileClient = (function () {
+        var instance;
+
+        function Client() {
+            var report;
+            var vis;
+            var jrsServer;
+
+            window.onresize = function() {
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+            }
+
+            function setupFn(server, initialScale) {
+                jrsServer = server;
+
+                appendViewportMeta(initialScale);
+                updateRenderRect(document.documentElement.offsetWidth, document.documentElement.offsetHeight);
+                setupVisualizeScript(server);
+            }
+
+            function appendViewportMeta(reportScale) {
+                var maxScale = reportScale * 5;
+                var viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                viewport.content = "target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=" + reportScale + ", minimum-scale=" + reportScale +" , maximum-scale=" + maxScale + ", user-scalable=yes";
+                document.head.appendChild(viewport);
+            }
+
+            function updateRenderRect(width, height) {
+                var container = document.getElementById('container');
+
+                // Because of default body margin (8px)
+                var newContainerHeight = height - 16;
+                var newContainerWidth = width - 16;
+
+                container.style.height = newContainerHeight + "px";
+                container.style.width = newContainerWidth + "px";
+
+	            if (report) {
+	                report.resize();
+	            }
+            }
+
+            function setupVisualizeScript() {
+                var visScript = document.createElement('script');
+                visScript.onload = loadVisualize;
+                visScript.onerror = onVisualizeLoadingFailed;
+
+                var baseServerUrl = jrsServer.url.replace(/\/$/, "");
+                var encodedBaseServerUrl = encodeURIComponent(baseServerUrl);
+                visScript.setAttribute('src', jrsServer.url + "client/visualize.js?_opt=true&baseUrl=" + encodedBaseServerUrl);
+                document.head.appendChild(visScript);
+            }
+
+            function loadVisualize() {
+                var auth = {};
+                if (jrsServer.pre61) {
+                    auth.auth = {
+                        loginFn: function(properties, request) {
+                            return (new jQuery.Deferred()).resolve();
+                        }
+                    };
+                }
+                visualize(auth, onVisualizeLoaded, onVisualizeLoadingFailed);
+            };
+
+            function onVisualizeLoaded(v) {
+                vis = v;
+                NativeCallbacks.onInited();
+            };
+
+             function onVisualizeLoadingFailed(error) {
+                var jsError = {
+                    errorCode: "visualize.load.failed",
+                    message: "Failed to load visualize."
+                };
+                var errorString = JSON.stringify(jsError);
+                NativeCallbacks.onError(errorString);
+            };
+
+            return {
+                setup: setupFn,
+                report: function () {
+                    if (!report || report.isInvalid()) {
+                        if (jrsServer.pre61) {
+                            report = new Pre61Report(vis);
+                        } else {
+                            report = new BaseReport(vis);
+                        }
+                    }
+                    return report;
+                }
+            }
+        }
+
+        function BaseReport(v) {
+            var invalid = false;
+            var vis = v;
+            var hyperLinkHandler = new HyperLinkHandler();
+            var reportInstance;
+
+            this.run = function(uri, params, destination) {
+                var reportBundle = prepareBaseRunReportBundle(uri, params, destination);
+                this._modifyReportBundle(reportBundle);
+
+                reportInstance = vis.report(reportBundle);
+            }
+
+            this.applyParams = function(params) {
+                reportInstance.params(params).run(reportReadyFn, reportErrorFn);
+            }
+
+            this.navigateTo = function(destination) {
+                reportInstance.pages(destination).run(reportRenderedFn, reportErrorFn);
+            }
+
+            this.updateChartType = function(componentId, chartTypeId) {
+                reportInstance.updateComponent(componentId, {chartType : chartTypeId}, reportRenderedFn, reportErrorFn);
+            }
+
+            this.resize = function() {
+                if (reportInstance) {
+                    reportInstance.resize();
+                }
+            }
+
+            this.refresh = function() {
+                reportInstance.refresh(reportReadyFn, reportErrorFn);
+            }
+
+            this.checkMultiPage = function() {
+                reportInstance.export({outputFormat: "html", pages: 2}, reportExportedFn, reportExportErrorFn);
+            }
+
+            this.clear = function() {
+                invalid = true;
+                if (reportInstance && reportInstance.container()) {
+                    destroyReport();
+                }
+                NativeCallbacks.onCleared();
+            }
+
+            this.isInvalid = function() {
+                return invalid;
+            }
+
+            this._modifyReportBundle = function(reportBundle) {
+                reportBundle["autoresize"] = false;
+                reportBundle["chart"] = {
+                    animation: false,
+                    zoom: false
+                };
+            }
+
+            prepareBaseRunReportBundle = function(uri, params, destination) {
+                return reportBundle = {
+                    resource: uri,
+                    params: params,
+                    scale: "width",
+                    pages: destination,
+                    success: reportExecutedFn,
+                    error: reportErrorFn,
+                    events: {
+                        reportCompleted: reportCompletedFn,
+                        changePagesState: currentPageChangedFn,
+                        bookmarksReady: bookmarksReadyFn,
+                        reportPartsReady: reportPartsReadyFn
+                    },
+                    linkOptions: {
+                        events: {
+                            click: handleHyperlinkClick
+                        }
+                    }
+                }
+            }
+
+            destroyReport = function() {
+                reportInstance.container(null);
+                jQuery("#container").empty();
+                reportInstance.destroy();
+            }
+
+            handleHyperlinkClick = function(event, link) {
+                hyperLinkHandler.handle(event, link);
+            }
+
+            reportExecutedFn = function (){
+                if (invalid) {
+                    destroyReport();
+                } else {
+                    reportReadyFn();
+                    reportInstance.container("#container");
+                    reportInstance.render(reportRenderedFn, reportErrorFn);
+                }
+            }
+
+            currentPageChangedFn = function(currentPage) {
+                reportInstance.pages(currentPage);
+                NativeCallbacks.onCurrentPageChanged(currentPage);
+            }
+
+            bookmarksReadyFn = function(bookmarks) {
+                bookmarkList = JSON.stringify(bookmarks);
+                NativeCallbacks.onBookmarkListChanged(bookmarkList);
+            }
+
+            reportPartsReadyFn = function(parts) {
+                reportParts = JSON.stringify(parts);
+                NativeCallbacks.onReportPartsChanged(reportParts);
+            }
+
+            reportCompletedFn = function() {
+                NativeCallbacks.onPagesCountChanged(reportInstance.data().totalPages);
+                var reportComponents = reportInstance.data().components;
+                NativeCallbacks.onReportComponentsChanged(JSON.stringify(reportInstance.data().components));
+            }
+
+            reportRenderedFn = function() {
+                NativeCallbacks.onRendered();
+                NativeCallbacks.onCurrentPageChanged(parseInt(reportInstance.properties().pages));
+                NativeCallbacks.onAvailableChartTypesChanged(JSON.stringify(collectChartTypes()));
+            }
+
+            collectChartTypes = function() {
+                var chartTypes = vis.report.chart.types;
+                var result = [];
+                for (var i = 0; i < chartTypes.length; i++) {
+                    result.push({
+                        "name" : chartTypes[i]
+                    });
+                }
+                return result;
+            }
+
+            reportErrorFn = function(error) {
+                message = JSON.stringify(error);
+                NativeCallbacks.onError(message);
+            }
+
+            reportReadyFn = function() {
+                NativeCallbacks.onReportReady();
+                reportRenderedFn();
+            }
+
+            reportExportedFn = function() {
+                 NativeCallbacks.onMultiPageStateChanged(true);
+            }
+
+            reportExportErrorFn = function() {
+                NativeCallbacks.onMultiPageStateChanged(false);
+            }
+        }
+
+        function Pre61Report(v) {
+            BaseReport.apply(this, arguments);
+
+            this.resize = function() {
+                // Resize is not supported for 6.0
+            }
+
+            this._modifyReportBundle = function(reportBundle, page, localAnchor) {
+                // Disabling chart zoom and animation is not supported for 6.0
+            }
+        }
+
+        function HyperLinkHandler() {
+            this.handle = function(event, link) {
+                var type = link.type;
+                switch (type) {
+                    case "ReportExecution":
+                        return handleReportExecutionType(link);
+                    case "LocalAnchor":
+                        return handleLocalAnchorType(link);
+                    case "LocalPage":
+                        return handleLocalPageType(link);
+                    case "RemoteAnchor":
+                        return handleRemoteAnchorType(link);
+                    case "RemotePage":
+                        return handleRemotePageType(link);
+                    case "Reference":
+                        return handleReferenceType(link);
+                }
+            }
+
+            filterReportParams = function (params) {
+                var filters = [];
+                var blackList = ["_report", "_page", "_anchor", "_output"];
+                for (var key in params) {
+                    var value = params[key];
+                    var isFilter = (blackList.indexOf(key) < 0);
+                    if (isFilter) {
+                        var filter = {
+                            name: key,
+                            value: [value]
+                        }
+                        filters.splice(filters.length, 1, filter)
+                    }
+                }
+                return filters;
+            };
+
+            handleReportExecutionType = function(link) {
+                var runOptions = link.parameters;
+                if (!runOptions) return;
+
+                var reportParams = filterReportParams(link.parameters);
+                var hyperlink = {
+                    reportUri: runOptions._report,
+                    parameters: reportParams
+                };
+                if (runOptions._page || runOptions._anchor) {
+                    hyperlink.destination = {
+                        page: runOptions._page,
+                        anchor: runOptions._anchor
+                    }
+                };
+                if (runOptions._output) {
+                    hyperlink.reportFormat = runOptions._output;
+                }
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
+
+            handleReferenceType = function (link) {
+                NativeCallbacks.onHyperLinkClick(link.type, link.href);
+            };
+
+            handleLocalPageType = function (link) {
+                var localPage;
+                if (link.pages) {
+                   localPage = link.pages;
+                } else {
+                   localPage = null;
+                }
+                NativeCallbacks.onHyperLinkClick(link.type, localPage);
+            };
+
+            handleLocalAnchorType = function (link) {
+                var localAnchor;
+                if (link.anchor) {
+                   localAnchor = link.anchor;
+                } else {
+                   localAnchor = null;
+                }
+
+                NativeCallbacks.onHyperLinkClick(link.type, localAnchor);
+            };
+
+            handleRemotePageType = function (link) {
+                var url = toRestLink(link.href);
+                var hyperlink = {
+                    resourceUri: url,
+                    destination: {
+                        page: link.pages
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
+
+            handleRemoteAnchorType = function (link) {
+                var url = toRestLink(link.href);
+                var hyperlink = {
+                    resourceUri: url,
+                    destination: {
+                        anchor: link.anchor,
+                    }
+                };
+                NativeCallbacks.onHyperLinkClick(link.type, JSON.stringify(hyperlink));
+            };
+
+            toRestLink = function (url) {
+                var urlWithoutAnchor = url.replace(/(#.+?)$/, '');
+                return urlWithoutAnchor.replace('fileview/fileview/','');
+            }
+        }
+
+        return {
+            getInstance: function() {
+                if (!instance) {
+                    instance = new Client();
+                }
+                return instance;
+            }
+        };
+    })();
+
+
+    </script>
+</head>
+<body>
+<div id="container"></div>
+</body>

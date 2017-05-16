@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN"
+        "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
+
+<head xmlns="http://www.w3.org/1999/html">
+
+    <title>TIBCO Jaspersoft</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript">
+        var NativeCallbacks = {
+            onVisualizeReady: function () {
+                return Android.onVisualizeReady();
+            },
+            onDashboardRenedered: function () {
+                return Android.onDashboardRenedered();
+            },
+            onWindowError: function (error) {
+                return Android.onWindowError(error);
+            },
+            onMaximizeStart: function (componentName) {
+                return Android.onMaximizeStart(componentName);
+            },
+            onMaximizeEnd: function (componentName) {
+                return Android.onMaximizeEnd(componentName);
+            },
+            onMinimizeStart: function (componentName) {
+                return Android.onMinimizeStart(componentName);
+            },
+            onMinimizeEnd: function (componentName) {
+                return Android.onMinimizeEnd(componentName);
+            },
+            onDashletError: function (error) {
+                return Android.onDashletError(error);
+            },
+            onHyperLinkClick: function (hyperlink) {
+                var linkAsString = JSON.stringify(hyperlink);
+                return Android.onHyperLinkClick(linkAsString);
+            }
+        };
+
+        window.Android = window.Android || new Proxy({}, {
+            get: function (target, name) {
+                return function (args) {
+                    var resultArgs = args || [];
+                    console.log("Function '" + name + "' has been called with args '" + resultArgs + "' on Android object");
+                }
+            }
+        });
+
+        window.onerror = function (message, source, line, column) {
+            var e = {
+                message: message,
+                source: source,
+                line: line,
+                column: column
+            };
+            var errorLog = JSON.stringify(e);
+            NativeCallbacks.onWindowError(errorLog);
+            return false;
+        };
+
+        var DOMObserver = (function () {
+            function DOMObserver() {
+            }
+
+            DOMObserver._instance = null;
+
+            DOMObserver.observeSubtree = function (callback) {
+                this._instance = new DOMObserver;
+                this._instance.callback = callback;
+                return this._instance;
+            };
+
+            DOMObserver.prototype.await = function () {
+                var timeout = null;
+                var body = jQuery("body");
+
+                body.unbind();
+                body.bind("DOMSubtreeModified", (function (_this) {
+                    if (timeout != null) {
+                        window.clearInterval(timeout);
+                    }
+                    timeout = window.setTimeout(function () {
+                        window.clearInterval(timeout);
+                        body.unbind();
+                        _this.callback.call(_this);
+                    }, 2000);
+                })(this));
+            };
+
+            return DOMObserver;
+        })();
+
+        var MobileClient = (function () {
+            var clientContext = this;
+
+            var setupVisualizeScript = function (callback) {
+                var visScript = document.createElement('script');
+                visScript.onload = callback;
+                visScript.setAttribute('src', clientContext.config.server.url + "client/visualize.js?_opt=false");
+                document.head.appendChild(visScript);
+            };
+
+            var loadVisualize = function (callback) {
+                var onComplete = function (v) {
+                    var dashboard = new Dashboard(v);
+                    clientContext.dashboard = dashboard;
+
+                    if (callback !== undefined) {
+                        callback.call(clientContext, dashboard);
+                    }
+
+                    NativeCallbacks.onVisualizeReady();
+                };
+
+                var auth = clientContext.config.auth;
+                if (auth === undefined) {
+                    visualize(onComplete);
+                } else {
+                    visualize({auth: auth}, onComplete);
+                }
+            };
+
+            function Client() {
+                return {
+                    setup: function (config, callback) {
+                        clientContext.config = config;
+                        var loadFunc = loadVisualize.bind(this, callback);
+                        setupVisualizeScript(loadFunc);
+                    },
+                    dashboard: function () {
+                        return clientContext.dashboard;
+                    }
+                }
+            }
+
+            function Dashlet6_0(dashboard) {
+                var dashletContext = this;
+                dashletContext.dashboard = dashboard;
+                dashletContext.dashlets = queryDashlets();
+
+                configureMaximization();
+
+                function configureMaximization() {
+                    jQuery.each(dashletContext.dashlets, function (index, el) {
+                        var dashlet = jQuery(el);
+
+                        dashlet.on("click", function () {
+                            var maximizeButton = dashlet.find(".maximizeDashletButton");
+                            if (maximizeButton.length > 0) {
+                                var componentName = dashlet.find(".innerLabel > p").text();
+
+                                maximizeButton.click();
+                                enableClicks(false);
+
+                                var maximizeEnd = NativeCallbacks.onMaximizeEnd.bind(this, componentName);
+                                NativeCallbacks.onMaximizeStart(componentName);
+                                DOMObserver.observeSubtree(maximizeEnd).await();
+                            }
+                        });
+                    });
+                }
+
+                var minimize = function () {
+                    var componentName = jQuery(".canvasOverlay .innerLabel > p").text();
+                    var minimizeControl = jQuery(".minimizeDashlet");
+                    minimizeControl.click();
+                    enableClicks(true);
+
+                    var maximizeEnd = NativeCallbacks.onMinimizeEnd.bind(this, componentName);
+                    NativeCallbacks.onMinimizeStart(componentName);
+                    DOMObserver.observeSubtree(maximizeEnd).await();
+                };
+
+                function enableClicks(enableFlag) {
+                    var overlays = jQuery(".dashletOverlay");
+                    overlays.css({pointerEvents: enableFlag ? "auto" : "none"});
+                }
+
+                function queryDashlets() {
+                    var dashboard = dashletContext.dashboard.instance;
+                    var container = dashboard.container();
+
+                    var dashlets = jQuery(container).find("[data-componentid] > .dashlet").parent();
+                    return dashlets;
+                }
+
+                return {
+                    minimize: minimize
+                }
+            }
+
+            function Dashlet6_1Plus(dashboard) {
+                var dashletContext = this;
+                dashletContext.dashboard = dashboard;
+                dashletContext.dashlets = queryDashlets();
+
+                configureMaximization();
+
+                function getComponentById(id) {
+                    var dashboard = dashletContext.dashboard.instance;
+                    var components = dashboard.data().components;
+                    var byId = function (c) {
+                        return c.id == id;
+                    };
+                    var filtered = components.filter(byId);
+                    return filtered[0];
+                }
+
+                function configureMaximization() {
+                    dashletContext.dashlets.on("click", function () {
+                        var dashboard = dashletContext.dashboard.instance;
+                        var dashboardId = dashletContext.dashboard.dashboardId;
+
+                        var dashlet = jQuery(this);
+                        var dashletId = dashlet.attr(dashboardId);
+                        var component = getComponentById(dashletId);
+
+                        NativeCallbacks.onMaximizeStart(component.name);
+                        dashboard.updateComponent(dashletId, {
+                                    maximized: true,
+                                    interactive: true
+                                },
+                                function () {
+                                    dashletContext.maximized = component;
+                                    NativeCallbacks.onMaximizeEnd(component.name);
+                                },
+                                function (error) {
+                                    NativeCallbacks.onDashletError(error);
+                                }
+                        );
+                    });
+                }
+
+                function queryDashlets() {
+                    var dashboard = dashletContext.dashboard.instance;
+                    var dashboardId = dashletContext.dashboard.dashboardId;
+                    var container = dashboard.container();
+
+                    var dashlets = jQuery(container).find("[" + dashboardId + "] > .dashlet").parent();
+                    return dashlets;
+                }
+
+                var minimize = function () {
+                    var component = dashletContext.maximized;
+                    if (component) {
+                        var dashboard = dashletContext.dashboard.instance;
+
+                        NativeCallbacks.onMinimizeStart(component.name);
+                        dashboard.updateComponent(component.id, {
+                                    maximized: false,
+                                    interactive: false
+                                },
+                                function () {
+                                    dashletContext.maximized = undefined;
+                                    NativeCallbacks.onMinimizeEnd(component.name);
+                                },
+                                function (error) {
+                                    NativeCallbacks.onDashletError(error);
+                                }
+                        );
+                    }
+                };
+
+                return {
+                    minimize: minimize
+                }
+            }
+
+            function HyperLinkHandler() {
+                var AdHocExecutionHandler6_0 = function (link) {
+                };
+
+                var AdHocExecutionHandler6_1 = function (link) {
+                };
+
+                var filterReportParams = function (params) {
+                    var buffer = {};
+                    var whiteList = ["_report", "_page", "_anchor", "_output"];
+
+                    for (var key in params) {
+                        var value = params[key];
+                        var isParameter = (whiteList.indexOf(key) < 0);
+                        if (isParameter) {
+                            buffer[key] = Array.isArray(value) ? value : [value];
+                        }
+                    }
+
+                    return buffer;
+                };
+
+                var createAdHocExecutionHandler = function (version) {
+                    if (version >= 6.1) {
+                        return AdHocExecutionHandler6_0;
+                    } else {
+                        return AdHocExecutionHandler6_1;
+                    }
+                };
+
+                var handleReportExecutionType = function (link) {
+                    var params = link.parameters;
+                    var reportParams = filterReportParams(params);
+                    var metadata = {
+                        uri: params._report,
+                        page: params._page,
+                        anchor: params._anchor,
+                        output: params._output,
+                        params: reportParams
+                    };
+
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: metadata
+                    };
+
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                var handleReferenceType = function(link) {
+                    var hyperlink = {
+                        type: link.type,
+                        metadata: {
+                            href: link.href
+                        }
+                    };
+                    NativeCallbacks.onHyperLinkClick(hyperlink);
+                };
+
+                return {
+                    handle: function (event, link, defaultHandler) {
+                        var type = link.type;
+                        if (type === "ReportExecution") {
+                            handleReportExecutionType(link);
+                        } else if (type === "Reference") {
+                            handleReferenceType(link);
+                        } else if (type === "AdHocExecution") {
+                            var version = clientContext.config.server.version;
+                            createAdHocExecutionHandler(version).call(this, link);
+                        } else {
+                            if (defaultHandler) {
+                                defaultHandler.call(this);
+                            }
+                        }
+                        console.log(event, link, defaultHandler);
+                    }
+                }
+            }
+
+            function Dashboard(visualize) {
+                var dashboardContext = this;
+                this.visualize = visualize;
+                this.dashboardId = visualize.dashboard.componentIdDomAttribute;
+
+                var createDashlet = function (version) {
+                    if (version >= 6.1) {
+                        return new Dashlet6_1Plus(dashboardContext);
+                    } else {
+                        return new Dashlet6_0(dashboardContext);
+                    }
+                };
+
+                var dashboardRenderedFn = function () {
+                    var version = clientContext.config.server.version;
+                    dashboardContext.dashlet = createDashlet(version);
+                    NativeCallbacks.onDashboardRenedered();
+                };
+
+                var dashboardErrorFn = function (error) {
+                    var errorLog = JSON.stringify(error);
+                    console.log(errorLog);
+                };
+
+                var runFn = function (uri) {
+                    var hyperLinkHandler = new HyperLinkHandler();
+                    var v = dashboardContext.visualize;
+
+                    dashboardContext.instance = v.dashboard({
+                        params: uri,
+                        container: "#container",
+                        success: dashboardRenderedFn,
+                        error: dashboardErrorFn,
+                        linkOptions: {
+                            events: {
+                                click: hyperLinkHandler.handle
+                            }
+                        }
+                    });
+                };
+
+                return {
+                    minimizeDashlet: function () {
+                        dashboardContext.dashlet.minimize();
+                    },
+                    run: runFn
+                }
+            }
+
+            var instance;
+            return {
+                instance: function () {
+                    if (instance == null) {
+                        instance = new Client();
+                        instance.constructor = null;
+                    }
+                    return instance;
+                }
+            };
+        })();
+    </script>
+</head>
+<body>
+<div id="container"></div>
+</body>

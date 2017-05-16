@@ -33,6 +33,7 @@ package com.jaspersoft.android.sdk.network;
 public class AuthorizedClient extends AnonymousClient {
 
     private final AnonymousClient mAnonymousClient;
+    private final Credentials mCredentials;
 
     private ReportExecutionRestApi mReportExecutionRestApi;
     private ReportExportRestApi mReportExportRestApi;
@@ -42,9 +43,19 @@ public class AuthorizedClient extends AnonymousClient {
     private ReportScheduleRestApi mReportScheduleRestApi;
     private DashboardExportRestApi mDashboardExportRestApi;
 
-    AuthorizedClient(NetworkClient networkClient, AnonymousClient anonymousClient) {
+    AuthorizedClient(NetworkClient networkClient, AnonymousClient anonymousClient, Credentials credentials) {
         super(networkClient);
         mAnonymousClient = anonymousClient;
+        mCredentials = credentials;
+    }
+
+    /**
+     * Provides credentials associated with particular client
+     *
+     * @return concrete implementation. See {@link com.jaspersoft.android.sdk.network.SpringCredentials}
+     */
+    public Credentials getCredentials() {
+        return mCredentials;
     }
 
     /**

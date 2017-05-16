@@ -66,6 +66,10 @@ public final class StatusCodes {
      * Requested export execution failed on the JRS side
      */
     public static final int EXPORT_EXECUTION_FAILED = 202;
+    /**
+     * Requested export with anchor does not exist
+     */
+    public static final int EXPORT_ANCHOR_ABSENT = 203;
 
     // REPORT
     /**
@@ -80,6 +84,10 @@ public final class StatusCodes {
      * Session has been deprecated therefore associated execution invalid
      */
     public static final int REPORT_EXECUTION_INVALID = 303;
+    /**
+     * Requested report execution has no content
+     */
+    public static final int REPORT_EXECUTION_EMPTY = 304;
 
     // RESOURCE
     /**
@@ -150,6 +158,12 @@ public final class StatusCodes {
      * Report option label too long
      */
     public static final int SAVED_VALUES_LABEL_TOO_LONG = 601;
+
+    // WIDGET
+    /**
+     * Web view request error
+     */
+    public static final int WEB_VIEW_REQUEST_ERROR = 700;
 
     private StatusCodes() {
     }

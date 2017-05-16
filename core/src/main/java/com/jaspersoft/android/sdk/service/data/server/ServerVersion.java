@@ -75,6 +75,10 @@ public class ServerVersion implements Comparable<ServerVersion> {
         return lessThan(other) || equals(other);
     }
 
+    public double code() {
+        return versionCode;
+    }
+
     @Override
     public int compareTo(ServerVersion other) {
         return Double.compare(versionCode, other.versionCode);
