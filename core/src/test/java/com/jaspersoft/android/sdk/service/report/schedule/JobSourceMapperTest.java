@@ -28,6 +28,9 @@ import com.jaspersoft.android.sdk.network.entity.report.ReportParameter;
 import com.jaspersoft.android.sdk.network.entity.schedule.JobFormEntity;
 import com.jaspersoft.android.sdk.service.data.schedule.JobForm;
 import com.jaspersoft.android.sdk.service.data.schedule.JobSource;
+
+import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,6 +81,25 @@ public class JobSourceMapperTest {
 
         assertThat(params.keySet(), hasItem("key"));
         assertThat(values, hasItem("value"));
+    }
+
+    @Test
+    public void should_map_form_without_parameters_to_entity() throws Exception {
+        JobSource source = new JobSource.Builder()
+                .withUri("/my/uri")
+                .withParameters(null)
+                .build();
+
+        JobFormEntity mappedEntity = formFactory.givenNewJobFormEntity();
+        JobForm preparedForm = formFactory.givenJobFormBuilderWithValues()
+                .withJobSource(source)
+                .build();
+
+        mapperUnderTest.mapFormOnEntity(preparedForm, mappedEntity);
+        assertThat(mappedEntity.getSourceUri(), is("/my/uri"));
+
+        Map<String, Set<String>> params = mappedEntity.getSourceParameters();
+        Assert.assertNull(params);
     }
 
     @Test
