@@ -180,7 +180,21 @@
             }
 
             this.updateChartType = function(componentId, chartTypeId) {
-                reportInstance.updateComponent(componentId, {chartType : chartTypeId}, reportRenderedFn, reportErrorFn);
+                var currentChartType = reportInstance.data().components[0].chartType;
+                var self = this;
+                try {
+                    reportInstance.updateComponent(
+                        componentId,
+                        {chartType : chartTypeId},
+                        reportRenderedFn,
+                        function(error) {
+                            // NativeCallbacks.onError(error);
+                            self.updateChartType(componentId, currentChartType);
+                        }
+                    );
+                } catch(error) {
+                    console.log("error of updating chart type" + error);
+                }
             }
 
             this.resize = function() {
