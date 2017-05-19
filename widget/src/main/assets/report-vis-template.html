@@ -188,8 +188,13 @@
                         {chartType : chartTypeId},
                         reportRenderedFn,
                         function(error) {
-                            // NativeCallbacks.onError(error);
                             self.updateChartType(componentId, currentChartType);
+                            reportErrorFn(
+                                {
+                                    "errorCode": "Update Chart Type Type",
+                                    "message" : error.message
+                                }
+                            );
                         }
                     );
                 } catch(error) {
