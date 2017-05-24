@@ -89,6 +89,8 @@ public final class StatusCodes {
      */
     public static final int REPORT_EXECUTION_EMPTY = 304;
 
+    public static final int REPORT_UPDATE_CHART_TYPE_FAILED = 305;
+
     // RESOURCE
     /**
      * API responds with corresponding error in the case when resource not found.

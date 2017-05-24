@@ -180,7 +180,23 @@
             }
 
             this.updateChartType = function(componentId, chartTypeId) {
-                reportInstance.updateComponent(componentId, {chartType : chartTypeId}, reportRenderedFn, reportErrorFn);
+                try {
+                    reportInstance.updateComponent(
+                        componentId,
+                        {chartType : chartTypeId},
+                        reportRenderedFn,
+                        function(error) {
+                            reportErrorFn(
+                                {
+                                    "errorCode": "Update Chart Type Type",
+                                    "message" : error.message
+                                }
+                            );
+                        }
+                    );
+                } catch(error) {
+                    console.log("error of updating chart type" + error);
+                }
             }
 
             this.resize = function() {
