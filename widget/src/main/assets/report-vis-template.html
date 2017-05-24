@@ -180,15 +180,12 @@
             }
 
             this.updateChartType = function(componentId, chartTypeId) {
-                var currentChartType = reportInstance.data().components[0].chartType;
-                var self = this;
                 try {
                     reportInstance.updateComponent(
                         componentId,
                         {chartType : chartTypeId},
                         reportRenderedFn,
                         function(error) {
-                            self.updateChartType(componentId, currentChartType);
                             reportErrorFn(
                                 {
                                     "errorCode": "Update Chart Type Type",
