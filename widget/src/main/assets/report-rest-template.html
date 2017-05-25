@@ -6,8 +6,8 @@
 
     <title>TIBCO Jaspersoft</title>
     <style>
-        html {height: 100%;}
-        body {min-height: 100%;}
+        html {height: 100%; width: 100%;}
+        body {min-height: 100%; margin: 0px;}
     </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script src="https://code.jquery.com/jquery.min.js"></script>
@@ -215,17 +215,26 @@
                 $(".highcharts_parent_container").highcharts().pointer.zoomHor = false
                 $(".highcharts_parent_container").highcharts().pointer.zoomVert = false
 
-                $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth, document.documentElement.offsetHeight, false);
+                $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth - 8, document.documentElement.offsetHeight - 40, false);
+            }
+
+            function removeEmptyRows(rows) {
+                for (var i=0; i<rows.length; i++) {
+                    var txt = (rows[i].textContent || rows[i].innerText).trim();
+                    if (!(/\S/.test(txt))) rows[i].remove();
+                }
             }
 
             var _render = function (reportPage) {
                 $("#container").empty().append(reportPage);
+                removeEmptyRows($(".jrPage")[0].rows);
+                $(".jrPage").css('width', '100%');
                 waitForChartRendered();
             };
 
             var _refresh = function () {
                 if (rendered) {
-                    $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth, document.documentElement.offsetHeight, false)
+                    $(".highcharts_parent_container").highcharts().setSize(document.documentElement.offsetWidth - 8, document.documentElement.offsetHeight - 40, false)
                 }
             };
 
