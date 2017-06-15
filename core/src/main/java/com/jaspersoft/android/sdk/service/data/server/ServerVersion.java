@@ -43,6 +43,8 @@ public class ServerVersion implements Comparable<ServerVersion> {
     public static final ServerVersion v6_1 = new ServerVersion("6.1", 6.1d);
     public static final ServerVersion v6_1_1 = new ServerVersion("6.1.1", 6.11d);
     public static final ServerVersion v6_2 = new ServerVersion("6.2", 6.2d);
+    public static final ServerVersion v6_2_1 = new ServerVersion("6.2.1", 6.21d);
+    public static final ServerVersion v6_3 = new ServerVersion("6.3", 6.3d);
 
     @TestOnly
     ServerVersion(String versionName, double versionCode) {
