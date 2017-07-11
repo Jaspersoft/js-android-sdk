@@ -31,5 +31,5 @@ package com.jaspersoft.android.sdk.service.report;
  * @since 2.3
  */
 public enum ReportFormat {
-    HTML, PDF, XLS
+    HTML, PDF, XLS, RTF, CSV, ODT, TXT, DOCX, ODS, XLSX, XLS_NOPAG, XLSX_NOPAG, DATA_SNAPSHOT, PPTX
 }
